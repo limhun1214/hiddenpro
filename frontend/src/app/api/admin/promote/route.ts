@@ -1,6 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
 
+export const runtime = 'edge';
+
 // Service Role Key로 JWT app_metadata 직접 수정 (Admin API 전용)
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

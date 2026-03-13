@@ -6,6 +6,8 @@ import { supabase } from '@/lib/supabase';
 import { useToast } from '@/components/ui/Toast';
 import QuoteDetailModal from '@/components/customer/QuoteDetailModal';
 
+export const runtime = 'edge';
+
 export default function ChatRoomPage({ params }: { params: { room_id: string } }) {
     const router = useRouter();
     const { showToast } = useToast();

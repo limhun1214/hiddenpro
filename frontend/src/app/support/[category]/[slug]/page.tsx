@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useParams, useRouter } from 'next/navigation';
 
+export const runtime = 'edge';
+
 export default function SupportPageViewer() {
     const params = useParams();
     const router = useRouter();
