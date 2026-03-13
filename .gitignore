@@ -1,0 +1,18 @@
+# 수동 백업 폴더 전체 제외
+backup*/
+backup_extracted/
+
+# 백업 스크립트
+backup.ps1
+
+# 임시 스크립트 폴더
+temp_pg_script/
+
+# 수동 백업 파일
+frontend/page_backup.txt
+
+# Claude Code 로컬 설정
+.claude/
+
+# 환경 변수 (루트 레벨)
+.env*
