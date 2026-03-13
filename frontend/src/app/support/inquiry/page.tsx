@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import { optimizeImage } from '@/utils/imageOptimizer';
 import { useToast } from '@/components/ui/Toast';
 import { useSearchParams } from 'next/navigation';
 
-export default function InquiryPage() {
+function InquiryContent() {
     const router = useRouter();
     const { showToast } = useToast();
     const searchParams = useSearchParams();
@@ -430,5 +430,13 @@ export default function InquiryPage() {
                 )}
             </main>
         </div>
+    );
+}
+
+export default function InquiryPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <InquiryContent />
+        </Suspense>
     );
 }
