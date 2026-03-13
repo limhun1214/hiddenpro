@@ -270,14 +270,39 @@ export default function DynamicRequestForm() {
             if (authError || !sessionUser) {
                 if (typeof window !== 'undefined') {
                     localStorage.setItem('pendingRequestData', JSON.stringify(answers));
+                    localStorage.setItem('pending_show_login', '1');
                 }
-                alert("로그인이 필요합니다. 로그인 후 요청이 자동 등록됩니다.");
                 router.replace('/');
+                return;
+            }
+
+            // [role 체크] pro 계정은 견적 요청 불가
+            const { data: userData } = await supabase
+                .from('users')
+                .select('role')
+                .eq('user_id', sessionUser.id)
+                .single();
+
+            if (!userData || userData.role?.toUpperCase() === 'PRO') {
+                showToast('고수 계정으로는 견적 요청을 할 수 없습니다.', 'error');
+                setTimeout(() => { router.replace('/'); }, 1500);
                 return;
             }
 
             const isVerified = await checkCustomerPhoneVerified(sessionUser.id);
             if (!isVerified) {
+                // 첫 번째 견적 여부 확인 (match_requests에 기존 견적이 없으면 첫 번째)
+                const { count } = await supabase
+                    .from('match_requests')
+                    .select('request_id', { count: 'exact', head: true })
+                    .eq('customer_id', sessionUser.id);
+
+                if (count === 0) {
+                    // 첫 번째 견적: 인증 없이 바로 등록
+                    await doActualSubmit();
+                    return;
+                }
+                // 두 번째 이상: 전화번호 인증 모달 표시
                 setShowPhoneModal(true);
                 return;
             }

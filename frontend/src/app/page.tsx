@@ -10,6 +10,16 @@ export default function HomePage() {
     const router = useRouter();
     const [isLoggingIn, setIsLoggingIn] = useState(false);
     const [showLoginModal, setShowLoginModal] = useState(false);
+    React.useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const shouldShowLogin = localStorage.getItem('pending_show_login');
+            if (shouldShowLogin === '1') {
+                localStorage.removeItem('pending_show_login');
+                setAuthMode('login');
+                setShowLoginModal(true);
+            }
+        }
+    }, []);
     const [authMode, setAuthMode] = useState<'login' | 'customer_signup' | 'pro_signup'>('login');
     const [authTab, setAuthTab] = useState<'CUSTOMER' | 'PRO'>('CUSTOMER');
     const [authError, setAuthError] = useState('');

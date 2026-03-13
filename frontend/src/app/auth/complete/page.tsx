@@ -136,6 +136,79 @@ export default function AuthCompletePage() {
                 localStorage.removeItem('pending_auth_role');
                 localStorage.removeItem('pending_auth_mode');
                 setStatus('로그인 성공! 이동 중...');
+
+                // [pending 견적 자동 등록] CUSTOMER 로그인 후 미완료 견적 처리
+                const pendingRequestRaw = localStorage.getItem('pendingRequestData');
+                if (finalRole === 'CUSTOMER' && pendingRequestRaw) {
+                    try {
+                        localStorage.removeItem('pendingRequestData');
+                        const pendingAnswers = JSON.parse(pendingRequestRaw);
+
+                        // 전화번호 인증 여부 확인
+                        const { data: userRow } = await supabase
+                            .from('users')
+                            .select('is_phone_verified')
+                            .eq('user_id', sessionUser.id)
+                            .single();
+
+                        if (!userRow?.is_phone_verified) {
+                            // 전화번호 미인증 시 — 첫 번째 견적 여부 확인
+                            const { count } = await supabase
+                                .from('match_requests')
+                                .select('request_id', { count: 'exact', head: true })
+                                .eq('customer_id', sessionUser.id);
+
+                            if (count !== 0) {
+                                // 두 번째 이상: pendingRequestData 복원 후 request 페이지로 이동 (전화번호 인증 유도)
+                                localStorage.setItem('pendingRequestData', JSON.stringify(pendingAnswers));
+                                const categoryId = pendingAnswers.depth1 || '';
+                                window.location.href = `/request?categoryId=${encodeURIComponent(categoryId)}&pendingSubmit=1`;
+                                return;
+                            }
+                            // 첫 번째 견적: 인증 없이 바로 등록 (아래 INSERT 로직으로 계속 진행)
+                        }
+
+                        // 전화번호 인증 완료 시 바로 DB 등록
+                        const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+                        const finalRegion = `${pendingAnswers.region_reg}, ${pendingAnswers.region_city}`;
+
+                        let realCategoryId = null;
+                        if (pendingAnswers.service_type) {
+                            const { data: catData } = await supabase
+                                .from('categories')
+                                .select('id')
+                                .eq('name', pendingAnswers.service_type)
+                                .single();
+                            if (catData) realCategoryId = catData.id;
+                        }
+
+                        const { error: insertError } = await supabase.from('match_requests').insert({
+                            customer_id: sessionUser.id,
+                            category_id: realCategoryId,
+                            region_id: 1,
+                            service_type: pendingAnswers.service_type,
+                            region: finalRegion,
+                            dynamic_answers: pendingAnswers,
+                            status: 'OPEN',
+                            expires_at: expiresAt
+                        });
+
+                        if (insertError) {
+                            console.error('Pending 견적 자동 등록 실패:', insertError);
+                            window.location.href = '/quotes/received';
+                            return;
+                        }
+
+                        setStatus('견적 요청이 완료되었습니다! 이동 중...');
+                        window.location.href = '/quotes/received';
+                        return;
+                    } catch (e) {
+                        console.error('Pending 견적 처리 오류:', e);
+                        window.location.href = '/quotes/received';
+                        return;
+                    }
+                }
+
                 if (finalRole === 'PRO') {
                     window.location.href = '/profile';
                 } else if (['ADMIN', 'ADMIN_OPERATION', 'ADMIN_VIEWER'].includes(finalRole)) {
