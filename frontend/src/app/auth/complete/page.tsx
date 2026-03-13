@@ -137,8 +137,18 @@ export default function AuthCompletePage() {
                 localStorage.removeItem('pending_auth_mode');
                 setStatus('로그인 성공! 이동 중...');
 
-                // [pending 견적 자동 등록] CUSTOMER 로그인 후 미완료 견적 처리
+                // [pending 견적 처리] 로그인 후 미완료 견적 처리
                 const pendingRequestRaw = localStorage.getItem('pendingRequestData');
+
+                // [PRO 계정] pending 견적 차단 — localStorage 정리 후 프로필로 이동
+                if (finalRole === 'PRO' && pendingRequestRaw) {
+                    localStorage.removeItem('pendingRequestData');
+                    sessionStorage.setItem('pro_quote_blocked_msg', '고수 계정으로는 견적 요청을 할 수 없습니다.');
+                    window.location.href = '/profile';
+                    return;
+                }
+
+                // [CUSTOMER 계정] pending 견적 자동 등록
                 if (finalRole === 'CUSTOMER' && pendingRequestRaw) {
                     try {
                         localStorage.removeItem('pendingRequestData');
@@ -161,6 +171,7 @@ export default function AuthCompletePage() {
                             if (count !== 0) {
                                 // 두 번째 이상: pendingRequestData 복원 후 request 페이지로 이동 (전화번호 인증 유도)
                                 localStorage.setItem('pendingRequestData', JSON.stringify(pendingAnswers));
+                                sessionStorage.setItem('pending_phone_verify_msg', '2번째 견적부터는 전화번호 인증이 필요합니다. 인증 후 견적을 보내주세요.');
                                 const categoryId = pendingAnswers.depth1 || '';
                                 window.location.href = `/request?categoryId=${encodeURIComponent(categoryId)}&pendingSubmit=1`;
                                 return;
@@ -168,7 +179,7 @@ export default function AuthCompletePage() {
                             // 첫 번째 견적: 인증 없이 바로 등록 (아래 INSERT 로직으로 계속 진행)
                         }
 
-                        // 전화번호 인증 완료 시 바로 DB 등록
+                        // 전화번호 인증 완료 또는 첫 번째 견적 → DB 등록
                         const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
                         const finalRegion = `${pendingAnswers.region_reg}, ${pendingAnswers.region_city}`;
 

@@ -99,6 +99,16 @@ export default function DynamicRequestForm() {
     }, []);
 
     useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const msg = sessionStorage.getItem('pending_phone_verify_msg');
+            if (msg) {
+                sessionStorage.removeItem('pending_phone_verify_msg');
+                showToast(msg, 'error');
+            }
+        }
+    }, []);
+
+    useEffect(() => {
         const loadCategories = async () => {
             const { data } = await supabase.from('categories').select('name, depth1, depth2').eq('is_active', true).order('sort_order', { ascending: true });
             if (data) {

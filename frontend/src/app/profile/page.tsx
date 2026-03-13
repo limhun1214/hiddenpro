@@ -82,6 +82,15 @@ export default function ProfilePage() {
         } catch {}
     }, [showToast]);
 
+    // PRO 계정 견적 차단 안내 토스트 (auth/complete에서 전달)
+    useEffect(() => {
+        const msg = sessionStorage.getItem('pro_quote_blocked_msg');
+        if (msg) {
+            sessionStorage.removeItem('pro_quote_blocked_msg');
+            showToast(msg, 'error');
+        }
+    }, []);
+
     const handleLogout = async () => {
         await supabase.auth.signOut();
         window.location.href = '/';

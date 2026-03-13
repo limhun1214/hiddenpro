@@ -267,7 +267,10 @@ export default function HomePage() {
         localStorage.setItem('pending_auth_mode', authMode);
         const { error } = await supabase.auth.signInWithOAuth({
             provider,
-            options: { redirectTo: `${location.origin}/auth/callback` }
+            options: {
+                redirectTo: `${location.origin}/auth/callback`,
+                queryParams: { prompt: 'select_account' }
+            }
         });
         if (error) alert('소셜 로그인 오류: ' + error.message);
     };
