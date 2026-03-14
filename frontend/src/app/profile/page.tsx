@@ -769,9 +769,12 @@ function ProfileHeader({ user, role, tableName, idColumn, onLogout, reviewHref }
 // 고객 프로필 (기본 정보)
 // ─────────────────────────────────────────────
 function CustomerProfile({ user }: { user: any }) {
+    const { showToast } = useToast();
     const [phoneData, setPhoneData] = useState<{ is_phone_verified: boolean; phone: string } | null>(null);
     const [joinDate, setJoinDate] = useState<string>('');
     const [reviewCount, setReviewCount] = useState<number>(0);
+    const [phoneInput, setPhoneInput] = useState('');
+    const [verifyingPhone, setVerifyingPhone] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -805,6 +808,22 @@ function CustomerProfile({ user }: { user: any }) {
         fetchData();
     }, [user.id]);
 
+    const handlePhoneVerify = async () => {
+        if (!phoneInput.trim()) { showToast('휴대폰 번호를 입력해주세요.', 'error'); return; }
+        setVerifyingPhone(true);
+        try {
+            const { mockVerifyCustomerPhone } = await import('@/lib/mockAuth');
+            await mockVerifyCustomerPhone(user.id, phoneInput);
+            setPhoneData(prev => ({ ...prev!, is_phone_verified: true, phone: phoneInput.replace(/[\s\-]/g, '') }));
+            setPhoneInput('');
+            showToast('전화번호 인증이 완료되었습니다.', 'success');
+        } catch (e: any) {
+            showToast('인증 실패: ' + e.message, 'error');
+        } finally {
+            setVerifyingPhone(false);
+        }
+    };
+
     return (
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-4">
             <h2 className="text-lg font-bold text-gray-800 border-b pb-2">기본 정보</h2>
@@ -815,13 +834,35 @@ function CustomerProfile({ user }: { user: any }) {
                         {user.email || '이메일 정보 없음'}
                     </span>
                 </div>
-                {phoneData?.is_phone_verified && phoneData?.phone && (
+                {phoneData?.is_phone_verified && phoneData?.phone ? (
                     <div className="flex flex-col">
                         <span className="text-xs text-gray-500 font-medium mb-1">인증된 전화번호</span>
                         <span className="text-gray-900 font-medium bg-green-50 p-3 rounded-lg border border-green-200 flex items-center gap-2">
                             <span className="text-green-600 text-sm">✅</span>
                             {phoneData.phone}
                         </span>
+                    </div>
+                ) : (
+                    <div className="flex flex-col">
+                        <span className="text-xs text-gray-500 font-medium mb-1">전화번호 인증</span>
+                        <div className="flex gap-2">
+                            <input
+                                type="tel"
+                                value={phoneInput}
+                                onChange={e => setPhoneInput(e.target.value)}
+                                placeholder="예: 09171234567"
+                                className="flex-1 p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                disabled={verifyingPhone}
+                            />
+                            <button
+                                onClick={handlePhoneVerify}
+                                disabled={verifyingPhone || !phoneInput.trim()}
+                                className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-lg text-sm transition disabled:opacity-50 whitespace-nowrap"
+                            >
+                                {verifyingPhone ? '인증 중...' : '인증하기'}
+                            </button>
+                        </div>
+                        <span className="text-xs text-gray-400 mt-1">2번째 견적 요청부터 전화번호 인증이 필요합니다.</span>
                     </div>
                 )}
                 {joinDate && (
