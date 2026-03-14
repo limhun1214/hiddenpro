@@ -141,10 +141,10 @@ export default function HomePage() {
 
     // 롤링 타이핑 애니메이션 텍스트
     const placeholderTexts = [
-        "어떤 서비스가 필요하신가요?",
-        "에어컨 청소가 필요하신가요?",
-        "포장이사 견적을 비교해볼까요?",
-        "인테리어 전문가를 찾으시나요?",
+        "어떤 서비스 찾으세요?",
+        "에어컨 청소 맡겨보세요",
+        "가사도우미 구하기",
+        "출장 수리 전문가",
     ];
     const [currentTextIdx, setCurrentTextIdx] = useState(0);
     const [animatedPlaceholder, setAnimatedPlaceholder] = useState('');
