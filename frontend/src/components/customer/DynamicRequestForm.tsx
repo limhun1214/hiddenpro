@@ -515,6 +515,221 @@ const CUSTOM_CAKE_STEPS = [
     { id: 'details', type: 'TEXTAREA_INPUT', text: '고수님께 전달할 특이사항이 있나요? (선택)', skippable: true, placeholder: '예: 하단 1단만 진짜 케이크고, 위 2단은 스티로폼(Dummy)으로 제작해 예산과 무게를 줄이고 싶습니다, 아이가 견과류 알러지가 있습니다 등' }
 ];
 
+const VIDEOKE_STEPS = [
+    { id: 'vk_equipment_types', type: 'MULTI_CHOICE', text: '대여를 원하시는 장비의 종류를 선택해주세요. (다중 선택 가능)', options: ['비디오케 머신 (Videoke Machine - 최신곡 업데이트 포함)', '기본 PA 사운드 시스템 (스피커, 믹서, 마이크)', '밴드 또는 공연용 고급 음향 장비', '파티용 조명 (Party Lights/Lasers)', '프로젝터 및 스크린'] },
+    { id: 'vk_headcount', type: 'SINGLE_CHOICE', text: '행사 규모와 예상 인원을 선택해주세요.', options: ['30명 미만 (소형 비디오케/스피커 1조)', '30 ~ 100명 (중형 행사용 시스템)', '100 ~ 200명 이상 (대형 연회장/야외 시스템)', '정확한 규모 모름'] },
+    { id: 'vk_venue_noise', type: 'SINGLE_CHOICE', text: '[중요] 행사 장소(Venue)의 소음 규정 및 Admin 허가 상태를 알려주세요.', options: ['빌리지/바랑가이 (오후 10시 이후 소음 금지 커퓨/Curfew 있음)', '콘도미니엄 (Admin 승인 완료, 볼륨 제한 있음)', '방음이 완비된 실내 홀 또는 호텔 (제한 없음)', '야외/개인 사유지 (규정 없음)', '아직 확인 전'] },
+    { id: 'vk_power_status', type: 'SINGLE_CHOICE', text: '장비 설치 장소의 전력(전기) 공급 상태를 체크해주세요.', options: ['안정적인 220V 콘센트 사용 가능 (실내)', '야외지만 전기 연장선(Extension wire)으로 연결 가능', '전기가 없는 완전 야외 (고수가 발전기/Generator 대여 필요)', '확인 전'] },
+    { id: 'vk_rental_duration', type: 'SINGLE_CHOICE', text: '희망하시는 총 대여 시간을 선택해주세요.', options: ['반나절 (4~6시간 이내)', '종일 행사 (8시간 이상)', '1박 2일 (Overnight - 다음 날 회수)', '다일간 렌탈'] },
+    { id: 'vk_accessibility', type: 'SINGLE_CHOICE', text: '무거운 장비 반입을 위한 현장 접근성을 알려주세요.', options: ['1층 또는 엘리베이터 사용 가능 (대차/트롤리 이동 가능)', '계단으로 직접 들고 운반해야 함 (추가 인건비 발생 가능)', '차량이 행사장 앞까지 직진입 가능'] },
+    { id: 'vk_date', type: 'DATE_PICKER', text: '대여(또는 행사)를 희망하시는 날짜를 선택해주세요.' },
+    { id: 'details', type: 'TEXTAREA_INPUT', text: '고수님께 전달할 특이사항이 있나요? (선택)', skippable: true, placeholder: '예: 무선 마이크(Wireless Mic)가 최소 4대 필요합니다, 유튜브 연결이 가능한 스마트 비디오케를 원합니다 등' }
+];
+
+const TENT_RENTAL_STEPS = [
+    { id: 'tent_items', type: 'MULTI_CHOICE', text: '대여가 필요한 품목을 선택해주세요. (다중 선택 가능)', options: ['야외용 텐트 (Canopy / Monotent / 마키 텐트)', '기본 플라스틱 의자 (Monobloc chairs)', '고급 파티용 의자 (Tiffany / Ghost / Crossback chairs)', '원형 또는 사각 테이블', '테이블보 및 의자 커버 (Linens)', '야외용 대형 선풍기 (Industrial Fans) 및 쿨러'] },
+    { id: 'tent_headcount', type: 'SINGLE_CHOICE', text: '사용 예상 인원(또는 대여 수량)을 선택해주세요.', options: ['30명 미만 (소규모 세트)', '30 ~ 50명', '50 ~ 100명', '100명 이상 (대형 행사)', '정확한 수량은 상담 후 결정'] },
+    { id: 'tent_surface', type: 'SINGLE_CHOICE', text: '[중요] 텐트 및 장비가 설치될 바닥(Surface)의 형태를 알려주세요.', options: ['콘크리트/아스팔트 바닥 (팩 다운 불가, 무거운 물통/모래주머니 Weights 필수)', '흙바닥 또는 잔디밭 (팩/Peg 설치 가능)', '실내 홀 세팅 (텐트 불필요, 가구만 대여)', '잘 모름'] },
+    { id: 'tent_access', type: 'SINGLE_CHOICE', text: '행사장의 자재 반입 규정 및 접근성을 알려주세요.', options: ['빌리지/콘도 (Admin 승인 완료 및 트럭 게이트 패스 발급 완료)', '대형 트럭(트럭반) 진입이 원활한 개인 사유지', '진입로가 좁아 작은 차로 여러 번 이동해야 함', '아직 규정을 확인하지 못함'] },
+    { id: 'tent_weather', type: 'SINGLE_CHOICE', text: '기상 변수에 대비한 준비 상태를 선택해주세요.', options: ['우기(Rainy season) 대비 완전 방수 텐트 및 측면 가림막(Sidewalls) 필수', '건기/햇빛 차단용(Shade) 기본 텐트로 충분함', '실내 사용임', '고수의 날씨 상황에 맞춘 추천 요망'] },
+    { id: 'tent_date', type: 'DATE_PICKER', text: '장비 대여(또는 행사)를 희망하시는 날짜를 선택해주세요.' },
+    { id: 'tent_setup_time', type: 'SINGLE_CHOICE', text: '장비 셋업(Ingress) 및 철수(Egress) 가능 시간을 알려주세요.', options: ['행사 전날 미리 설치 및 행사 다음 날 철수 가능 (여유로움)', '행사 당일 몇 시간 전 설치 및 행사 직후 즉시 철수 필수 (시간 촉박)', '아직 베뉴와 조율 전'] },
+    { id: 'details', type: 'TEXTAREA_INPUT', text: '고수님께 전달할 특이사항이 있나요? (선택)', skippable: true, placeholder: '예: 테이블보 및 의자 리본 색상을 파티 테마인 \'네이비 블루\'에 맞춰주세요, 텐트 내부에 조명(String lights) 설치도 필요합니다 등' }
+];
+
+const PHOTOBOOTH_STEPS = [
+    { id: 'pb_service_types', type: 'MULTI_CHOICE', text: '대여를 원하시는 서비스를 선택해주세요. (다중 선택 가능)', options: ['일반 사진 인화 포토부스 (Photobooth)', '360도 비디오 부스 (360 Video Booth)', '매직 미러 부스 (Magic Mirror Booth)', '네온사인 및 커스텀 백드롭(Backdrop) 대여', '재미있는 촬영 소품(Props) 추가'] },
+    { id: 'pb_duration', type: 'SINGLE_CHOICE', text: '포토부스 운영(대여)을 희망하시는 시간을 선택해주세요.', options: ['2시간 (기본 패키지)', '3시간', '4시간', '행사 내내 무제한 운영', '포토부스 아님 (소품/백드롭 단순 대여)'] },
+    { id: 'pb_output_type', type: 'SINGLE_CHOICE', text: '(포토부스의 경우) 선호하시는 인화 및 결과물 제공 방식을 선택해주세요.', options: ['무제한 일반 인화지 출력 (Unlimited 4R prints)', '냉장고 자석형 인화 (Magnetic prints - 필리핀 인기)', '종이 인화 없이 이메일/QR코드 다운로드만 (Soft copy)', '360 비디오 파일만', '포토부스 아님'] },
+    { id: 'pb_space_power', type: 'SINGLE_CHOICE', text: '[중요] 포토부스 설치 공간 및 전기 인프라 상태를 체크해주세요.', options: ['최소 2x2m 이상 평탄한 공간 및 전용 220V 콘센트 제공 가능', '공간은 충분하나 전기 연결선(Extension)이 길게 필요함', '야외 흙바닥/잔디밭 (평탄화용 합판/플로어링 필요)', '공간 사이즈 확인 전'] },
+    { id: 'pb_template_design', type: 'SINGLE_CHOICE', text: '사진 템플릿(레이아웃) 또는 백드롭 디자인 방식을 선택해주세요.', options: ['주인공 이름/기업 로고가 들어간 완전 맞춤형(Custom) 디자인 희망', '업체가 보유한 기존 템플릿(Standard) 중 선택', '디자인 파일(AI/PSD)을 고객이 직접 제공함'] },
+    { id: 'pb_venue_access', type: 'SINGLE_CHOICE', text: '행사장 형태 및 Admin 반입 규정을 알려주세요.', options: ['호텔/전문 베뉴 (반입 수수료 없음)', '콘도/빌리지 (Admin 반입 허가 및 게이트 패스 완료)', '아직 규정 확인 전', '반입 제한 없는 자택'] },
+    { id: 'pb_date', type: 'DATE_PICKER', text: '대여(또는 행사)를 희망하시는 날짜를 선택해주세요.' },
+    { id: 'details', type: 'TEXTAREA_INPUT', text: '고수님께 전달할 특이사항이 있나요? (선택)', skippable: true, placeholder: '예: 결혼식 하객용이라 식전 1시간, 식후 1시간으로 나누어(Split time) 운영 가능할까요?, 사진 템플릿에 스폰서 로고 3개를 넣어야 합니다 등' }
+];
+
+const SNAP_PHOTO_STEPS = [
+    { id: 'sp_event_types', type: 'MULTI_CHOICE', text: '촬영이 필요한 행사 또는 목적을 선택해주세요. (다중 선택 가능)', options: ['웨딩 (본식 및 피로연)', '프리웨딩(Prenup) 및 커플 스냅', '데뷰(18세) 및 생일, 세례식', '기업 행사 및 세미나', '제품/상업 공간 촬영', '가족 사진 및 개인 프로필'] },
+    { id: 'sp_service_scope', type: 'MULTI_CHOICE', text: '필요하신 서비스 범위를 선택해주세요. (다중 선택 가능)', options: ['사진 촬영만 (Photography)', '영상 촬영만 (Videography)', '사진 및 영상 패키지 (P&V)', '드론(Drone) 항공 촬영 추가', '행사 당일 편집 영상(SDE - Same Day Edit) 상영'] },
+    { id: 'sp_duration', type: 'SINGLE_CHOICE', text: '예상되는 촬영 소요 시간을 선택해주세요.', options: ['2~4시간 (반나절 / 간단한 행사)', '5~8시간 (종일 / 웨딩 등 풀타임)', '8시간 이상 (추가 초과 수당 발생 동의)', '시간 제한 없이 행사 종료 시까지'] },
+    { id: 'sp_venue_type', type: 'SINGLE_CHOICE', text: '[중요] 촬영 장소 형태 및 출장/이동(OOTF) 요건을 알려주세요.', options: ['메트로 마닐라 내 단일 장소 진행', '다중 장소 이동 (예: 호텔 준비 → 성당 → 피로연장)', '메트로 마닐라 외곽 및 지방 출장 (Out-of-town fee 및 숙박/교통 제공 필요)', '실내 스튜디오 대관 렌탈 필요'] },
+    { id: 'sp_vendor_rules', type: 'SINGLE_CHOICE', text: '행사장(Venue)의 외부 포토그래퍼 반입 규정을 확인하셨나요?', options: ['외부 촬영팀 반입 100% 허용 (퍼밋 불필요 또는 납부 완료)', '코르키지(Corkage) 및 반입 수수료 발생함 (고객 부담)', '성당/교회 규정상 제단(Altar) 진입 제한 등 제약 있음', '아직 규정 확인 전'] },
+    { id: 'sp_delivery_type', type: 'SINGLE_CHOICE', text: '원본 및 보정본 수령 방식을 선택해주세요.', options: ['모든 파일을 구글 드라이브/USB로만 수령 (Soft copy)', '사진 인화, 고급 앨범, 액자 제작 포함 (Hard copy 패키지)', '고수와 포트폴리오 상담 후 결정'] },
+    { id: 'sp_date', type: 'DATE_PICKER', text: '촬영 희망 날짜를 선택해주세요.' },
+    { id: 'details', type: 'TEXTAREA_INPUT', text: '고수님께 전달할 특이사항이 있나요? (선택)', skippable: true, placeholder: '예: 촬영 크루(Crew) 식사는 저희가 행사장 뷔페로 별도 제공합니다, 피로연 중간에 틀어야 할 SDE 영상 편집이 가장 중요합니다 등' }
+];
+
+const EVENT_MC_STEPS = [
+    { id: 'mc_event_type', type: 'SINGLE_CHOICE', text: '진행자(MC)가 필요한 행사의 종류를 선택해주세요.', options: ['웨딩 리셉션', '데뷰 (18세 생일 파티)', '아이 생일파티 (Kiddie Party)', '기업 연말 파티 (Year-end) 및 팀빌딩', '컨퍼런스, 갈라 및 공식 행사'] },
+    { id: 'mc_language_style', type: 'SINGLE_CHOICE', text: '원하시는 진행 언어 및 MC 스타일을 선택해주세요.', options: ['100% 영어 진행 (격식 있고 차분한 공식 행사)', '영어+타갈로그어 혼용 (Taglish - 로컬 하객 타겟의 활발한 파티)', '한국어+영어 혼용 (필리핀/한국 하객 믹스)', '유머러스하고 코믹한 스탠드업 코미디 스타일', '아직 미정'] },
+    { id: 'mc_service_scope', type: 'MULTI_CHOICE', text: '필요하신 진행 서비스의 범위를 선택해주세요. (다중 선택 가능)', options: ['단독 MC 1명 진행', '코-호스트(Co-host) 포함 2명 이상 진행', '파티 게임 및 레크리에이션 기획/진행 포함', '행사 식순(Program flow) 기획 보조', '마술/노래 등 개인기(Talent) 포함'] },
+    { id: 'mc_pa_status', type: 'SINGLE_CHOICE', text: '[중요] 행사장의 마이크 및 음향(PA) 시스템 상태를 알려주세요.', options: ['전문 음향팀 및 무선 마이크(Wireless mic) 완비됨', '기본 스피커만 있어 MC가 직접 오디오 잭/블루투스 연결 확인 필요', '음향 장비가 아예 없음 (MC 측에서 스피커 대여까지 턴키 요망)', '확인 전'] },
+    { id: 'mc_headcount_duration', type: 'SINGLE_CHOICE', text: '예상되는 하객(Guest) 수와 행사 시간을 선택해주세요.', options: ['50명 미만 / 2~3시간 소요', '50 ~ 150명 / 4~5시간 소요', '150명 이상 대규모 / 8시간 종일 행사'] },
+    { id: 'mc_venue_type', type: 'SINGLE_CHOICE', text: '행사장 형태 및 이동 요건을 알려주세요.', options: ['메트로 마닐라 내 호텔/전문 베뉴', '메트로 마닐라 내 야외/일반 레스토랑', '지방 출장(Out-of-town)으로 교통비 별도 지급 필요', '온라인 비대면(Zoom) 행사'] },
+    { id: 'mc_date', type: 'DATE_PICKER', text: '행사 진행(섭외) 희망 날짜를 선택해주세요.' },
+    { id: 'details', type: 'TEXTAREA_INPUT', text: '고수님께 전달할 특이사항이 있나요? (선택)', skippable: true, placeholder: '예: K-pop을 좋아하는 데뷰 파티라 랜덤 플레이 댄스 게임을 능숙하게 이끌어 주실 분이 필요합니다, 대본(Script)은 주최 측에서 미리 작성해 제공합니다 등' }
+];
+
+const LIVE_BAND_STEPS = [
+    { id: 'lb_entertainer_types', type: 'MULTI_CHOICE', text: '섭외를 원하시는 엔터테이너 종류를 선택해주세요. (다중 선택 가능)', options: ['어쿠스틱 듀오/트리오 (보컬+기타/건반)', '풀 밴드 (Full Band - 드럼, 베이스 포함)', '파티 및 클럽 DJ', '솔로 가수 (웨딩 축가 등)', '현악 3/4중주 (String Quartet - 클래식)'] },
+    { id: 'lb_music_genre', type: 'SINGLE_CHOICE', text: '행사의 성격 및 주로 원하는 음악 장르를 선택해주세요.', options: ['웨딩/로맨틱 (발라드, 어쿠스틱 팝)', '데뷰 및 파티 (팝, 댄스, EDM)', '기업 행사/갈라 디너 (재즈, 보사노바, 라운지)', '로컬/OPM (Original Pilipino Music) 위주', '종교 행사 (CCM)'] },
+    { id: 'lb_venue_pa', type: 'SINGLE_CHOICE', text: '[중요] 행사장(Venue)의 악기/음향(PA) 세팅 및 소음 규정을 체크해주세요.', options: ['풀 밴드용 악기 및 음향 시스템 완비됨', '음향 장비가 없어 밴드/DJ 측에서 악기와 스피커 일체 대여 요망 (견적 포함)', '빌리지 내라 밤 10시 이후 큰 소음(커퓨) 발생 불가', '아직 규정 및 장비 확인 전'] },
+    { id: 'lb_performance_duration', type: 'SINGLE_CHOICE', text: '연주/공연 예상 소요 시간(세트)을 선택해주세요.', options: ['축가 및 특수 순서용 1~2곡만 (이벤트성)', '1~2세트 (1시간~1시간 반 내외)', '3세트 (피로연 및 식사 시간 전체 - 3시간 내외)', '종일 행사 또는 DJ 올나잇 파티'] },
+    { id: 'lb_song_request', type: 'SINGLE_CHOICE', text: '희망하시는 곡 신청(Song Request) 방식을 선택해주세요.', options: ['고객이 사전에 전달한 플레이리스트 100% 연주 희망', '밴드/DJ의 추천 레퍼토리에 일임', '현장 하객들의 즉석 신청곡(Live request) 유연하게 허용'] },
+    { id: 'lb_green_room', type: 'SINGLE_CHOICE', text: '엔터테이너 대기실(Green room) 및 식사 제공 여부를 알려주세요.', options: ['별도 대기실 및 행사 뷔페(Crew meal) 제공 가능', '식사 제공 불가 (견적에 식대 포함 요망)', '조율 필요'] },
+    { id: 'lb_date', type: 'DATE_PICKER', text: '공연(행사) 희망 날짜를 선택해주세요.' },
+    { id: 'details', type: 'TEXTAREA_INPUT', text: '고수님께 전달할 특이사항이 있나요? (선택)', skippable: true, placeholder: '예: 신부 입장 시 특정 팝송을 어쿠스틱 버전으로 직접 편곡해 라이브로 불러주세요, DJ 장비(Pioneer CDJ) 대여도 패키지에 포함해 주세요 등' }
+];
+
+const HMUA_STEPS = [
+    { id: 'hmua_event_type', type: 'SINGLE_CHOICE', text: '메이크업을 받으실 분의 주요 행사/목적을 선택해주세요.', options: ['웨딩 (신부 본식)', '프리웨딩(Prenup) 사진/영상 촬영', '데뷰 (18세 파티 주인공)', '졸업식(Graduation) 및 프롬', '일반 파티 하객 참석용', '프로필 및 상업 광고 촬영'] },
+    { id: 'hmua_pax', type: 'MULTI_CHOICE', text: '메이크업을 진행할 인원 및 대상을 모두 선택해주세요. (다중 선택 가능)', options: ['주인공 1명 (신부/데뷰탄트 등)', '혼주 및 직계 가족', '신부/파티 들러리 (Entourage)', '남성(신랑 등) 헤어 및 그루밍'] },
+    { id: 'hmua_style', type: 'SINGLE_CHOICE', text: '원하시는 메이크업 스타일을 선택해주세요.', options: ['내추럴/투명한 한국식(K-Beauty) 스타일', '진한 윤곽과 인조 속눈썹 강조형 서양식(Glam) 스타일', '사진/영상 촬영에 적합한 조명용(HD/매트) 스타일', '고수와 포트폴리오 상담 후 결정'] },
+    { id: 'hmua_location', type: 'SINGLE_CHOICE', text: '[중요] 메이크업 진행 장소 및 출장 요건을 선택해주세요.', options: ['지정한 호텔/자택으로 출장 방문(Home service/On-location) 희망', '고수의 메이크업 샵/스튜디오로 직접 방문 예정', '지방 출장(Out-of-town) 필수 (교통/숙박비 지원 요망)'] },
+    { id: 'hmua_retouch', type: 'SINGLE_CHOICE', text: '촬영/행사 중 수정 메이크업(Retouching) 서비스가 필요한가요?', options: ['행사 내내 동행하며 드레스 변경 시 수정 메이크업(Second look) 변경 필수', '초기 헤어/메이크업 세팅 완료 후 철수 (리터치 불필요)', '상담 후 결정'] },
+    { id: 'hmua_date', type: 'DATE_PICKER', text: '메이크업(행사) 희망 날짜를 선택해주세요.' },
+    { id: 'hmua_call_time', type: 'SINGLE_CHOICE', text: '메이크업 아티스트가 도착해야 하는 시간(Call time)을 선택해주세요.', options: ['새벽 시간대 (오전 6시 이전 - Early call charge 발생 동의)', '오전 시간대 (오전 6시 ~ 12시)', '오후 시간대', '야간 파티 대비 저녁 시간'] },
+    { id: 'hmua_special_tools', type: 'MULTI_CHOICE', text: '특수 장비/기법이 필요한가요? (다중 선택 가능)', options: ['땀과 물에 강한 에어브러시(Airbrush) 메이크업 기법', '헤어 볼륨을 위한 붙임머리/가발(Hair extension) 추가', '바디 메이크업 (어깨/등 커버)', '해당 없음 (일반 브러시 메이크업)'] },
+    { id: 'details', type: 'TEXTAREA_INPUT', text: '고수님께 전달할 특이사항이 있나요? (선택)', skippable: true, placeholder: '예: 들러리가 5명이라 아티스트 보조(Assistant) 동행이 필수입니다, 피부가 예민하여 제가 쓰는 화장품으로 진행해 주셨으면 합니다 등' }
+];
+
+const ENG_CONVERSATION_STEPS = [
+    { id: 'ec_purpose', type: 'MULTI_CHOICE', text: '영어를 배우려는 주된 목적을 선택해주세요. (다중 선택 가능)', options: ['필리핀 일상 생활 및 생존 영어 (마트, 식당, 콘도 Admin 소통 등)', '현지 친구 사귀기 및 친목', '자녀의 학교(국제학교 등) 학부모 상담 대비', '여행 및 취미', '왕초보 탈출 및 기초 문법 확립'] },
+    { id: 'ec_level', type: 'SINGLE_CHOICE', text: '현재 수강생의 대략적인 영어 실력은 어느 정도인가요?', options: ['알파벳과 아주 기초적인 단어만 아는 왕초보 수준', '간단한 문장으로 더듬더듬 의사소통이 가능한 초급', '일상 대화는 가능하지만 문법과 어휘가 부족한 중급', '유창하게 말하고 싶어 연습 상대가 필요한 고급'] },
+    { id: 'ec_tutor_style', type: 'SINGLE_CHOICE', text: '선호하시는 튜터의 악센트(발음) 및 티칭 스타일을 선택해주세요.', options: ['미국식(Neutral) 악센트를 구사하는 튜터 (BPO/콜센터 경력자 등)', '발음보다는 친절하고 천천히 말해주는 필리핀 로컬 친화적 튜터', '문법과 교재 위주로 꼼꼼하게 가르치는 튜터', '자유로운 프리토킹(Free talking) 위주의 튜터'] },
+    { id: 'ec_lesson_type', type: 'SINGLE_CHOICE', text: '선호하시는 레슨 진행 방식 및 장소를 선택해주세요.', options: ['교통체증(Traffic) 걱정 없는 100% 온라인 화상 레슨 (Zoom, Skype 등)', '수강생의 자택(콘도/빌리지)으로 튜터가 직접 방문', '주변 조용한 카페나 스터디룸에서 대면 진행', '튜터가 지정한 장소(어학원/자택)로 수강생이 방문'] },
+    { id: 'ec_access_rules', type: 'SINGLE_CHOICE', text: '[중요] (방문 레슨 시) 콘도/빌리지 출입 규정 및 요구사항을 알려주세요.', options: ['로비/게이트에 신분증(ID)만 맡기면 출입 가능', '사전에 Admin에 튜터 등록(Work/Visitor permit) 필수', '대면 방문이 아니므로 해당 없음'] },
+    { id: 'ec_schedule', type: 'SINGLE_CHOICE', text: '희망하시는 레슨 주기 및 시간대를 선택해주세요.', options: ['주 2~3회 평일 주간 (오전/오후)', '주 2~3회 평일 저녁 퇴근 후', '주말(토/일) 집중 레슨', '매일 조금씩 (주 5회 이상)', '고수와 스케줄 유동적 조율'] },
+    { id: 'ec_start_date', type: 'DATE_PICKER', text: '레슨 시작을 희망하시는 날짜를 선택해주세요.' },
+    { id: 'details', type: 'TEXTAREA_INPUT', text: '고수님께 전달할 특이사항이 있나요? (선택)', skippable: true, placeholder: '예: 영어를 전혀 못해서 한국어를 조금이라도 할 줄 아는 필리핀 튜터였으면 좋겠습니다, 초등학생 자녀 2명이 함께 그룹 과외를 받으려고 합니다 등' }
+];
+
+const LOCAL_LANG_STEPS = [
+    { id: 'll_language', type: 'SINGLE_CHOICE', text: '배우고자 하는 정확한 로컬 언어를 선택해주세요.', options: ['표준 타갈로그어 (Tagalog - 마닐라 및 루손 지역)', '비사야어/세부아노 (Bisaya/Cebuano - 세부, 다바오 등 민다나오 지역)', '일롱고 (Ilonggo/Hiligaynon)', '일로카노 (Ilocano)', '기타 방언 (특이사항 기재)'] },
+    { id: 'll_purpose', type: 'MULTI_CHOICE', text: '해당 로컬 언어를 배우려는 주된 목적이 무엇인가요? (다중 선택 가능)', options: ['필리핀 로컬 직원(현장직, 운전기사 등) 업무 지시 및 관리', '가사도우미(Ate/Yaya)와의 명확한 소통', '현지인 파트너 및 친구, 가족과의 친밀한 대화', '관공서, 재래시장 등 완전한 현지화 생존', '단순한 언어적 호기심'] },
+    { id: 'll_level', type: 'SINGLE_CHOICE', text: '현재 수강생의 해당 로컬 언어 구사 수준은 어느 정도인가요?', options: ['\'살라맛(Salamat)\', \'뽀(Po)\' 등 기본 인사말만 아는 완전 기초', '자주 쓰는 생활 단어와 짧은 문장 구사 가능', '어느 정도 듣고 이해하지만 말하기가 안 되는 상태'] },
+    { id: 'll_instruction_lang', type: 'SINGLE_CHOICE', text: '[중요] 레슨을 진행할 매개 언어(Instruction language)를 선택해주세요.', options: ['튜터가 \'영어\'로 타갈로그어/비사야어의 문법과 뜻을 설명 희망', '튜터가 \'한국어\'로 설명 가능해야 함 (희귀 인력으로 단가 상승 가능)', '영어를 쓰지 않고 해당 로컬 언어로만 직접 부딪히며 진행'] },
+    { id: 'll_lesson_type', type: 'SINGLE_CHOICE', text: '선호하시는 레슨 진행 방식 및 장소를 선택해주세요.', options: ['100% 온라인 화상 레슨', '수강생 자택(콘도) 및 사무실로 튜터 방문', '조용한 외부 카페 미팅', '튜터 지정 장소 방문'] },
+    { id: 'll_access_rules', type: 'SINGLE_CHOICE', text: '(방문 레슨 시) 콘도/사무실 출입 규정을 체크해주세요.', options: ['단순 신분증(ID) 제출로 게이트/로비 통과 가능', 'Admin에 튜터 출입 사전 등록 필요', '온라인 진행이라 출입 규정 불필요'] },
+    { id: 'll_schedule', type: 'SINGLE_CHOICE', text: '희망하시는 레슨 주기 및 시간대를 선택해주세요.', options: ['주 2~3회 평일 주간', '주 2~3회 평일 저녁', '주말 전용', '고수와 유동적 스케줄 조율'] },
+    { id: 'll_start_date', type: 'DATE_PICKER', text: '레슨 시작을 희망하시는 날짜를 선택해주세요.' },
+    { id: 'details', type: 'TEXTAREA_INPUT', text: '고수님께 전달할 특이사항이 있나요? (선택)', skippable: true, placeholder: '예: 세부(Cebu) 현장 발령 예정이라 순수 마닐라 타갈로그어가 아닌 세부아노(Cebuano) 기초가 반드시 필요합니다, 현지 건설 현장 용어 위주로 배우고 싶습니다 등' }
+];
+
+const BUSINESS_ENG_STEPS = [
+    { id: 'be_situation', type: 'MULTI_CHOICE', text: '비즈니스 영어가 가장 시급하게 필요한 구체적인 상황을 선택해주세요. (다중 선택 가능)', options: ['격식 있는 비즈니스 이메일 작성 및 슬랙(Slack) 등 업무 메신저 소통', '영어 프레젠테이션(PT) 및 프로젝트 피칭 준비', '해외 바이어 및 클라이언트와의 화상 회의(Zoom/Teams) 주도', '다국적 기업 취업 및 이직을 위한 영어 면접(Job Interview) 준비', '콜드 콜링(Cold Calling) 및 세일즈 영업 멘트 훈련'] },
+    { id: 'be_industry', type: 'SINGLE_CHOICE', text: '튜터가 특히 숙지하거나 배경지식이 있었으면 하는 산업 분야가 있나요?', options: ['IT, 소프트웨어 및 엔지니어링', '무역, 수출입 및 물류', '금융, 회계 및 은행업', '의료, 제약 및 간호', '특정 분야 없음 (일반적인 비즈니스 범용 영어)'] },
+    { id: 'be_level', type: 'SINGLE_CHOICE', text: '현재 수강생의 비즈니스 영어 구사 수준은 어느 정도인가요?', options: ['일상 회화는 가능하나 프로페셔널한 비즈니스 어휘와 포맷을 전혀 모름', '중급 수준으로 이메일 등은 쓰지만 보다 세련되고 고급스러운 어휘 확장이 필요함', '원어민과의 업무 소통은 무리 없으나 발음 교정 및 미세한 뉘앙스 차이(Politeness)를 다듬고 싶음'] },
+    { id: 'be_tutor_req', type: 'SINGLE_CHOICE', text: '튜터에게 바라는 가장 중요한 자격 요건은 무엇인가요?', options: ['다국적 기업(MNC)이나 대형 BPO(콜센터) 매니저급 이상 실무 근무 경력자 보유', '미국/영국 원어민 수준의 완벽하고 중립적인 악센트', '비즈니스 영어 전문 티칭 자격증(TESOL, TEFL 등) 보유자', '상관없음 (실력 위주 테스트 후 결정)'] },
+    { id: 'be_lesson_type', type: 'SINGLE_CHOICE', text: '선호하시는 레슨 진행 방식 및 장소를 선택해주세요.', options: ['시간 절약을 위한 100% 온라인 비대면 레슨', '고객의 회사(오피스/회의실)로 튜터 출장 방문', '고객의 자택(콘도) 방문', '조용한 카페 및 비즈니스 라운지 미팅'] },
+    { id: 'be_access_rules', type: 'SINGLE_CHOICE', text: '[중요] (회사/오피스 방문 시) 출입 인가 및 보안 규정을 알려주세요.', options: ['로비에서 방문자 등록만으로 회의실 출입 가능', '빌딩 관리소(Admin) 및 회사 HR에 외부인 사전 등록 필수', '온라인 진행이므로 해당 없음'] },
+    { id: 'be_schedule', type: 'SINGLE_CHOICE', text: '희망하시는 레슨 주기 및 시간대를 선택해주세요.', options: ['출근 전 이른 아침 시간대', '점심 시간 활용 (1시간 내외)', '퇴근 후 저녁 시간대', '주말 집중반', '튜터와 유동적으로 스케줄 조율'] },
+    { id: 'be_start_date', type: 'DATE_PICKER', text: '레슨 시작을 희망하시는 날짜를 선택해주세요.' },
+    { id: 'details', type: 'TEXTAREA_INPUT', text: '고수님께 전달할 특이사항이 있나요? (선택)', skippable: true, placeholder: '예: 다음 달 미국 본사 경영진 앞에서의 사업 성과 프레젠테이션 대본 첨삭과 모의 발표(Mock presentation) 피드백이 집중적으로 필요합니다 등' }
+];
+
+const BPO_PREP_STEPS = [
+    { id: 'bpo_account_types', type: 'MULTI_CHOICE', text: '목표로 하는 BPO/콜센터의 주요 어카운트(Account) 및 직무를 선택해주세요. (다중 선택 가능)', options: ['인바운드 고객 지원 (Customer Service)', '아웃바운드 세일즈 및 텔레마케팅', '기술 지원 (Tech Support/IT)', '헬스케어 및 의료 코딩 (Healthcare/Medical Billing)', '금융 및 은행 (Financial/Banking)', '비음성 업무 (Non-Voice/Chat/Email Support)'] },
+    { id: 'bpo_english_level', type: 'SINGLE_CHOICE', text: '현재 본인의 영어 구사 능력 및 발음 수준을 어떻게 평가하시나요?', options: ['기초적인 의사소통만 가능한 수준', '일상 대화는 가능하나 억양(Accent) 및 문법 교정이 필요한 중급', 'BPO 프리미엄 어카운트(미국/영국) 합격을 목표로 하는 고급(Near-native)', '아직 모름 (레벨 테스트 희망)'] },
+    { id: 'bpo_weak_areas', type: 'MULTI_CHOICE', text: 'BPO 채용 과정 중 가장 취약하거나 집중 훈련이 필요한 부분을 선택해주세요. (다중 선택 가능)', options: ['초기 전화 면접 (Initial Phone Screening)', '어휘/발음 테스트 (Versant, Berlitz, SVAR 등)', '타이핑 속도 및 컴퓨터 내비게이션 시험', '최종 심층 면접 (Final Interview / 상황 대처 질문)', '모의 콜 테스트 (Mock Call Simulation)'] },
+    { id: 'bpo_work_shift', type: 'SINGLE_CHOICE', text: '취업 시 희망하는 근무 형태와 시간대를 선택해주세요.', options: ['미국/야간 교대 근무(Graveyard shift) 지원 예정', '주간 근무(AU/UK/Local)만 희망', '재택근무(WFH) 포지션 우선 지원', '오피스 출근(On-site) 선호'] },
+    { id: 'bpo_lesson_type', type: 'SINGLE_CHOICE', text: '선호하시는 레슨 진행 방식을 선택해주세요.', options: ['100% 온라인 화상 레슨 (Zoom, Skype 등)', '수강생의 자택/콘도로 튜터 출장 방문', '튜터가 지정한 장소(어학원 등)로 방문', '조용한 카페 미팅'] },
+    { id: 'bpo_start_date', type: 'DATE_PICKER', text: '레슨(훈련) 시작을 희망하시는 날짜를 선택해주세요.' },
+    { id: 'bpo_schedule', type: 'SINGLE_CHOICE', text: '희망하시는 레슨 주기 및 시간대를 선택해주세요.', options: ['평일 주간 (오전/오후)', '평일 저녁', '주말(토/일) 전용', '튜터와 자유롭게 스케줄 조율'] },
+    { id: 'details', type: 'TEXTAREA_INPUT', text: '고수님께 전달할 특이사항이 있나요? (선택)', skippable: true, placeholder: '예: 콜센터 경력은 없지만 영문학과를 졸업했습니다, BPO 면접에서 3번 떨어져서 최종 면접 팁(STAR 기법)이 절실합니다 등' }
+];
+
+const VA_TRAINING_STEPS = [
+    { id: 'va_train_fields', type: 'MULTI_CHOICE', text: '집중적으로 배우고 싶은 가상 비서(VA) 전문 분야를 선택해주세요. (다중 선택 가능)', options: ['일반 사무 보조 및 데이터 입력 (General Admin/Data Entry)', '소셜 미디어 관리 (SMM / 페이스북, 인스타, 틱톡)', '이커머스 관리 (Shopify, Amazon, Lazada 등)', '부동산 VA (Real Estate / Cold Calling)', '회계 및 장부 정리 (Bookkeeping / Xero, QuickBooks)', '그래픽 디자인 및 영상 편집 기초'] },
+    { id: 'va_train_background', type: 'SINGLE_CHOICE', text: '현재 본인의 관련 경력 및 배경을 선택해주세요.', options: ['BPO나 프리랜서 경험이 전혀 없는 완전 초보', 'BPO(콜센터) 경력은 있으나 VA 프리랜서 업무는 처음', '기존 VA 경험이 있으며 특정 고급 기술(Niche skill) 업스킬링 희망', '일반 회사원 출신'] },
+    { id: 'va_train_tools', type: 'MULTI_CHOICE', text: '실무 교육 시 꼭 다루었으면 하는 소프트웨어/툴을 체크해주세요. (다중 선택 가능)', options: ['Google Workspace (Docs, Sheets 등) 및 MS Office', 'Canva 및 기초 디자인 툴', '프로젝트 관리 툴 (Trello, Asana, Notion 등)', 'CRM 툴 (HubSpot, Salesforce 등)', '화상 회의 및 커뮤니케이션 툴 (Slack, Zoom)', '프리랜서 플랫폼 사용법 (Upwork, OnlineJobs.ph 프로필 세팅)'] },
+    { id: 'va_train_infra', type: 'SINGLE_CHOICE', text: '[중요] 실제 VA 업무 및 온라인 레슨을 위한 재택(WFH) 인프라 상태를 알려주세요.', options: ['개인 노트북/PC 및 안정적인 광랜(Fiber internet) 보유 완료', '노트북/PC는 있으나 인터넷이 불안정함(모바일 데이터 사용 등)', '아직 개인용 PC/노트북이 없어 구매 전임'] },
+    { id: 'va_train_lesson_type', type: 'SINGLE_CHOICE', text: '선호하시는 레슨 진행 방식을 선택해주세요.', options: ['화면 공유(Screen share)가 필수적인 100% 온라인 비대면 레슨', '수강생이 개인 노트북을 지참하여 대면(Face-to-Face) 레슨', '오프라인과 온라인을 섞은 하이브리드 방식'] },
+    { id: 'va_train_start_date', type: 'DATE_PICKER', text: '교육 시작을 희망하시는 날짜를 선택해주세요.' },
+    { id: 'va_train_schedule', type: 'SINGLE_CHOICE', text: '희망하시는 레슨 주기 및 시간대를 선택해주세요.', options: ['평일 주간', '평일 저녁', '주말 전용', '고수와 유동적 스케줄 조율'] },
+    { id: 'details', type: 'TEXTAREA_INPUT', text: '고수님께 전달할 특이사항이 있나요? (선택)', skippable: true, placeholder: '예: 영어가 완벽하지 않아 클라이언트와 이메일 템플릿으로 소통하는 방법을 중점적으로 배우고 싶습니다, 페이팔(PayPal)/와이즈(Wise) 등 대금 수령 세팅 방법도 알려주세요 등' }
+];
+
+const CODING_LESSON_STEPS = [
+    { id: 'cl_fields', type: 'MULTI_CHOICE', text: '배우고자 하는 프로그래밍 분야/목표를 선택해주세요. (다중 선택 가능)', options: ['웹 프론트엔드 (HTML, CSS, JavaScript, React, Vue 등)', '웹 백엔드 (Node.js, Python, PHP, Java 등)', '모바일 앱 개발 (Flutter, React Native, Swift 등)', '데이터 사이언스 및 AI (Python, SQL 등)', '게임 개발 (Unity, C# 등)', '알고리즘 및 코딩 테스트(면접) 준비'] },
+    { id: 'cl_level', type: 'SINGLE_CHOICE', text: '현재 수강생의 코딩 지식 수준은 어느 정도인가요?', options: ['코딩을 한 번도 해본 적 없는 완전 기초 (비전공자)', '기초 문법(변수, 조건문 등) 정도만 아는 초급', '간단한 토이 프로젝트는 만들어본 중급 (아키텍처/실무 팁 필요)', '특정 프레임워크의 심화 과정이나 코드 리뷰(멘토링)가 필요한 고급'] },
+    { id: 'cl_goal', type: 'SINGLE_CHOICE', text: '코딩을 배우려는 가장 주된 목적을 선택해주세요.', options: ['IT 기업 취업 및 커리어 전환 (Developer 포지션)', '프리랜서 활동 (외주 프로젝트 수주)', '학교/대학 전공 과목 보충 및 시험 대비', '개인적인 취미 및 사이드 프로젝트 개발'] },
+    { id: 'cl_lesson_type', type: 'SINGLE_CHOICE', text: '레슨 진행 방식 및 실습 환경을 선택해주세요.', options: ['100% 온라인 레슨 (화면 공유 및 Live Share 사용)', '수강생이 본인 노트북을 지참하여 대면(오프라인) 레슨', '수강생에게 PC가 없어 튜터의 장비/컴퓨터실 사용 필수 (튜터 방문)'] },
+    { id: 'cl_instruction_lang', type: 'SINGLE_CHOICE', text: '레슨을 진행할 선호 언어(Instruction Language)를 선택해주세요.', options: ['영어 (글로벌 IT 환경 적응을 위해 영어 위주 설명 희망)', '타갈로그어/비사야어 (쉬운 로컬 언어로 기초부터 확실한 이해 희망)', '한국어 (튜터가 한국인일 경우)', '상관없음'] },
+    { id: 'cl_start_date', type: 'DATE_PICKER', text: '레슨 시작을 희망하시는 날짜를 선택해주세요.' },
+    { id: 'cl_schedule', type: 'SINGLE_CHOICE', text: '희망하시는 레슨 주기 및 시간대를 선택해주세요.', options: ['평일 주간', '평일 저녁', '주말 전용반', '유동적 스케줄 조율'] },
+    { id: 'details', type: 'TEXTAREA_INPUT', text: '고수님께 전달할 특이사항이 있나요? (선택)', skippable: true, placeholder: '예: Next.js와 Supabase를 활용한 사스(SaaS) 만들기 실전 프로젝트 위주로 수업을 진행하고 싶습니다, 맥북(MacBook) 환경에서 실습 예정입니다 등' }
+];
+
+const IELTS_STEPS = [
+    { id: 'ielts_exam_type', type: 'SINGLE_CHOICE', text: '준비하고자 하는 공식 영어 시험의 종류를 선택해주세요.', options: ['IELTS Academic (유학 및 전문직 취업용)', 'IELTS General Training (이민 및 일반 취업용)', 'OET (의료/간호 전문직용)', 'TOEFL iBT', '아직 어떤 시험을 볼지 결정하지 못함 (상담 필요)'] },
+    { id: 'ielts_target_score', type: 'SINGLE_CHOICE', text: '목표로 하는 점수(Target Score/Band)를 선택해주세요.', options: ['IELTS 5.5 ~ 6.0 (기본 요건)', 'IELTS 6.5 ~ 7.0 (주요 대학 및 일반 취업)', 'IELTS 7.5 이상 (고득점)', 'OET B 등급 이상 (UK/AU 간호사 등)', 'TOEFL 80~100점 이상', '목표 점수 미정'] },
+    { id: 'ielts_current_level', type: 'SINGLE_CHOICE', text: '현재 본인의 대략적인 영어 실력이나 해당 시험 경험을 알려주세요.', options: ['해당 시험을 처음 준비하며, 기초 영어 실력부터 다져야 함 (초보)', '기본 영어 회화는 가능하나 시험 유형 파악이 필요함 (중급)', '이미 시험 응시 경험이 있으나 목표 점수 달성에 실패함 (재도전)', '특정 파트만 집중 공략하면 되는 고득점자'] },
+    { id: 'ielts_weak_parts', type: 'MULTI_CHOICE', text: '가장 취약하거나 집중 튜터링이 필요한 파트를 선택해주세요. (다중 선택 가능)', options: ['스피킹 (Speaking - 원어민/전문 튜터와의 모의고사 훈련 필요)', '라이팅 (Writing - 에세이 구조 및 문법 첨삭 필수)', '리딩 (Reading - 시간 단축 및 독해 스킬)', '리스닝 (Listening)', '전 영역 고른 대비 (Full package)'] },
+    { id: 'ielts_lesson_type', type: 'SINGLE_CHOICE', text: '선호하시는 튜터링(레슨) 진행 방식을 선택해주세요.', options: ['100% 온라인 화상 레슨 (비대면 모의고사 진행 포함)', '수강생의 자택/콘도로 튜터 출장 방문', '조용한 카페 및 스터디룸 대면 미팅', '튜터 지정 장소(어학원 등) 방문'] },
+    { id: 'ielts_exam_timeline', type: 'SINGLE_CHOICE', text: '실제 공식 시험(Official Exam) 응시 예정 시기를 알려주세요.', options: ['1~2개월 이내 (매우 급함, 스파르타식 단기 집중 요망)', '3~6개월 이내', '6개월 이후 등 시간적 여유 있음', '아직 시험 접수 전임'] },
+    { id: 'ielts_start_date', type: 'DATE_PICKER', text: '튜터링 시작을 희망하시는 날짜를 선택해주세요.' },
+    { id: 'ielts_schedule', type: 'SINGLE_CHOICE', text: '희망하시는 레슨 주기 및 시간대를 선택해주세요.', options: ['평일 주간 집중', '평일 저녁 퇴근 후', '주말 전용', '고수와 자유롭게 스케줄 조율'] },
+    { id: 'details', type: 'TEXTAREA_INPUT', text: '고수님께 전달할 특이사항이 있나요? (선택)', skippable: true, placeholder: '예: 영국 간호사 취업을 위해 OET B 등급이 반드시 필요합니다, 라이팅(Writing) Task 2 에세이 첨삭 위주로 수업을 원합니다 등' }
+];
+
+const PRC_EXAM_STEPS = [
+    { id: 'prc_exam_field', type: 'SINGLE_CHOICE', text: '준비하시는 PRC(Professional Regulation Commission) 보드 시험의 전공/직군을 선택해주세요.', options: ['간호사 (PNLE - Philippine Nurses Licensure Exam)', '공인회계사 (CPALE - CPA Licensure Exam)', '교사 (LET - Licensure Examination for Teachers)', '엔지니어링 (CE, ME, EE 등)', '건축가 (ALE)', '범죄학 (CLE)', '기타 PRC 보드 시험 (특이사항 기재)'] },
+    { id: 'prc_taker_status', type: 'SINGLE_CHOICE', text: '현재 시험 응시 상태를 알려주세요.', options: ['대학 졸업(예정) 후 처음 응시하는 초시생 (First-time taker)', '이전 시험에 낙방하여 다시 준비하는 재수생 (Retaker / Refresher)', '해외 면허 변환 등을 위해 준비하는 외국인 응시자'] },
+    { id: 'prc_review_type', type: 'SINGLE_CHOICE', text: '원하시는 시험 준비(리뷰) 방식을 선택해주세요.', options: ['취약 과목 보완을 위한 1:1 개인 튜터링', '뜻이 맞는 친구들과 2~4인 소그룹 튜터링 (비용 절감)', '대형 리뷰 센터(Review Center) 종합반 등록 상담 및 연계 희망'] },
+    { id: 'prc_focus_areas', type: 'MULTI_CHOICE', text: '집중적으로 튜터링을 받고 싶은 특정 과목이나 파트가 있나요? (다중 선택 가능)', options: ['기초 개념 및 이론 완벽 정리', '과거 기출문제(Past Board Exams) 풀이 및 분석', '계산/수학 기반 문제 집중 훈련', '실전 모의고사(Mock Exam) 및 시간 관리 훈련', '전 과목 종합 리뷰'] },
+    { id: 'prc_lesson_type', type: 'SINGLE_CHOICE', text: '선호하시는 튜터링 진행 방식 및 장소를 선택해주세요.', options: ['100% 온라인 비대면 레슨', '수강생 자택 방문 대면 레슨', '스터디 카페 등 조용한 외부 장소 대면 레슨'] },
+    { id: 'prc_exam_timeline', type: 'SINGLE_CHOICE', text: '목표로 하는 PRC 보드 시험 응시 예정일을 알려주세요.', options: ['가장 가까운 다가오는 시험 (1~3개월 내)', '다음 회차 시험 (6개월 정도 여유)', '내년 시험 대비 (장기전)'] },
+    { id: 'prc_start_date', type: 'DATE_PICKER', text: '튜터링 시작을 희망하시는 날짜를 선택해주세요.' },
+    { id: 'prc_schedule', type: 'SINGLE_CHOICE', text: '희망하시는 레슨 주기 및 시간대를 선택해주세요.', options: ['평일 주간 (풀타임 리뷰생)', '평일 저녁 (직장 병행)', '주말 집중반', '튜터와 스케줄 유동적 조율'] },
+    { id: 'details', type: 'TEXTAREA_INPUT', text: '고수님께 전달할 특이사항이 있나요? (선택)', skippable: true, placeholder: '예: 간호사 보드 시험 중 정신간호학(Psychiatric Nursing) 파트가 가장 취약합니다, 5년 전 졸업 후 다시 공부하는 거라 기초부터 짚어줄 튜터가 필요합니다 등' }
+];
+
+const SWIMMING_STEPS = [
+    { id: 'sw_age_group', type: 'SINGLE_CHOICE', text: '수영 레슨을 받을 수강생의 연령대를 선택해주세요.', options: ['영유아 및 어린이 (Kids / Toddlers)', '청소년 (Teens)', '성인 (Adults)', '시니어 (Seniors)'] },
+    { id: 'sw_level', type: 'SINGLE_CHOICE', text: '현재 수강생의 대략적인 수영 실력을 선택해주세요.', options: ['물이 무섭고 뜨는 법도 모르는 완전 초보', '물에 뜨고 앞으로 갈 수는 있으나 자세 교정이 필요한 초/중급', '4개 영법(자유형, 평영, 배영, 접영) 마스터 희망', '철인 3종 및 라이프가드 자격 준비 (고급)'] },
+    { id: 'sw_group_type', type: 'SINGLE_CHOICE', text: '레슨을 진행할 형태(인원)를 선택해주세요.', options: ['1:1 개인 레슨', '2~3인 소그룹 레슨 (가족, 친구 등 자체 구성)', '기존 그룹 레슨에 합류 희망'] },
+    { id: 'sw_pool_location', type: 'SINGLE_CHOICE', text: '[중요] 레슨을 진행할 수영장 장소를 선택해주세요.', options: ['거주 중인 콘도미니엄/빌리지 수영장 (강사 출입 가능)', '외부 퍼블릭/사설 수영장', '강사가 보유/지정한 수영장으로 직접 방문', '수영장이 없어 섭외부터 필요함'] },
+    { id: 'sw_access_rules', type: 'SINGLE_CHOICE', text: '(콘도/빌리지 진행 시) 외부 강사 및 게스트 출입 규정을 확인하셨나요?', options: ['게스트 요금(Guest fee) 없이 무료 출입 및 강습 가능', 'Admin에 게스트/코치 등록 필수 및 요금 발생 (고객이 부담)', '상업적 강습(Coaching) 자체를 엄격히 금지함 (외부 장소 섭외 필요)', '아직 규정 확인 전'] },
+    { id: 'sw_start_date', type: 'DATE_PICKER', text: '레슨 시작을 희망하시는 날짜를 선택해주세요.' },
+    { id: 'sw_schedule', type: 'SINGLE_CHOICE', text: '희망하시는 레슨 주기 및 시간대를 선택해주세요.', options: ['평일 주간 (오전/오후)', '평일 저녁', '주말 전용 (토, 일)', '강사와 스케줄 유동적 조율'] },
+    { id: 'details', type: 'TEXTAREA_INPUT', text: '고수님께 전달할 특이사항이 있나요? (선택)', skippable: true, placeholder: '예: 허리 디스크가 있어 무리가 가지 않는 영법 위주로 배우고 싶습니다, 여자 강사님을 선호합니다 등' }
+];
+
+const DANCE_STEPS = [
+    { id: 'dance_genres', type: 'MULTI_CHOICE', text: '배우고자 하는 댄스 장르를 선택해주세요. (다중 선택 가능)', options: ['줌바(Zumba) 및 에어로빅', 'K-Pop 방송 댄스', '힙합 및 스트릿 댄스', '라틴 및 볼룸 댄스 (사교 댄스)', '발레(Ballet)', '웨딩 댄스(First Dance) 및 코틸리온(Cotillion) 안무'] },
+    { id: 'dance_purpose', type: 'SINGLE_CHOICE', text: '레슨의 주된 목적을 선택해주세요.', options: ['다이어트, 피트니스 및 취미', '학교 및 사내 행사 장기자랑 퍼포먼스 준비', '데뷰(Debut) 파티 코틸리온 및 웨딩 안무 연습', '전문적인 댄스 오디션 준비'] },
+    { id: 'dance_group_type', type: 'SINGLE_CHOICE', text: '레슨을 진행할 형태(인원)를 선택해주세요.', options: ['1:1 개인 안무 레슨', '2~5인 소그룹 레슨', '6인 이상 대그룹 및 기업/학교 출강', '기존 댄스 클래스에 1인 합류 희망'] },
+    { id: 'dance_venue', type: 'SINGLE_CHOICE', text: '레슨을 진행할 장소를 선택해주세요.', options: ['거주 중인 콘도/빌리지 내 짐(Gym) 또는 펑션룸(Function room)', '강사가 보유/소속된 댄스 스튜디오로 방문', '시간당 대여 가능한 외부 댄스 스튜디오(고객이 대관료 부담)', '100% 온라인 화상 레슨'] },
+    { id: 'dance_noise_rules', type: 'SINGLE_CHOICE', text: '[중요] (콘도 진행 시) 소음 및 스피커 사용 규정을 확인하셨나요?', options: ['대형 블루투스 스피커 사용 및 음악 재생 가능', '소음 제한이 있어 이어폰 또는 아주 작은 볼륨으로만 가능', '상업적 외부 강사 출입 및 레슨 금지', '아직 관리소(Admin) 규정 확인 전'] },
+    { id: 'dance_start_date', type: 'DATE_PICKER', text: '레슨 시작을 희망하시는 날짜를 선택해주세요.' },
+    { id: 'dance_schedule', type: 'SINGLE_CHOICE', text: '희망하시는 레슨 주기 및 시간대를 선택해주세요.', options: ['주 2~3회 평일 주간', '주 2~3회 평일 저녁', '주말 집중반', '행사를 앞두고 매일 단기 속성반'] },
+    { id: 'details', type: 'TEXTAREA_INPUT', text: '고수님께 전달할 특이사항이 있나요? (선택)', skippable: true, placeholder: '예: 다음 달 데뷰 파티를 위한 18 Roses 입장 댄스 안무를 짜주실 분이 필요합니다, 몸치라 기초 리듬 타는 법부터 알려주세요 등' }
+];
+
+const COOKING_LESSON_STEPS = [
+    { id: 'ck_fields', type: 'MULTI_CHOICE', text: '배우고자 하는 요리 및 베이킹 분야를 선택해주세요. (다중 선택 가능)', options: ['필리핀 로컬 요리 (Adobo, Sinigang 등)', '한식 전반', '서양식 (파스타, 스테이크 등)', '제과제빵 (빵, 페이스트리, 쿠키)', '케이크 장식 및 데코레이션 (Fondant 등)', '건강식, 비건, 키토 다이어트 식단'] },
+    { id: 'ck_purpose', type: 'SINGLE_CHOICE', text: '레슨 대상자 및 수강 목적을 선택해주세요.', options: ['본인 취미 및 가정식 요리 실력 향상', '가사도우미(Ate/Yaya) 대상 위생 및 한식/가정식 조리 교육', '카페, 식당 창업 및 비즈니스 메뉴 개발', '아이들(Kids) 체험형 쿠킹 클래스'] },
+    { id: 'ck_venue', type: 'SINGLE_CHOICE', text: '레슨을 진행할 장소를 선택해주세요.', options: ['수강생의 자택(콘도/빌리지) 주방으로 강사 방문', '강사가 보유/소속된 쿠킹 스튜디오로 방문', '100% 온라인 비대면 레슨'] },
+    { id: 'ck_kitchen_infra', type: 'SINGLE_CHOICE', text: '[중요] (자택 방문 시) 주방 인프라 및 도구 보유 상태를 알려주세요.', options: ['오븐, 가스/인덕션, 조리 도구가 모두 완비됨', '오븐은 없으나 기본 불 조리(Stove) 및 도구는 있음', '베이킹용 믹서, 오븐 등 특수 도구 전혀 없음 (강사 장비 지참 또는 방문 레슨 불가)', '강사 스튜디오로 방문할 예정임'] },
+    { id: 'ck_ingredients', type: 'SINGLE_CHOICE', text: '식재료 준비 방식에 대한 선호도를 선택해주세요.', options: ['강사가 모든 식재료를 장봐서 준비 (레슨비에 재료비 포함 턴키)', '강사가 제공한 레시피 리스트를 보고 고객이 직접 마트에서 구매', '상담 후 결정'] },
+    { id: 'ck_start_date', type: 'DATE_PICKER', text: '레슨 시작을 희망하시는 날짜를 선택해주세요.' },
+    { id: 'ck_schedule', type: 'SINGLE_CHOICE', text: '희망하시는 레슨 형태 및 주기를 선택해주세요.', options: ['1회성 원데이 클래스 (One-day class)', '주 1~2회 정기 레슨 (취미/심화반)', '평일 주간 집중', '주말 전용'] },
+    { id: 'details', type: 'TEXTAREA_INPUT', text: '고수님께 전달할 특이사항이 있나요? (선택)', skippable: true, placeholder: '예: 새로 온 아떼(가사도우미)에게 김치찌개, 불고기 등 기본적인 한식 5가지를 이틀 동안 집중적으로 가르쳐주고 싶습니다, 특정 해산물 알레르기가 있습니다 등' }
+];
+
+const MUSIC_LESSON_STEPS = [
+    { id: 'ml_instruments', type: 'MULTI_CHOICE', text: '배우고자 하는 악기 및 분야를 선택해주세요. (다중 선택 가능)', options: ['피아노 및 키보드', '통기타(Acoustic) 및 일렉 기타', '보컬 및 발성 (노래)', '바이올린, 첼로 등 현악기', '우쿨렐레', '베이스 또는 드럼'] },
+    { id: 'ml_age_level', type: 'SINGLE_CHOICE', text: '수강생의 연령대 및 현재 실력을 선택해주세요.', options: ['유아 및 어린이 (악보를 못 보는 기초)', '성인 완전 초보', '성인 중급 (어느 정도 연주/노래 가능하나 교정 필요)', '고급 (공연, 콩쿠르, 입시 준비 등)'] },
+    { id: 'ml_goal', type: 'SINGLE_CHOICE', text: '레슨의 주된 목표를 선택해주세요.', options: ['1곡 마스터 (축가, 프로포즈, 장기자랑 등 단기 목표)', '꾸준한 취미 및 스트레스 해소', 'ABRSM 등 급수 시험 및 자격증 준비', '교회 반주(Accompaniment) 및 찬양팀 훈련', '음악 이론 및 화성학 기초 확립'] },
+    { id: 'ml_venue', type: 'SINGLE_CHOICE', text: '레슨을 진행할 장소를 선택해주세요.', options: ['수강생의 자택(콘도/빌리지)으로 강사 출장 방문', '강사의 개인 스튜디오 및 연습실로 수강생이 방문', '100% 온라인 비대면 레슨 (Zoom 등)', '외부 연습실 대여 (대관료 고객 부담)'] },
+    { id: 'ml_instrument_status', type: 'SINGLE_CHOICE', text: '[중요] (방문/온라인 레슨 시) 악기 보유 상태를 알려주세요.', options: ['어쿠스틱 피아노(Upright/Grand) 보유', '전자 키보드(디지털 피아노) 보유', '본인 소유의 기타/현악기 보유', '악기 전혀 없음 (대여 필요 또는 구매 전 상담 희망)', '보컬 레슨이라 악기 불필요'] },
+    { id: 'ml_noise_rules', type: 'SINGLE_CHOICE', text: '(방문 레슨 시) 콘도/빌리지의 소음 규정을 확인하셨나요?', options: ['악기 연주 및 노래에 대한 소음 제한 없음', '낮 시간대(예: 오전 10시~오후 5시)에만 연주 허용', '층간 소음 민원으로 어쿠스틱 악기 연주 절대 불가 (헤드셋 가능한 디지털 악기만 가능)', '스튜디오 방문 예정임'] },
+    { id: 'ml_start_date', type: 'DATE_PICKER', text: '레슨 시작을 희망하시는 날짜를 선택해주세요.' },
+    { id: 'ml_schedule', type: 'SINGLE_CHOICE', text: '희망하시는 레슨 주기 및 시간대를 선택해주세요.', options: ['주 1~2회 평일 주간', '주 1~2회 평일 저녁', '주말(토,일) 레슨', '강사와 유동적 스케줄 조율'] },
+    { id: 'details', type: 'TEXTAREA_INPUT', text: '고수님께 전달할 특이사항이 있나요? (선택)', skippable: true, placeholder: '예: 아이가 집중력이 짧아 30분씩 짧게 주 3회 진행하고 싶습니다, 3달 뒤에 있을 사내 행사 밴드 공연을 위해 일렉 기타 속성 레슨이 필요합니다 등' }
+];
+
 const TILE_FLOORING_STEPS = [
     { id: 'tile_spaces', type: 'MULTI_CHOICE', text: '시공을 원하시는 공간을 선택해주세요. (다중 선택 가능)', options: ['거실 및 복도', '방 (침실 등)', '주방', '화장실 및 욕실', '베란다/발코니', '야외 공간 (주차장, 정원 등)'] },
     { id: 'floor_material', type: 'SINGLE_CHOICE', text: '원하시는 바닥재 종류를 선택해주세요.', options: ['세라믹/도기질 타일', '포셀린 타일 (대형 타일 포함)', '비닐/데코타일 (Vinyl/PVC)', '나무 마루 (Wood flooring)', '에폭시 코팅', '아직 미정 (고수와 상담 후 결정)'] },
@@ -885,6 +1100,25 @@ export default function DynamicRequestForm() {
             const isPartyCatering = answers.service_type === '파티 뷔페/음식 케이터링';
             const isFoodCart = answers.service_type === '푸드 카트 렌탈';
             const isCustomCake = answers.service_type === '맞춤 디자인 케이크 제작';
+            const isVideoke = answers.service_type === '비디오케 및 사운드 시스템 대여';
+            const isTentRental = answers.service_type === '텐트/테이블/의자 대여';
+            const isPhotobooth = answers.service_type === '파티 소품/포토부스 대여';
+            const isSnapPhoto = answers.service_type === '스냅 사진 및 영상 촬영';
+            const isEventMC = answers.service_type === '행사 진행자 섭외';
+            const isLiveBand = answers.service_type === '라이브 밴드/DJ/가수 섭외';
+            const isHmua = answers.service_type === '헤어 및 메이크업';
+            const isEngConversation = answers.service_type === '외국인 대상 영어 회화';
+            const isLocalLang = answers.service_type === '기초 타갈로그어/비사야어 레슨';
+            const isBusinessEng = answers.service_type === '비즈니스 영어 튜터링';
+            const isBpoPrep = answers.service_type === 'BPO/콜센터 취업 준비';
+            const isVaTraining = answers.service_type === '가상 비서 실무 교육';
+            const isCodingLesson = answers.service_type === '프로그래밍/코딩 레슨';
+            const isIelts = answers.service_type === 'IELTS / OET / TOEFL 준비';
+            const isPrcExam = answers.service_type === 'PRC 보드 시험 준비';
+            const isSwimming = answers.service_type === '수영 레슨';
+            const isDance = answers.service_type === '댄스/줌바 레슨';
+            const isCookingLesson = answers.service_type === '요리/베이킹 레슨';
+            const isMusicLesson = answers.service_type === '피아노/기타/보컬 레슨';
 
             if (isDeepCleaning) {
                 setActiveSteps([...BASE_STEPS, ...DEEP_CLEANING_STEPS]);
@@ -1018,6 +1252,44 @@ export default function DynamicRequestForm() {
                 setActiveSteps([...BASE_STEPS, ...FOOD_CART_STEPS]);
             } else if (isCustomCake) {
                 setActiveSteps([...BASE_STEPS, ...CUSTOM_CAKE_STEPS]);
+            } else if (isVideoke) {
+                setActiveSteps([...BASE_STEPS, ...VIDEOKE_STEPS]);
+            } else if (isTentRental) {
+                setActiveSteps([...BASE_STEPS, ...TENT_RENTAL_STEPS]);
+            } else if (isPhotobooth) {
+                setActiveSteps([...BASE_STEPS, ...PHOTOBOOTH_STEPS]);
+            } else if (isSnapPhoto) {
+                setActiveSteps([...BASE_STEPS, ...SNAP_PHOTO_STEPS]);
+            } else if (isEventMC) {
+                setActiveSteps([...BASE_STEPS, ...EVENT_MC_STEPS]);
+            } else if (isLiveBand) {
+                setActiveSteps([...BASE_STEPS, ...LIVE_BAND_STEPS]);
+            } else if (isHmua) {
+                setActiveSteps([...BASE_STEPS, ...HMUA_STEPS]);
+            } else if (isEngConversation) {
+                setActiveSteps([...BASE_STEPS, ...ENG_CONVERSATION_STEPS]);
+            } else if (isLocalLang) {
+                setActiveSteps([...BASE_STEPS, ...LOCAL_LANG_STEPS]);
+            } else if (isBusinessEng) {
+                setActiveSteps([...BASE_STEPS, ...BUSINESS_ENG_STEPS]);
+            } else if (isBpoPrep) {
+                setActiveSteps([...BASE_STEPS, ...BPO_PREP_STEPS]);
+            } else if (isVaTraining) {
+                setActiveSteps([...BASE_STEPS, ...VA_TRAINING_STEPS]);
+            } else if (isCodingLesson) {
+                setActiveSteps([...BASE_STEPS, ...CODING_LESSON_STEPS]);
+            } else if (isIelts) {
+                setActiveSteps([...BASE_STEPS, ...IELTS_STEPS]);
+            } else if (isPrcExam) {
+                setActiveSteps([...BASE_STEPS, ...PRC_EXAM_STEPS]);
+            } else if (isSwimming) {
+                setActiveSteps([...BASE_STEPS, ...SWIMMING_STEPS]);
+            } else if (isDance) {
+                setActiveSteps([...BASE_STEPS, ...DANCE_STEPS]);
+            } else if (isCookingLesson) {
+                setActiveSteps([...BASE_STEPS, ...COOKING_LESSON_STEPS]);
+            } else if (isMusicLesson) {
+                setActiveSteps([...BASE_STEPS, ...MUSIC_LESSON_STEPS]);
             } else {
                 setActiveSteps([...BASE_STEPS, DEFAULT_DETAILS_STEP]);
             }

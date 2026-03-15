@@ -1,3 +1,9 @@
+[2026-03-15] 견적 요청 플로우 신규 서비스 전용 질문 4개 추가 (수영 레슨 / 댄스·줌바 레슨 / 요리·베이킹 레슨 / 피아노·기타·보컬 레슨) / frontend/src/components/customer/DynamicRequestForm.tsx / DB변경 없음
+[2026-03-15] 견적 요청 플로우 신규 서비스 전용 질문 2개 추가 (IELTS/OET/TOEFL 준비 / PRC 보드 시험 준비) / frontend/src/components/customer/DynamicRequestForm.tsx / DB변경 없음
+[2026-03-15] 견적 요청 플로우 신규 서비스 전용 질문 3개 추가 (BPO/콜센터 취업 준비 / 가상 비서 실무 교육 / 프로그래밍/코딩 레슨) / frontend/src/components/customer/DynamicRequestForm.tsx / DB변경 없음
+[2026-03-15] 견적 요청 플로우 신규 서비스 전용 질문 3개 추가 (외국인 대상 영어 회화 / 기초 타갈로그어/비사야어 레슨 / 비즈니스 영어 튜터링) / frontend/src/components/customer/DynamicRequestForm.tsx / DB변경 없음
+[2026-03-15] 견적 요청 플로우 신규 서비스 전용 질문 4개 추가 (스냅 사진 및 영상 촬영 / 행사 진행자 섭외 / 라이브 밴드/DJ/가수 섭외 / 헤어 및 메이크업) / frontend/src/components/customer/DynamicRequestForm.tsx / DB변경 없음
+[2026-03-15] 견적 요청 플로우 신규 서비스 전용 질문 3개 추가 (비디오케 및 사운드 시스템 대여 / 텐트/테이블/의자 대여 / 파티 소품/포토부스 대여) / frontend/src/components/customer/DynamicRequestForm.tsx / DB변경 없음
 [2026-03-13] 감사 로그 "관리자 지정/해제" 필터 탭 추가 (PROMOTE_ADMIN + REVOKE_ADMIN) / admin/page.tsx / DB변경 없음
 [2026-03-13 / auth/complete 역할 충돌 감지 추가 — ADMIN 계열 예외, PRO·CUSTOMER 불일치 시 강제 로그아웃 및 에러 안내 / frontend/src/app/auth/complete/page.tsx 수정 / DB변경: 없음]
 [2026-03-13 / auth/callback route.ts 교체 (/auth/complete 위임 방식) + auth/complete ADMIN_OPERATION·ADMIN_VIEWER 라우팅 보완 / frontend/src/app/auth/callback/route.ts, frontend/src/app/auth/complete/page.tsx 수정 / DB변경: 없음]

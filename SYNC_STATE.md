@@ -20,6 +20,7 @@
 ## 3. [Current Workflow]
 
 
+
 ## 4. [Go-Live Pending Checklist] (런칭 전 필수 보류 - 현재 절대 활성화 금지)
 1. Sentry 에러 트래킹 전면 연결 및 Key 주입
 2. Supabase Rate Limit 전면 활성화 (DDoS 방어)
