@@ -1,4 +1,5 @@
 'use client';
+export const runtime = 'edge';
 
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
