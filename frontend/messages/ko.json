@@ -478,7 +478,8 @@
     "phonePlaceholder": "예: 09171234567",
     "phoneLater": "나중에 하기",
     "phoneVerifying": "인증 중...",
-    "phoneVerifyBtn": "인증하고 견적 받기"
+    "phoneVerifyBtn": "인증하고 견적 받기",
+    "notesPlaceholder": "상세 내용을 적어주세요..."
   },
   "proProfileModal": {
     "loading": "프로필 정보를 불러오는 중...",

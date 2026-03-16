@@ -1466,7 +1466,7 @@ export default function DynamicRequestForm() {
 
     const handleSkip = () => {
         if (!currentQuestion.skippable) return;
-        const skipValue = currentQuestion.id === 'details' ? '상담 시 논의할게요' : '미입력 (건너뜀)';
+        const skipValue = currentQuestion.id === 'details' ? 'Will discuss with the pro' : 'Skipped';
         commitAnswer(skipValue, skipValue);
     };
 
@@ -1788,7 +1788,7 @@ export default function DynamicRequestForm() {
                                                 value={tempText}
                                                 onChange={e => setTempText(e.target.value)}
                                                 className="border border-gray-300 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 w-full min-h-[100px]"
-                                                placeholder="상세 내용을 적어주세요..."
+                                                placeholder={t('requestForm.notesPlaceholder')}
                                             />
                                         )}
                                         <div className="flex gap-2">
@@ -1964,7 +1964,7 @@ export default function DynamicRequestForm() {
                                         <button onClick={() => commitAnswer('지금 작성할게요', '💬 지금 작성할게요')} className="bg-blue-50 text-blue-700 py-3 px-4 rounded-xl border border-blue-200 font-medium text-left">
                                             {t('requestForm.detailsNow')}
                                         </button>
-                                        <button onClick={() => commitAnswer('고수와 상담 시 논의할게요', '🤝 상담 시 논의할게요')} className="bg-gray-50 text-gray-700 py-3 px-4 rounded-xl border border-gray-200 font-medium text-left">
+                                        <button onClick={() => commitAnswer('Will discuss with the pro', '🤝 Will discuss with the pro')} className="bg-gray-50 text-gray-700 py-3 px-4 rounded-xl border border-gray-200 font-medium text-left">
                                             {t('requestForm.detailsLater')}
                                         </button>
                                     </div>

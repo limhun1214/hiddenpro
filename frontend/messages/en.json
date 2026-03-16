@@ -478,7 +478,8 @@
     "phonePlaceholder": "e.g. 09171234567",
     "phoneLater": "Later",
     "phoneVerifying": "Verifying...",
-    "phoneVerifyBtn": "Verify & Get Quotes"
+    "phoneVerifyBtn": "Verify & Get Quotes",
+    "notesPlaceholder": "Please enter details..."
   },
   "proProfileModal": {
     "loading": "Loading profile information...",
