@@ -36,7 +36,7 @@ export default function HomePage() {
     const searchRef = React.useRef<HTMLDivElement>(null);
     const [showAllRecommendServices, setShowAllRecommendServices] = useState(false);
 
-    const [allServices, setAllServices] = useState<{ service: string, service_en: string, category: string, category_ko: string, depth2: string }[]>([]);
+    const [allServices, setAllServices] = useState<{ service: string, service_en: string, category: string, depth2: string }[]>([]);
     const [depth1Keys, setDepth1Keys] = useState<string[]>([]);
 
     React.useEffect(() => {
@@ -508,7 +508,7 @@ export default function HomePage() {
                                             )).map((item, i) => (
                                                 <div
                                                     key={i}
-                                                    onClick={() => { setShowDropdown(false); router.push(`/request?categoryId=${encodeURIComponent((item as any).category_ko || item.category)}&serviceId=${encodeURIComponent(item.service)}${(item as any).depth2 ? `&depth2=${encodeURIComponent((item as any).depth2)}&serviceType=${encodeURIComponent(item.service)}` : ''}`); }}
+                                                    onClick={() => { setShowDropdown(false); router.push(`/request?categoryId=${encodeURIComponent(item.category)}&serviceId=${encodeURIComponent(item.service)}${(item as any).depth2 ? `&depth2=${encodeURIComponent((item as any).depth2)}&serviceType=${encodeURIComponent(item.service)}` : ''}`); }}
                                                     className="px-6 py-4 hover:bg-blue-50 cursor-pointer flex items-center justify-between border-b border-gray-50 last:border-0 transition-colors"
                                                 >
                                                     <span className="text-gray-900 font-bold text-lg">{(item as any).service_display || (locale === 'en' ? ((item as any).service_en || item.service) : item.service)}</span>
