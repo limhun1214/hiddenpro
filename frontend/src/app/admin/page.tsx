@@ -264,6 +264,30 @@ function AdminDashboardPageContent() {
     const ADMIN_WARN_BEFORE_MS = 30 * 1000    // 30초 전 경고
     const [showTimeoutWarning, setShowTimeoutWarning] = useState(false)
 
+    // ─── 관리자 알림 시스템 ───
+    const [unreadCounts, setUnreadCounts] = useState<{ inquiries: number; abuse: number; reports: number; payout: number }>({ inquiries: 0, abuse: 0, reports: 0, payout: 0 });
+    const prevUnreadRef = React.useRef<{ inquiries: number; abuse: number; reports: number; payout: number }>({ inquiries: 0, abuse: 0, reports: 0, payout: 0 });
+    const audioContextRef = React.useRef<AudioContext | null>(null);
+    const hasInteractedRef = React.useRef(false);
+    const isFirstPollRef = React.useRef(true);
+
+    // ─── 알림 사운드 (TTS 음성) ───
+    const playAlertSound = useCallback((isUrgent: boolean) => {
+      console.log('[AdminAlert] playAlertSound called, hasInteracted:', hasInteractedRef.current);
+      if (!hasInteractedRef.current) return;
+      try {
+        const utterance = new SpeechSynthesisUtterance('Please check your notifications');
+        utterance.lang = 'en-US';
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
+        utterance.volume = 1.0;
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utterance);
+      } catch (e) {
+        console.warn('[AdminAlert] Sound play failed:', e);
+      }
+    }, []);
+
     // ─── Auth Guard (Race Condition 방어: 세션 복원 재시도 포함) ───
     useEffect(() => {
         let isMounted = true;
@@ -346,6 +370,67 @@ function AdminDashboardPageContent() {
             events.forEach(e => window.removeEventListener(e, resetTimers));
         };
     }, [authorized, router]);
+
+    // ─── 브라우저 인터랙션 감지 (사운드 정책 준수) ───
+    useEffect(() => {
+      const markInteracted = () => { hasInteractedRef.current = true; };
+      const events = ['click', 'keydown', 'touchstart'] as const;
+      events.forEach(e => window.addEventListener(e, markInteracted, { once: false }));
+      return () => { events.forEach(e => window.removeEventListener(e, markInteracted)); };
+    }, []);
+
+    // ─── 미확인 건수 폴링 (60초 주기) ───
+    useEffect(() => {
+      if (!authorized) return;
+
+      const fetchUnreadCounts = async () => {
+        try {
+          const { data, error } = await supabase.rpc('get_admin_unread_counts');
+          if (error || !data) return;
+
+          const counts = typeof data === 'string' ? JSON.parse(data) : data;
+          const newCounts = {
+            inquiries: counts.inquiries || 0,
+            abuse: counts.abuse || 0,
+            reports: counts.reports || 0,
+            payout: counts.payout || 0,
+          };
+
+          // 이전 대비 증가분 감지 → 토스트 + 사운드
+          const prev = prevUnreadRef.current;
+          const alerts: { key: string; label: string; count: number; urgent: boolean }[] = [];
+
+          if (newCounts.payout > prev.payout) alerts.push({ key: 'payout', label: adminLocale === 'ko' ? '새 출금 요청' : 'New payout request', count: newCounts.payout - prev.payout, urgent: true });
+          if (newCounts.reports > prev.reports) alerts.push({ key: 'reports', label: adminLocale === 'ko' ? '새 신고 접수' : 'New report filed', count: newCounts.reports - prev.reports, urgent: true });
+          if (newCounts.inquiries > prev.inquiries) alerts.push({ key: 'inquiries', label: adminLocale === 'ko' ? '새 1:1 문의' : 'New inquiry', count: newCounts.inquiries - prev.inquiries, urgent: false });
+          if (newCounts.abuse > prev.abuse) alerts.push({ key: 'abuse', label: adminLocale === 'ko' ? '새 어뷰징 감지' : 'New abuse detected', count: newCounts.abuse - prev.abuse, urgent: false });
+
+          if (isFirstPollRef.current) {
+            isFirstPollRef.current = false;
+          } else {
+            const totalUnread = newCounts.inquiries + newCounts.abuse + newCounts.reports + newCounts.payout;
+            if (alerts.length > 0) {
+              playAlertSound(alerts.some(a => a.urgent));
+              alerts.forEach(a => {
+                showToast(`🔔 ${a.label} (+${a.count})`, a.urgent ? 'error' : 'success', true);
+              });
+            } else if (totalUnread > 0) {
+              playAlertSound(newCounts.reports > 0 || newCounts.payout > 0);
+            }
+          }
+
+          prevUnreadRef.current = newCounts;
+          setUnreadCounts(newCounts);
+        } catch (e) {
+          console.warn('[AdminAlert] Polling failed:', e);
+        }
+      };
+
+      // 최초 1회 즉시 실행
+      fetchUnreadCounts();
+      const interval = setInterval(fetchUnreadCounts, 60000);
+      return () => clearInterval(interval);
+    }, [authorized, adminLocale, playAlertSound, showToast]);
 
     // ─── Data Loaders ───
     const loadDashboard = useCallback(async () => {
@@ -1093,6 +1178,14 @@ function AdminDashboardPageContent() {
 
     useEffect(() => {
         if (!authorized) return;
+        // ─── 읽음 마커 upsert ───
+        const markerKeys: Record<string, string> = { inquiries: 'inquiries', abuse: 'abuse', reports: 'reports', payout: 'payout' };
+        if (markerKeys[tab]) {
+          supabase.rpc('upsert_admin_read_marker', { p_marker_key: markerKeys[tab] }).then(() => {
+            setUnreadCounts(prev => ({ ...prev, [tab]: 0 }));
+            prevUnreadRef.current = { ...prevUnreadRef.current, [tab]: 0 };
+          });
+        }
         if (tab === 'dashboard') loadDashboard();
         if (tab === 'ledger') { setLedgerPage(1); loadLedger(1, ledgerCategory, ledgerPeriod, ledgerSearch); }
         if (tab === 'pro') loadPros();
@@ -1860,6 +1953,16 @@ function AdminDashboardPageContent() {
             return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
         });
 
+    // ─── 사이드바 뱃지 헬퍼 ───
+    const UnreadBadge = ({ count }: { count: number }) => {
+      if (count <= 0) return null;
+      return (
+        <span className="ml-auto min-w-[20px] h-5 flex items-center justify-center rounded-full bg-red-500 text-white text-[11px] font-bold px-1.5 animate-pulse">
+          {count > 99 ? '99+' : count}
+        </span>
+      );
+    };
+
     return (
         <div className="flex min-h-screen bg-gray-900 text-white">
             {/* ─── Sidebar ─── */}
@@ -1927,6 +2030,7 @@ function AdminDashboardPageContent() {
                                         className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition ${tab === m.key ? 'bg-blue-600/20 text-blue-400' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`}>
                                         <span className="text-base">{m.icon}</span>
                                         {m.label}
+                                        {m.key === 'payout' && <UnreadBadge count={unreadCounts.payout} />}
                                     </button>
                                 ))}
                             </div>
@@ -1971,6 +2075,8 @@ function AdminDashboardPageContent() {
                                         className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition ${tab === m.key ? 'bg-blue-600/20 text-blue-400' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`}>
                                         <span className="text-base">{m.icon}</span>
                                         {m.label}
+                                        {m.key === 'inquiries' && <UnreadBadge count={unreadCounts.inquiries} />}
+                                        {m.key === 'abuse' && <UnreadBadge count={unreadCounts.abuse} />}
                                     </button>
                                 ))}
                                 {/* 신고 관리 — 미처리 건수 배지 유지 */}
@@ -1985,6 +2091,7 @@ function AdminDashboardPageContent() {
                                             {reports.filter(r => r.status === 'pending').length}
                                         </span>
                                     )}
+                                    <UnreadBadge count={unreadCounts.reports} />
                                 </button>
                             </div>
                         )}
