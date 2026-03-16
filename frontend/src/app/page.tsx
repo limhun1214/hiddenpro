@@ -144,12 +144,6 @@ export default function HomePage() {
     const [isReviewsLoading, setIsReviewsLoading] = useState(true);
 
     // 롤링 타이핑 애니메이션 텍스트
-    const placeholderTexts = [
-        "What service are you looking for?",
-        "Try AC cleaning",
-        "Find a housekeeper",
-        "On-site repair expert",
-    ];
     const [currentTextIdx, setCurrentTextIdx] = useState(0);
     const [animatedPlaceholder, setAnimatedPlaceholder] = useState('');
     const [isDeleting, setIsDeleting] = useState(false);
@@ -293,6 +287,18 @@ export default function HomePage() {
         const saved = document.cookie.split('; ').find(r => r.startsWith('locale='))?.split('=')[1];
         if (saved) setLocale(saved);
     }, []);
+
+    const placeholderTexts = locale === 'ko' ? [
+        "어떤 서비스를 찾고 계세요?",
+        "에어컨 청소를 검색해 보세요",
+        "가사 도우미를 찾아보세요",
+        "방문 수리 전문가",
+    ] : [
+        "What service are you looking for?",
+        "Try AC cleaning",
+        "Find a housekeeper",
+        "On-site repair expert",
+    ];
 
     const categoryUI: Record<string, { icon: React.ReactNode; desc: string }> = {
         "이사/청소": {

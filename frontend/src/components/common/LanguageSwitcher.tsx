@@ -24,7 +24,7 @@ export default function LanguageSwitcher() {
     const switchLocale = (code: string) => {
         document.cookie = `locale=${code}; path=/; max-age=${60 * 60 * 24 * 365}`;
         setCurrent(code);
-        router.refresh();
+        window.location.reload();
     };
 
     return (
