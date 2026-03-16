@@ -48,7 +48,7 @@ export default function HomePage() {
                 data.forEach(item => {
                     if (item.depth1) {
                         d1Set.add(item.depth1);
-                        list.push({ service: item.name, service_en: item.name_en || item.name, category: item.depth1, category_ko: item.depth1, depth2: item.depth2 || '' });
+                        list.push({ service: item.name, service_en: item.name_en || item.name, category: item.depth1, depth2: item.depth2 || '' });
                     }
                 });
                 setAllServices(list);
