@@ -127,6 +127,7 @@ function AdminDashboardPageContent() {
 
     // CS Control Mode States
     const [csContactInfo, setCsContactInfo] = useState<{ customer: any; pro: any } | null>(null);
+    const [csDetailOpen, setCsDetailOpen] = useState(false);
     const [chatLogs, setChatLogs] = useState<any[]>([]);
     const [isChatOpen, setIsChatOpen] = useState(false);
 
@@ -3140,19 +3141,51 @@ function AdminDashboardPageContent() {
                                         <div className="bg-gray-800 rounded-xl border border-gray-700 p-6">
                                             <div className="flex justify-between items-start mb-4">
                                                 <div>
-                                                    <h2 className="text-lg font-bold text-white">{selectedRequest.service_type}</h2>
+                                                    <h2 className="text-lg font-bold text-white">{(() => {
+                                                        const da = selectedRequest.dynamic_answers;
+                                                        if (da?._history && Array.isArray(da._history)) {
+                                                            const detailStep = da._history.find((h: any) => h.stepText?.toLowerCase().includes('detailed service'));
+                                                            if (detailStep?.userAnswer) return detailStep.userAnswer;
+                                                        }
+                                                        return selectedRequest.service_type;
+                                                    })()}</h2>
                                                     <p className="text-sm text-gray-400">{selectedRequest.region}</p>
                                                 </div>
                                                 <span className={`text-xs font-bold px-3 py-1.5 rounded-full ${statusColor(selectedRequest.status)}`}>{statusLabel(selectedRequest.status)}</span>
                                             </div>
                                             <p className="text-xs text-gray-500">{adminLocale === 'ko' ? '생성' : 'Created'}: {fmtDate(selectedRequest.created_at, adminLocale)}</p>
 
-                                            {/* 고객 요청 상세 답변 */}
+                                            {/* 고객 요청 상세 답변 — _history Q&A 형식 우선 */}
                                             {selectedRequest.dynamic_answers && typeof selectedRequest.dynamic_answers === 'object' && Object.keys(selectedRequest.dynamic_answers).length > 0 && (
                                                 <div className="mt-4 pt-4 border-t border-gray-700">
-                                                    <h4 className="text-xs font-bold text-gray-400 mb-2">{adminLocale === 'ko' ? '📋 고객 요청 상세 내용' : '📋 Customer Request Details'}</h4>
-                                                    <div className="space-y-1.5">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setCsDetailOpen(prev => !prev)}
+                                                        className="w-full flex items-center justify-between text-xs font-bold text-gray-400 mb-2 hover:text-gray-200 transition-colors"
+                                                    >
+                                                        <span>{adminLocale === 'ko' ? '📋 고객 요청 상세 내용' : '📋 Customer Request Details'}</span>
+                                                        <span className={`transition-transform duration-200 ${csDetailOpen ? 'rotate-180' : ''}`}>▼</span>
+                                                    </button>
+                                                    {csDetailOpen && <div className="space-y-2">
                                                         {(() => {
+                                                            const da = selectedRequest.dynamic_answers as Record<string, any>;
+                                                            const history = da._history;
+
+                                                            // _history가 있으면 Q&A 형식으로 표시
+                                                            if (Array.isArray(history) && history.length > 0) {
+                                                                return history.map((item: any, idx: number) => {
+                                                                    if (!item.stepText || !item.userAnswer) return null;
+                                                                    return (
+                                                                        <div key={idx} className="bg-gray-700/30 rounded-lg p-2.5">
+                                                                            <p className="text-[11px] text-blue-400 font-medium mb-1">Q. {item.stepText}</p>
+                                                                            <p className="text-xs text-gray-200">{Array.isArray(item.userAnswer) ? item.userAnswer.join(', ') : String(item.userAnswer)}</p>
+                                                                        </div>
+                                                                    );
+                                                                }).filter(Boolean);
+                                                            }
+
+                                                            // _history가 없으면 기존 key-value 방식 (fallback)
+                                                            const SKIP_KEYS = ['_history', 'depth1', 'depth2', 'details_mode', 'region_reg', 'region_city'];
                                                             const ORDERED_KEYS = [
                                                                 'service_type', 'merged_region',
                                                                 'move_type', 'move_date', 'from_region', 'from_floor', 'from_size', 'from_elevator',
@@ -3220,180 +3253,14 @@ function AdminDashboardPageContent() {
                                                             ];
                                                             const labelMap: Record<string, string> = {
                                                                 service_type: 'Detailed Service', merged_region: 'Service Area',
-                                                                move_type: 'Moving Service Type', move_date: 'Moving Date',
-                                                                from_region: 'Origin Area', from_floor: 'Origin Floor', from_size: 'Origin Size / Headcount', from_elevator: 'Origin Site Conditions',
-                                                                appliances: 'Appliances to Move', furniture: 'Furniture to Move', images: 'Attached Photos',
-                                                                to_region: 'Destination Area', to_floor: 'Destination Floor', to_elevator: 'Destination Site Conditions',
-                                                                house_type: 'Housing Type & Size', service_frequency: 'Service Frequency',
-                                                                extra_services: 'Additional Services', cleaning_supplies: 'Cleaning Supplies Ready', has_pets: 'Pets in Home',
-                                                                visit_timing: 'Preferred Visit Time', care_schedule: 'Care Schedule & Format',
-                                                                children_info: 'Children Count & Age', language_pref: 'Preferred Language',
-                                                                extra_tasks: 'Additional Tasks', child_health_note: 'Child Health Notes',
-                                                                meal_headcount: 'Number of Diners', meal_time: 'Cooking Time / Purpose',
-                                                                cuisine_style: 'Cuisine Style', grocery_needed: 'Grocery Shopping Needed', allergy_note: 'Allergies / Dietary Restrictions',
-                                                                deep_clean_type: 'Deep Cleaning Type', house_size: 'House Size & Type',
-                                                                furnished_status: 'Furniture/Appliance Status', utilities_status: 'Electricity/Water Available', special_options: 'Special Cleaning Options',
-                                                                cleaning_cycle: 'Cleaning Frequency', focus_areas: 'Focus Cleaning Areas',
-                                                                pool_type: 'Pool Type & Size', pool_condition: 'Water Quality',
-                                                                chemicals_supply: 'Chemical Supply Method', extra_repair: 'Additional Equipment Check',
-                                                                clean_items: 'Deep Cleaning Items', item_size_qty: 'Item Size & Quantity',
-                                                                material_type: 'Material Type', stain_issues: 'Stain / Issue Type',
-                                                                ac_quantity: 'AC Quantity', ac_size: 'AC Horsepower (HP)',
-                                                                ac_symptoms: 'AC Symptoms', ac_height: 'AC Installation Height',
-                                                                ac_clean_date: 'Preferred Cleaning Date', visit_time: 'Preferred Visit Time',
-                                                                outdoor_unit_location: 'Outdoor Unit Location', indoor_unit_access: 'Indoor Unit Clearance',
-                                                                work_time: 'Work Time', ac_types: 'AC Types', ceiling_height: 'Ceiling Height',
-                                                                visit_date: 'Preferred Visit Date', building_type: 'Building Type',
-                                                                damage_status: 'Termite Damage Status', area_size: 'Area Size',
-                                                                treatment_method: 'Termite Treatment Method', children_pets: 'Children / Pets Present',
-                                                                pest_types: 'Target Pests',
-                                                                problem_types: 'Problem Types', problem_locations: 'Problem Locations', mold_severity: 'Mold Severity',
-                                                                pickup_date: 'Pickup Date', waste_items: 'Waste Items',
-                                                                waste_volume: 'Waste Volume', floor_access: 'Floor & Elevator Access', disassembly_needed: 'Disassembly Needed',
-                                                                leak_problems: 'Leak / Plumbing Issues', leak_locations: 'Problem Locations',
-                                                                main_valve_status: 'Main Water Valve Status',
-                                                                equipment_types: 'Equipment to Inspect', pump_symptoms: 'Water Pump Symptoms',
-                                                                pump_hp: 'Water Pump HP', pump_location: 'Pump / Tank Location',
-                                                                clog_locations: 'Clog Locations', clog_severity: 'Clog Severity',
-                                                                prior_attempts: 'Prior Attempts', clog_cause: 'Clog Cause',
-                                                                service_type_wh: 'Water Heater Service Type', heater_type: 'Water Heater Type',
-                                                                heater_symptoms: 'Water Heater Symptoms', electrical_ready: 'Electrical Readiness',
-                                                                electrical_symptoms: 'Electrical Symptoms', outage_scope: 'Outage Scope', panel_board_access: 'Panel Board Location',
-                                                                service_type_gen: 'Generator Service Type', fuel_type: 'Generator Fuel Type',
-                                                                gen_capacity: 'Generator Capacity (kVA)', gen_symptoms: 'Generator Symptoms',
-                                                                work_types: 'Work Types', ceiling_type: 'Ceiling Type & Height',
-                                                                materials_ready: 'Lighting/Materials Ready', wiring_condition: 'Wall/Ceiling Wiring Condition',
-                                                                service_type_solar: 'Solar Service Type', system_type: 'Solar System Type',
-                                                                system_capacity: 'Solar System Capacity', roof_type: 'Roof Type',
-                                                                ac_hp: 'AC Horsepower (HP)', appliance_type: 'Appliance Type',
-                                                                appliance_symptoms: 'Appliance Symptoms', appliance_brand: 'Appliance Brand', appliance_age: 'Appliance Age',
-                                                                tv_size: 'TV Size', install_type: 'Installation Type',
-                                                                bracket_ready: 'Bracket Available', wall_type: 'Wall Material',
-                                                                service_type_cctv: 'CCTV Service Type', camera_count: 'Camera Count',
-                                                                install_location: 'Installation Location', wifi_available: 'Wi-Fi Available',
-                                                                screen_locations: 'Screen Locations', screen_qty: 'Screen Quantity',
-                                                                screen_material: 'Screen Material', screen_frame_status: 'Window Frame Condition',
-                                                                lock_service_type: 'Lock Service Type', door_material: 'Door Material',
-                                                                lock_type_new: 'Lock Type', lock_product_supply: 'Product Supply Method',
-                                                                furniture_types: 'Furniture Types', furniture_brand: 'Furniture Brand',
-                                                                furniture_qty: 'Furniture Quantity & Size', wall_mount_needed: 'Wall Mount Needed',
-                                                                gas_service_type: 'LPG Service Type', gas_brand: 'Gas Tank Brand',
-                                                                gas_capacity: 'Gas Tank Capacity', empty_cylinder: 'Empty Cylinder Available', gas_symptoms: 'Gas Symptoms',
-                                                                remodel_scope: 'Remodeling Scope', remodel_start: 'Construction Start Date',
-                                                                permit_status: 'Permit Status', material_supply: 'Material Supply Method',
-                                                                site_infra: 'Site Infrastructure', remodel_budget: 'Total Construction Budget',
-                                                                interior_scope: 'Interior Scope', unit_condition: 'Unit Condition',
-                                                                condo_permit_status: 'Condo Permit Status', work_schedule: 'Work Schedule',
-                                                                interior_supply: 'Material Supply Method', interior_budget: 'Interior Budget',
-                                                                commercial_space_type: 'Commercial Space Type', commercial_unit_condition: 'Store Condition',
-                                                                commercial_permit_status: 'Permit Status', admin_requirements: 'Admin / Safety Requirements',
-                                                                design_status: 'Design Drawing Available', commercial_budget: 'Interior Budget',
-                                                                commercial_start: 'Construction Start Date',
-                                                                tile_spaces: 'Tiling Spaces', floor_material: 'Floor Material',
-                                                                floor_condition: 'Current Floor Condition', tile_material_supply: 'Material Supply Method',
-                                                                tile_permit_status: 'Permit Status', tile_site_access: 'Site Access',
-                                                                tile_area_sqm: 'Tiling Area (sqm)', tile_work_schedule: 'Work Schedule',
-                                                                paint_scope: 'Painting Scope', paint_site_condition: 'Site Condition',
-                                                                wall_condition: 'Wall Condition & Prep', paint_material_supply: 'Paint Supply',
-                                                                paint_permit_status: 'Permit Status', floor_height: 'Floor / Ceiling Height',
-                                                                paint_work_schedule: 'Work Schedule',
-                                                                carpentry_work_types: 'Carpentry Work Types', carpentry_material: 'Material & Finish',
-                                                                design_doc: 'Design Drawing Available', carpentry_site_condition: 'Work Site Condition',
-                                                                carpentry_permit_status: 'Permit Status', carpentry_work_schedule: 'Work Schedule',
-                                                                drywall_purpose: 'Purpose', insulation_needed: 'Soundproofing / Insulation Needed',
-                                                                ceiling_height_drywall: 'Ceiling Height', finish_level: 'Finish Level',
-                                                                drywall_permit_status: 'Permit Status', drywall_material_supply: 'Material Supply Method',
-                                                                drywall_work_schedule: 'Work Schedule',
-                                                                roofing_work_types: 'Roofing Work Types', roof_problem_status: 'Problem Status',
-                                                                roof_material: 'Roof / Floor Material', roof_access: 'Floor & Access',
-                                                                roof_permit_status: 'Permit Status', roof_work_schedule: 'Work Schedule',
-                                                                landscaping_work_types: 'Landscaping Work Types', garden_condition: 'Garden Condition',
-                                                                garden_area_sqm: 'Garden Area (sqm)', garden_infra: 'Site Infrastructure (Water/Electric)',
-                                                                garden_material_supply: 'Material Supply Method', garden_permit_status: 'Permit Status',
-                                                                garden_work_schedule: 'Work Schedule',
-                                                                signage_types: 'Signage Work Types', signage_location: 'Signage Location & Height',
-                                                                signage_design_status: 'Design Ready', signage_power: 'Power Supply Available',
-                                                                signage_permit_status: 'Permit Status', signage_size: 'Signage Size',
-                                                                signage_work_schedule: 'Work Schedule',
-                                                                deck_fence_types: 'Deck / Fence Work Types', deck_material: 'Main Material',
-                                                                deck_ground_condition: 'Ground / Existing Structure Condition', deck_material_supply: 'Material Supply Method',
-                                                                deck_permit_status: 'Permit Status', deck_size: 'Work Area & Length',
-                                                                deck_work_schedule: 'Work Schedule',
-                                                                va_tasks: 'Main Tasks', va_english_level: 'English Proficiency',
-                                                                va_work_schedule: 'Work Format & Hours', va_tools: 'Required Software / Tools',
-                                                                va_wfh_infra: 'WFH Infrastructure Requirements', va_budget: 'Monthly Budget / Salary',
-                                                                va_start_date: 'Preferred Start Date',
-                                                                cs_channels: 'CS Support Channels', cs_languages: 'Support Languages',
-                                                                cs_agent_count: 'Agent Count', cs_coverage: 'Service Hours',
-                                                                cs_infra: 'Infrastructure & Operations', cs_ticket_volume: 'Monthly Call / Ticket Volume',
-                                                                cs_start_date: 'Preferred Start Date',
-                                                                tm_campaign_goal: 'Campaign Goal', tm_target_country: 'Target Country',
-                                                                tm_script_db: 'Call List / Script Ready', tm_payment_type: 'Compensation & Payment',
-                                                                tm_dialer: 'Dialer System Setup', tm_agent_count: 'Agent Count',
-                                                                tm_start_date: 'Preferred Start Date',
-                                                                bizreg_entity_type: 'Business Entity Type', bizreg_foreign_ownership: 'Foreign Ownership %',
-                                                                bizreg_scope: 'Service Scope', bizreg_address_status: 'Business Address Ready',
-                                                                bizreg_capital: 'Expected Capital', bizreg_start_date: 'Preferred Start Date',
-                                                                tax_service_types: 'Tax Service Types', tax_vat_status: 'BIR Taxpayer Type',
-                                                                tax_transaction_volume: 'Monthly Transaction Volume', tax_bir_status: 'BIR Registration Status',
-                                                                tax_accounting_system: 'Accounting / POS System', tax_start_date: 'Preferred Start Date',
-                                                                visa_service_types: 'Visa / Immigration Service Types', visa_headcount: 'Number of Applicants',
-                                                                visa_stay_status: 'Current Stay Status', visa_sponsor_docs: 'Sponsor Documents Ready',
-                                                                visa_new_or_renewal: 'New or Renewal', visa_start_date: 'Preferred Start Date',
-                                                                permit_types: 'Permit / License Types', permit_current_status: 'Current Permit Status',
-                                                                permit_biz_docs: 'Business Documents Ready', permit_item_count: 'Number of Items / Locations',
-                                                                permit_inspection_ready: 'Inspection Ready', permit_start_date: 'Preferred Start Date',
-                                                                tl_service_types: 'Translation / Interpretation Service Types', tl_field: 'Field / Context',
-                                                                tl_doc_volume: 'Document Volume', tl_interp_duration: 'Interpretation Duration',
-                                                                tl_notarization: 'Notarization Needed', tl_location: 'Interpretation Location',
-                                                                tl_start_date: 'Preferred Date',
-                                                                vi_service_types: 'Translation / Interpretation Service Types', vi_dialect: 'Visayan Dialect',
-                                                                vi_field: 'Field / Context', vi_doc_volume: 'Document Volume',
-                                                                vi_interp_duration: 'Interpretation Duration', vi_location: 'Interpretation Location',
-                                                                vi_start_date: 'Preferred Date',
-                                                                en_service_types: 'Translation / Interpretation Service Types', en_field: 'Field of Expertise',
-                                                                en_target_country: 'Target Country / Context', en_doc_volume: 'Document Volume',
-                                                                en_interp_duration: 'Interpretation Duration', en_apostille: 'Notarization / Apostille Needed',
-                                                                en_start_date: 'Preferred Date',
-                                                                ml_language_pair: 'Language Pair', ml_service_types: 'Translation / Interpretation Service Types',
-                                                                ml_field: 'Field / Context', ml_doc_volume: 'Document Volume',
-                                                                ml_interp_duration: 'Interpretation Duration', ml_location: 'Location / Submission',
-                                                                ml_start_date: 'Preferred Date',
-                                                                gd_work_types: 'Design Work Types', gd_reference_status: 'Brief / Reference Ready',
-                                                                gd_usage_purpose: 'Usage Purpose', gd_source_files: 'Source Files / Copyright Transfer',
-                                                                gd_meeting_type: 'Communication Method', gd_start_date: 'Preferred Delivery Date',
-                                                                wd_platform_types: 'Development Platform Types', wd_project_stage: 'Project Stage',
-                                                                wd_local_integration: 'Local Payment / Logistics Integration', wd_hosting_status: 'Server / Domain Ready',
-                                                                wd_budget: 'Project Budget', wd_start_date: 'Preferred Start Date',
-                                                                ve_platform_purpose: 'Video Platform / Purpose', ve_footage_status: 'Source Footage Status',
-                                                                ve_video_length: 'Final Video Length', ve_edit_elements: 'Required Edit Elements',
-                                                                ve_work_style: 'Work & Communication Style', ve_start_date: 'Preferred Delivery Date',
-                                                                sns_platforms: 'Target Platforms', sns_target_audience: 'Target Audience',
-                                                                sns_work_scope: 'Work Scope', sns_ads_budget_type: 'Ad Budget Handling',
-                                                                sns_page_status: 'Page Status', sns_start_date: 'Preferred Start Date',
-                                                                debut_theme: 'Party Concept / Theme', debut_scope: 'Service Scope',
-                                                                debut_guest_count: 'Expected Guest Count', debut_venue_status: 'Venue Status',
-                                                                debut_catering_rules: 'Catering / Lechon Rules', debut_budget: 'Total Budget',
-                                                                debut_date: 'Event Date',
-                                                                ch_scope: 'Planning Scope', ch_guest_count: 'Guest Count',
-                                                                ch_church_status: 'Church / Chapel Booking Status', ch_reception_venue: 'Reception Venue Type',
-                                                                ch_catering_style: 'Catering Style', ch_date: 'Event Date',
-                                                                bday_party_type: 'Party Type', bday_scope: 'Planning Scope',
-                                                                bday_guest_count: 'Expected Guest Count', bday_venue_status: 'Venue Status',
-                                                                bday_vendor_rules: 'External Vendor Rules', bday_budget: 'Total Budget',
-                                                                bday_date: 'Party Date',
-                                                                wed_service_scope: 'Planning Service Scope', wed_venue_type: 'Wedding Type & Venue',
-                                                                wed_guest_count: 'Guest Count', wed_booked_items: 'Already Booked Items',
-                                                                wed_logistics: 'Weather / Transportation Plan', wed_budget: 'Total Budget',
-                                                                wed_date: 'Wedding Date',
-                                                                corp_event_types: 'Event Types', corp_headcount: 'Expected Attendees',
-                                                                corp_work_scope: 'Work Scope', corp_venue_status: 'Venue Status',
-                                                                corp_billing_req: 'Billing / Admin Requirements', corp_setup_timing: 'Setup Time Available',
-                                                                corp_date: 'Event Date',
                                                                 details: 'Additional Notes / Special Requests',
                                                             };
-                                                            const entries = Object.entries(selectedRequest.dynamic_answers as Record<string, any>)
-                                                                .filter(([, v]) => v !== null && v !== undefined && v !== '')
+                                                            const workingDa = { ...da };
+                                                            if (workingDa.region_reg && workingDa.region_city) {
+                                                                workingDa.merged_region = `${workingDa.region_reg}, ${workingDa.region_city}`;
+                                                            }
+                                                            const entries = Object.entries(workingDa)
+                                                                .filter(([k, v]) => v !== null && v !== undefined && v !== '' && !SKIP_KEYS.includes(k))
                                                                 .sort(([a], [b]) => {
                                                                     const ia = ORDERED_KEYS.indexOf(a);
                                                                     const ib = ORDERED_KEYS.indexOf(b);
@@ -3406,12 +3273,12 @@ function AdminDashboardPageContent() {
                                                                 <div key={key} className="flex gap-2 text-xs">
                                                                     <span className="text-gray-400 shrink-0">{labelMap[key] || key}:</span>
                                                                     <span className="text-gray-300 break-all">
-                                                                        {Array.isArray(value) ? value.join(', ') : String(value ?? '-')}
+                                                                        {Array.isArray(value) ? value.join(', ') : (typeof value === 'object' ? JSON.stringify(value) : String(value ?? '-'))}
                                                                     </span>
                                                                 </div>
                                                             ));
                                                         })()}
-                                                    </div>
+                                                    </div>}
                                                 </div>
                                             )}
 
@@ -3588,7 +3455,14 @@ function AdminDashboardPageContent() {
                                         <tbody>{filteredRequests.map(r => (
                                             <tr key={r.request_id} className="border-b border-gray-700/50 hover:bg-gray-700/30 transition-colors whitespace-nowrap">
                                                 <td className="p-3">
-                                                    <div className="font-semibold text-white">{r.service_type || '-'}</div>
+                                                    <div className="font-semibold text-white">{(() => {
+                                                        const da = r.dynamic_answers;
+                                                        if (da?._history && Array.isArray(da._history)) {
+                                                            const detailStep = da._history.find((h: any) => h.stepText?.toLowerCase().includes('detailed service'));
+                                                            if (detailStep?.userAnswer) return detailStep.userAnswer;
+                                                        }
+                                                        return r.service_type || '-';
+                                                    })()}</div>
                                                     <div className="text-xs text-gray-500">{r.region || '-'}</div>
                                                 </td>
                                                 <td className="p-3 text-gray-300 font-medium">{r.customerName}</td>
