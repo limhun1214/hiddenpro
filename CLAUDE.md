@@ -208,6 +208,36 @@ SELECT policyname, cmd FROM pg_policies WHERE tablename = '대상_테이블명';
 
 ---
 
+### PHASE 11: i18n 필수 준수 규칙 (next-intl 기반)
+
+**이 규칙은 아키텍츠와 안티그래비티 모두에게 적용된다.**
+
+HiddenPro는 next-intl 기반 EN/KO 다국어 시스템이 구축되어 있다.
+UI 텍스트가 포함된 모든 컴포넌트/페이지 작업 시 아래 규칙을 반드시 준수한다.
+
+#### ❌ 절대 금지
+- 컴포넌트/페이지 내 한글 또는 영어 UI 문자열 하드코딩 금지
+- 새 UI 텍스트를 번역 키 없이 JSX에 직접 삽입 금지
+
+#### ✅ 필수 준수
+1. 신규 컴포넌트/페이지 작성 시 반드시 `useTranslations('네임스페이스')` 훅 적용
+2. 신규 텍스트는 반드시 `frontend/messages/en.json` + `frontend/messages/ko.json` 양쪽에 동시 추가
+3. 네임스페이스 명명 규칙: 파일 경로 기반 camelCase (예: `proWallet`, `adminDashboard`)
+4. 기존 네임스페이스 목록 (중복 생성 금지):
+   `common, legal, businessInfo, inquiry, notifications, myReviews, proReviews, profile, wallet, proRequestList, customerQuotes, footer, brandPanel, chatRoom, requestForm, proProfileModal, quoteModal, proBidding, toast, chatList, authComplete, landing, pcTopNav`
+
+#### i18n 인프라 파일 위치 (수정 시 반드시 숙지)
+- 설정: `frontend/src/i18n.ts`, `frontend/next.config.js`
+- 번역: `frontend/messages/en.json`, `frontend/messages/ko.json`
+- 전환 컴포넌트: `frontend/src/components/common/LanguageSwitcher.tsx`
+
+#### 신규 언어 추가 시 (타갈로그 등) 필수 3단계
+1. `frontend/messages/{locale}.json` 생성
+2. `frontend/src/i18n.ts`의 `validLocales` 배열에 locale 코드 추가
+3. `LanguageSwitcher.tsx`의 `LOCALES` 배열에 `{ code: '{locale}', label: 'XX' }` 추가
+
+---
+
 # 프로젝트 구조 (아키텍츠 전용 참조 — 안티그래비티 무시)
 
 src

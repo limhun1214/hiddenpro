@@ -3,26 +3,29 @@
 import React, { useContext } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { NavStateContext } from '@/context/NavStateContext';
+import LanguageSwitcher from '@/components/common/LanguageSwitcher';
+import { useTranslations } from 'next-intl';
 
 export default function PCTopNav({ isFixed = false }: { isFixed?: boolean }) {
+    const t = useTranslations();
     const router = useRouter();
     const pathname = usePathname();
     const navState = useContext(NavStateContext);
 
     const customerItems = [
-        { label: '견적요청', href: '/request', icon: '📝' },
-        { label: '받은견적', href: '/quotes/received', icon: '📩' },
-        { label: '채팅', href: '/chat', icon: '💬' },
-        { label: '알림', href: '/notifications', icon: '🔔' },
-        { label: '고객 프로필', href: '/profile', icon: '👤' },
+        { label: t('pcTopNav.requestQuote'), href: '/request', icon: '📝' },
+        { label: t('pcTopNav.receivedQuotes'), href: '/quotes/received', icon: '📩' },
+        { label: t('pcTopNav.chat'), href: '/chat', icon: '💬' },
+        { label: t('pcTopNav.notifications'), href: '/notifications', icon: '🔔' },
+        { label: t('pcTopNav.customerProfile'), href: '/profile', icon: '👤' },
     ];
 
     const proItems = [
-        { label: '받은요청', href: '/pro/requests', icon: '📋' },
-        { label: '채팅', href: '/chat', icon: '💬' },
-        { label: '지갑', href: '/pro/wallet', icon: '💰' },
-        { label: '알림', href: '/notifications', icon: '🔔' },
-        { label: '고수 프로필', href: '/profile', icon: '👤' },
+        { label: t('pcTopNav.requests'), href: '/pro/requests', icon: '📋' },
+        { label: t('pcTopNav.chat'), href: '/chat', icon: '💬' },
+        { label: t('pcTopNav.wallet'), href: '/pro/wallet', icon: '💰' },
+        { label: t('pcTopNav.notifications'), href: '/notifications', icon: '🔔' },
+        { label: t('pcTopNav.proProfile'), href: '/profile', icon: '👤' },
     ];
 
     const items = navState.isProUser ? proItems : customerItems;
@@ -48,31 +51,31 @@ export default function PCTopNav({ isFixed = false }: { isFixed?: boolean }) {
                         >
                             <div className="relative text-xl">
                                 {item.icon}
-                                {item.label === '알림' && navState.unreadNotifsCount > 0 && (
+                                {item.label === t('pcTopNav.notifications') && navState.unreadNotifsCount > 0 && (
                                     <span className="absolute -top-1 -right-2 flex h-3 w-3">
                                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                                         <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-white"></span>
                                     </span>
                                 )}
-                                {item.label === '채팅' && navState.unreadChatsCount > 0 && (
+                                {item.label === t('pcTopNav.chat') && navState.unreadChatsCount > 0 && (
                                     <span className="absolute -top-1 -right-2 flex h-3 w-3">
                                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                                         <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-white"></span>
                                     </span>
                                 )}
-                                {item.label === '받은견적' && navState.hasNewQuotes && (
+                                {item.label === t('pcTopNav.receivedQuotes') && navState.hasNewQuotes && (
                                     <span className="absolute -top-1 -right-2 flex h-3 w-3">
                                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                                         <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-white"></span>
                                     </span>
                                 )}
-                                {item.label === '받은요청' && navState.hasNewRequests && (
+                                {item.label === t('pcTopNav.requests') && navState.hasNewRequests && (
                                     <span className="absolute -top-1 -right-2 flex h-3 w-3">
                                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                                         <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-white"></span>
                                     </span>
                                 )}
-                                {navState.isProUser && item.label === '지갑' && (
+                                {navState.isProUser && item.label === t('pcTopNav.wallet') && (
                                     <span className="absolute -bottom-1 -right-8 flex h-4 px-1 rounded-full bg-yellow-400 items-center justify-center text-[10px] font-black text-white border-2 border-white shadow-sm whitespace-nowrap">
                                         {navState.walletBalance !== null ? navState.walletBalance.toLocaleString() : 'C'}
                                     </span>
@@ -82,6 +85,7 @@ export default function PCTopNav({ isFixed = false }: { isFixed?: boolean }) {
                         </button>
                     );
                 })}
+                <LanguageSwitcher />
             </div>
         </div>
     );

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTranslations } from 'next-intl';
 
 interface QuoteDetailModalProps {
     quote: {
@@ -27,11 +28,12 @@ interface QuoteDetailModalProps {
 }
 
 export default function QuoteDetailModal({ quote, onClose, onStartChat, requestId, request, isReadOnly, proName }: QuoteDetailModalProps) {
+    const t = useTranslations();
     const proProfile = Array.isArray(quote.pro_profiles) ? quote.pro_profiles[0] : quote.pro_profiles;
     const userInfo = proProfile?.users
         ? (Array.isArray(proProfile.users) ? proProfile.users[0] : proProfile.users)
         : null;
-    const displayProName = proName || ((userInfo?.nickname && userInfo.nickname.trim() !== '') ? userInfo.nickname : (userInfo?.name || '전문가'));
+    const displayProName = proName || ((userInfo?.nickname && userInfo.nickname.trim() !== '') ? userInfo.nickname : (userInfo?.name || 'Pro'));
     const avatarUrl = userInfo?.avatar_url || null;
     const avgRating = proProfile?.average_rating || 0;
     const reviewCount = proProfile?.review_count || 0;
@@ -45,7 +47,7 @@ export default function QuoteDetailModal({ quote, onClose, onStartChat, requestI
                 >
                     {/* 헤더 */}
                     <div className="flex items-center justify-between p-4 border-b border-gray-100">
-                        <h2 className="text-lg font-bold text-gray-800">견적 상세</h2>
+                        <h2 className="text-lg font-bold text-gray-800">{t('quoteModal.title')}</h2>
                         <button
                             onClick={onClose}
                             className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition text-gray-500"
@@ -71,15 +73,15 @@ export default function QuoteDetailModal({ quote, onClose, onStartChat, requestI
                                 <div className="flex items-center flex-wrap gap-1.5">
                                     <span className="font-bold text-gray-800 text-base">{displayProName}님</span>
                                     {proProfile?.is_phone_verified && (
-                                        <span className="inline-flex items-center text-[10px] bg-green-50 text-green-700 font-bold px-1.5 py-0.5 rounded-full border border-green-200 whitespace-nowrap">✅ 전화번호 인증</span>
+                                        <span className="inline-flex items-center text-[10px] bg-green-50 text-green-700 font-bold px-1.5 py-0.5 rounded-full border border-green-200 whitespace-nowrap">{t('quoteModal.phoneVerified')}</span>
                                     )}
                                     {proProfile?.facebook_url && (
-                                        <span className="inline-flex items-center text-[10px] bg-blue-50 text-blue-700 font-bold px-1.5 py-0.5 rounded-full border border-blue-200 whitespace-nowrap">🔵 Facebook 연동</span>
+                                        <span className="inline-flex items-center text-[10px] bg-blue-50 text-blue-700 font-bold px-1.5 py-0.5 rounded-full border border-blue-200 whitespace-nowrap">{t('quoteModal.facebookLinked')}</span>
                                     )}
                                 </div>
                                 <div className="flex items-center gap-1 mt-0.5">
                                     <span className="text-xs font-bold text-yellow-500">⭐ {Number(avgRating).toFixed(1)}</span>
-                                    <span className="text-xs text-gray-400">({reviewCount}개 리뷰)</span>
+                                    <span className="text-xs text-gray-400">({reviewCount}{t('quoteModal.reviewCount')})</span>
                                 </div>
                             </div>
                         </div>
@@ -93,25 +95,25 @@ export default function QuoteDetailModal({ quote, onClose, onStartChat, requestI
 
                         {/* B. 제안 금액 (가장 눈에 띄게) */}
                         <div className="bg-blue-50 p-5 rounded-xl border border-blue-100 text-center">
-                            <span className="text-xs font-bold text-blue-500 uppercase tracking-wider block mb-1">제안 금액</span>
+                            <span className="text-xs font-bold text-blue-500 uppercase tracking-wider block mb-1">{t('quoteModal.proposedPrice')}</span>
                             {quote.price ? (
                                 <span className="text-3xl font-black text-gray-900">
                                     ₱{Number(quote.price).toLocaleString()}
                                 </span>
                             ) : (
-                                <span className="text-lg font-bold text-gray-400">금액 미기재</span>
+                                <span className="text-lg font-bold text-gray-400">{t('quoteModal.noPrice')}</span>
                             )}
                         </div>
 
                         {/* C. 상세 설명 */}
                         <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">상세 설명</h3>
+                            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t('quoteModal.descriptionTitle')}</h3>
                             {quote.description ? (
                                 <p className="text-sm text-gray-800 leading-relaxed whitespace-pre-wrap">
                                     {quote.description}
                                 </p>
                             ) : (
-                                <p className="text-sm text-gray-400">상세 설명이 첨부되지 않았습니다.</p>
+                                <p className="text-sm text-gray-400">{t('quoteModal.noDescription')}</p>
                             )}
                         </div>
 
@@ -137,13 +139,13 @@ export default function QuoteDetailModal({ quote, onClose, onStartChat, requestI
 
                             return (
                                 <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                                    <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">첨부 사진 ({imageList.length}장)</h3>
+                                    <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t('quoteModal.photosTitle')} ({imageList.length})</h3>
                                     <div className="flex flex-col gap-3">
                                         {imageList.map((url, idx) => (
                                             <a key={idx} href={url} target="_blank" rel="noopener noreferrer" className="block cursor-pointer hover:opacity-90 transition-opacity">
                                                 <img
                                                     src={url}
-                                                    alt={`견적서 첨부 이미지 ${idx + 1}`}
+                                                    alt={`${t('quoteModal.quoteImageAlt')}${idx + 1}`}
                                                     className="w-full rounded-lg object-contain border border-gray-200 shadow-sm max-h-80 bg-white"
                                                 />
                                             </a>
@@ -156,7 +158,7 @@ export default function QuoteDetailModal({ quote, onClose, onStartChat, requestI
                         {/* E. 요청 내용 (고객 원본 데이터) */}
                         {request && request.dynamic_answers && (
                             <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 mt-6">
-                                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">요청 내용</h3>
+                                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">{t('quoteModal.requestTitle')}</h3>
                                 <ul className="space-y-3">
                                     {(() => {
                                         const dynamicAnswers = { ...request.dynamic_answers };
@@ -289,225 +291,183 @@ export default function QuoteDetailModal({ quote, onClose, onStartChat, requestI
                                         });
 
                                         const labelMap: Record<string, string> = {
-                                            service_type: '상세 서비스', merged_region: '서비스를 받으실 지역',
-                                            // 이사
-                                            move_type: '이사 서비스 종류', move_date: '이사 날짜',
-                                            from_region: '출발 지역', from_floor: '출발지 층수', from_size: '출발지 면적 / 인원', from_elevator: '출발지 현장 상황',
-                                            appliances: '이전 가전', furniture: '이전 가구', images: '첨부 사진',
-                                            to_region: '도착 지역', to_floor: '도착지 층수', to_elevator: '도착지 현장 상황',
-                                            // 가사/육아
-                                            house_type: '주거 형태 및 크기', service_frequency: '서비스 주기',
-                                            extra_services: '추가 서비스', cleaning_supplies: '청소 도구/세제 준비', has_pets: '반려동물 여부',
-                                            visit_timing: '희망 방문 시기', care_schedule: '돌봄 시간대 및 형태',
-                                            children_info: '아이 인원 및 나이', language_pref: '선호 소통 언어',
-                                            extra_tasks: '추가 업무', child_health_note: '아이 건강 특이사항',
-                                            // 요리
-                                            meal_headcount: '식사 인원', meal_time: '요리 시간대/목적',
-                                            cuisine_style: '요리 스타일', grocery_needed: '식재료 장보기 대행', allergy_note: '알레르기/피해야 할 식재료',
-                                            // 딥클리닝/청소
-                                            deep_clean_type: '딥클리닝 종류', house_size: '집 규모 및 형태',
-                                            furnished_status: '가구/가전 입주 상태', utilities_status: '전기/수도 사용 여부', special_options: '추가 특수 방역/청소 옵션',
-                                            cleaning_cycle: '청소 서비스 주기', focus_areas: '집중 청소 구역',
-                                            pool_type: '수영장 종류 및 규모', pool_condition: '수질 상태',
-                                            chemicals_supply: '약품 준비 방법', extra_repair: '추가 점검/수리 설비',
-                                            clean_items: '딥클리닝 대상 품목', item_size_qty: '품목 크기 및 수량',
-                                            material_type: '제품 소재', stain_issues: '오염/문제 종류',
-                                            // 에어컨 청소
-                                            ac_quantity: '에어컨 수량', ac_size: '에어컨 마력(HP)',
-                                            ac_symptoms: '에어컨 증상', ac_height: '에어컨 설치 높이',
-                                            ac_clean_date: '청소/점검 희망 날짜', visit_time: '희망 방문 시간대',
-                                            outdoor_unit_location: '실외기 위치', indoor_unit_access: '실내기 하단 공간',
-                                            work_time: '작업 시간대', ac_types: '에어컨 종류', ceiling_height: '천장 층고',
-                                            // 방역/해충/곰팡이
-                                            visit_date: '방문 희망 날짜', building_type: '건물 형태',
-                                            damage_status: '흰개미 피해 상황', area_size: '공간 면적',
-                                            treatment_method: '흰개미 퇴치 방식', children_pets: '어린아이/반려동물 여부',
-                                            pest_types: '퇴치 대상 해충',
-                                            problem_types: '주요 문제 종류', problem_locations: '문제 발생 위치', mold_severity: '곰팡이 피해 심각도',
-                                            // 폐기물
-                                            pickup_date: '수거 희망 날짜', waste_items: '폐기 품목',
-                                            waste_volume: '폐기물 양(부피)', floor_access: '층수 및 엘리베이터 여부', disassembly_needed: '분해 작업 필요 여부',
-                                            // 배관/수도
-                                            leak_problems: '누수/배관 문제', leak_locations: '문제 발생 위치',
-                                            main_valve_status: '메인 수도 밸브 상태',
-                                            equipment_types: '점검 대상 장비', pump_symptoms: '워터펌프 증상',
-                                            pump_hp: '워터펌프 마력(HP)', pump_location: '워터펌프/물탱크 위치',
-                                            clog_locations: '막힘 발생 위치', clog_severity: '막힘 심각도',
-                                            prior_attempts: '직접 시도한 방법', clog_cause: '이물질 원인',
-                                            // 전기/태양광
-                                            service_type_wh: '온수기 서비스 종류', heater_type: '온수기 종류',
-                                            heater_symptoms: '온수기 증상', electrical_ready: '전선/차단기 준비 상태',
-                                            electrical_symptoms: '전기 증상', outage_scope: '정전 범위', panel_board_access: '메인 분전함 위치',
-                                            service_type_gen: '발전기 서비스 종류', fuel_type: '발전기 연료 타입',
-                                            gen_capacity: '발전기 용량(kVA)', gen_symptoms: '발전기 증상',
-                                            work_types: '작업 종류', ceiling_type: '천장 형태 및 높이',
-                                            materials_ready: '조명/자재 준비 여부', wiring_condition: '벽/천장 배선 상태',
-                                            service_type_solar: '태양광 서비스 종류', system_type: '태양광 시스템 방식',
-                                            system_capacity: '태양광 시스템 용량', roof_type: '지붕 형태',
-                                            // 가전/전자
-                                            ac_hp: '에어컨 마력(HP)', appliance_type: '수리 대상 가전',
-                                            appliance_symptoms: '가전 증상', appliance_brand: '가전 브랜드', appliance_age: '가전 사용 기간',
-                                            tv_size: 'TV 크기', install_type: '설치 방식',
-                                            bracket_ready: '브라켓 보유 여부', wall_type: '벽 재질',
-                                            service_type_cctv: 'CCTV 서비스 종류', camera_count: '카메라 설치 대수',
-                                            install_location: '설치 장소 형태', wifi_available: '인터넷(Wi-Fi) 연결 여부',
-                                            // 기타 홈서비스
-                                            screen_locations: '방충망 시공 위치', screen_qty: '방충망 시공 수량',
-                                            screen_material: '방충망 재질/기능', screen_frame_status: '창문/틀 상태',
-                                            lock_service_type: '열쇠/도어락 서비스 종류', door_material: '문 재질',
-                                            lock_type_new: '자물쇠 종류', lock_product_supply: '제품 준비 방법',
-                                            furniture_types: '조립 가구 종류', furniture_brand: '가구 브랜드/구매처',
-                                            furniture_qty: '가구 수량 및 규모', wall_mount_needed: '벽 고정 작업 필요 여부',
-                                            // LPG 가스
-                                            gas_service_type: 'LPG 서비스 종류', gas_brand: '가스통 브랜드',
-                                            gas_capacity: '가스통 용량', empty_cylinder: '빈 가스통 보유 여부', gas_symptoms: '가스 증상/문제',
-                                            // 리모델링/인테리어
-                                            remodel_scope: '리모델링 범위', remodel_start: '공사 시작 시기',
-                                            permit_status: '공사 허가 상태', material_supply: '자재 수급 방식',
-                                            site_infra: '현장 인프라 상태', remodel_budget: '총 공사 예산',
-                                            interior_scope: '인테리어 범위', unit_condition: '유닛 상태',
-                                            condo_permit_status: '콘도 공사 허가 상태', work_schedule: '작업 가능 시간대',
-                                            interior_supply: '자재 수급 방식', interior_budget: '인테리어 예산',
-                                            commercial_space_type: '상업 공간 종류', commercial_unit_condition: '매장 상태',
-                                            commercial_permit_status: '공사 허가 상태', admin_requirements: '행정/안전 요건',
-                                            design_status: '디자인 도면 보유 여부', commercial_budget: '인테리어 예산',
-                                            commercial_start: '공사 시작 시기',
-                                            // 타일/바닥재
-                                            tile_spaces: '시공 공간', floor_material: '바닥재 종류',
-                                            floor_condition: '현재 바닥 상태', tile_material_supply: '자재 준비 방식',
-                                            tile_permit_status: '공사 허가 상태', tile_site_access: '현장 반입 환경',
-                                            tile_area_sqm: '시공 면적', tile_work_schedule: '작업 가능 시간대',
-                                            // 페인트
-                                            paint_scope: '페인트 시공 범위', paint_site_condition: '현장 상태',
-                                            wall_condition: '벽면 상태 및 사전 작업', paint_material_supply: '페인트 자재 준비',
-                                            paint_permit_status: '공사 허가 상태', floor_height: '층수/층고',
-                                            paint_work_schedule: '작업 가능 시간대',
-                                            // 목공
-                                            carpentry_work_types: '목공 작업 종류', carpentry_material: '자재 및 마감 방식',
-                                            design_doc: '도면 보유 여부', carpentry_site_condition: '작업 장소 상태',
-                                            carpentry_permit_status: '공사 허가 상태', carpentry_work_schedule: '작업 가능 시간대',
-                                            // 가벽/드라이월
-                                            drywall_purpose: '시공 목적', insulation_needed: '방음/단열 필요 여부',
-                                            ceiling_height_drywall: '층고', finish_level: '마감 단계',
-                                            drywall_permit_status: '공사 허가 상태', drywall_material_supply: '자재 준비 방식',
-                                            drywall_work_schedule: '작업 가능 시간대',
-                                            // 지붕/방수
-                                            roofing_work_types: '지붕 공사 종류', roof_problem_status: '문제 상황',
-                                            roof_material: '지붕/바닥 재질', roof_access: '층수 및 접근성',
-                                            roof_permit_status: '공사 허가 상태', roof_work_schedule: '작업 가능 시간대',
-                                            // 조경/정원
-                                            landscaping_work_types: '조경/정원 관리 작업 종류', garden_condition: '정원 현재 상태',
-                                            garden_area_sqm: '정원 면적', garden_infra: '현장 인프라 (수도/전기)',
-                                            garden_material_supply: '자재/식물 준비 방식', garden_permit_status: '공사 허가 상태',
-                                            garden_work_schedule: '작업 가능 시간대',
-                                            // 간판
-                                            signage_types: '간판/작업 종류', signage_location: '간판 설치 위치 및 높이',
-                                            signage_design_status: '디자인 시안 준비 여부', signage_power: '전기 공급 여부',
-                                            signage_permit_status: '관할 허가 상태', signage_size: '간판 크기',
-                                            signage_work_schedule: '작업 가능 시간대',
-                                            // 데크/펜스
-                                            deck_fence_types: '시공 항목', deck_material: '주요 자재',
-                                            deck_ground_condition: '지면/기존 구조물 상태', deck_material_supply: '자재 준비 방식',
-                                            deck_permit_status: '공사 허가 상태', deck_size: '시공 면적 및 길이',
-                                            deck_work_schedule: '작업 가능 시간대',
-                                            // 가상 비서
-                                            va_tasks: '주요 업무', va_english_level: '영어 능통 수준',
-                                            va_work_schedule: '근무 형태 및 시간대', va_tools: '필수 소프트웨어/툴',
-                                            va_wfh_infra: '재택근무 인프라 요건', va_budget: '월간 예산/급여 수준',
-                                            va_start_date: '업무 시작 희망 날짜',
-                                            // CS/콜센터
-                                            cs_channels: 'CS 지원 채널', cs_languages: '지원 언어',
-                                            cs_agent_count: '상담원 규모', cs_coverage: '서비스 제공 시간대',
-                                            cs_infra: '인프라 및 운영 방식', cs_ticket_volume: '월간 콜/티켓 볼륨',
-                                            cs_start_date: '프로젝트 시작 희망일',
-                                            // 텔레마케팅
-                                            tm_campaign_goal: '캠페인 주요 목적', tm_target_country: '타겟 고객 국가',
-                                            tm_script_db: '콜 리스트/스크립트 준비 여부', tm_payment_type: '보상 및 지불 방식',
-                                            tm_dialer: '다이얼러 시스템 준비 방식', tm_agent_count: '투입 인원 규모',
-                                            tm_start_date: '캠페인 시작 희망일',
-                                            // 법인 등록
-                                            bizreg_entity_type: '사업체 형태', bizreg_foreign_ownership: '외국인 지분율',
-                                            bizreg_scope: '대행 업무 범위', bizreg_address_status: '사업장 주소지 확보 여부',
-                                            bizreg_capital: '예상 자본금 규모', bizreg_start_date: '대행 업무 시작 희망일',
-                                            // 세무 기장
-                                            tax_service_types: '세무 서비스 종류', tax_vat_status: 'BIR 납세자 형태',
-                                            tax_transaction_volume: '월 평균 거래 건수', tax_bir_status: 'BIR 등록 상태',
-                                            tax_accounting_system: '회계/POS 시스템', tax_start_date: '서비스 시작 희망 날짜',
-                                            // 비자/이민
-                                            visa_service_types: '비자/이민 서류 업무 종류', visa_headcount: '수속 대상자 인원',
-                                            visa_stay_status: '현재 체류 상태', visa_sponsor_docs: '스폰서 법인 서류 상태',
-                                            visa_new_or_renewal: '신규/갱신 여부', visa_start_date: '서류 접수 대행 시작 희망일',
-                                            // 인허가
-                                            permit_types: '인허가/면허 종류', permit_current_status: '인허가 진행 상태',
-                                            permit_biz_docs: '기본 사업 서류 구비 상태', permit_item_count: '대상 물품/사업장 수',
-                                            permit_inspection_ready: '실사 준비 여부', permit_start_date: '대행 업무 시작 희망일',
-                                            // 타갈로그어 통번역
-                                            tl_service_types: '통번역 서비스 종류', tl_field: '통번역 분야/문맥',
-                                            tl_doc_volume: '번역 분량', tl_interp_duration: '통역 소요 시간',
-                                            tl_notarization: '공증/확인서 필요 여부', tl_location: '통역 장소 형태',
-                                            tl_start_date: '희망 날짜',
-                                            // 비사야어 통번역
-                                            vi_service_types: '통번역 서비스 종류', vi_dialect: '비사야어 방언',
-                                            vi_field: '통번역 분야/문맥', vi_doc_volume: '번역 분량',
-                                            vi_interp_duration: '통역 소요 시간', vi_location: '통역 장소 형태',
-                                            vi_start_date: '희망 날짜',
-                                            // 영어 통번역
-                                            en_service_types: '통번역 서비스 종류', en_field: '전문 분야',
-                                            en_target_country: '타겟 국가/문맥', en_doc_volume: '번역 분량',
-                                            en_interp_duration: '통역 소요 시간', en_apostille: '공증/아포스티유 필요 여부',
-                                            en_start_date: '희망 날짜',
-                                            // 기타 다국어 통번역
-                                            ml_language_pair: '언어 쌍', ml_service_types: '통번역 서비스 종류',
-                                            ml_field: '통번역 분야/문맥', ml_doc_volume: '번역 분량',
-                                            ml_interp_duration: '통역 소요 시간', ml_location: '장소/제출처',
-                                            ml_start_date: '희망 날짜',
-                                            // 그래픽 디자인
-                                            gd_work_types: '디자인 작업 종류', gd_reference_status: '기획/레퍼런스 보유 상태',
-                                            gd_usage_purpose: '결과물 활용 목적', gd_source_files: '원본 파일/저작권 양도 여부',
-                                            gd_meeting_type: '소통 방식', gd_start_date: '납품 희망 날짜',
-                                            // 웹/앱 개발
-                                            wd_platform_types: '개발 플랫폼 종류', wd_project_stage: '프로젝트 준비 단계',
-                                            wd_local_integration: '현지 결제/물류 연동', wd_hosting_status: '서버/도메인 준비 상태',
-                                            wd_budget: '프로젝트 예산', wd_start_date: '프로젝트 시작 희망일',
-                                            // 영상 편집
-                                            ve_platform_purpose: '영상 활용 플랫폼/목적', ve_footage_status: '원본 소스 상태',
-                                            ve_video_length: '완성본 길이', ve_edit_elements: '필수 편집 요소',
-                                            ve_work_style: '작업 및 소통 방식', ve_start_date: '납품 희망 날짜',
-                                            // SNS 마케팅
-                                            sns_platforms: '타겟 플랫폼', sns_target_audience: '타겟 고객층',
-                                            sns_work_scope: '업무 범위', sns_ads_budget_type: '광고비 처리 방식',
-                                            sns_page_status: '페이지 활성화 상태', sns_start_date: '대행 시작 희망일',
-                                            // 데뷰
-                                            debut_theme: '파티 컨셉/테마', debut_scope: '서비스 범위',
-                                            debut_guest_count: '예상 하객 수', debut_venue_status: '베뉴 섭외 상태',
-                                            debut_catering_rules: '케이터링/레촌 반입 규정', debut_budget: '총 예상 예산',
-                                            debut_date: '행사 예정일',
-                                            // 세례식
-                                            ch_scope: '기획 범위', ch_guest_count: '하객 규모',
-                                            ch_church_status: '성당/교회 예약 상태', ch_reception_venue: '리셉션 장소 형태',
-                                            ch_catering_style: '케이터링 스타일', ch_date: '행사 예정일',
-                                            // 생일/기념일 파티
-                                            bday_party_type: '파티 종류', bday_scope: '기획 범위',
-                                            bday_guest_count: '예상 하객 수', bday_venue_status: '베뉴 섭외 상태',
-                                            bday_vendor_rules: '외부 업체 반입 규정', bday_budget: '총 예상 예산',
-                                            bday_date: '파티 예정일',
-                                            // 웨딩
-                                            wed_service_scope: '플래닝 서비스 범위', wed_venue_type: '웨딩 형태 및 베뉴',
-                                            wed_guest_count: '하객 규모', wed_booked_items: '예약 완료 항목',
-                                            wed_logistics: '날씨/이동 대비', wed_budget: '총 예상 예산',
-                                            wed_date: '예식 예정일',
-                                            // 기업 행사
-                                            corp_event_types: '행사 종류', corp_headcount: '예상 참여 인원',
-                                            corp_work_scope: '업무 범위', corp_venue_status: '베뉴 준비 상태',
-                                            corp_billing_req: '결제/행정 요건', corp_setup_timing: '셋업 가능 시간',
-                                            corp_date: '행사 예정일',
-                                            details: '추가 요청사항 / 특이사항',
-                                            // 하위 호환
-                                            region: '지역', region_reg: '지역 (Region)', region_city: '도시 (City)'
+                                            service_type: 'Detailed Service', merged_region: 'Service Region',
+                                            move_type: 'Moving Service Type', move_date: 'Moving Date',
+                                            from_region: 'Departure Region', from_floor: 'Departure Floor', from_size: 'Departure Area / Occupants', from_elevator: 'Departure Site Condition',
+                                            appliances: 'Appliances to Move', furniture: 'Furniture to Move', images: 'Attached Photos',
+                                            to_region: 'Destination Region', to_floor: 'Destination Floor', to_elevator: 'Destination Site Condition',
+                                            house_type: 'Housing Type & Size', service_frequency: 'Service Frequency',
+                                            extra_services: 'Additional Services', cleaning_supplies: 'Cleaning Tools/Supplies', has_pets: 'Pets at Home',
+                                            visit_timing: 'Preferred Visit Timing', care_schedule: 'Care Schedule & Type',
+                                            children_info: 'Number & Age of Children', language_pref: 'Preferred Language',
+                                            extra_tasks: 'Additional Tasks', child_health_note: 'Child Health Notes',
+                                            meal_headcount: 'Number of Diners', meal_time: 'Meal Time/Purpose',
+                                            cuisine_style: 'Cooking Style', grocery_needed: 'Grocery Shopping Assistance', allergy_note: 'Allergies/Ingredients to Avoid',
+                                            deep_clean_type: 'Deep Cleaning Type', house_size: 'Unit Size & Type',
+                                            furnished_status: 'Furnished Status', utilities_status: 'Electricity/Water Availability', special_options: 'Additional Special Options',
+                                            cleaning_cycle: 'Cleaning Frequency', focus_areas: 'Focused Cleaning Areas',
+                                            pool_type: 'Pool Type & Size', pool_condition: 'Water Condition',
+                                            chemicals_supply: 'Chemical Supply Method', extra_repair: 'Additional Inspection/Repair',
+                                            clean_items: 'Items for Deep Cleaning', item_size_qty: 'Item Size & Quantity',
+                                            material_type: 'Material Type', stain_issues: 'Stain/Issue Type',
+                                            ac_quantity: 'Number of AC Units', ac_size: 'AC Horsepower (HP)',
+                                            ac_symptoms: 'AC Symptoms', ac_height: 'AC Installation Height',
+                                            ac_clean_date: 'Preferred Cleaning Date', visit_time: 'Preferred Visit Time',
+                                            outdoor_unit_location: 'Outdoor Unit Location', indoor_unit_access: 'Indoor Unit Clearance',
+                                            work_time: 'Work Schedule', ac_types: 'AC Types', ceiling_height: 'Ceiling Height',
+                                            visit_date: 'Preferred Visit Date', building_type: 'Building Type',
+                                            damage_status: 'Termite Damage Status', area_size: 'Area Size',
+                                            treatment_method: 'Treatment Method', children_pets: 'Children/Pets at Home',
+                                            pest_types: 'Target Pests',
+                                            problem_types: 'Problem Types', problem_locations: 'Problem Locations', mold_severity: 'Mold Severity',
+                                            pickup_date: 'Preferred Pickup Date', waste_items: 'Items to Dispose',
+                                            waste_volume: 'Waste Volume', floor_access: 'Floor & Elevator Access', disassembly_needed: 'Disassembly Required',
+                                            leak_problems: 'Leak/Plumbing Issues', leak_locations: 'Problem Locations',
+                                            main_valve_status: 'Main Water Valve Status',
+                                            equipment_types: 'Equipment to Inspect', pump_symptoms: 'Water Pump Symptoms',
+                                            pump_hp: 'Water Pump HP', pump_location: 'Pump/Tank Location',
+                                            clog_locations: 'Clog Locations', clog_severity: 'Clog Severity',
+                                            prior_attempts: 'Prior DIY Attempts', clog_cause: 'Clog Cause',
+                                            service_type_wh: 'Water Heater Service Type', heater_type: 'Water Heater Type',
+                                            heater_symptoms: 'Water Heater Symptoms', electrical_ready: 'Wiring/Breaker Status',
+                                            electrical_symptoms: 'Electrical Symptoms', outage_scope: 'Outage Scope', panel_board_access: 'Main Panel Location',
+                                            service_type_gen: 'Generator Service Type', fuel_type: 'Generator Fuel Type',
+                                            gen_capacity: 'Generator Capacity (kVA)', gen_symptoms: 'Generator Symptoms',
+                                            work_types: 'Work Types', ceiling_type: 'Ceiling Type & Height',
+                                            materials_ready: 'Lighting/Materials Ready', wiring_condition: 'Wall/Ceiling Wiring Condition',
+                                            service_type_solar: 'Solar Service Type', system_type: 'Solar System Type',
+                                            system_capacity: 'Solar System Capacity', roof_type: 'Roof Type',
+                                            ac_hp: 'AC Horsepower (HP)', appliance_type: 'Appliance to Repair',
+                                            appliance_symptoms: 'Appliance Symptoms', appliance_brand: 'Appliance Brand', appliance_age: 'Appliance Age',
+                                            tv_size: 'TV Size', install_type: 'Installation Type',
+                                            bracket_ready: 'Bracket Available', wall_type: 'Wall Material',
+                                            service_type_cctv: 'CCTV Service Type', camera_count: 'Number of Cameras',
+                                            install_location: 'Installation Location', wifi_available: 'Internet (Wi-Fi) Available',
+                                            screen_locations: 'Screen Installation Locations', screen_qty: 'Number of Screens',
+                                            screen_material: 'Screen Material/Type', screen_frame_status: 'Window/Frame Condition',
+                                            lock_service_type: 'Lock/Door Lock Service Type', door_material: 'Door Material',
+                                            lock_type_new: 'Lock Type', lock_product_supply: 'Product Supply Method',
+                                            furniture_types: 'Furniture Types to Assemble', furniture_brand: 'Furniture Brand/Purchase',
+                                            furniture_qty: 'Furniture Quantity & Size', wall_mount_needed: 'Wall Mounting Required',
+                                            gas_service_type: 'LPG Service Type', gas_brand: 'Gas Tank Brand',
+                                            gas_capacity: 'Gas Tank Capacity', empty_cylinder: 'Empty Cylinder Available', gas_symptoms: 'Gas Symptoms/Issues',
+                                            remodel_scope: 'Renovation Scope', remodel_start: 'Construction Start Timing',
+                                            permit_status: 'Construction Permit Status', material_supply: 'Material Supply Method',
+                                            site_infra: 'Site Infrastructure', remodel_budget: 'Total Construction Budget',
+                                            interior_scope: 'Interior Scope', unit_condition: 'Unit Condition',
+                                            condo_permit_status: 'Condo Construction Permit', work_schedule: 'Available Work Schedule',
+                                            interior_supply: 'Interior Material Supply', interior_budget: 'Interior Budget',
+                                            commercial_space_type: 'Commercial Space Type', commercial_unit_condition: 'Store Condition',
+                                            commercial_permit_status: 'Construction Permit Status', admin_requirements: 'Admin/Safety Requirements',
+                                            design_status: 'Design/Blueprint Available', commercial_budget: 'Interior Budget',
+                                            commercial_start: 'Construction Start Timing',
+                                            tile_spaces: 'Tiling Spaces', floor_material: 'Flooring Material',
+                                            floor_condition: 'Current Floor Condition', tile_material_supply: 'Material Supply Method',
+                                            tile_permit_status: 'Construction Permit Status', tile_site_access: 'Site Access Conditions',
+                                            tile_area_sqm: 'Tiling Area (sqm)', tile_work_schedule: 'Available Work Schedule',
+                                            paint_scope: 'Painting Scope', paint_site_condition: 'Site Condition',
+                                            wall_condition: 'Wall Condition & Prep Work', paint_material_supply: 'Paint Material Supply',
+                                            paint_permit_status: 'Construction Permit Status', floor_height: 'Floor/Ceiling Height',
+                                            paint_work_schedule: 'Available Work Schedule',
+                                            carpentry_work_types: 'Carpentry Work Types', carpentry_material: 'Material & Finish',
+                                            design_doc: 'Blueprint Available', carpentry_site_condition: 'Work Site Condition',
+                                            carpentry_permit_status: 'Construction Permit Status', carpentry_work_schedule: 'Available Work Schedule',
+                                            drywall_purpose: 'Installation Purpose', insulation_needed: 'Soundproofing/Insulation Required',
+                                            ceiling_height_drywall: 'Ceiling Height', finish_level: 'Finish Level',
+                                            drywall_permit_status: 'Construction Permit Status', drywall_material_supply: 'Material Supply Method',
+                                            drywall_work_schedule: 'Available Work Schedule',
+                                            roofing_work_types: 'Roofing Work Types', roof_problem_status: 'Problem Status',
+                                            roof_material: 'Roof/Floor Material', roof_access: 'Floor & Accessibility',
+                                            roof_permit_status: 'Construction Permit Status', roof_work_schedule: 'Available Work Schedule',
+                                            landscaping_work_types: 'Landscaping Work Types', garden_condition: 'Garden Current Condition',
+                                            garden_area_sqm: 'Garden Area (sqm)', garden_infra: 'Site Infrastructure (Water/Power)',
+                                            garden_material_supply: 'Material/Plant Supply', garden_permit_status: 'Construction Permit Status',
+                                            garden_work_schedule: 'Available Work Schedule',
+                                            signage_types: 'Signage/Work Types', signage_location: 'Signage Location & Height',
+                                            signage_design_status: 'Design Draft Available', signage_power: 'Power Supply Available',
+                                            signage_permit_status: 'Permit Status', signage_size: 'Signage Size',
+                                            signage_work_schedule: 'Available Work Schedule',
+                                            deck_fence_types: 'Construction Items', deck_material: 'Main Material',
+                                            deck_ground_condition: 'Ground/Existing Structure', deck_material_supply: 'Material Supply Method',
+                                            deck_permit_status: 'Construction Permit Status', deck_size: 'Construction Area & Length',
+                                            deck_work_schedule: 'Available Work Schedule',
+                                            va_tasks: 'Main Tasks', va_english_level: 'English Proficiency',
+                                            va_work_schedule: 'Work Type & Schedule', va_tools: 'Required Software/Tools',
+                                            va_wfh_infra: 'WFH Infrastructure', va_budget: 'Monthly Budget/Salary',
+                                            va_start_date: 'Preferred Start Date',
+                                            cs_channels: 'CS Support Channels', cs_languages: 'Support Languages',
+                                            cs_agent_count: 'Number of Agents', cs_coverage: 'Service Hours',
+                                            cs_infra: 'Infrastructure & Operations', cs_ticket_volume: 'Monthly Call/Ticket Volume',
+                                            cs_start_date: 'Preferred Project Start Date',
+                                            tm_campaign_goal: 'Campaign Goal', tm_target_country: 'Target Country',
+                                            tm_script_db: 'Call List/Script Available', tm_payment_type: 'Compensation & Payment Method',
+                                            tm_dialer: 'Dialer System', tm_agent_count: 'Number of Agents',
+                                            tm_start_date: 'Preferred Campaign Start Date',
+                                            bizreg_entity_type: 'Business Entity Type', bizreg_foreign_ownership: 'Foreign Ownership %',
+                                            bizreg_scope: 'Service Scope', bizreg_address_status: 'Business Address Ready',
+                                            bizreg_capital: 'Estimated Capital', bizreg_start_date: 'Preferred Start Date',
+                                            tax_service_types: 'Tax Service Types', tax_vat_status: 'BIR Taxpayer Type',
+                                            tax_transaction_volume: 'Monthly Transaction Volume', tax_bir_status: 'BIR Registration Status',
+                                            tax_accounting_system: 'Accounting/POS System', tax_start_date: 'Preferred Service Start Date',
+                                            visa_service_types: 'Visa/Immigration Service Types', visa_headcount: 'Number of Applicants',
+                                            visa_stay_status: 'Current Stay Status', visa_sponsor_docs: 'Sponsor/Company Documents',
+                                            visa_new_or_renewal: 'New Application or Renewal', visa_start_date: 'Preferred Start Date',
+                                            permit_types: 'Permit/License Types', permit_current_status: 'Current Permit Status',
+                                            permit_biz_docs: 'Basic Business Documents', permit_item_count: 'Number of Items/Sites',
+                                            permit_inspection_ready: 'Inspection Ready', permit_start_date: 'Preferred Start Date',
+                                            tl_service_types: 'Translation/Interpretation Service Types', tl_field: 'Field/Context',
+                                            tl_doc_volume: 'Document Volume', tl_interp_duration: 'Interpretation Duration',
+                                            tl_notarization: 'Notarization Required', tl_location: 'Interpretation Location',
+                                            tl_start_date: 'Preferred Date',
+                                            vi_service_types: 'Translation/Interpretation Service Types', vi_dialect: 'Visayan Dialect',
+                                            vi_field: 'Field/Context', vi_doc_volume: 'Document Volume',
+                                            vi_interp_duration: 'Interpretation Duration', vi_location: 'Interpretation Location',
+                                            vi_start_date: 'Preferred Date',
+                                            en_service_types: 'Translation/Interpretation Service Types', en_field: 'Field',
+                                            en_target_country: 'Target Country/Context', en_doc_volume: 'Document Volume',
+                                            en_interp_duration: 'Interpretation Duration', en_apostille: 'Notarization/Apostille Required',
+                                            en_start_date: 'Preferred Date',
+                                            ml_language_pair: 'Language Pair', ml_service_types: 'Translation/Interpretation Service Types',
+                                            ml_field: 'Field/Context', ml_doc_volume: 'Document Volume',
+                                            ml_interp_duration: 'Interpretation Duration', ml_location: 'Location/Submission',
+                                            ml_start_date: 'Preferred Date',
+                                            gd_work_types: 'Design Work Types', gd_reference_status: 'Brief/Reference Available',
+                                            gd_usage_purpose: 'Output Usage Purpose', gd_source_files: 'Source Files/Copyright Transfer',
+                                            gd_meeting_type: 'Communication Method', gd_start_date: 'Preferred Delivery Date',
+                                            wd_platform_types: 'Development Platform Types', wd_project_stage: 'Project Preparation Stage',
+                                            wd_local_integration: 'Local Payment/Logistics Integration', wd_hosting_status: 'Server/Domain Ready',
+                                            wd_budget: 'Project Budget', wd_start_date: 'Preferred Project Start Date',
+                                            ve_platform_purpose: 'Video Platform/Purpose', ve_footage_status: 'Source Footage Status',
+                                            ve_video_length: 'Final Video Length', ve_edit_elements: 'Required Editing Elements',
+                                            ve_work_style: 'Work & Communication Style', ve_start_date: 'Preferred Delivery Date',
+                                            sns_platforms: 'Target Platforms', sns_target_audience: 'Target Audience',
+                                            sns_work_scope: 'Work Scope', sns_ads_budget_type: 'Ad Budget Handling',
+                                            sns_page_status: 'Page Activation Status', sns_start_date: 'Preferred Start Date',
+                                            debut_theme: 'Party Concept/Theme', debut_scope: 'Service Scope',
+                                            debut_guest_count: 'Expected Guest Count', debut_venue_status: 'Venue Status',
+                                            debut_catering_rules: 'Catering/Lechon Rules', debut_budget: 'Total Estimated Budget',
+                                            debut_date: 'Event Date',
+                                            ch_scope: 'Planning Scope', ch_guest_count: 'Guest Count',
+                                            ch_church_status: 'Church/Chapel Booking Status', ch_reception_venue: 'Reception Venue Type',
+                                            ch_catering_style: 'Catering Style', ch_date: 'Event Date',
+                                            bday_party_type: 'Party Type', bday_scope: 'Planning Scope',
+                                            bday_guest_count: 'Expected Guest Count', bday_venue_status: 'Venue Status',
+                                            bday_vendor_rules: 'External Vendor Rules', bday_budget: 'Total Estimated Budget',
+                                            bday_date: 'Party Date',
+                                            wed_service_scope: 'Planning Service Scope', wed_venue_type: 'Wedding Type & Venue',
+                                            wed_guest_count: 'Guest Count', wed_booked_items: 'Already Booked Items',
+                                            wed_logistics: 'Weather/Transportation Plan', wed_budget: 'Total Estimated Budget',
+                                            wed_date: 'Wedding Date',
+                                            corp_event_types: 'Event Types', corp_headcount: 'Expected Attendees',
+                                            corp_work_scope: 'Work Scope', corp_venue_status: 'Venue Status',
+                                            corp_billing_req: 'Billing/Admin Requirements', corp_setup_timing: 'Setup Available Time',
+                                            corp_date: 'Event Date',
+                                            details: 'Additional Requests / Notes',
+                                            region: 'Region', region_reg: 'Region', region_city: 'City'
                                         };
 
                                         if (answerEntries.length === 0) {
-                                            return <p className="text-sm text-gray-400">요청 상세 내용이 없습니다.</p>;
+                                            return <p className="text-sm text-gray-400">{t('quoteModal.noRequestDetails')}</p>;
                                         }
 
                                         return answerEntries.map(([key, value]) => {
@@ -522,7 +482,7 @@ export default function QuoteDetailModal({ quote, onClose, onStartChat, requestI
                                                                     <div className="flex flex-wrap gap-2 mt-1">
                                                                         {value.map((img: any, i: number) => (
                                                                             <a key={i} href={img.url} target="_blank" rel="noopener noreferrer" className="block relative cursor-pointer hover:opacity-90 transition group overflow-hidden rounded-lg">
-                                                                                <img src={img.url} className="w-20 h-20 object-cover border border-gray-200" alt={`첨부사진 ${i + 1}`} />
+                                                                                <img src={img.url} className="w-20 h-20 object-cover border border-gray-200" alt={`${t('quoteModal.imageAlt')}${i + 1}`} />
                                                                                 {img.description && <span className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-[10px] p-1 truncate text-center transition-all group-hover:bg-black/80">{img.description}</span>}
                                                                             </a>
                                                                         ))}
@@ -550,7 +510,7 @@ export default function QuoteDetailModal({ quote, onClose, onStartChat, requestI
 
                         {/* 견적 도착 시간 */}
                         <p className="text-xs text-gray-400 text-right">
-                            견적 도착: {new Date(quote.created_at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                            {t('quoteModal.arrivedAt')}{new Date(quote.created_at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                         </p>
                     </div>
 
@@ -561,7 +521,7 @@ export default function QuoteDetailModal({ quote, onClose, onStartChat, requestI
                                 onClick={() => onStartChat({ ...quote, request_id: requestId })}
                                 className="w-full bg-yellow-400 hover:bg-yellow-500 text-white font-bold py-4 rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-base active:scale-[0.98]"
                             >
-                                <span className="text-lg">💬</span> 상담 / 채팅하기
+                                {t('quoteModal.chatBtn')}
                             </button>
                         </div>
                     )}

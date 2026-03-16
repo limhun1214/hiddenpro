@@ -3,10 +3,12 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useParams, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 export const runtime = 'edge';
 
 export default function LegalDocumentViewer() {
+    const t = useTranslations();
     const params = useParams();
     const router = useRouter();
     const [legalDoc, setLegalDoc] = useState<any | null>(null);
@@ -39,8 +41,8 @@ export default function LegalDocumentViewer() {
         return (
             <div className="w-full flex flex-col pt-4">
                 <div className="flex justify-between items-center p-4 bg-white border-b border-gray-100">
-                    <button onClick={() => router.back()} className="text-gray-500 hover:text-gray-800 font-bold">&larr; 뒤로</button>
-                    <h1 className="font-bold text-gray-800">법적 고지</h1>
+                    <button onClick={() => router.back()} className="text-gray-500 hover:text-gray-800 font-bold">&larr; {t('common.back')}</button>
+                    <h1 className="font-bold text-gray-800">{t('legal.title')}</h1>
                     <div className="w-10"></div>
                 </div>
                 <div className="flex-1 flex items-center justify-center">
@@ -54,19 +56,19 @@ export default function LegalDocumentViewer() {
         return (
             <div className="w-full flex flex-col pt-4">
                 <div className="flex justify-between items-center p-4 bg-white border-b border-gray-100">
-                    <button onClick={() => router.back()} className="text-gray-500 hover:text-gray-800 font-bold">&larr; 뒤로</button>
-                    <h1 className="font-bold text-gray-800">문서 없음</h1>
+                    <button onClick={() => router.back()} className="text-gray-500 hover:text-gray-800 font-bold">&larr; {t('common.back')}</button>
+                    <h1 className="font-bold text-gray-800">{t('legal.notFound')}</h1>
                     <div className="w-10"></div>
                 </div>
                 <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
                     <div className="text-gray-400 mb-4 text-6xl">⚖️</div>
-                    <h2 className="text-xl font-bold text-gray-900 mb-2">법적 고지 문서를 불러올 수 없습니다</h2>
-                    <p className="text-gray-500 mb-6">등록된 문서가 없거나 현재 활성화된 버전이 없습니다.</p>
+                    <h2 className="text-xl font-bold text-gray-900 mb-2">{t('legal.notFoundDesc')}</h2>
+                    <p className="text-gray-500 mb-6">{t('legal.notFoundSub')}</p>
                     <button
                         onClick={() => router.push('/')}
                         className="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition"
                     >
-                        메인으로 돌아가기
+                        {t('common.goToMain')}
                     </button>
                 </div>
             </div>
@@ -76,8 +78,8 @@ export default function LegalDocumentViewer() {
     return (
         <div className="w-full flex flex-col pt-4">
             <div className="flex justify-between items-center p-4 bg-white border-b border-gray-100">
-                <button onClick={() => router.back()} className="text-gray-500 hover:text-gray-800 font-bold">&larr; 뒤로</button>
-                <h1 className="font-bold text-gray-800">{legalDoc.document_type === 'TERMS' ? '이용약관' : '개인정보처리방침'}</h1>
+                <button onClick={() => router.back()} className="text-gray-500 hover:text-gray-800 font-bold">&larr; {t('common.back')}</button>
+                <h1 className="font-bold text-gray-800">{legalDoc.document_type === 'TERMS' ? t('legal.terms') : t('legal.privacy')}</h1>
                 <div className="w-10"></div>
             </div>
             <main className="flex-1 w-full max-w-3xl mx-auto p-5 md:p-8">
@@ -90,7 +92,7 @@ export default function LegalDocumentViewer() {
                             {legalDoc.version}
                         </span>
                     </div>
-                    <p className="text-sm text-gray-500 font-medium">시행일자: {legalDoc.effective_date}</p>
+                    <p className="text-sm text-gray-500 font-medium">{t('legal.effectiveDate')} {legalDoc.effective_date}</p>
                 </div>
 
                 <div

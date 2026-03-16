@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import QuoteDetailModal from '../customer/QuoteDetailModal';
 import { supabase } from '@/lib/supabase';
+import { useTranslations } from 'next-intl';
 
 // API 연동 전 UI 로직 테스트를 위한 모의 데이터 세팅
 const mockRoomData = {
@@ -15,6 +16,7 @@ const mockRoomData = {
 };
 
 export default function ChatRoom({ roomId }: { roomId: string }) {
+    const t = useTranslations();
     const [status, setStatus] = useState(mockRoomData.initialStatus);
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState<{ id: number; text: string; sender: 'me' | 'other' }[]>([]);
@@ -94,7 +96,7 @@ export default function ChatRoom({ roomId }: { roomId: string }) {
     };
 
     const handleMatchConfirm = async () => {
-        const confirmed = window.confirm('매칭을 확정하시겠습니까? (이후 취소 불가)');
+        const confirmed = window.confirm(t('chatRoom.matchConfirm'));
         if (!confirmed || !currentUserId) return;
 
         const { data, error } = await supabase.rpc('confirm_match', {
@@ -104,18 +106,18 @@ export default function ChatRoom({ roomId }: { roomId: string }) {
 
         if (error) {
             console.error('매칭 확정 RPC 에러:', error);
-            alert('매칭 확정 중 오류가 발생했습니다. 다시 시도해주세요.');
+            alert(t('chatRoom.matchError'));
             return;
         }
 
         const result = typeof data === 'string' ? JSON.parse(data) : data;
         if (!result.success) {
-            alert(result.error || '매칭 확정에 실패했습니다.');
+            alert(result.error || t('chatRoom.matchError'));
             return;
         }
 
         setStatus('MATCHED');
-        alert('매칭이 확정되었습니다! 🎉');
+        alert(t('chatRoom.matchSuccess'));
     };
 
     const handleSubmitReport = async () => {
@@ -130,11 +132,11 @@ export default function ChatRoom({ roomId }: { roomId: string }) {
         });
         setReportSubmitting(false);
         if (error) {
-            alert('신고 접수 오류: ' + error.message);
+            alert(t('chatRoom.reportError') + error.message);
         } else {
             setShowReportModal(false);
             setReportReason('');
-            alert('신고가 접수되었습니다.');
+            alert(t('chatRoom.reportSuccess'));
         }
     };
 
@@ -153,7 +155,7 @@ export default function ChatRoom({ roomId }: { roomId: string }) {
                             고
                         </div>
                         <h2 className="font-bold text-gray-800 text-sm">
-                            {mockRoomData.opponentName} 고수님
+                            {mockRoomData.opponentName}{t('chatRoom.proSuffix')}
                         </h2>
                     </div>
 
@@ -163,13 +165,13 @@ export default function ChatRoom({ roomId }: { roomId: string }) {
                             onClick={() => setIsQuoteModalOpen(true)}
                             className="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-semibold px-3 py-1.5 rounded-lg text-xs shadow-sm transition"
                         >
-                            📋 견적/요청 상세
+                            {t('chatRoom.quoteDetailBtn')}
                         </button>
                         <button
                             onClick={() => setShowReportModal(true)}
                             className="bg-white border border-red-200 hover:bg-red-50 text-red-500 font-semibold px-3 py-1.5 rounded-lg text-xs shadow-sm transition"
                         >
-                            🚨 신고
+                            {t('chatRoom.reportBtn')}
                         </button>
                     </div>
                 </div>
@@ -179,7 +181,7 @@ export default function ChatRoom({ roomId }: { roomId: string }) {
 
                     {/* 좌측: 제안된 견적 금액 */}
                     <div>
-                        <span className="text-xs text-gray-400 block leading-none mb-0.5">제안된 견적</span>
+                        <span className="text-xs text-gray-400 block leading-none mb-0.5">{t('chatRoom.proposedQuote')}</span>
                         <span className="text-sm font-bold text-blue-600">
                             ₱ {quoteData ? quoteData.price?.toLocaleString() : mockRoomData.quoteAmount.toLocaleString()}
                         </span>
@@ -191,11 +193,11 @@ export default function ChatRoom({ roomId }: { roomId: string }) {
                             onClick={handleMatchConfirm}
                             className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-1.5 rounded-lg text-xs transition shadow-sm"
                         >
-                            🤝 서비스 진행 확정
+                            {t('chatRoom.confirmBtn')}
                         </button>
                     ) : (
                         <span className="inline-flex items-center gap-1 bg-green-50 text-green-700 font-semibold px-3 py-1.5 rounded-lg text-xs border border-green-200">
-                            ✅ 거래 성사
+                            {t('chatRoom.dealDone')}
                         </span>
                     )}
                 </div>
@@ -236,7 +238,7 @@ export default function ChatRoom({ roomId }: { roomId: string }) {
                 {/* [기획 핵심] 매칭 완료 상태 & 고객 권한을 동시에 만족할 때만 리뷰 버튼 노출 */}
                 {status === 'MATCHED' && mockRoomData.isCustomer && (
                     <button className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-white font-bold py-3 text-sm rounded-xl shadow-md transition transform hover:-translate-y-0.5 animate-bounce">
-                        ⭐ 이 고수에게 리뷰 남기기
+                        {t('chatRoom.leaveReview')}
                     </button>
                 )}
 
@@ -247,13 +249,13 @@ export default function ChatRoom({ roomId }: { roomId: string }) {
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
                         className="flex-1 bg-gray-100 border border-gray-200 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 rounded-xl px-4 py-2 outline-none text-sm transition"
-                        placeholder="외부 거래(전화번호/URL) 적발 시 즉시 제재됩니다."
+                        placeholder={t('chatRoom.inputPlaceholder')}
                     />
                     <button
                         type="submit"
                         className="bg-gray-800 hover:bg-gray-700 text-white px-4 rounded-xl font-bold text-sm transition"
                     >
-                        전송
+                        {t('chatRoom.sendBtn')}
                     </button>
                 </form>
             </div>
@@ -265,18 +267,18 @@ export default function ChatRoom({ roomId }: { roomId: string }) {
                         <div className="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                             <span className="text-red-500 text-2xl">⚠️</span>
                         </div>
-                        <h3 className="text-lg font-bold text-gray-900 mb-2">외부 거래 시도 감지</h3>
+                        <h3 className="text-lg font-bold text-gray-900 mb-2">{t('chatRoom.bypassTitle')}</h3>
                         <p className="text-red-600 text-sm font-medium mb-3">
-                            안전한 거래를 위해 연락처(숫자배열)나 외부 링크가 포함된 메시지는 절대 전송할 수 없습니다.
+                            {t('chatRoom.bypassDesc')}
                         </p>
                         <p className="text-gray-500 text-xs mb-6">
-                            반복적인 우회 시도 시 플랫폼 이용이 영구 정지됩니다.
+                            {t('chatRoom.bypassSub')}
                         </p>
                         <button
                             onClick={() => { setShowWarning(false); setMessage(''); }}
                             className="w-full bg-gray-900 hover:bg-black text-white font-bold py-3 rounded-xl transition"
                         >
-                            확인했습니다
+                            {t('chatRoom.bypassConfirm')}
                         </button>
                     </div>
                 </div>
@@ -296,12 +298,12 @@ export default function ChatRoom({ roomId }: { roomId: string }) {
             {showReportModal && (
                 <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
                     <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl">
-                        <h3 className="text-lg font-bold text-gray-900 mb-1">🚨 신고하기</h3>
-                        <p className="text-xs text-gray-400 mb-4">허위 신고 시 불이익이 있을 수 있습니다.</p>
+                        <h3 className="text-lg font-bold text-gray-900 mb-1">{t('chatRoom.reportTitle')}</h3>
+                        <p className="text-xs text-gray-400 mb-4">{t('chatRoom.reportDesc')}</p>
                         <textarea
                             value={reportReason}
                             onChange={(e) => setReportReason(e.target.value)}
-                            placeholder="신고 사유를 입력해 주세요"
+                            placeholder={t('chatRoom.reportPlaceholder')}
                             className="w-full border border-gray-200 rounded-xl p-3 text-sm h-28 resize-none focus:outline-none focus:ring-2 focus:ring-red-400"
                         />
                         <div className="flex gap-2 mt-4">
@@ -309,14 +311,14 @@ export default function ChatRoom({ roomId }: { roomId: string }) {
                                 onClick={() => { setShowReportModal(false); setReportReason(''); }}
                                 className="flex-1 border border-gray-200 text-gray-600 font-bold py-2 rounded-xl text-sm hover:bg-gray-50 transition"
                             >
-                                취소
+                                {t('chatRoom.reportCancel')}
                             </button>
                             <button
                                 onClick={handleSubmitReport}
                                 disabled={reportSubmitting || !reportReason.trim()}
                                 className="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-2 rounded-xl text-sm disabled:opacity-50 transition"
                             >
-                                {reportSubmitting ? '접수 중...' : '신고 접수'}
+                                {reportSubmitting ? t('chatRoom.reportSubmitting') : t('chatRoom.reportSubmitBtn')}
                             </button>
                         </div>
                     </div>

@@ -4,10 +4,11 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import QuoteDetailModal from '@/components/customer/QuoteDetailModal';
+import { useTranslations } from 'next-intl';
 
-function ReviewCard({ review, proName, proAvatar, onClickViewQuote }: { review: any; proName: string; proAvatar: string | null; onClickViewQuote: (review: any) => void }) {
+function ReviewCard({ review, proName, proAvatar, onClickViewQuote, t }: { review: any; proName: string; proAvatar: string | null; onClickViewQuote: (review: any) => void; t: any }) {
     const [expanded, setExpanded] = useState(false);
-    const comment = review.comment || '코멘트 없음';
+    const comment = review.comment || t('myReviews.noComment');
 
     return (
         <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 space-y-3">
@@ -15,12 +16,12 @@ function ReviewCard({ review, proName, proAvatar, onClickViewQuote }: { review: 
                 <div className="flex items-center gap-2">
                     <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden border border-gray-200">
                         {proAvatar ? (
-                            <img src={proAvatar} alt="프로필" className="w-full h-full object-cover" />
+                            <img src={proAvatar} alt="Profile" className="w-full h-full object-cover" />
                         ) : (
                             <svg className="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" /></svg>
                         )}
                     </div>
-                    <span className="font-bold text-gray-800">{proName}님에게 남긴 리뷰</span>
+                    <span className="font-bold text-gray-800">{proName}{t('myReviews.reviewFor')}</span>
                 </div>
                 <span className="text-xs text-gray-400">{new Date(review.created_at).toLocaleDateString()}</span>
             </div>
@@ -39,7 +40,7 @@ function ReviewCard({ review, proName, proAvatar, onClickViewQuote }: { review: 
             </div>
             {comment.length > 50 && (
                 <button onClick={() => setExpanded(!expanded)} className="text-xs text-blue-500 font-medium hover:underline">
-                    {expanded ? '접기 ▲' : '더보기 ▼'}
+                    {expanded ? t('myReviews.collapse') : t('myReviews.expand')}
                 </button>
             )}
 
@@ -49,7 +50,7 @@ function ReviewCard({ review, proName, proAvatar, onClickViewQuote }: { review: 
                         onClick={() => onClickViewQuote(review)}
                         className="w-full sm:w-auto justify-center text-xs font-bold text-blue-600 hover:text-blue-800 bg-blue-50 px-4 py-2 rounded-lg border border-blue-200 transition-colors flex items-center gap-1"
                     >
-                        <span>📋</span> 관련 견적 보기
+                        <span>📋</span> {t('myReviews.viewQuote')}
                     </button>
                 </div>
             )}
@@ -58,6 +59,7 @@ function ReviewCard({ review, proName, proAvatar, onClickViewQuote }: { review: 
 }
 
 export default function CustomerMyReviewsPage() {
+    const t = useTranslations();
     const router = useRouter();
     const [reviews, setReviews] = useState<any[]>([]);
     const [proNames, setProNames] = useState<Record<string, string>>({});
@@ -127,7 +129,7 @@ export default function CustomerMyReviewsPage() {
                         }
                     }
                 } catch (e) {
-                    console.warn('견적 데이터 패칭 실패, 리뷰 기본 데이터만 렌더링합니다:', e);
+                    console.warn(t('myReviews.fetchWarning'), e);
                 }
 
                 setReviews(enrichedReviews);
@@ -142,7 +144,7 @@ export default function CustomerMyReviewsPage() {
                         .select('name, nickname, avatar_url')
                         .eq('user_id', pid)
                         .single();
-                    nameMap[pid] = userData?.nickname || userData?.name || '알 수 없는 고수';
+                    nameMap[pid] = userData?.nickname || userData?.name || t('myReviews.unknownPro');
                     avatarMap[pid] = userData?.avatar_url || null;
                 }
                 setProNames(nameMap);
@@ -155,20 +157,20 @@ export default function CustomerMyReviewsPage() {
         fetchReviews();
     }, [router]);
 
-    if (loading) return <div className="p-10 text-center text-gray-500">불러오는 중...</div>;
+    if (loading) return <div className="p-10 text-center text-gray-500">{t('myReviews.loading')}</div>;
 
     return (
         <div className="min-h-screen bg-gray-50 p-4 pb-24 space-y-4">
             <div className="flex items-center gap-3 bg-white p-4 rounded-xl shadow-sm border border-gray-100 sticky top-0 z-10">
                 <button onClick={() => router.back()} className="text-gray-500 hover:text-gray-800 text-xl font-bold">←</button>
-                <h1 className="text-xl font-bold text-gray-800">✏️ 내가 쓴 리뷰</h1>
+                <h1 className="text-xl font-bold text-gray-800">{t('myReviews.title')}</h1>
             </div>
 
             {reviews.length === 0 ? (
                 <div className="text-center p-16 bg-white rounded-2xl shadow-sm border border-gray-100">
                     <div className="text-4xl mb-4">📝</div>
-                    <p className="text-gray-500 font-medium">아직 작성한 리뷰가 없습니다.</p>
-                    <p className="text-xs text-gray-400 mt-2">매칭이 완료된 고수에게 리뷰를 남겨보세요!</p>
+                    <p className="text-gray-500 font-medium">{t('myReviews.noReviews')}</p>
+                    <p className="text-xs text-gray-400 mt-2">{t('myReviews.noReviewsSub')}</p>
                 </div>
             ) : (
                 <div className="space-y-3">
@@ -176,7 +178,7 @@ export default function CustomerMyReviewsPage() {
                         <ReviewCard
                             key={review.review_id}
                             review={review}
-                            proName={proNames[review.pro_id] || '고수'}
+                            proName={proNames[review.pro_id] || t('myReviews.unknownPro')}
                             proAvatar={proAvatars[review.pro_id] || null} // 추가된 줄
                             onClickViewQuote={(r) => {
                                 setQuoteDetailModal({
@@ -185,6 +187,7 @@ export default function CustomerMyReviewsPage() {
                                     request: r.request
                                 });
                             }}
+                            t={t}
                         />
                     ))}
                 </div>

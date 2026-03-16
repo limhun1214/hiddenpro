@@ -10,6 +10,7 @@ import BrandSidePanel from '@/components/common/BrandSidePanel';
 
 import { NavStateContext } from '@/context/NavStateContext';
 import { ToastProvider } from '@/components/ui/Toast';
+import { useTranslations } from 'next-intl';
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
@@ -43,6 +44,9 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     const [isCheckingAuth, setIsCheckingAuth] = useState<boolean>(true);
     const [isProProfileComplete, setIsProProfileComplete] = useState(true);
     const [showProfileIncompleteModal, setShowProfileIncompleteModal] = useState(false);
+
+    const t = useTranslations();
+    const [showLoginModal, setShowLoginModal] = useState(false);
 
     const [userId, setUserId] = useState<string | null>(null);
 
@@ -387,19 +391,19 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     }, [userId]);
 
     const customerNav = [
-        { label: '견적요청', href: '/request', icon: '📝' },
-        { label: '받은견적', href: '/quotes/received', icon: '📩' },
-        { label: '채팅', href: '/chat', icon: '💬' },
-        { label: '알림', href: '/notifications', icon: '🔔' },
-        { label: '고객 프로필', href: '/profile', icon: '👤' },
+        { label: t('pcTopNav.requestQuote'), href: '/request', icon: '📝', key: 'request' },
+        { label: t('pcTopNav.receivedQuotes'), href: '/quotes/received', icon: '📩', key: 'quotes' },
+        { label: t('pcTopNav.chat'), href: '/chat', icon: '💬', key: 'chat' },
+        { label: t('pcTopNav.notifications'), href: '/notifications', icon: '🔔', key: 'notifications' },
+        { label: t('pcTopNav.customerProfile'), href: '/profile', icon: '👤', key: 'profile' },
     ];
 
     const proNav = [
-        { label: '받은요청', href: '/pro/requests', icon: '📋' },
-        { label: '채팅', href: '/chat', icon: '💬' },
-        { label: '지갑', href: '/pro/wallet', icon: '💰' },
-        { label: '알림', href: '/notifications', icon: '🔔' },
-        { label: '고수 프로필', href: '/profile', icon: '👤' },
+        { label: t('pcTopNav.requests'), href: '/pro/requests', icon: '📋', key: 'requests' },
+        { label: t('pcTopNav.chat'), href: '/chat', icon: '💬', key: 'chat' },
+        { label: t('pcTopNav.wallet'), href: '/pro/wallet', icon: '💰', key: 'wallet' },
+        { label: t('pcTopNav.notifications'), href: '/notifications', icon: '🔔', key: 'notifications' },
+        { label: t('pcTopNav.proProfile'), href: '/profile', icon: '👤', key: 'profile' },
     ];
 
     const proProfileRequiredPaths = ['/pro/requests', '/chat', '/pro/wallet', '/notifications'];
@@ -456,14 +460,13 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                                                 const isActive = currentPath.startsWith(item.href) && item.href !== '/' || currentPath === item.href;
 
                                                 return (
-                                                    <li key={item.label} className="flex-1">
+                                                    <li key={item.key} className="flex-1">
                                                         <Link
                                                             href={item.href}
                                                             onClick={(e) => {
                                                                 if (!isCheckingAuth && !userId && item.href !== '/request') {
                                                                     e.preventDefault();
-                                                                    alert('로그인이 필요한 서비스입니다.');
-                                                                    router.push('/?login=true');
+                                                                    setShowLoginModal(true);
                                                                     return;
                                                                 }
                                                                 if (isProUser && !isProProfileComplete && proProfileRequiredPaths.some(p => item.href.startsWith(p))) {
@@ -479,35 +482,35 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                                                             <div className="relative text-xl">
                                                                 {item.icon}
 
-                                                                {item.label === '알림' && unreadNotifsCount > 0 && (
+                                                                {item.key === 'notifications' && unreadNotifsCount > 0 && (
                                                                     <span className="absolute -top-1 -right-2 flex h-3 w-3">
                                                                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                                                                         <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-white"></span>
                                                                     </span>
                                                                 )}
 
-                                                                {item.label === '채팅' && unreadChatsCount > 0 && (
+                                                                {item.key === 'chat' && unreadChatsCount > 0 && (
                                                                     <span className="absolute -top-1 -right-2 flex h-3 w-3">
                                                                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                                                                         <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-white"></span>
                                                                     </span>
                                                                 )}
 
-                                                                {item.label === '받은견적' && hasNewQuotes && (
+                                                                {item.key === 'quotes' && hasNewQuotes && (
                                                                     <span className="absolute -top-1 -right-2 flex h-3 w-3">
                                                                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                                                                         <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-white"></span>
                                                                     </span>
                                                                 )}
 
-                                                                {item.label === '받은요청' && hasNewRequests && (
+                                                                {item.key === 'requests' && hasNewRequests && (
                                                                     <span className="absolute -top-1 -right-2 flex h-3 w-3">
                                                                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                                                                         <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-white"></span>
                                                                     </span>
                                                                 )}
 
-                                                                {isProUser && item.label === '지갑' && (
+                                                                {isProUser && item.key === 'wallet' && (
                                                                     <span className="absolute -bottom-1 -right-8 flex h-4 px-1 rounded-full bg-yellow-400 items-center justify-center text-[10px] font-black text-white border-2 border-white shadow-sm whitespace-nowrap">
                                                                         {walletBalance !== null ? walletBalance.toLocaleString() : 'C'}
                                                                     </span>
@@ -531,6 +534,38 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                     </div>
                     {isSpecialPage && !hideFooter && <GlobalFooter />}
 
+                    {showLoginModal && (
+                        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                            <div className="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
+                                <div className="bg-gradient-to-r from-blue-500 to-indigo-500 p-6 text-center">
+                                    <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto shadow-lg">
+                                        <span className="text-3xl">🔐</span>
+                                    </div>
+                                </div>
+                                <div className="p-6 text-center">
+                                    <h3 className="text-lg font-bold text-gray-900 mb-2">{t('common.loginRequiredTitle')}</h3>
+                                    <p className="text-sm text-gray-500 leading-relaxed mb-6 whitespace-pre-line">
+                                        {t('common.loginRequiredDesc')}
+                                    </p>
+                                    <div className="flex gap-3">
+                                        <button
+                                            onClick={() => setShowLoginModal(false)}
+                                            className="flex-1 py-3 rounded-xl border border-gray-200 text-gray-600 font-bold text-sm hover:bg-gray-50 transition"
+                                        >
+                                            {t('common.loginRequiredCancel')}
+                                        </button>
+                                        <button
+                                            onClick={() => { setShowLoginModal(false); router.push('/?login=true'); }}
+                                            className="flex-[2] py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-bold rounded-xl hover:from-blue-600 hover:to-indigo-600 transition-all shadow-md active:scale-[0.98] text-sm"
+                                        >
+                                            {t('common.loginRequiredBtn')}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {showProfileIncompleteModal && (
                         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
                             <div className="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
@@ -543,26 +578,26 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 
                                 {/* 본문 */}
                                 <div className="p-6 text-center">
-                                    <h3 className="text-lg font-bold text-gray-900 mb-2">프로필을 완성해주세요</h3>
-                                    <p className="text-sm text-gray-500 leading-relaxed mb-4">
-                                        아래 항목을 모두 작성해야<br />서비스를 이용할 수 있어요.
+                                    <h3 className="text-lg font-bold text-gray-900 mb-2">{t('common.profileIncompleteTitle')}</h3>
+                                    <p className="text-sm text-gray-500 leading-relaxed mb-4 whitespace-pre-line">
+                                        {t('common.profileIncompleteDesc')}
                                     </p>
 
                                     <div className="bg-gray-50 rounded-xl p-4 text-left space-y-2 mb-6">
                                         <div className="flex items-center gap-2 text-sm text-gray-700">
-                                            <span className="text-base">📱</span><span>전화번호 인증</span>
+                                            <span className="text-base">📱</span><span>{t('common.profileIncompletePhone')}</span>
                                         </div>
                                         <div className="flex items-center gap-2 text-sm text-gray-700">
-                                            <span className="text-base">✏️</span><span>한 줄 소개</span>
+                                            <span className="text-base">✏️</span><span>{t('common.profileIncompleteIntro')}</span>
                                         </div>
                                         <div className="flex items-center gap-2 text-sm text-gray-700">
-                                            <span className="text-base">📝</span><span>상세 소개</span>
+                                            <span className="text-base">📝</span><span>{t('common.profileIncompleteDetail')}</span>
                                         </div>
                                         <div className="flex items-center gap-2 text-sm text-gray-700">
-                                            <span className="text-base">📍</span><span>활동 지역</span>
+                                            <span className="text-base">📍</span><span>{t('common.profileIncompleteRegion')}</span>
                                         </div>
                                         <div className="flex items-center gap-2 text-sm text-gray-700">
-                                            <span className="text-base">🔧</span><span>제공 서비스 (1개 이상)</span>
+                                            <span className="text-base">🔧</span><span>{t('common.profileIncompleteServices')}</span>
                                         </div>
                                     </div>
 
@@ -570,7 +605,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                                         onClick={() => { setShowProfileIncompleteModal(false); router.push('/profile'); }}
                                         className="w-full py-3.5 bg-gradient-to-r from-yellow-400 to-orange-400 text-white font-bold rounded-xl hover:from-yellow-500 hover:to-orange-500 transition-all shadow-md active:scale-[0.98]"
                                     >
-                                        프로필 작성하러 가기
+                                        {t('common.profileIncompleteBtn')}
                                     </button>
                                 </div>
                             </div>

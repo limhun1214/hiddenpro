@@ -13,6 +13,7 @@
     "@supabase/supabase-js": "^2.43.4",
     "dotenv": "^17.3.1",
     "next": "14.2.3",
+    "next-intl": "^4.8.3",
     "pg": "^8.19.0",
     "react": "^18",
     "react-dom": "^18"

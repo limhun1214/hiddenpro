@@ -1,3 +1,22 @@
+[2026-03-16] CLAUDE.md PHASE 11 i18n 규칙 추가 완료 — next-intl 기반 신규 컴포넌트/페이지 작성 시 번역 키 의무화 + 기존 네임스페이스 목록 + 인프라 파일 위치 + 신규 언어 추가 3단계 정의 / CLAUDE.md / DB변경 없음
+[2026-03-16] i18n: PCTopNav next-intl 연동 완료 (pcTopNav 네임스페이스 8키) — customerItems/proItems t() 연동 + 배지 조건 7곳 동기화 / frontend/src/components/common/PCTopNav.tsx, frontend/messages/en.json, frontend/messages/ko.json / DB변경 없음
+[2026-03-16] i18n: PCTopNav nav label 영어 직치환 완료 + profile/page.tsx joinDate locale ko-KR→en-US 교체 / frontend/src/components/common/PCTopNav.tsx, frontend/src/app/profile/page.tsx / DB변경 없음
+[2026-03-16] i18n: app/page.tsx (랜딩) next-intl 연동 완료 (landing 네임스페이스 52키) — placeholderTexts 영어직치환 + categoryUI desc 6개 영어직치환 + fallback + alert + 배너 + 헤더 + 히어로 + 리뷰 + 신뢰도 + 고수배너 + 모달 전체 / frontend/src/app/page.tsx, frontend/messages/en.json, frontend/messages/ko.json / DB변경 없음
+[2026-03-16] i18n: auth/complete/page.tsx next-intl 연동 완료 (authComplete 네임스페이스 9키) — setStatus 4개 + 역할충돌 msg + sessionStorage 2개 + JSX fallback / frontend/src/app/auth/complete/page.tsx, frontend/messages/en.json, frontend/messages/ko.json / DB변경 없음
+[2026-03-16] i18n: chat/[room_id]/page.tsx next-intl 연동 완료 (chatRoom 네임스페이스 51키) — showToast 4개 + alert 2개 + locale 교체 2곳 + JSX 텍스트 전체 / frontend/src/app/chat/[room_id]/page.tsx, frontend/messages/en.json, frontend/messages/ko.json / DB변경 없음
+[2026-03-15] i18n: chat/page.tsx next-intl 연동 완료 (chatList 네임스페이스 20키) — formatChatTime + userMap/mappedRooms fallback + lastMsgMap + JSX 텍스트 전체 / frontend/src/app/chat/page.tsx, frontend/messages/en.json, frontend/messages/ko.json / DB변경 없음
+[2026-03-15] i18n: Toast next-intl 연동 완료 (toast 네임스페이스 2키) — aria-label 닫기 + 확인 버튼 t() 연동 / frontend/src/components/ui/Toast.tsx, frontend/messages/en.json, frontend/messages/ko.json / DB변경 없음
+[2026-03-15] i18n: ProBiddingDetail 전체 next-intl 연동 완료 (proBidding 네임스페이스 78키) — showToast 14개 + JSX 텍스트 40개 + labelMap 19개 + 플로팅버튼 삼항 전체 / frontend/src/components/pro/ProBiddingDetail.tsx, frontend/messages/en.json, frontend/messages/ko.json / DB변경 없음
+[2026-03-15] i18n: QuoteDetailModal next-intl 연동 완료 (quoteModal 네임스페이스 18키) + labelMap 전체 영문 직변환 (~140개 키) / frontend/src/components/customer/QuoteDetailModal.tsx, frontend/messages/en.json, frontend/messages/ko.json / DB변경 없음
+[2026-03-15] i18n: ProProfileDetailModal next-intl 연동 완료 (proProfileModal 네임스페이스 20키) / frontend/src/components/customer/ProProfileDetailModal.tsx, frontend/messages/en.json, frontend/messages/ko.json / DB변경 없음
+[2026-03-15] i18n: DynamicRequestForm 전체 next-intl 연동 완료 — STEP 배열 70+개 영문 직변환(PART 1) + JSX UI t() 연동 22키 (requestForm 네임스페이스 22키) / frontend/src/components/customer/DynamicRequestForm.tsx, frontend/messages/en.json, frontend/messages/ko.json / DB변경 없음
+[2026-03-15] i18n: ChatRoom next-intl 연동 완료 (chatRoom 네임스페이스 25키) / frontend/src/components/common/ChatRoom.tsx, frontend/messages/en.json, frontend/messages/ko.json / DB변경 없음
+[2026-03-15] i18n: BrandSidePanel next-intl 연동 완료 (brandPanel 네임스페이스 7키) / frontend/src/components/common/BrandSidePanel.tsx, frontend/messages/en.json, frontend/messages/ko.json / DB변경 없음
+[2026-03-15] i18n: GlobalFooter next-intl 연동 완료 (footer 네임스페이스 3키) / frontend/src/components/common/GlobalFooter.tsx, frontend/messages/en.json, frontend/messages/ko.json / DB변경 없음
+[2026-03-15] i18n: CustomerQuotesClient 전체 next-intl 연동 완료 (customerQuotes 네임스페이스 73키) / frontend/src/app/quotes/received/CustomerQuotesClient.tsx, frontend/messages/en.json, frontend/messages/ko.json / DB변경 없음
+[2026-03-15] i18n: ProRequestListClient 전체 next-intl 연동 완료 (proRequestList 네임스페이스 36키) / frontend/src/app/pro/requests/ProRequestListClient.tsx, frontend/messages/en.json, frontend/messages/ko.json / DB변경 없음
+[2026-03-15] i18n: wallet 페이지 전체 next-intl 연동 완료 / frontend/src/app/pro/wallet/page.tsx, frontend/messages/en.json, frontend/messages/ko.json / DB변경 없음
+[2026-03-15] i18n: profile 페이지 전체 next-intl 연동 완료 (ProfilePage, ProfileHeader, CustomerProfile, CustomerSupportSection, ProProfile) / frontend/src/app/profile/page.tsx, frontend/messages/en.json, frontend/messages/ko.json / DB변경 없음
 [2026-03-15] 견적 요청 플로우 신규 서비스 전용 질문 4개 추가 (수영 레슨 / 댄스·줌바 레슨 / 요리·베이킹 레슨 / 피아노·기타·보컬 레슨) / frontend/src/components/customer/DynamicRequestForm.tsx / DB변경 없음
 [2026-03-15] 견적 요청 플로우 신규 서비스 전용 질문 2개 추가 (IELTS/OET/TOEFL 준비 / PRC 보드 시험 준비) / frontend/src/components/customer/DynamicRequestForm.tsx / DB변경 없음
 [2026-03-15] 견적 요청 플로우 신규 서비스 전용 질문 3개 추가 (BPO/콜센터 취업 준비 / 가상 비서 실무 교육 / 프로그래밍/코딩 레슨) / frontend/src/components/customer/DynamicRequestForm.tsx / DB변경 없음

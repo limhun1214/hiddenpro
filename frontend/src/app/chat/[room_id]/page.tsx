@@ -5,10 +5,12 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/components/ui/Toast';
 import QuoteDetailModal from '@/components/customer/QuoteDetailModal';
+import { useTranslations } from 'next-intl';
 
 export const runtime = 'edge';
 
 export default function ChatRoomPage({ params }: { params: { room_id: string } }) {
+    const t = useTranslations();
     const router = useRouter();
     const { showToast } = useToast();
     const [messages, setMessages] = useState<any[]>([]);
@@ -157,7 +159,7 @@ export default function ChatRoomPage({ params }: { params: { room_id: string } }
                             .single();
 
                         if (partnerUserData) {
-                            setProName((partnerUserData.nickname && partnerUserData.nickname.trim() !== '') ? partnerUserData.nickname : (partnerUserData.name || '알 수 없음'));
+                            setProName((partnerUserData.nickname && partnerUserData.nickname.trim() !== '') ? partnerUserData.nickname : (partnerUserData.name || t('common.unknown')));
                             setPartnerAvatar(partnerUserData.avatar_url);
                         }
 
@@ -402,10 +404,10 @@ export default function ChatRoomPage({ params }: { params: { room_id: string } }
         if (isSuspended || isBlockedInRoom || isRoomClosed) {
             showToast(
                 isSuspended
-                    ? '계정이 정지되어 메시지를 전송할 수 없습니다.'
+                    ? t('chatRoom.suspendedToast')
                     : isRoomClosed
-                    ? '관리자 조치로 이 채팅방이 종료되었습니다.'
-                    : '이 채팅방에서 제재 처리되어 메시지를 전송할 수 없습니다.',
+                    ? t('chatRoom.roomClosedToast')
+                    : t('chatRoom.blockedToast'),
                 'error',
                 true
             );
@@ -450,7 +452,7 @@ export default function ChatRoomPage({ params }: { params: { room_id: string } }
 
         if (error) {
             console.error("메시지 전송 실패:", error);
-            alert("전송 실패: " + error.message);
+            alert(t('chatRoom.sendError') + error.message);
             // 실패 시 로컬에서 미리 그려둔 메시지만 제거 (롤백 복원)
             setMessages(prev => prev.filter(msg => msg.id !== clientMessageId));
         } else {
@@ -492,7 +494,7 @@ export default function ChatRoomPage({ params }: { params: { room_id: string } }
             setShowMatchSuccessModal(true);
         } catch (error: any) {
             console.error("매칭 확정 에러:", error);
-            alert("매칭 확정 중 오류가 발생했습니다: " + error.message);
+            alert(t('chatRoom.matchError') + error.message);
         }
     };
 
@@ -511,12 +513,12 @@ export default function ChatRoomPage({ params }: { params: { room_id: string } }
         });
         setReportSubmitting(false);
         if (error) {
-            showToast('신고 접수 중 오류가 발생했습니다.', 'error');
+            showToast(t('chatRoom.reportError'), 'error');
         } else {
             setShowReportModal(false);
             setReportReason('');
             setReportStatus('pending');
-            showToast('신고가 접수되었습니다. 관리자가 검토 후 조치하겠습니다.', 'success', true);
+            showToast(t('chatRoom.reportSuccess'), 'success', true);
         }
     };
 
@@ -597,13 +599,13 @@ export default function ChatRoomPage({ params }: { params: { room_id: string } }
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5 flex-wrap">
                             <h1 className="text-base font-bold text-gray-800 truncate">
-                                {proName ? `${proName}님` : '대화방'}
+                                {proName ? `${proName}${t('chatRoom.proSuffix')}` : t('chatRoom.defaultRoom')}
                             </h1>
                             {proPhoneVerified && (
-                                <span className="inline-flex items-center text-[10px] bg-green-50 text-green-700 font-bold px-1.5 py-0.5 rounded-full border border-green-200 whitespace-nowrap flex-shrink-0">✅ 전화번호 인증</span>
+                                <span className="inline-flex items-center text-[10px] bg-green-50 text-green-700 font-bold px-1.5 py-0.5 rounded-full border border-green-200 whitespace-nowrap flex-shrink-0">{t('chatRoom.phoneVerified')}</span>
                             )}
                             {proFacebookUrl && (
-                                <span className="inline-flex items-center text-[10px] bg-blue-50 text-blue-700 font-bold px-1.5 py-0.5 rounded-full border border-blue-200 whitespace-nowrap flex-shrink-0">🔵 Facebook 연동</span>
+                                <span className="inline-flex items-center text-[10px] bg-blue-50 text-blue-700 font-bold px-1.5 py-0.5 rounded-full border border-blue-200 whitespace-nowrap flex-shrink-0">{t('chatRoom.facebookLinked')}</span>
                             )}
                         </div>
                     </div>
@@ -614,24 +616,24 @@ export default function ChatRoomPage({ params }: { params: { room_id: string } }
                             onClick={() => setIsQuoteModalOpen(true)}
                             className="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-semibold px-2.5 py-1 rounded-lg text-[11px] shadow-sm transition"
                         >
-                            📋 견적/요청 상세
+                            {t('chatRoom.quoteDetailBtn')}
                         </button>
                         {reportStatus === 'none' && (
                             <button
                                 onClick={() => setShowReportModal(true)}
                                 className="text-[11px] text-red-400 hover:text-red-600 border border-red-200 hover:border-red-400 px-2.5 py-1 rounded-lg transition"
                             >
-                                🚨 신고
+                                {t('chatRoom.reportBtn')}
                             </button>
                         )}
                         {reportStatus === 'pending' && (
                             <span className="text-[11px] text-yellow-500 border border-yellow-300 px-2.5 py-1 rounded-lg">
-                                🕐 신고 접수중
+                                {t('chatRoom.reportPending')}
                             </span>
                         )}
                         {reportStatus === 'reviewed' && (
                             <span className="text-[11px] text-green-500 border border-green-300 px-2.5 py-1 rounded-lg">
-                                ✅ 신고 처리완료
+                                {t('chatRoom.reportReviewed')}
                             </span>
                         )}
                     </div>
@@ -640,25 +642,25 @@ export default function ChatRoomPage({ params }: { params: { room_id: string } }
                 {/* 2행: 견적 금액(좌) + 상태 버튼/배지(우) */}
                 <div className="flex items-center justify-between mt-2.5 pt-2.5 border-t border-gray-100">
                     <div>
-                        <span className="text-[10px] text-gray-400 block leading-none mb-0.5">제안된 견적</span>
+                        <span className="text-[10px] text-gray-400 block leading-none mb-0.5">{t('chatRoom.proposedQuote')}</span>
                         <span className="text-sm font-bold text-blue-600">
-                            {quotePrice !== null ? `₱ ${quotePrice.toLocaleString()}` : '금액 미정'}
+                            {quotePrice !== null ? `₱ ${quotePrice.toLocaleString()}` : t('chatRoom.noPrice')}
                         </span>
                     </div>
                     {(roomStatus === 'MATCHED' || requestData?.status === 'MATCHED') ? (
                         <span className="bg-green-100 text-green-700 text-xs font-bold py-1 px-2.5 rounded-lg">
-                            {roomStatus === 'MATCHED' ? '✅ 서비스 확정' : '❌ 다른 고수 확정됨'}
+                            {roomStatus === 'MATCHED' ? t('chatRoom.matchConfirmed') : t('chatRoom.matchedOther')}
                         </span>
                     ) : userRole === 'CUSTOMER' ? (
                         <button
                             onClick={() => setShowConfirmModal(true)}
                             className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-1.5 px-3 rounded-lg shadow-sm transition"
                         >
-                            서비스 진행 확정
+                            {t('chatRoom.confirmBtn')}
                         </button>
                     ) : (
                         <span className="bg-gray-100 text-gray-500 text-xs font-bold py-1 px-2.5 rounded-lg border border-gray-200">
-                            ⏳ 고객의 확정 대기 중
+                            {t('chatRoom.waitingConfirm')}
                         </span>
                     )}
                 </div>
@@ -675,7 +677,7 @@ export default function ChatRoomPage({ params }: { params: { room_id: string } }
                         }}
                         className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg transition flex items-center gap-1.5"
                     >
-                        ↓ 새 메시지가 있습니다
+                        {t('chatRoom.newMessage')}
                     </button>
                 </div>
             )}
@@ -695,18 +697,18 @@ export default function ChatRoomPage({ params }: { params: { room_id: string } }
                 {/* 과거 메시지 로딩 인디케이터 */}
                 {isLoadingMore && (
                     <div className="flex justify-center py-2">
-                        <span className="text-xs text-gray-400">메시지 불러오는 중...</span>
+                        <span className="text-xs text-gray-400">{t('chatRoom.loadingMore')}</span>
                     </div>
                 )}
                 {!hasMore && messages.length > 0 && (
                     <div className="flex justify-center py-2">
-                        <span className="text-xs text-gray-300">대화 시작 지점입니다.</span>
+                        <span className="text-xs text-gray-300">{t('chatRoom.startOfChat')}</span>
                     </div>
                 )}
                 {isRoomClosed && (
                     <div className="flex justify-center my-4">
                         <div className="bg-gray-700/50 border border-gray-500/30 text-gray-400 text-xs px-4 py-2 rounded-xl text-center">
-                            🔒 관리자 조치로 이 채팅방이 종료되었습니다. 거래는 정상적으로 유지됩니다.
+                            {t('chatRoom.roomClosed')}
                         </div>
                     </div>
                 )}
@@ -715,19 +717,19 @@ export default function ChatRoomPage({ params }: { params: { room_id: string } }
                         <svg className="w-16 h-16 mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                         </svg>
-                        <p className="text-sm">서비스 진행이 성사되었습니다.</p>
-                        <p className="text-sm">첫 메시지를 보내 대화를 시작해보세요!</p>
+                        <p className="text-sm">{t('chatRoom.emptyChat1')}</p>
+                        <p className="text-sm">{t('chatRoom.emptyChat2')}</p>
                     </div>
                 ) : (
                     messages.map((msg, index) => {
                         // 날짜 구분선 렌더링 조건 계산 (한국어 형식: YYYY년 M월 D일 dddd)
-                        const currentDateStr = new Date(msg.created_at).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
+                        const currentDateStr = new Date(msg.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
                         let showDateDivider = false;
 
                         if (index === 0) {
                             showDateDivider = true;
                         } else {
-                            const prevDateStr = new Date(messages[index - 1].created_at).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
+                            const prevDateStr = new Date(messages[index - 1].created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
                             if (currentDateStr !== prevDateStr) showDateDivider = true;
                         }
 
@@ -792,12 +794,12 @@ export default function ChatRoomPage({ params }: { params: { room_id: string } }
                         onChange={(e) => setNewMessage(e.target.value)}
                         placeholder={
                             isSuspended
-                                ? '계정 정지로 인해 메시지를 보낼 수 없습니다.'
+                                ? t('chatRoom.suspendedPlaceholder')
                                 : isRoomClosed
-                                ? '관리자 조치로 이 채팅방이 종료되었습니다.'
+                                ? t('chatRoom.roomClosedPlaceholder')
                                 : isBlockedInRoom
-                                ? '이 채팅방에서 제재 처리되어 메시지를 보낼 수 없습니다.'
-                                : '메시지를 입력하세요...'
+                                ? t('chatRoom.blockedPlaceholder')
+                                : t('chatRoom.messagePlaceholder')
                         }
                         disabled={isSuspended || isBlockedInRoom || isRoomClosed}
                         className="flex-1 bg-gray-50 border border-gray-200 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition disabled:opacity-50 disabled:cursor-not-allowed"
@@ -830,15 +832,15 @@ export default function ChatRoomPage({ params }: { params: { room_id: string } }
             {showReportModal && (
                 <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
                     <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl">
-                        <h3 className="text-lg font-bold text-gray-900 mb-1">🚨 신고하기</h3>
-                        <p className="text-xs text-gray-400 mb-4">허위 신고 시 불이익이 있을 수 있습니다.</p>
+                        <h3 className="text-lg font-bold text-gray-900 mb-1">{t('chatRoom.reportTitle')}</h3>
+                        <p className="text-xs text-gray-400 mb-4">{t('chatRoom.reportDesc')}</p>
                         <div className="bg-yellow-500/10 border border-yellow-400/30 text-yellow-400 text-xs px-3 py-2 rounded-lg mb-3">
-                            ⚠️ 신고 접수 후 관리자 검토 결과 제재가 확정되면, 양측 모두 이 채팅방에서 대화가 불가능해집니다. 거래는 정상 유지됩니다.
+                            {t('chatRoom.reportWarning')}
                         </div>
                         <textarea
                             value={reportReason}
                             onChange={(e) => setReportReason(e.target.value)}
-                            placeholder="신고 사유를 입력해 주세요 (예: 욕설, 사기 시도, 노쇼 등)"
+                            placeholder={t('chatRoom.reportPlaceholder')}
                             className="w-full border border-gray-200 rounded-xl p-3 text-sm h-28 resize-none focus:outline-none focus:ring-2 focus:ring-red-400"
                         />
                         <div className="flex gap-2 mt-4">
@@ -846,14 +848,14 @@ export default function ChatRoomPage({ params }: { params: { room_id: string } }
                                 onClick={() => { setShowReportModal(false); setReportReason(''); }}
                                 className="flex-1 border border-gray-200 text-gray-600 font-bold py-2 rounded-xl text-sm hover:bg-gray-50 transition"
                             >
-                                취소
+                                {t('chatRoom.reportCancel')}
                             </button>
                             <button
                                 onClick={handleSubmitReport}
                                 disabled={reportSubmitting || !reportReason.trim()}
                                 className="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-2 rounded-xl text-sm disabled:opacity-50 transition"
                             >
-                                {reportSubmitting ? '접수 중...' : '신고 접수'}
+                                {reportSubmitting ? t('chatRoom.reportSubmitting') : t('chatRoom.reportSubmitBtn')}
                             </button>
                         </div>
                     </div>
@@ -867,16 +869,15 @@ export default function ChatRoomPage({ params }: { params: { room_id: string } }
                         <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                             <span className="text-red-500 text-3xl">🚫</span>
                         </div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">계정이 정지되었습니다</h3>
+                        <h3 className="text-xl font-bold text-gray-900 mb-2">{t('chatRoom.suspendedTitle')}</h3>
                         <p className="text-sm text-gray-500 mb-6">
-                            이용 약관 위반으로 계정이 정지 처리되었습니다.<br />
-                            문의사항은 고객센터로 연락해 주세요.
+                            {t('chatRoom.suspendedDesc')}
                         </p>
                         <button
                             onClick={() => router.push('/')}
                             className="w-full bg-gray-900 text-white font-bold py-3 rounded-xl text-sm hover:bg-black transition"
                         >
-                            메인으로 이동
+                            {t('chatRoom.suspendedBtn')}
                         </button>
                     </div>
                 </div>
@@ -888,15 +889,15 @@ export default function ChatRoomPage({ params }: { params: { room_id: string } }
                         <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                             <span className="text-3xl">🎉</span>
                         </div>
-                        <h3 className="text-lg font-bold text-gray-900 text-center mb-2">서비스 진행 확정</h3>
-                        <p className="text-sm text-gray-500 text-center mb-1">정말로 이 고수님과 서비스를 확정하시겠습니까?</p>
-                        <p className="text-xs text-red-400 text-center mb-6">확정 이후에는 번복할 수 없으며<br />다른 고수들의 견적은 모두 거절 처리됩니다.</p>
+                        <h3 className="text-lg font-bold text-gray-900 text-center mb-2">{t('chatRoom.confirmModalTitle')}</h3>
+                        <p className="text-sm text-gray-500 text-center mb-1">{t('chatRoom.confirmModalDesc')}</p>
+                        <p className="text-xs text-red-400 text-center mb-6">{t('chatRoom.confirmModalWarn')}</p>
                         <div className="flex gap-2">
                             <button
                                 onClick={() => setShowConfirmModal(false)}
                                 className="flex-1 border border-gray-200 text-gray-600 font-bold py-3 rounded-xl text-sm hover:bg-gray-50 transition"
                             >
-                                취소
+                                {t('chatRoom.confirmCancel')}
                             </button>
                             <button
                                 onClick={() => {
@@ -905,7 +906,7 @@ export default function ChatRoomPage({ params }: { params: { room_id: string } }
                                 }}
                                 className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-sm transition shadow-sm"
                             >
-                                확정하기
+                                {t('chatRoom.confirmBtn2')}
                             </button>
                         </div>
                     </div>
@@ -918,10 +919,9 @@ export default function ChatRoomPage({ params }: { params: { room_id: string } }
                         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                             <span className="text-4xl">🎉</span>
                         </div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">매칭 확정 완료!</h3>
+                        <h3 className="text-xl font-bold text-gray-900 mb-2">{t('chatRoom.successTitle')}</h3>
                         <p className="text-sm text-gray-500 mb-6">
-                            고수님과 최종 매칭이 확정되었습니다.<br />
-                            지금 바로 일정을 조율해보세요!
+                            {t('chatRoom.successDesc')}
                         </p>
                         <button
                             onClick={() => {
@@ -930,7 +930,7 @@ export default function ChatRoomPage({ params }: { params: { room_id: string } }
                             }}
                             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-sm transition shadow-sm"
                         >
-                            확인
+                            {t('chatRoom.successBtn')}
                         </button>
                     </div>
                 </div>

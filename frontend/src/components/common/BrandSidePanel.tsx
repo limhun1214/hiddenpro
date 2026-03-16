@@ -1,8 +1,10 @@
 "use client";
 
 import React from 'react';
+import { useTranslations } from 'next-intl';
 
 export default function BrandSidePanel() {
+    const t = useTranslations();
     return (
         <div className="hidden lg:flex w-[350px] shrink-0 flex-col justify-center sticky top-0 h-[100dvh] bg-[#0D1629] text-white p-8 lg:px-10 overflow-hidden relative border-r border-gray-800">
             <div className="relative z-10 w-full max-w-lg">
@@ -15,14 +17,13 @@ export default function BrandSidePanel() {
                 </div>
 
                 <h1 className="text-3xl font-extrabold text-white tracking-tight leading-[1.5] mb-6 break-keep">
-                    완벽한 전문가를<br />
+                    {t('brandPanel.headline1')}<br />
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">
-                        만나보세요.
+                        {t('brandPanel.headline2')}
                     </span>
                 </h1>
                 <p className="text-sm text-gray-400 leading-[1.6] mb-12 break-keep">
-                    수수료 거품 없이, 검증된 마스터가<br />
-                    고객님의 일정에 맞춰 스마트하게 매칭됩니다.
+                    {t('brandPanel.subtext').split('\n').map((line, i) => <React.Fragment key={i}>{line}{i === 0 && <br />}</React.Fragment>)}
                 </p>
 
                 {/* Feature Micro-copy */}
@@ -32,8 +33,8 @@ export default function BrandSidePanel() {
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                         </div>
                         <div>
-                            <h4 className="font-bold text-white text-[15px]">100% 신원 검증 프루핑</h4>
-                            <p className="text-sm text-gray-400 mt-1">신분증 및 연락처가 보증된 마스터와 연결</p>
+                            <h4 className="font-bold text-white text-[15px]">{t('brandPanel.feature1Title')}</h4>
+                            <p className="text-sm text-gray-400 mt-1">{t('brandPanel.feature1Desc')}</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-4">
@@ -41,8 +42,8 @@ export default function BrandSidePanel() {
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                         </div>
                         <div>
-                            <h4 className="font-bold text-white text-[15px]">1분 만에 도착하는 비교 견적</h4>
-                            <p className="text-sm text-gray-400 mt-1">폼 제출 즉시 조건에 맞는 최적 견적 딜리버리</p>
+                            <h4 className="font-bold text-white text-[15px]">{t('brandPanel.feature2Title')}</h4>
+                            <p className="text-sm text-gray-400 mt-1">{t('brandPanel.feature2Desc')}</p>
                         </div>
                     </div>
                 </div>

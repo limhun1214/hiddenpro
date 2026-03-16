@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
+import { useTranslations } from 'next-intl';
 
 /**
  * 소셜 로그인 완료 페이지
@@ -14,7 +15,8 @@ import { supabase } from '@/lib/supabase';
  * - 신규 유저: localStorage role로 INSERT
  */
 export default function AuthCompletePage() {
-    const [status, setStatus] = useState('인증 처리 중...');
+    const t = useTranslations();
+    const [status, setStatus] = useState('');
     const hasRun = useRef(false);
 
     useEffect(() => {
@@ -28,7 +30,7 @@ export default function AuthCompletePage() {
                 const sessionUser = authData?.user;
 
                 if (authError || !sessionUser) {
-                    setStatus('인증 실패. 메인 페이지로 이동합니다...');
+                    setStatus(t('authComplete.authFailed'));
                     setTimeout(() => { window.location.href = '/'; }, 2000);
                     return;
                 }
@@ -89,8 +91,9 @@ export default function AuthCompletePage() {
                         if (!isAdminRole && !isLoginMode && pendingRole.toUpperCase() !== finalRole) {
                             // 역할 충돌: 로그아웃하지 않고 기존 역할로 정상 로그인 처리
                             // 프로필 페이지에서 토스트로 안내
-                            const roleLabel = finalRole === 'CUSTOMER' ? '고객' : '고수';
-                            const msg = `이미 ${roleLabel} 계정으로 가입되어 있어 ${roleLabel}으로 로그인되었습니다. 고수로 가입하려면 다른 Google 계정을 사용해 주세요.`;
+                            const msg = finalRole === 'CUSTOMER'
+                                ? t('authComplete.roleConflictCustomer')
+                                : t('authComplete.roleConflictPro');
                             try { sessionStorage.setItem('role_conflict_msg', msg); } catch {}
                             // signOut 하지 않음 — 아래 정상 라우팅 로직으로 계속 진행
                         }
@@ -135,7 +138,7 @@ export default function AuthCompletePage() {
                 // 4. 서버 역할(finalRole) 기준 라우팅
                 localStorage.removeItem('pending_auth_role');
                 localStorage.removeItem('pending_auth_mode');
-                setStatus('로그인 성공! 이동 중...');
+                setStatus(t('authComplete.loginSuccess'));
 
                 // [pending 견적 처리] 로그인 후 미완료 견적 처리
                 const pendingRequestRaw = localStorage.getItem('pendingRequestData');
@@ -143,7 +146,7 @@ export default function AuthCompletePage() {
                 // [PRO 계정] pending 견적 차단 — localStorage 정리 후 프로필로 이동
                 if (finalRole === 'PRO' && pendingRequestRaw) {
                     localStorage.removeItem('pendingRequestData');
-                    sessionStorage.setItem('pro_quote_blocked_msg', '고수 계정으로는 견적 요청을 할 수 없습니다.');
+                    sessionStorage.setItem('pro_quote_blocked_msg', t('authComplete.proQuoteBlocked'));
                     window.location.href = '/profile';
                     return;
                 }
@@ -171,7 +174,7 @@ export default function AuthCompletePage() {
                             if (count !== 0) {
                                 // 두 번째 이상: pendingRequestData 복원 후 request 페이지로 이동 (전화번호 인증 유도)
                                 localStorage.setItem('pendingRequestData', JSON.stringify(pendingAnswers));
-                                sessionStorage.setItem('pending_phone_verify_msg', '2번째 견적부터는 전화번호 인증이 필요합니다. 인증 후 견적을 보내주세요.');
+                                sessionStorage.setItem('pending_phone_verify_msg', t('authComplete.pendingPhoneVerify'));
                                 const categoryId = pendingAnswers.depth1 || '';
                                 window.location.href = `/request?categoryId=${encodeURIComponent(categoryId)}&pendingSubmit=1`;
                                 return;
@@ -210,7 +213,7 @@ export default function AuthCompletePage() {
                             return;
                         }
 
-                        setStatus('견적 요청이 완료되었습니다! 이동 중...');
+                        setStatus(t('authComplete.quoteSuccess'));
                         window.location.href = '/quotes/received';
                         return;
                     } catch (e) {
@@ -229,7 +232,7 @@ export default function AuthCompletePage() {
                 }
             } catch (err) {
                 console.error('Auth Complete Error:', err);
-                setStatus('오류 발생. 메인 페이지로 이동합니다...');
+                setStatus(t('authComplete.error'));
                 setTimeout(() => { window.location.href = '/'; }, 2000);
             }
         };
@@ -241,7 +244,7 @@ export default function AuthCompletePage() {
         <div className="fixed inset-0 flex items-center justify-center bg-white z-50">
             <div className="text-center space-y-4">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-                <p className="text-gray-600 font-medium text-sm">{status}</p>
+                <p className="text-gray-600 font-medium text-sm">{status || t('authComplete.processing')}</p>
             </div>
         </div>
     );

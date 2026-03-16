@@ -4,8 +4,10 @@ import React, { useEffect, useState, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/ui/Toast';
+import { useTranslations } from 'next-intl';
 
 export default function ProBiddingDetail({ requestId }: { requestId: string }) {
+    const t = useTranslations();
     const router = useRouter();
     const { showToast } = useToast();
     const [request, setRequest] = useState<any>(null);
@@ -15,7 +17,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
     const [submittedQuote, setSubmittedQuote] = useState<any>(null);
     const [chatRoomId, setChatRoomId] = useState<string | null>(null);
     const [isReviewed, setIsReviewed] = useState(false);
-    const [customerName, setCustomerName] = useState<string>('고객');
+    const [customerName, setCustomerName] = useState<string>('');
     const [customerAvatar, setCustomerAvatar] = useState<string | null>(null);
 
     // 견적 폼 상태
@@ -108,7 +110,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                     .eq('user_id', data.customer_id)
                     .single();
                 if (customerData) {
-                    setCustomerName((customerData.nickname && customerData.nickname.trim() !== '') ? customerData.nickname : (customerData.name || '알 수 없는 고객'));
+                    setCustomerName((customerData.nickname && customerData.nickname.trim() !== '') ? customerData.nickname : (customerData.name || t('proBidding.unknownCustomer')));
                     setCustomerAvatar(customerData.avatar_url || null);
                 }
             }
@@ -170,13 +172,13 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
         const selectedFiles = Array.from(e.target.files);
 
         if (quoteImages.length + selectedFiles.length > MAX_IMAGES) {
-            showToast(`사진은 최대 ${MAX_IMAGES}장까지만 첨부할 수 있습니다.`, 'warning');
+            showToast(`${t('requestForm.imageMax')}`, 'warning');
             return;
         }
 
         const validFiles = selectedFiles.filter(file => {
             if (file.size > 5 * 1024 * 1024) {
-                showToast(`${file.name} 파일 크기는 5MB 이하만 가능합니다.`, 'warning');
+                showToast(`${file.name}: ${t('profile.photoSizeError')}`, 'warning');
                 return false;
             }
             return true;
@@ -211,17 +213,17 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
         const sessionUser = authData?.user;
 
         if (!sessionUser) {
-            showToast('로그인이 필요합니다.', 'error');
+            showToast(t('proBidding.loginRequired'), 'error');
             return;
         }
 
         // 폼 검증
         if (!quotePrice || Number(quotePrice) <= 0) {
-            showToast('견적 금액을 올바르게 입력해주세요. (1 이상)', 'error', true);
+            showToast(t('proBidding.invalidPrice'), 'error', true);
             return;
         }
         if (!quoteDescription.trim()) {
-            showToast('견적 설명을 입력해주세요.', 'error', true);
+            showToast(t('proBidding.noDescription'), 'error', true);
             return;
         }
 
@@ -242,13 +244,13 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                 .single();
 
             if (latestReq?.status !== 'OPEN') {
-                showToast('이 요청은 이미 마감되었습니다.', 'error');
+                showToast(t('proBidding.requestClosed'), 'error');
                 setRequest((prev: any) => prev ? { ...prev, status: latestReq?.status, quote_count: latestReq?.quote_count } : prev);
                 setIsSubmitting(false);
                 return;
             }
             if ((latestReq?.quote_count || 0) >= maxQuotes) {
-                showToast('선착순 5명 견적이 모두 마감되었습니다.', 'error');
+                showToast(t('proBidding.slotsFullError'), 'error');
                 setRequest((prev: any) => prev ? { ...prev, quote_count: latestReq?.quote_count } : prev);
                 setIsSubmitting(false);
                 return;
@@ -283,7 +285,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                     allImageUrls = [...allImageUrls, ...uploadedUrls];
                 } catch (e: any) {
                     console.warn('이미지 업로드 실패:', e.message);
-                    throw new Error('이미지 업로드에 실패하여 견적 발송이 취소되었습니다.');
+                    throw new Error(t('proBidding.imageUploadFailed'));
                 }
             }
 
@@ -307,11 +309,11 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                     // ── [확장 2단계] 화면 이탈 제거 → 인앱 충전 모달 ──
                     setShowChargeModal(true);
                 } else if (error.message.includes('이미 초과된') || error.message.includes('정원이 마감된')) {
-                    showToast('이미 5명 정원이 마감된 요청입니다.', 'error');
+                    showToast(t('proBidding.slotsFullError'), 'error');
                 } else if (error.message.includes('이미 견적을 발송한')) {
-                    showToast('이미 이 요청에 견적을 발송하셨습니다.', 'warning');
+                    showToast(t('proBidding.alreadySent'), 'warning');
                 } else if (error.message.includes('chk_price_max') || error.message.includes('price')) {
-                    showToast('견적 금액은 최대 ₱10,000,000까지 입력 가능합니다.', 'error', true);
+                    showToast(t('proBidding.priceMaxError'), 'error', true);
                 } else {
                     throw error;
                 }
@@ -332,17 +334,17 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
             }
 
             setIsSent(true);
-            showToast('견적이 성공적으로 발송되었습니다!', 'success');
+            showToast(t('proBidding.sendSuccess'), 'success');
             window.dispatchEvent(new CustomEvent('wallet-updated'));
             router.push('/pro/requests');
         } catch (e: any) {
-            showToast('오류 발생: ' + e.message, 'error');
+            showToast(t('proBidding.sendError') + e.message, 'error');
             setIsSubmitting(false);
         }
     };
 
-    if (loading) return <div className="p-4 text-center mt-20 text-gray-500">요청서 세부정보를 불러오는 중입니다...</div>;
-    if (!request) return <div className="p-4 text-center mt-20 text-red-500">요청서를 찾을 수 없습니다.</div>;
+    if (loading) return <div className="p-4 text-center mt-20 text-gray-500">{t('proBidding.loading')}</div>;
+    if (!request) return <div className="p-4 text-center mt-20 text-red-500">{t('proBidding.notFound')}</div>;
 
     const timeRemaining = request.created_at ? new Date(request.created_at).getTime() + (48 * 60 * 60 * 1000) - Date.now() : 0;
     const isExpired = timeRemaining <= 0;
@@ -403,16 +405,16 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                     <div className="flex items-center gap-3 flex-1">
                         <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden border border-gray-200">
                             {customerAvatar ? (
-                                <img src={customerAvatar} alt="고객 프로필" className="w-full h-full object-cover" />
+                                <img src={customerAvatar} alt="Customer Profile" className="w-full h-full object-cover" />
                             ) : (
                                 <svg className="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" /></svg>
                             )}
                         </div>
                         <div>
-                            <h1 className="text-lg font-bold">{customerName}님의 요청</h1>
+                            <h1 className="text-lg font-bold">{customerName || t('proBidding.unknownCustomer')}{t('proBidding.requestTitle')}</h1>
                             <p className="text-xs text-gray-500">
                                 {request.service_type ? `${request.service_type} | ` : ''}
-                                {request.region ? request.region : `카테고리: ${request.category_id} | 지역: ${request.region_id}`}
+                                {request.region ? request.region : `Category: ${request.category_id} | Region: ${request.region_id}`}
                             </p>
                         </div>
                     </div>
@@ -421,7 +423,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                             💡 {request.quote_count}/{maxQuotes}명
                         </span>
                         <div className={`text-xs mt-1 font-bold ${isExpired ? 'text-gray-500' : isHurry ? 'text-red-500 animate-pulse' : 'text-blue-500'}`}>
-                            {isExpired ? '마감됨' : `${hoursRemaining}시간 ${minutesRemaining}분 후 마감!`}
+                            {isExpired ? t('proBidding.expired') : `${hoursRemaining}${t('proBidding.timeLeft').replace('{min}', String(minutesRemaining))}`}
                         </div>
                     </div>
                 </div>
@@ -432,18 +434,18 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                 {isSent && submittedQuote && (
                     <div className="bg-blue-50 rounded-xl p-4 shadow-sm border border-blue-200">
                         <h3 className="font-bold text-blue-800 mb-3 flex items-center gap-2">
-                            <span className="text-blue-600">✉️</span> 내가 보낸 견적 내용
+                            {t('proBidding.sentQuoteTitle')}
                         </h3>
                         <div className="space-y-3">
                             <div>
-                                <span className="text-xs text-blue-500 font-bold block mb-1">제안 금액</span>
+                                <span className="text-xs text-blue-500 font-bold block mb-1">{t('proBidding.proposedAmount')}</span>
                                 <div className="text-sm font-bold text-gray-900 bg-white p-2.5 rounded-lg border border-blue-100">
                                     ₱ {Number(submittedQuote.price).toLocaleString()}
                                 </div>
                             </div>
                             {submittedQuote.description && (
                                 <div>
-                                    <span className="text-xs text-blue-500 font-bold block mb-1">견적 설명</span>
+                                    <span className="text-xs text-blue-500 font-bold block mb-1">{t('proBidding.quoteDescription')}</span>
                                     <div className="text-sm text-gray-800 bg-white p-2.5 rounded-lg border border-blue-100 whitespace-pre-wrap leading-relaxed">
                                         {submittedQuote.description}
                                     </div>
@@ -451,7 +453,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                             )}
                             {submittedQuote.image_url && (
                                 <div>
-                                    <span className="text-xs text-blue-500 font-bold block mb-1">첨부 사진</span>
+                                    <span className="text-xs text-blue-500 font-bold block mb-1">{t('proBidding.attachedPhotos')}</span>
                                     <div className="flex flex-wrap gap-2 mt-1">
                                         {(() => {
                                             let imageList: string[] = [];
@@ -466,7 +468,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                                             }
                                             return imageList.map((url, idx) => (
                                                 <a key={idx} href={url} target="_blank" rel="noopener noreferrer" className="block relative cursor-pointer hover:opacity-90 transition">
-                                                    <img src={url} alt={`첨부사진 ${idx + 1}`} className="w-24 h-24 object-cover rounded-xl border border-blue-200 shadow-sm bg-white" />
+                                                    <img src={url} alt={`${t('proBidding.submittedImageAlt')}${idx + 1}`} className="w-24 h-24 object-cover rounded-xl border border-blue-200 shadow-sm bg-white" />
                                                 </a>
                                             ));
                                         })()}
@@ -480,36 +482,36 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                 {/* 2. 요청 상세 내용 (dynamic_answers 전체 파싱) */}
                 <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
                     <h3 className="font-bold text-gray-700 mb-3 flex items-center gap-2">
-                        <span className="text-blue-500">📋</span> 요청 상세 내용
+                        {t('proBidding.requestDetails')}
                     </h3>
 
                     {answerEntries.length === 0 ? (
-                        <p className="text-sm text-gray-400 text-center py-4">상세 내용이 없습니다.</p>
+                        <p className="text-sm text-gray-400 text-center py-4">{t('proBidding.noDetails')}</p>
                     ) : (
                         <ul className="space-y-3">
                             {answerEntries.map(([key, value]) => {
                                 // 키 이름을 사람이 읽기 쉬운 형태로 변환
                                 const labelMap: Record<string, string> = {
-                                    depth1: '서비스 대분류',
-                                    depth2: '서비스 중분류',
-                                    move_type: '이사 종류',
-                                    move_date: '이사 날짜',
-                                    merged_region: '서비스를 받으실 지역',
-                                    from_region: '출발 지역',
-                                    from_floor: '출발지 층수',
-                                    from_size: '출발지 면적 / 인원',
-                                    from_elevator: '출발지 엘리베이터',
-                                    appliances: '이전 가전',
-                                    furniture: '이전 가구',
-                                    images: '첨부 사진',
-                                    to_region: '도착 지역',
-                                    to_floor: '도착지 층수',
-                                    to_elevator: '도착지 엘리베이터',
-                                    details: '추가 요청사항',
-                                    service_type: '상세 서비스',
-                                    region: '지역',
-                                    region_reg: '지역 (Region)',
-                                    region_city: '도시 (City)'
+                                    depth1: 'Service Category',
+                                    depth2: 'Service Subcategory',
+                                    move_type: 'Moving Type',
+                                    move_date: 'Moving Date',
+                                    merged_region: 'Service Region',
+                                    from_region: 'Departure Region',
+                                    from_floor: 'Departure Floor',
+                                    from_size: 'Departure Area / Occupants',
+                                    from_elevator: 'Departure Elevator',
+                                    appliances: 'Appliances to Move',
+                                    furniture: 'Furniture to Move',
+                                    images: 'Attached Photos',
+                                    to_region: 'Destination Region',
+                                    to_floor: 'Destination Floor',
+                                    to_elevator: 'Destination Elevator',
+                                    details: 'Additional Requests',
+                                    service_type: 'Detailed Service',
+                                    region: 'Region',
+                                    region_reg: 'Region',
+                                    region_city: 'City'
                                 };
                                 const label = labelMap[key] || key;
 
@@ -518,17 +520,17 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                                         <span className="text-xs text-gray-400 font-medium mb-1">{label}</span>
                                         <div className="text-sm font-medium text-gray-800 bg-blue-50 p-2.5 rounded-lg whitespace-pre-wrap leading-relaxed">
                                             {(() => {
-                                                if (value === '상담 시 논의할게요') {
-                                                    return <span className="text-blue-500 font-bold bg-blue-50 px-2 py-1 rounded-md">🤝 상담 시 논의할게요</span>;
+                                                if (value === '상담 시 논의할게요' || value === 'To be discussed with pro') {
+                                                    return <span className="text-blue-500 font-bold bg-blue-50 px-2 py-1 rounded-md">{t('proBidding.discussLater')}</span>;
                                                 }
                                                 if (value === null || value === undefined || value === '') {
-                                                    return <span className="text-gray-400 italic">상담 시 논의 (미입력)</span>;
+                                                    return <span className="text-gray-400 italic">{t('proBidding.notEntered')}</span>;
                                                 }
                                                 if (Array.isArray(value) && value.length === 0) {
-                                                    return <span className="text-gray-400 italic">선택 항목 없음</span>;
+                                                    return <span className="text-gray-400 italic">{t('proBidding.noSelection')}</span>;
                                                 }
                                                 if (value === '없음' || (Array.isArray(value) && value.length === 1 && value[0] === '없음')) {
-                                                    return <span className="text-gray-500 font-bold">없음</span>;
+                                                    return <span className="text-gray-500 font-bold">{t('proBidding.none')}</span>;
                                                 }
 
                                                 if (key === 'images' && Array.isArray(value)) {
@@ -536,7 +538,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                                                         <div className="flex flex-wrap gap-2 mt-1">
                                                             {value.map((img: any, i: number) => (
                                                                 <a key={i} href={img.url} target="_blank" rel="noopener noreferrer" className="block relative cursor-pointer hover:opacity-90 transition group overflow-hidden rounded-lg">
-                                                                    <img src={img.url} className="w-24 h-24 object-cover border border-blue-200" alt={`첨부사진 ${i + 1}`} />
+                                                                    <img src={img.url} className="w-24 h-24 object-cover border border-blue-200" alt={`${t('proBidding.submittedImageAlt')}${i + 1}`} />
                                                                     {img.description && <span className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-[10px] p-1.5 truncate text-center transition-all group-hover:bg-black/80">{img.description}</span>}
                                                                 </a>
                                                             ))}
@@ -565,17 +567,17 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                 {!isSent && !isExpired && request.quote_count < maxQuotes && (
                     <div className="bg-white rounded-xl p-4 shadow-sm border border-blue-100">
                         <h3 className="font-bold text-gray-700 mb-3 flex items-center gap-2">
-                            <span className="text-yellow-500">✍️</span> 견적 작성
+                            {t('proBidding.quoteForm')}
                         </h3>
 
                         {/* 금액 입력 */}
                         <div className="mb-3">
-                            <label className="text-xs font-bold text-gray-600 mb-1 block">견적 금액 (₱) <span className="text-red-500">*</span></label>
+                            <label className="text-xs font-bold text-gray-600 mb-1 block">{t('proBidding.priceLabel')} <span className="text-red-500">*</span></label>
                             <input
                                 type="number"
                                 value={quotePrice}
                                 onChange={e => setQuotePrice(e.target.value)}
-                                placeholder="견적 금액을 입력하세요 (₱)"
+                                placeholder={t('proBidding.pricePlaceholder')}
                                 min="0"
                                 className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition text-sm font-medium"
                             />
@@ -584,12 +586,12 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                         {/* 설명 입력 */}
                         <div className="mb-3">
                             <div className="flex items-center justify-between mb-1">
-                                <label className="text-xs font-bold text-gray-600">견적 설명 <span className="text-xs text-gray-400 font-normal">(선택)</span></label>
+                                <label className="text-xs font-bold text-gray-600">{t('proBidding.descLabel')} <span className="text-xs text-gray-400 font-normal">{t('proBidding.descOptional')}</span></label>
                                 <button
                                     onClick={() => setShowTemplatePanel(!showTemplatePanel)}
                                     className="text-xs font-bold text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-2.5 py-1 rounded-lg transition flex items-center gap-1"
                                 >
-                                    ⭐️ 자주 쓰는 내용 불러오기
+                                    {t('proBidding.loadTemplate')}
                                 </button>
                             </div>
 
@@ -597,7 +599,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                             {showTemplatePanel && (
                                 <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 mb-2 space-y-2">
                                     {templates.length === 0 ? (
-                                        <p className="text-xs text-gray-500 text-center py-2">저장된 템플릿이 없습니다. 아래에서 견적을 작성 후 저장해보세요.</p>
+                                        <p className="text-xs text-gray-500 text-center py-2">{t('proBidding.noTemplates')}</p>
                                     ) : (
                                         templates.map(tpl => (
                                             <div key={tpl.id} className="flex items-center gap-2 bg-white rounded-lg p-2.5 border border-blue-100 shadow-sm">
@@ -646,13 +648,13 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                                     <button
                                         onClick={() => setShowSaveTpl(true)}
                                         className="mt-2 w-full text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 px-3 py-2.5 rounded-xl transition shadow-sm hover:shadow-md flex items-center justify-center gap-1.5"
-                                    >💾 이 내용을 템플릿으로 저장</button>
+                                    >{t('proBidding.saveTplBtn')}</button>
                                 ) : (
                                     <div className="mt-1.5 flex gap-2 items-center">
                                         <input
                                             value={newTplTitle}
                                             onChange={e => setNewTplTitle(e.target.value)}
-                                            placeholder="템플릿 이름 (예: 기본 인사말)"
+                                            placeholder={t('proBidding.tplTitlePlaceholder')}
                                             className="flex-1 text-xs px-2.5 py-1.5 border border-gray-300 rounded-lg focus:ring-1 focus:ring-blue-400 focus:outline-none"
                                         />
                                         <button
@@ -710,8 +712,8 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                                                 }
                                             }}
                                             className={`text-xs font-bold text-white px-3 py-1.5 rounded-lg transition ${savingTemplate ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
-                                        >{savingTemplate ? '저장 중...' : '저장'}</button>
-                                        <button onClick={() => { setShowSaveTpl(false); setNewTplTitle(''); }} className="text-xs text-gray-400 hover:text-gray-600">취소</button>
+                                        >{savingTemplate ? t('proBidding.savingTpl') : t('proBidding.saveTpl')}</button>
+                                        <button onClick={() => { setShowSaveTpl(false); setNewTplTitle(''); }} className="text-xs text-gray-400 hover:text-gray-600">{t('proBidding.cancelTpl')}</button>
                                     </div>
                                 )
                             )}
@@ -724,7 +726,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                             <div className="flex flex-wrap gap-2">
                                 {imagePreviews.map((preview, idx) => (
                                     <div key={idx} className="relative inline-block">
-                                        <img src={preview} alt={`미리보기 ${idx + 1}`} className="w-24 h-24 object-cover rounded-xl border border-gray-200 shadow-sm" />
+                                        <img src={preview} alt={`${t('proBidding.imagePreviewAlt')}${idx + 1}`} className="w-24 h-24 object-cover rounded-xl border border-gray-200 shadow-sm" />
                                         <button
                                             type="button"
                                             onClick={() => handleRemoveImage(idx)}
@@ -744,7 +746,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                                         <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
                                         </svg>
-                                        <span className="text-[10px] font-medium">사진 추가</span>
+                                        <span className="text-[10px] font-medium">{t('proBidding.addPhoto')}</span>
                                     </button>
                                 )}
                             </div>
@@ -769,7 +771,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                             disabled
                             className="w-full max-w-md mx-auto block font-bold py-4 rounded-xl shadow-none bg-gray-400 text-white cursor-not-allowed"
                         >
-                            ✅ 거래 완료된 요청입니다 (채팅 종료)
+                            {t('proBidding.dealDone')}
                         </button>
                     ) : (
                         <button
@@ -777,12 +779,12 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                                 if (chatRoomId) {
                                     router.push(`/chat/${chatRoomId}`);
                                 } else {
-                                    alert('채팅방 정보를 불러오는 중이거나 생성되지 않았습니다.');
+                                    alert(t('proBidding.chatRoomError'));
                                 }
                             }}
                             className="w-full max-w-md mx-auto block font-bold py-4 rounded-xl shadow-[0_10px_20px_rgba(37,99,235,0.3)] transition transform hover:-translate-y-1 bg-blue-600 hover:bg-blue-700 text-white"
                         >
-                            💬 채팅방으로 이동하기
+                            {t('proBidding.goToChat')}
                         </button>
                     )
                 ) : (
@@ -795,13 +797,15 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                         disabled={!canSubmit}
                         className={`w-full max-w-md mx-auto block font-bold py-4 rounded-xl shadow-[0_10px_20px_rgba(37,99,235,0.3)] transition transform hover:-translate-y-1 ${!canSubmit ? 'bg-gray-400 text-white cursor-not-allowed shadow-none hover:translate-y-0' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
                     >
-                        {isSubmitting ? '발송 중...' :
-                            isRequestClosed ? '이미 마감된 요청입니다' :
-                                isExpired ? '시간이 초과되어 마감되었습니다' :
-                                    request.quote_count >= maxQuotes ? '선착순 5명 견적이 모두 마감되었습니다' :
-                                        !isPriceReady ? '단가 계산 중...' :
-                                            !isQuoteValid ? (Number(quotePrice) <= 0 ? '견적 금액을 입력해주세요' : '견적 설명을 입력해주세요') :
-                                                `${costToQuote} 캐시로 견적 보내기${quotePrice ? ` (₱${Number(quotePrice).toLocaleString()})` : ''}`}
+                        {isSubmitting ? t('proBidding.submitting') :
+                            isRequestClosed ? t('proBidding.closed') :
+                                isExpired ? t('proBidding.timeExpired') :
+                                    request.quote_count >= maxQuotes ? t('proBidding.fullSlots') :
+                                        !isPriceReady ? t('proBidding.calculating') :
+                                            !isQuoteValid ? (Number(quotePrice) <= 0 ? t('proBidding.enterPrice') : t('proBidding.enterDesc')) :
+                                                quotePrice
+                                                    ? t('proBidding.sendQuoteBtnWithPrice').replace('{cost}', String(costToQuote)).replace('{price}', Number(quotePrice).toLocaleString())
+                                                    : t('proBidding.sendQuoteBtn').replace('{cost}', String(costToQuote))}
                     </button>
                 )}
             </div>
@@ -824,7 +828,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                                 <div className="flex justify-center mb-3">
                                     <div className="w-10 h-1 bg-gray-300 rounded-full"></div>
                                 </div>
-                                <h3 className="text-lg font-bold text-gray-900 text-center">견적 발송 확인</h3>
+                                <h3 className="text-lg font-bold text-gray-900 text-center">{t('proBidding.confirmTitle')}</h3>
                             </div>
 
                             {/* ② 중앙 내용부 (스크롤 가능) */}
@@ -832,24 +836,24 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                                 {/* 견적 요약 */}
                                 <div className="bg-blue-50 rounded-xl p-4 mb-4 border border-blue-100">
                                     <div className="flex justify-between items-center mb-2">
-                                        <span className="text-sm text-gray-500 font-medium">서비스</span>
-                                        <span className="text-sm font-bold text-gray-800">{request.service_type || request.categories?.name || '서비스'}</span>
+                                        <span className="text-sm text-gray-500 font-medium">{t('proBidding.serviceLabel')}</span>
+                                        <span className="text-sm font-bold text-gray-800">{request.service_type || request.categories?.name || t('proBidding.defaultService')}</span>
                                     </div>
                                     <div className="flex justify-between items-center mb-2">
-                                        <span className="text-sm text-gray-500 font-medium">견적 금액</span>
+                                        <span className="text-sm text-gray-500 font-medium">{t('proBidding.quotePriceLabel')}</span>
                                         <span className="text-lg font-bold text-blue-600">₱ {Number(quotePrice).toLocaleString()}</span>
                                     </div>
                                     <div className="flex justify-between items-center mb-2">
-                                        <span className="text-sm text-gray-500 font-medium">차감 캐시</span>
+                                        <span className="text-sm text-gray-500 font-medium">{t('proBidding.deductLabel')}</span>
                                         <span className="text-sm font-bold text-red-500">{costToQuote} 캐시</span>
                                     </div>
                                     {/* ── [확장 2단계] 보유 코인 명시 ── */}
                                     <div className="flex justify-between items-center pt-2 mt-2 border-t border-blue-100">
-                                        <span className="text-sm text-gray-500 font-medium">보유 캐시</span>
+                                        <span className="text-sm text-gray-500 font-medium">{t('proBidding.balanceLabel')}</span>
                                         <span className={`text-sm font-bold ${(myBalance !== null && myBalance < costToQuote) ? 'text-red-500' : 'text-green-600'}`}>
-                                            {myBalance !== null ? `${myBalance.toLocaleString()} 캐시` : '조회 중...'}
+                                            {myBalance !== null ? `${myBalance.toLocaleString()} 캐시` : t('proBidding.checking')}
                                             {myBalance !== null && myBalance < costToQuote && (
-                                                <span className="ml-1 text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold">부족</span>
+                                                <span className="ml-1 text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold">{t('proBidding.insufficient')}</span>
                                             )}
                                         </span>
                                     </div>
@@ -858,13 +862,13 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                                 {/* 환불 정책 안내 */}
                                 <div className="bg-yellow-50 rounded-xl p-3.5 mb-2 border border-yellow-200">
                                     <p className="text-xs text-gray-700 leading-relaxed break-keep">
-                                        💡 정상적으로 발송된 견적은 고객이 타 전문가를 채택하여 마감되더라도 <strong className="text-red-600">사용된 캐시가 환불되지 않습니다.</strong>
+                                        <span dangerouslySetInnerHTML={{ __html: t('proBidding.noRefundPolicy') }} />
                                     </p>
                                 </div>
                                 {/* 보너스 환급 안내 */}
                                 <div className="bg-green-50 rounded-xl p-3.5 mb-4 border border-green-200">
                                     <p className="text-xs text-gray-700 leading-relaxed break-keep">
-                                        🎁 단, 고객이 48시간 내에 견적을 <strong className="text-green-700">읽지 않거나</strong>, 미열람 상태로 타 전문가와 매칭될 경우 사용된 캐시는 <strong className="text-green-700">100% 보너스 캐시로 환급</strong>됩니다.
+                                        <span dangerouslySetInnerHTML={{ __html: t('proBidding.bonusRefundPolicy') }} />
                                     </p>
                                 </div>
 
@@ -877,7 +881,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                                         className="mt-0.5 w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 flex-shrink-0"
                                     />
                                     <span className="text-xs text-gray-700 font-medium leading-relaxed break-keep">
-                                        위 내용을 확인했으며 결제에 동의합니다.
+                                        {t('proBidding.agreeLabel')}
                                     </span>
                                 </label>
                             </div>
@@ -889,14 +893,14 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                                         onClick={() => { setShowConfirmModal(false); setAgreeNoRefund(false); }}
                                         className="flex-1 py-3.5 rounded-xl font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 transition text-sm"
                                     >
-                                        취소
+                                        {t('proBidding.cancelBtn')}
                                     </button>
                                     <button
                                         onClick={handleSendQuote}
                                         disabled={!agreeNoRefund || isSubmitting}
                                         className={`flex-[2] py-3.5 rounded-xl font-bold transition text-sm shadow-md ${!agreeNoRefund || isSubmitting ? 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-none' : 'bg-blue-600 hover:bg-blue-700 text-white shadow-[0_4px_12px_rgba(37,99,235,0.4)]'}`}
                                     >
-                                        {isSubmitting ? '발송 중...' : `${costToQuote} 캐시로 견적 보내기`}
+                                        {isSubmitting ? t('proBidding.submitting') : t('proBidding.sendBtn').replace('{cost}', String(costToQuote))}
                                     </button>
                                 </div>
                             </div>
@@ -931,9 +935,9 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                             </div>
                             <div className="text-center mb-4">
                                 <span className="text-4xl mb-2 block">💰</span>
-                                <h3 className="text-lg font-bold text-gray-900">캐시가 부족합니다</h3>
-                                <p className="text-sm text-gray-500 mt-1">견적 발송에 <strong className="text-red-500">{costToQuote} 캐시</strong>가 필요합니다.</p>
-                                <p className="text-sm text-gray-500">현재 잔액: <strong className={`${(myBalance || 0) < costToQuote ? 'text-red-500' : 'text-green-600'}`}>{(myBalance || 0).toLocaleString()} 캐시</strong></p>
+                                <h3 className="text-lg font-bold text-gray-900">{t('proBidding.chargeTitle')}</h3>
+                                <p className="text-sm text-gray-500 mt-1"><span dangerouslySetInnerHTML={{ __html: t('proBidding.chargeDesc').replace('{cost}', String(costToQuote)) }} /></p>
+                                <p className="text-sm text-gray-500">{t('proBidding.chargeBalance')}<strong className={`${(myBalance || 0) < costToQuote ? 'text-red-500' : 'text-green-600'}`}>{(myBalance || 0).toLocaleString()}{t('proBidding.chargeUnit')}</strong></p>
                             </div>
                             <div className="flex flex-col gap-2.5">
                                 {[10000, 30000, 50000].map((amount, i) => (
@@ -941,13 +945,13 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                                         key={amount}
                                         onClick={async () => {
                                             if (!currentProId) return;
-                                            showToast('GCash/Maya 결제 모듈 호출 예정 (가상 결제 진행)', 'info');
+                                            showToast(t('proBidding.chargeVirtual'), 'info');
                                             const { data: newBalance, error } = await supabase.rpc('charge_pro_cash', {
                                                 p_pro_id: currentProId,
                                                 p_amount: amount
                                             });
-                                            if (error) { showToast('충전 실패: ' + error.message, 'error'); return; }
-                                            showToast(`${amount.toLocaleString()} 캐시가 충전되었습니다!`, 'success');
+                                            if (error) { showToast(t('proBidding.chargeError') + error.message, 'error'); return; }
+                                            showToast(`${amount.toLocaleString()}${t('proBidding.chargeSuccess')}`, 'success');
                                             setMyBalance(newBalance);
                                             setShowChargeModal(false);
                                             window.dispatchEvent(new Event('wallet-updated'));
@@ -957,14 +961,14 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                                                 'bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200'
                                             }`}
                                     >
-                                        {amount.toLocaleString()} 캐시 충전 {i === 2 && <span className="text-sm bg-yellow-400 text-yellow-900 px-2 py-0.5 rounded-full ml-1">BEST</span>}
+                                        {amount.toLocaleString()}{t('proBidding.chargeUnit')} {i === 2 && <span className="text-sm bg-yellow-400 text-yellow-900 px-2 py-0.5 rounded-full ml-1">BEST</span>}
                                     </button>
                                 ))}
                             </div>
                             <button
                                 onClick={() => setShowChargeModal(false)}
                                 className="w-full mt-3 bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold py-3 rounded-xl transition text-sm"
-                            >나중에 할게요</button>
+                            >{t('proBidding.chargeLater')}</button>
                         </div>
                     </div>
                 )

@@ -4,8 +4,10 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import BadgeCleaner from '@/components/BadgeCleaner';
+import { useTranslations } from 'next-intl';
 
 export default function ProRequestListClient() {
+    const t = useTranslations();
     const router = useRouter();
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
     const [isAcceptingRequests, setIsAcceptingRequests] = useState<boolean>(true);
@@ -177,7 +179,7 @@ export default function ProRequestListClient() {
                                 const aMap: Record<string, string | null> = {};
                                 usersData.forEach((u: any) => {
                                     vMap[u.user_id] = u.is_phone_verified === true;
-                                    nMap[u.user_id] = (u.nickname && u.nickname.trim() !== '') ? u.nickname : (u.name || '알 수 없는 고객');
+                                    nMap[u.user_id] = (u.nickname && u.nickname.trim() !== '') ? u.nickname : (u.name || t('proRequestList.unknownCustomer'));
                                     aMap[u.user_id] = u.avatar_url || null;
                                 });
                                 setCustomerVerifiedMap(vMap);
@@ -213,7 +215,7 @@ export default function ProRequestListClient() {
                                 const aMap: Record<string, string | null> = {};
                                 usersData.forEach((u: any) => {
                                     vMap[u.user_id] = u.is_phone_verified === true;
-                                    nMap[u.user_id] = (u.nickname && u.nickname.trim() !== '') ? u.nickname : (u.name || '알 수 없는 고객');
+                                    nMap[u.user_id] = (u.nickname && u.nickname.trim() !== '') ? u.nickname : (u.name || t('proRequestList.unknownCustomer'));
                                     aMap[u.user_id] = u.avatar_url || null;
                                 });
                                 setCustomerVerifiedMap(vMap);
@@ -372,7 +374,7 @@ export default function ProRequestListClient() {
             <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col sticky top-0 z-10">
                 <div className="flex items-center justify-between mb-3">
                     <h1 className="text-xl font-bold flex items-center gap-2">
-                        실시간 요청 리스트
+                        {t('proRequestList.pageTitle')}
                         <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.8)]"></div>
                     </h1>
                 </div>
@@ -382,13 +384,13 @@ export default function ProRequestListClient() {
                         onClick={() => setFilterType('NEW')}
                         className={`flex-1 py-2 text-sm font-bold rounded-lg transition ${filterType === 'NEW' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                     >
-                        새로운 요청
+                        {t('proRequestList.tabNew')}
                     </button>
                     <button
                         onClick={() => setFilterType('QUOTED')}
                         className={`flex-1 py-2 text-sm font-bold rounded-lg transition ${filterType === 'QUOTED' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                     >
-                        보낸 견적
+                        {t('proRequestList.tabQuoted')}
                     </button>
                 </div>
 
@@ -399,13 +401,13 @@ export default function ProRequestListClient() {
                             onClick={() => setQuotedSubTab('IN_PROGRESS')}
                             className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition ${quotedSubTab === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-700 border border-blue-300' : 'text-gray-400 hover:text-gray-600 border border-transparent'}`}
                         >
-                            진행 중
+                            {t('proRequestList.subTabInProgress')}
                         </button>
                         <button
                             onClick={() => setQuotedSubTab('ARCHIVED')}
                             className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition ${quotedSubTab === 'ARCHIVED' ? 'bg-gray-200 text-gray-700 border border-gray-300' : 'text-gray-400 hover:text-gray-600 border border-transparent'}`}
                         >
-                            📦 보관함
+                            {t('proRequestList.subTabArchived')}
                         </button>
                     </div>
                 )}
@@ -414,15 +416,15 @@ export default function ProRequestListClient() {
             {!isAcceptingRequests ? (
                 <div className="flex flex-col items-center justify-center p-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-300 mt-4 text-center">
                     <span className="text-4xl mb-4 opacity-80">🔒</span>
-                    <h2 className="text-lg font-bold text-gray-800 mb-2">현재 휴가/마감 모드입니다</h2>
+                    <h2 className="text-lg font-bold text-gray-800 mb-2">{t('proRequestList.vacationTitle')}</h2>
                     <p className="text-sm text-gray-500 max-w-xs leading-relaxed mb-4">
-                        새로운 견적 요청을 받지 않도록 설정되어 있습니다. 프로필에서 스위치를 켜면 다시 매칭이 시작됩니다.
+                        {t('proRequestList.vacationDesc')}
                     </p>
                     <button
                         onClick={() => router.push('/profile')}
                         className="bg-gray-800 hover:bg-black text-white font-bold py-2 px-6 rounded-lg text-sm transition"
                     >
-                        프로필 설정 가기
+                        {t('proRequestList.vacationBtn')}
                     </button>
                 </div>
             ) : (
@@ -430,7 +432,7 @@ export default function ProRequestListClient() {
                     {/* 보관함 CS 방어 배너 */}
                     {filterType === 'QUOTED' && quotedSubTab === 'ARCHIVED' && (
                         <div className="bg-gray-50 border border-gray-200 text-gray-600 text-sm font-medium p-4 rounded-xl shadow-sm leading-relaxed sticky top-[140px] z-[5]">
-                            💡 매칭 실패 또는 취소 확정된 내역은 고객 보호를 위해 7일 후 자동 숨김 처리됩니다.
+                            {t('proRequestList.archiveBanner')}
                         </div>
                     )}
                     {requests.filter(req => {
@@ -473,7 +475,7 @@ export default function ProRequestListClient() {
                         return true;
                     }).length === 0 ? (
                         <div className="text-center p-10 text-gray-500 bg-white rounded-xl shadow-sm border border-gray-100">
-                            <p>{filterType === 'QUOTED' && quotedSubTab === 'ARCHIVED' ? '보관함에 표시할 내역이 없습니다.' : '조건에 맞는 요청이 없습니다.'}</p>
+                            <p>{filterType === 'QUOTED' && quotedSubTab === 'ARCHIVED' ? t('proRequestList.noArchived') : t('proRequestList.noRequests')}</p>
                         </div>
                     ) : (
                         requests.filter(req => {
@@ -515,7 +517,7 @@ export default function ProRequestListClient() {
                             }
                             return true;
                         }).map((req) => {
-                            const customerName = customerNameMap[req.customer_id] || '고객';
+                            const customerName = customerNameMap[req.customer_id] || t('proRequestList.unknownCustomer');
                             const customerAvatar = customerAvatarMap[req.customer_id];
                             const expiresAt = new Date(req.created_at).getTime() + (48 * 60 * 60 * 1000);
                             const diffMs = expiresAt - now;
@@ -542,55 +544,55 @@ export default function ProRequestListClient() {
                                         <div className="flex items-center gap-3 mb-2">
                                             <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden border border-gray-200">
                                                 {customerAvatar ? (
-                                                    <img src={customerAvatar} alt="고객 프로필" className="w-full h-full object-cover" />
+                                                    <img src={customerAvatar} alt="Customer Profile" className="w-full h-full object-cover" />
                                                 ) : (
                                                     <svg className="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" /></svg>
                                                 )}
                                             </div>
                                             <div>
-                                                <h2 className="text-lg font-bold">{customerName}님의 요청</h2>
+                                                <h2 className="text-lg font-bold">{customerName}{t('proRequestList.requestTitle')}</h2>
                                                 <p className="text-sm text-gray-500">
                                                     {(req.categories?.name || req.service_type) ? `${req.categories?.name || req.service_type} | ` : ''}
                                                     {req.region ? req.region : `카테고리: ${req.categories?.name || req.category_id} | 지역: ${req.region_id}`}
                                                 </p>
                                                 {customerVerifiedMap[req.customer_id] && (
                                                     <span className="inline-flex items-center gap-1 bg-green-50 text-green-700 text-xs font-bold px-2 py-0.5 rounded-full border border-green-200 mt-1">
-                                                        📱 인증된 고객
+                                                        {t('proRequestList.verifiedCustomer')}
                                                     </span>
                                                 )}
                                                 {/* ── [확장] 3-15-0 어뷰징 경고 배지 (고수에게만 노출) ── */}
                                                 {flaggedCustomerIds.has(req.customer_id) && (
                                                     <span className="inline-flex items-center gap-1 bg-red-50 text-red-600 text-xs font-bold px-2 py-0.5 rounded-full border border-red-200 mt-1 animate-pulse">
-                                                        ⚠️ 매칭률 하위 고객
+                                                        {t('proRequestList.abuseWarning')}
                                                     </span>
                                                 )}
                                             </div>
                                         </div>
                                         <div className="text-right">
                                             <span className={`inline-block font-bold px-3 py-1 rounded-full text-sm shadow-sm ${isClosed ? 'bg-gray-100 text-gray-500 border-gray-200' : 'bg-red-50 text-red-600 border-red-200 animate-pulse'}`}>
-                                                💡 {req.quote_count} / {req.max_quotes || 5}명 {isClosed ? '입찰 마감' : '입찰 중'}
+                                                💡 {req.quote_count} / {req.max_quotes || 5}명 {isClosed ? t('proRequestList.bidClosed') : t('proRequestList.bidding')}
                                             </span>
                                             <div className={`text-xs mt-1 font-bold ${isExpired || isMatchedButNotMe ? 'text-gray-500' : isHurrying ? 'text-red-500 animate-pulse' : 'text-blue-500'}`}>
-                                                {req.status === 'MATCHED' ? '매칭 완료' : isExpired ? '마감됨' : `${diffHours}시간 ${diffMinutes}분 남음`}
+                                                {req.status === 'MATCHED' ? t('proRequestList.matched') : isExpired ? t('proRequestList.expired') : `${diffHours}${t('proRequestList.hours')} ${diffMinutes}${t('proRequestList.minutes')} ${t('proRequestList.timeLeft')}`}
                                             </div>
                                         </div>
                                     </div>
                                     {isReviewed ? (
                                         <div className="mt-3 bg-gray-200 text-gray-700 px-3 py-2 rounded-lg text-sm font-bold flex items-center gap-2 border border-gray-300">
-                                            <span>✅</span> 거래 완료
+                                            <span>✅</span> {t('proRequestList.dealDone')}
                                         </div>
                                     ) : isAccepted ? (
                                         <div className="mt-3 bg-green-100 text-green-700 px-3 py-2 rounded-lg text-sm font-bold flex items-center gap-2 border border-green-200">
-                                            <span>🎉</span> 매칭 성공 (계약 확정)
+                                            <span>🎉</span> {t('proRequestList.matchSuccess')}
                                         </div>
                                     ) : isMatchedButNotMe ? (
                                         <div className={`mt-3 px-3 py-2 rounded-lg text-sm font-bold flex items-center gap-2 border ${isUnreadRefund ? 'bg-green-50 text-green-700 border-green-200' : 'bg-gray-100 text-gray-500 border-gray-200'}`}>
                                             <span>{isUnreadRefund ? '🎁' : '🔒'}</span>
-                                            {isUnreadRefund ? '고객 미열람 마감 — 캐시 100% 보너스 환급 완료' : '마감됨 (다른 고수 매칭)'}
+                                            {isUnreadRefund ? t('proRequestList.unreadRefund') : t('proRequestList.closedOther')}
                                         </div>
                                     ) : myQuote ? (
                                         <div className="mt-3 bg-blue-50 text-blue-700 px-3 py-2 rounded-lg text-sm font-bold flex items-center gap-2 border border-blue-200">
-                                            <span>✅</span> 이미 견적을 발송한 요청입니다.
+                                            <span>✅</span> {t('proRequestList.alreadySent')}
                                         </div>
                                     ) : null}
 
@@ -605,22 +607,22 @@ export default function ProRequestListClient() {
                                             }`}
                                     >
                                         {isAccepted
-                                            ? '상세보기'
+                                            ? t('proRequestList.btnDetail')
                                             : req.status === 'CANCELED'
-                                                ? '고객이 요청을 취소하여 마감되었습니다.'
+                                                ? t('proRequestList.btnCanceled')
                                                 : isMatchedButNotMe
                                                     ? (isUnreadRefund
-                                                        ? '🎁 고객 미열람 마감 — 캐시 100% 보너스 환급 완료'
-                                                        : '고객이 다른 고수와 매칭을 완료하여 마감되었습니다.')
+                                                        ? t('proRequestList.btnUnreadRefund')
+                                                        : t('proRequestList.btnClosedOther'))
                                                     : req.quote_count >= (req.max_quotes || 5) && !myQuote
-                                                        ? '입찰 정원(5명)이 초과되어 마감되었습니다.'
+                                                        ? t('proRequestList.btnFull')
                                                         : isExpired
-                                                            ? '48시간 입찰 기한이 만료되었습니다.'
+                                                            ? t('proRequestList.btnExpired')
                                                             : myQuote
-                                                                ? '상세보기'
+                                                                ? t('proRequestList.btnDetail')
                                                                 : isReadLocally
-                                                                    ? '견적 보내기'
-                                                                    : '🚨 자세히 보기 및 견적 보내기'}
+                                                                    ? t('proRequestList.btnSend')
+                                                                    : t('proRequestList.btnViewNew')}
                                     </button>
                                 </div>
                             );

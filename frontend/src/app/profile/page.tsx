@@ -8,11 +8,51 @@ import Link from 'next/link';
 import { PHILIPPINES_REGIONS } from '@/lib/constants';
 import { mockVerifyProPhone, mockLinkFacebook } from '@/lib/mockAuth';
 import { useToast } from '@/components/ui/Toast';
+import { useTranslations } from 'next-intl';
+
+const DEPTH1_EN: Record<string, string> = {
+    '이사/청소': 'Moving & Cleaning',
+    '설치/수리': 'Installation & Repair',
+    '인테리어/시공': 'Interior & Construction',
+    '비즈니스/외주': 'Business & Outsourcing',
+    '이벤트/파티': 'Events & Parties',
+    '레슨/튜터링': 'Lessons & Tutoring',
+};
+
+const DEPTH2_EN: Record<string, string> = {
+    '가사/메이드': 'Housekeeping & Maid',
+    '에어컨 청소': 'AC Cleaning',
+    '이사 및 운송': 'Moving & Transport',
+    '집 청소': 'House Cleaning',
+    '특수 청소 및 방역': 'Special Cleaning & Pest Control',
+    '폐기물 처리': 'Waste Disposal',
+    '가전/기기 수리': 'Appliance & Device Repair',
+    '기타 수리': 'Other Repairs',
+    '문/창문 및 조립': 'Doors, Windows & Assembly',
+    '수도/배관': 'Plumbing',
+    '전기': 'Electrical',
+    '부분 시공': 'Partial Construction',
+    '야외 시공': 'Outdoor Construction',
+    '종합 시공': 'General Construction',
+    '가상 비서 및 BPO': 'Virtual Assistant & BPO',
+    '디자인/개발': 'Design & Development',
+    '번역/통역': 'Translation & Interpretation',
+    '행정/세무 대행': 'Administrative & Tax Services',
+    '대여/렌탈': 'Rental',
+    '음식 및 케이터링': 'Food & Catering',
+    '촬영 및 섭외': 'Photography & Talent Booking',
+    '행사 기획': 'Event Planning',
+    '시험 준비': 'Exam Preparation',
+    '어학 레슨': 'Language Lessons',
+    '예체능/취미': 'Arts, Sports & Hobbies',
+    '취업/직무 준비': 'Career & Job Preparation',
+};
 
 // ─────────────────────────────────────────────
 // 메인 프로필 페이지
 // ─────────────────────────────────────────────
 export default function ProfilePage() {
+    const t = useTranslations();
     const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [userRole, setUserRole] = useState<'CUSTOMER' | 'PRO' | null>(null);
@@ -97,7 +137,7 @@ export default function ProfilePage() {
     };
 
     const handleWithdraw = async () => {
-        if (withdrawConfirmText !== '탈퇴합니다' || !sessionUser) return;
+        if (withdrawConfirmText !== t('profile.withdrawConfirmKeyword') || !sessionUser) return;
         setWithdrawing(true);
         try {
             // 1. withdrawal_logs에 개인정보 보존
@@ -107,26 +147,26 @@ export default function ProfilePage() {
                 email: sessionUser.email || null,
                 phone: sessionUser.user_metadata?.phone || null,
                 role: userRole,
-                reason: withdrawReason || '사유 미입력',
+                reason: withdrawReason || 'No reason provided',
             });
-            if (logErr) throw new Error('탈퇴 로그 저장 실패: ' + logErr.message);
+            if (logErr) throw new Error(t('profile.withdrawLogError') + logErr.message);
 
             // 2. users 테이블 개인정보 마스킹 + DELETED 처리 (핵심 단계 — 실패 시 즉시 중단)
             const { error: updateErr } = await supabase.from('users').update({
-                name: '탈퇴한 사용자',
+                name: 'Deleted User',
                 nickname: `deleted_${sessionUser.id}`,
                 phone: null,
                 email: `deleted_${sessionUser.id}@deleted.com`,
                 status: 'DELETED',
                 device_token: null,
             }).eq('user_id', sessionUser.id);
-            if (updateErr) throw new Error('계정 상태 업데이트 실패: ' + updateErr.message);
+            if (updateErr) throw new Error(t('profile.withdrawUpdateError') + updateErr.message);
 
             // 2-1. JWT user_metadata에도 DELETED 기록 (middleware 차단용)
             const { error: metaErr } = await supabase.auth.updateUser({
                 data: { status: 'DELETED' }
             });
-            if (metaErr) throw new Error('JWT 메타데이터 업데이트 실패: ' + metaErr.message);
+            if (metaErr) throw new Error(t('profile.withdrawMetaError') + metaErr.message);
 
             // 3. Supabase Auth 계정 비활성화 (관리자 API로 banned_until 영구 설정)
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -140,20 +180,20 @@ export default function ProfilePage() {
             await supabase.auth.signOut();
             window.location.href = '/?withdrawn=true';
         } catch (e: any) {
-            showToast('탈퇴 처리 중 오류가 발생했습니다: ' + e.message, 'error');
+            showToast(t('profile.withdrawError') + e.message, 'error');
             setWithdrawing(false);
         }
     };
 
-    if (loading) return <div className="p-10 text-center text-gray-500">로딩 중...</div>;
-    if (!userRole) return <div className="p-10 text-center text-red-500">프로필 로드 에러</div>;
+    if (loading) return <div className="p-10 text-center text-gray-500">{t('profile.loading')}</div>;
+    if (!userRole) return <div className="p-10 text-center text-red-500">{t('profile.error')}</div>;
 
     // [기획 핵심] 강제 Early Return (고객일 경우 고수 DB 조회 원천 차단)
     if (userRole === 'CUSTOMER') {
         return (
             <div className="min-h-screen bg-gray-50 flex flex-col w-full lg:px-8 lg:py-8 lg:items-stretch">
                 <header className="w-full bg-white p-4 border-b border-gray-100 flex justify-center lg:justify-start items-center shadow-sm lg:text-left lg:mb-8 lg:bg-transparent lg:border-none lg:p-0 lg:mt-8">
-                    <h1 className="text-xl lg:text-2xl lg:font-bold">프로필 관리</h1>
+                    <h1 className="text-xl lg:text-2xl lg:font-bold">{t('profile.title')}</h1>
                 </header>
                 <main className="flex-1 w-full space-y-6 mt-4">
                     <ProfileHeader user={sessionUser} role="CUSTOMER" tableName="users" idColumn="user_id" onLogout={handleLogout} />
@@ -166,13 +206,13 @@ export default function ProfilePage() {
                             onClick={handleLogout}
                             className="text-sm text-gray-400 hover:text-gray-500 underline underline-offset-4 transition"
                         >
-                            로그아웃
+                            {t('profile.logout')}
                         </button>
                         <button
                             onClick={() => { setShowWithdrawModal(true); setWithdrawReason(''); setWithdrawConfirmText(''); }}
                             className="text-xs text-gray-300 hover:text-red-400 transition"
                         >
-                            회원 탈퇴
+                            {t('profile.withdraw')}
                         </button>
                     </div>
                 </main>
@@ -183,39 +223,39 @@ export default function ProfilePage() {
                     <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl p-6 flex flex-col gap-4">
                         <div className="text-center">
                             <span className="text-4xl block mb-2">😢</span>
-                            <h3 className="text-lg font-black text-gray-800">정말 탈퇴하시겠어요?</h3>
+                            <h3 className="text-lg font-black text-gray-800">{t('profile.withdrawModalTitle')}</h3>
                             <p className="text-xs text-gray-500 mt-1 leading-relaxed">
-                                탈퇴 시 개인정보는 즉시 삭제되며<br />거래 내역은 법적 보존 기간 동안 보관됩니다.
+                                {t('profile.withdrawModalDesc')}
                             </p>
                         </div>
 
                         {/* 탈퇴 사유 선택 */}
                         <div>
-                            <p className="text-xs font-bold text-gray-600 mb-2">탈퇴 사유 (선택)</p>
+                            <p className="text-xs font-bold text-gray-600 mb-2">{t('profile.withdrawReasonLabel')}</p>
                             <select
                                 value={withdrawReason}
                                 onChange={e => setWithdrawReason(e.target.value)}
                                 className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-red-300"
                             >
-                                <option value="">사유를 선택해주세요</option>
-                                <option value="서비스 불만족">서비스 불만족</option>
-                                <option value="이용 빈도 낮음">이용 빈도 낮음</option>
-                                <option value="개인정보 우려">개인정보 우려</option>
-                                <option value="다른 서비스 이용">다른 서비스 이용</option>
-                                <option value="기타">기타</option>
+                                <option value="">{t('profile.withdrawReasonPlaceholder')}</option>
+                                <option value="서비스 불만족">{t('profile.withdrawReason1')}</option>
+                                <option value="이용 빈도 낮음">{t('profile.withdrawReason2')}</option>
+                                <option value="개인정보 우려">{t('profile.withdrawReason3')}</option>
+                                <option value="다른 서비스 이용">{t('profile.withdrawReason4')}</option>
+                                <option value="기타">{t('profile.withdrawReason5')}</option>
                             </select>
                         </div>
 
                         {/* 확인 텍스트 입력 */}
                         <div>
                             <p className="text-xs font-bold text-gray-600 mb-2">
-                                아래 입력란에 <span className="text-red-500">"탈퇴합니다"</span>라고 입력하세요
+                                {t('profile.withdrawConfirmLabel')} <span className="text-red-500">{t('profile.withdrawConfirmHighlight')}</span>{t('profile.withdrawConfirmSuffix')}
                             </p>
                             <input
                                 type="text"
                                 value={withdrawConfirmText}
                                 onChange={e => setWithdrawConfirmText(e.target.value)}
-                                placeholder="탈퇴합니다"
+                                placeholder={t('profile.withdrawConfirmPlaceholder')}
                                 className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-center font-bold focus:outline-none focus:ring-2 focus:ring-red-300 placeholder:text-gray-300"
                                 disabled={withdrawing}
                             />
@@ -227,16 +267,16 @@ export default function ProfilePage() {
                                 onClick={() => setShowWithdrawModal(false)}
                                 disabled={withdrawing}
                                 className="flex-1 py-3 rounded-xl border border-gray-200 text-gray-600 font-bold text-sm hover:bg-gray-50 transition"
-                            >취소</button>
+                            >{t('profile.withdrawCancelBtn')}</button>
                             <button
                                 onClick={handleWithdraw}
-                                disabled={withdrawConfirmText !== '탈퇴합니다' || withdrawing}
+                                disabled={withdrawConfirmText !== t('profile.withdrawConfirmKeyword') || withdrawing}
                                 className={`flex-1 py-3 rounded-xl font-bold text-sm transition ${
-                                    withdrawConfirmText === '탈퇴합니다' && !withdrawing
+                                    withdrawConfirmText === t('profile.withdrawConfirmKeyword') && !withdrawing
                                         ? 'bg-red-500 hover:bg-red-600 text-white'
                                         : 'bg-gray-100 text-gray-300 cursor-not-allowed'
                                 }`}
-                            >{withdrawing ? '처리 중...' : '탈퇴하기'}</button>
+                            >{withdrawing ? t('profile.withdrawing') : t('profile.withdrawSubmitBtn')}</button>
                         </div>
                     </div>
                 </div>
@@ -248,7 +288,7 @@ export default function ProfilePage() {
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col w-full lg:px-8 lg:py-8 lg:items-stretch">
             <header className="w-full bg-white p-4 border-b border-gray-100 flex justify-center lg:justify-start items-center shadow-sm lg:text-left lg:mb-8 lg:bg-transparent lg:border-none lg:p-0 lg:mt-8">
-                <h1 className="text-xl lg:text-2xl lg:font-bold">프로필 관리</h1>
+                <h1 className="text-xl lg:text-2xl lg:font-bold">{t('profile.title')}</h1>
             </header>
 
             <main className="flex-1 w-full space-y-6 mt-4">
@@ -262,13 +302,13 @@ export default function ProfilePage() {
                         onClick={handleLogout}
                         className="text-sm text-gray-400 hover:text-gray-500 underline underline-offset-4 transition"
                     >
-                        로그아웃
+                        {t('profile.logout')}
                     </button>
                     <button
                         onClick={() => { setShowWithdrawModal(true); setWithdrawReason(''); setWithdrawConfirmText(''); }}
                         className="text-xs text-gray-300 hover:text-red-400 transition"
                     >
-                        회원 탈퇴
+                        {t('profile.withdraw')}
                     </button>
                 </div>
             </main>
@@ -279,39 +319,39 @@ export default function ProfilePage() {
                     <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl p-6 flex flex-col gap-4">
                         <div className="text-center">
                             <span className="text-4xl block mb-2">😢</span>
-                            <h3 className="text-lg font-black text-gray-800">정말 탈퇴하시겠어요?</h3>
+                            <h3 className="text-lg font-black text-gray-800">{t('profile.withdrawModalTitle')}</h3>
                             <p className="text-xs text-gray-500 mt-1 leading-relaxed">
-                                탈퇴 시 개인정보는 즉시 삭제되며<br />거래 내역은 법적 보존 기간 동안 보관됩니다.
+                                {t('profile.withdrawModalDesc')}
                             </p>
                         </div>
 
                         {/* 탈퇴 사유 선택 */}
                         <div>
-                            <p className="text-xs font-bold text-gray-600 mb-2">탈퇴 사유 (선택)</p>
+                            <p className="text-xs font-bold text-gray-600 mb-2">{t('profile.withdrawReasonLabel')}</p>
                             <select
                                 value={withdrawReason}
                                 onChange={e => setWithdrawReason(e.target.value)}
                                 className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-red-300"
                             >
-                                <option value="">사유를 선택해주세요</option>
-                                <option value="서비스 불만족">서비스 불만족</option>
-                                <option value="이용 빈도 낮음">이용 빈도 낮음</option>
-                                <option value="개인정보 우려">개인정보 우려</option>
-                                <option value="다른 서비스 이용">다른 서비스 이용</option>
-                                <option value="기타">기타</option>
+                                <option value="">{t('profile.withdrawReasonPlaceholder')}</option>
+                                <option value="서비스 불만족">{t('profile.withdrawReason1')}</option>
+                                <option value="이용 빈도 낮음">{t('profile.withdrawReason2')}</option>
+                                <option value="개인정보 우려">{t('profile.withdrawReason3')}</option>
+                                <option value="다른 서비스 이용">{t('profile.withdrawReason4')}</option>
+                                <option value="기타">{t('profile.withdrawReason5')}</option>
                             </select>
                         </div>
 
                         {/* 확인 텍스트 입력 */}
                         <div>
                             <p className="text-xs font-bold text-gray-600 mb-2">
-                                아래 입력란에 <span className="text-red-500">"탈퇴합니다"</span>라고 입력하세요
+                                {t('profile.withdrawConfirmLabel')} <span className="text-red-500">{t('profile.withdrawConfirmHighlight')}</span>{t('profile.withdrawConfirmSuffix')}
                             </p>
                             <input
                                 type="text"
                                 value={withdrawConfirmText}
                                 onChange={e => setWithdrawConfirmText(e.target.value)}
-                                placeholder="탈퇴합니다"
+                                placeholder={t('profile.withdrawConfirmPlaceholder')}
                                 className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-center font-bold focus:outline-none focus:ring-2 focus:ring-red-300 placeholder:text-gray-300"
                                 disabled={withdrawing}
                             />
@@ -323,16 +363,16 @@ export default function ProfilePage() {
                                 onClick={() => setShowWithdrawModal(false)}
                                 disabled={withdrawing}
                                 className="flex-1 py-3 rounded-xl border border-gray-200 text-gray-600 font-bold text-sm hover:bg-gray-50 transition"
-                            >취소</button>
+                            >{t('profile.withdrawCancelBtn')}</button>
                             <button
                                 onClick={handleWithdraw}
-                                disabled={withdrawConfirmText !== '탈퇴합니다' || withdrawing}
+                                disabled={withdrawConfirmText !== t('profile.withdrawConfirmKeyword') || withdrawing}
                                 className={`flex-1 py-3 rounded-xl font-bold text-sm transition ${
-                                    withdrawConfirmText === '탈퇴합니다' && !withdrawing
+                                    withdrawConfirmText === t('profile.withdrawConfirmKeyword') && !withdrawing
                                         ? 'bg-red-500 hover:bg-red-600 text-white'
                                         : 'bg-gray-100 text-gray-300 cursor-not-allowed'
                                 }`}
-                            >{withdrawing ? '처리 중...' : '탈퇴하기'}</button>
+                            >{withdrawing ? t('profile.withdrawing') : t('profile.withdrawSubmitBtn')}</button>
                         </div>
                     </div>
                 </div>
@@ -353,6 +393,7 @@ function ProfileHeader({ user, role, tableName, idColumn, onLogout, reviewHref }
     onLogout: () => void;
     reviewHref?: string;
 }) {
+    const t = useTranslations();
     const { showToast } = useToast();
     const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
     const [nickname, setNickname] = useState<string>('');
@@ -434,24 +475,24 @@ function ProfileHeader({ user, role, tableName, idColumn, onLogout, reviewHref }
 
         if (value.trim() === nickname) {
             setNicknameStatus('available');
-            setNicknameMsg('현재 사용 중인 활동명입니다.');
+            setNicknameMsg(t('profile.nicknameCurrent'));
             return;
         }
 
         if (value.trim().length < 2) {
             setNicknameStatus('error');
-            setNicknameMsg('활동명은 2자 이상이어야 합니다.');
+            setNicknameMsg(t('profile.nicknameTooShort'));
             return;
         }
 
         if (value.trim().length > 20) {
             setNicknameStatus('error');
-            setNicknameMsg('활동명은 20자 이하여야 합니다.');
+            setNicknameMsg(t('profile.nicknameTooLong'));
             return;
         }
 
         setNicknameStatus('checking');
-        setNicknameMsg('중복 확인 중...');
+        setNicknameMsg(t('profile.nicknameChecking'));
 
         debounceRef.current = setTimeout(async () => {
             try {
@@ -464,14 +505,14 @@ function ProfileHeader({ user, role, tableName, idColumn, onLogout, reviewHref }
 
                 if (data === true) {
                     setNicknameStatus('taken');
-                    setNicknameMsg('이미 사용 중인 활동명입니다.');
+                    setNicknameMsg(t('profile.nicknameTaken'));
                 } else {
                     setNicknameStatus('available');
-                    setNicknameMsg('사용 가능한 활동명입니다! ✓');
+                    setNicknameMsg(t('profile.nicknameAvailable'));
                 }
             } catch {
                 setNicknameStatus('error');
-                setNicknameMsg('중복 확인에 실패했습니다.');
+                setNicknameMsg(t('profile.nicknameCheckFailed'));
             }
         }, 300);
     }, [user.id, nickname]);
@@ -483,19 +524,19 @@ function ProfileHeader({ user, role, tableName, idColumn, onLogout, reviewHref }
 
         // [방어 1] 쿨다운 체크 (DB Single Source of Truth 기준)
         if (cooldownRemaining > 0) {
-            showToast(`프로필 사진은 ${cooldownRemaining}일 후에 변경할 수 있습니다.`, 'error');
+            showToast(t('profile.photoCooldownToast').replace('{days}', String(cooldownRemaining)), 'error');
             return;
         }
 
         // [방어 2] 이미지 파일만 허용
         if (!file.type.startsWith('image/')) {
-            showToast('이미지 파일만 업로드할 수 있습니다.', 'error');
+            showToast(t('profile.photoTypeError'), 'error');
             return;
         }
 
         // [방어 3] 파일 크기 5MB 이하
         if (file.size > PROFILE_IMAGE_MAX_SIZE_BYTES) {
-            showToast('파일 크기는 5MB 이하여야 합니다.', 'error');
+            showToast(t('profile.photoSizeError'), 'error');
             return;
         }
 
@@ -535,9 +576,9 @@ function ProfileHeader({ user, role, tableName, idColumn, onLogout, reviewHref }
             setAvatarUrl(publicUrl);
             setImageUpdatedAt(now);
             setCooldownRemaining(PROFILE_IMAGE_COOLDOWN_DAYS);
-            showToast('프로필 사진이 성공적으로 변경되었습니다.', 'success');
+            showToast(t('profile.photoSuccess'), 'success');
         } catch (err: any) {
-            showToast('사진 업로드 실패: ' + (err.message || '알 수 없는 오류'), 'error');
+            showToast(t('profile.photoUploadError') + (err.message || t('common.unknown')), 'error');
         } finally {
             setUploading(false);
         }
@@ -546,13 +587,13 @@ function ProfileHeader({ user, role, tableName, idColumn, onLogout, reviewHref }
     // 활동명 저장
     const handleSaveNickname = async () => {
         if (nicknameStatus !== 'available') {
-            showToast('활동명을 다시 확인해주세요.', 'error');
+            showToast(t('profile.nicknameCheckError'), 'error');
             return;
         }
 
         // 쿨다운 체크 (DB Single Source of Truth 기준)
         if (nicknameCooldown > 0) {
-            showToast(`활동명은 ${nicknameCooldown}일 후에 변경할 수 있습니다.`, 'error');
+            showToast(t('profile.nicknameCooldownToast').replace('{days}', String(nicknameCooldown)), 'error');
             return;
         }
 
@@ -568,12 +609,12 @@ function ProfileHeader({ user, role, tableName, idColumn, onLogout, reviewHref }
 
             if (data.success === false) {
                 if (data.error === 'cooldown') {
-                    showToast(`활동명은 ${data.remaining_days}일 후에 변경할 수 있습니다.`, 'error');
+                    showToast(t('profile.nicknameCooldownToast').replace('{days}', String(data.remaining_days)), 'error');
                     setNicknameCooldown(data.remaining_days);
                 } else if (data.error === 'duplicate') {
-                    showToast('이미 사용 중인 활동명입니다.', 'error');
+                    showToast(t('profile.nicknameTaken'), 'error');
                     setNicknameStatus('taken');
-                    setNicknameMsg('이미 사용 중인 활동명입니다.');
+                    setNicknameMsg(t('profile.nicknameTaken'));
                 }
                 return;
             }
@@ -582,17 +623,17 @@ function ProfileHeader({ user, role, tableName, idColumn, onLogout, reviewHref }
             setNickname(newNickname.trim());
             setNicknameUpdatedAt(now);
             setNicknameCooldown(NICKNAME_COOLDOWN_DAYS);
-            showToast('활동명이 변경되었습니다.', 'success');
+            showToast(t('profile.nicknameSuccess'), 'success');
             setShowSettings(false);
         } catch (err: any) {
-            showToast('활동명 저장 실패: ' + (err.message || '알 수 없는 오류'), 'error');
+            showToast(t('profile.nicknameSaveError') + (err.message || t('common.unknown')), 'error');
         } finally {
             setSaving(false);
         }
     };
 
-    const roleLabel = role === 'CUSTOMER' ? '고객님' : '고수님';
-    const displayName = nickname || user.email?.split('@')[0] || '사용자';
+    const roleLabel = role === 'CUSTOMER' ? t('profile.roleCustomer') : t('profile.rolePro');
+    const displayName = nickname || user.email?.split('@')[0] || t('profile.proDefaultName');
 
     return (
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
@@ -604,7 +645,7 @@ function ProfileHeader({ user, role, tableName, idColumn, onLogout, reviewHref }
                         {avatarUrl ? (
                             <img
                                 src={avatarUrl}
-                                alt="프로필"
+                                alt={t('profile.avatarAlt')}
                                 className="w-full h-full object-cover"
                             />
                         ) : (
@@ -628,7 +669,7 @@ function ProfileHeader({ user, role, tableName, idColumn, onLogout, reviewHref }
                     </div>
                     <div className="flex items-center gap-1.5 mt-1">
                         <span className="text-xs text-gray-400">✉️</span>
-                        <span className="text-sm text-gray-500 truncate">{user.email || '이메일 없음'}</span>
+                        <span className="text-sm text-gray-500 truncate">{user.email || t('profile.noEmail')}</span>
                     </div>
                 </div>
 
@@ -640,7 +681,7 @@ function ProfileHeader({ user, role, tableName, idColumn, onLogout, reviewHref }
                         : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
                         }`}
                 >
-                    계정 설정
+                    {t('profile.accountSettings')}
                 </button>
             </div>
 
@@ -653,7 +694,7 @@ function ProfileHeader({ user, role, tableName, idColumn, onLogout, reviewHref }
                     >
                         <span>⭐</span>
                         <span>{reviewStats.avg.toFixed(1)}</span>
-                        <span className="text-yellow-500/70 text-xs">({reviewStats.count}건)</span>
+                        <span className="text-yellow-500/70 text-xs">({reviewStats.count}{t('profile.proReviewCount')})</span>
                     </button>
                 </div>
             )}
@@ -664,7 +705,7 @@ function ProfileHeader({ user, role, tableName, idColumn, onLogout, reviewHref }
                     {/* 프로필 사진 변경 */}
                     <div className="space-y-3">
                         <label className="text-sm font-bold text-gray-700 flex items-center gap-2">
-                            📷 프로필 사진
+                            {t('profile.photoLabel')}
                         </label>
                         <div className="flex items-center gap-4">
                             <div className="w-20 h-20 rounded-full overflow-hidden bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center border-2 border-gray-100 shadow-inner">
@@ -686,13 +727,9 @@ function ProfileHeader({ user, role, tableName, idColumn, onLogout, reviewHref }
                                     disabled={uploading || cooldownRemaining > 0}
                                     className="bg-white hover:bg-gray-50 text-gray-700 font-medium text-sm px-4 py-2.5 rounded-xl border border-gray-200 transition disabled:opacity-50 shadow-sm"
                                 >
-                                    {uploading
-                                        ? '업로드 중...'
-                                        : cooldownRemaining > 0
-                                            ? `${cooldownRemaining}일 후 변경 가능`
-                                            : avatarUrl ? '사진 변경' : '사진 등록'}
+                                    {uploading ? t('profile.photoUploading') : cooldownRemaining > 0 ? `${cooldownRemaining} ${t('profile.photoCooldown')}` : t('profile.photoUploadBtn')}
                                 </button>
-                                <span className="text-[11px] text-gray-400">JPG, PNG (최대 5MB)</span>
+                                <span className="text-[11px] text-gray-400">{t('profile.proPhotoSpec')}</span>
                             </div>
                             <input
                                 ref={fileInputRef}
@@ -707,8 +744,8 @@ function ProfileHeader({ user, role, tableName, idColumn, onLogout, reviewHref }
                     {/* 활동명 수정 */}
                     <div className="space-y-3">
                         <label className="text-sm font-bold text-gray-700 flex items-center gap-2">
-                            ✏️ 히든프로 활동명
-                            <span className="text-xs text-gray-400 font-normal">(2~20자, 중복 불가)</span>
+                            ✏️ {t('profile.nicknameLabel')}
+                            <span className="text-xs text-gray-400 font-normal">{t('profile.proNicknameRule')}</span>
                         </label>
                         <div className="flex gap-2">
                             <div className="flex-1 relative">
@@ -719,7 +756,7 @@ function ProfileHeader({ user, role, tableName, idColumn, onLogout, reviewHref }
                                         setNewNickname(e.target.value);
                                         checkNickname(e.target.value);
                                     }}
-                                    placeholder="활동명을 입력하세요"
+                                    placeholder={t('profile.nicknamePlaceholder')}
                                     maxLength={20}
                                     className={`w-full p-3 border rounded-xl focus:outline-none focus:ring-2 transition text-sm ${nicknameStatus === 'taken' || nicknameStatus === 'error'
                                         ? 'border-red-300 focus:ring-red-500 bg-red-50/50'
@@ -739,11 +776,7 @@ function ProfileHeader({ user, role, tableName, idColumn, onLogout, reviewHref }
                                 disabled={saving || nicknameStatus !== 'available' || nicknameCooldown > 0}
                                 className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-3 rounded-xl transition text-sm whitespace-nowrap disabled:bg-gray-300 disabled:cursor-not-allowed shadow-sm"
                             >
-                                {saving
-                                    ? '저장 중...'
-                                    : nicknameCooldown > 0
-                                        ? `${nicknameCooldown}일 후 변경 가능`
-                                        : '활동명 저장'}
+                                {saving ? t('profile.nicknameSaving') : nicknameCooldown > 0 ? t('profile.nicknameCooldownBtn').replace('{days}', String(nicknameCooldown)) : t('profile.nicknameSaveBtn')}
                             </button>
                         </div>
                         {/* 중복 체크 메시지 */}
@@ -769,6 +802,7 @@ function ProfileHeader({ user, role, tableName, idColumn, onLogout, reviewHref }
 // 고객 프로필 (기본 정보)
 // ─────────────────────────────────────────────
 function CustomerProfile({ user }: { user: any }) {
+    const t = useTranslations();
     const { showToast } = useToast();
     const [phoneData, setPhoneData] = useState<{ is_phone_verified: boolean; phone: string } | null>(null);
     const [joinDate, setJoinDate] = useState<string>('');
@@ -788,7 +822,7 @@ function CustomerProfile({ user }: { user: any }) {
                 if (data) {
                     setPhoneData(data);
                     if (data.created_at) {
-                        setJoinDate(new Date(data.created_at).toLocaleDateString('ko-KR', {
+                        setJoinDate(new Date(data.created_at).toLocaleDateString('en-US', {
                             year: 'numeric', month: 'long', day: 'numeric'
                         }));
                     }
@@ -802,23 +836,23 @@ function CustomerProfile({ user }: { user: any }) {
                     .eq('is_hidden', false);
                 if (count !== null) setReviewCount(count);
             } catch (e) {
-                console.warn('고객 프로필 데이터 조회 실패 (무시 가능)');
+                console.warn('CustomerProfile data fetch failed (ignorable)');
             }
         };
         fetchData();
     }, [user.id]);
 
     const handlePhoneVerify = async () => {
-        if (!phoneInput.trim()) { showToast('휴대폰 번호를 입력해주세요.', 'error'); return; }
+        if (!phoneInput.trim()) { showToast(t('profile.phoneInputError'), 'error'); return; }
         setVerifyingPhone(true);
         try {
             const { mockVerifyCustomerPhone } = await import('@/lib/mockAuth');
             await mockVerifyCustomerPhone(user.id, phoneInput);
             setPhoneData(prev => ({ ...prev!, is_phone_verified: true, phone: phoneInput.replace(/[\s\-]/g, '') }));
             setPhoneInput('');
-            showToast('전화번호 인증이 완료되었습니다.', 'success');
+            showToast(t('profile.phoneVerifySuccess'), 'success');
         } catch (e: any) {
-            showToast('인증 실패: ' + e.message, 'error');
+            showToast(t('profile.phoneVerifyError') + e.message, 'error');
         } finally {
             setVerifyingPhone(false);
         }
@@ -826,17 +860,17 @@ function CustomerProfile({ user }: { user: any }) {
 
     return (
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-4">
-            <h2 className="text-lg font-bold text-gray-800 border-b pb-2">기본 정보</h2>
+            <h2 className="text-lg font-bold text-gray-800 border-b pb-2">{t('profile.basicInfo')}</h2>
             <div className="space-y-3">
                 <div className="flex flex-col">
-                    <span className="text-xs text-gray-500 font-medium mb-1">이메일 계정</span>
+                    <span className="text-xs text-gray-500 font-medium mb-1">{t('profile.emailLabel')}</span>
                     <span className="text-gray-900 font-medium bg-gray-50 p-3 rounded-lg border border-gray-100">
-                        {user.email || '이메일 정보 없음'}
+                        {user.email || t('profile.noEmailInfo')}
                     </span>
                 </div>
                 {phoneData?.is_phone_verified && phoneData?.phone ? (
                     <div className="flex flex-col">
-                        <span className="text-xs text-gray-500 font-medium mb-1">인증된 전화번호</span>
+                        <span className="text-xs text-gray-500 font-medium mb-1">{t('profile.verifiedPhone')}</span>
                         <span className="text-gray-900 font-medium bg-green-50 p-3 rounded-lg border border-green-200 flex items-center gap-2">
                             <span className="text-green-600 text-sm">✅</span>
                             {phoneData.phone}
@@ -844,13 +878,13 @@ function CustomerProfile({ user }: { user: any }) {
                     </div>
                 ) : (
                     <div className="flex flex-col">
-                        <span className="text-xs text-gray-500 font-medium mb-1">전화번호 인증</span>
+                        <span className="text-xs text-gray-500 font-medium mb-1">{t('profile.phoneVerification')}</span>
                         <div className="flex gap-2">
                             <input
                                 type="tel"
                                 value={phoneInput}
                                 onChange={e => setPhoneInput(e.target.value)}
-                                placeholder="예: 09171234567"
+                                placeholder={t('profile.phonePlaceholder')}
                                 className="flex-1 p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
                                 disabled={verifyingPhone}
                             />
@@ -859,15 +893,15 @@ function CustomerProfile({ user }: { user: any }) {
                                 disabled={verifyingPhone || !phoneInput.trim()}
                                 className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-lg text-sm transition disabled:opacity-50 whitespace-nowrap"
                             >
-                                {verifyingPhone ? '인증 중...' : '인증하기'}
+                                {verifyingPhone ? t('profile.phoneVerifying') : t('profile.phoneVerifyBtn')}
                             </button>
                         </div>
-                        <span className="text-xs text-gray-400 mt-1">2번째 견적 요청부터 전화번호 인증이 필요합니다.</span>
+                        <span className="text-xs text-gray-400 mt-1">{t('profile.phoneNote')}</span>
                     </div>
                 )}
                 {joinDate && (
                     <div className="flex flex-col">
-                        <span className="text-xs text-gray-500 font-medium mb-1">가입일</span>
+                        <span className="text-xs text-gray-500 font-medium mb-1">{t('profile.joinDate')}</span>
                         <span className="text-gray-900 font-medium bg-gray-50 p-3 rounded-lg border border-gray-100 flex items-center gap-2">
                             <span className="text-gray-400 text-sm">📅</span>
                             {joinDate}
@@ -875,11 +909,11 @@ function CustomerProfile({ user }: { user: any }) {
                     </div>
                 )}
                 <div className="flex flex-col cursor-pointer group" onClick={() => window.location.href = '/customer/my-reviews'}>
-                    <span className="text-xs text-gray-500 font-medium mb-1">작성한 리뷰</span>
+                    <span className="text-xs text-gray-500 font-medium mb-1">{t('profile.myReviewsLabel')}</span>
                     <span className="text-gray-900 font-medium bg-yellow-50 p-3 rounded-lg border border-yellow-200 flex items-center gap-2 group-hover:bg-yellow-100 group-hover:border-yellow-300 transition">
                         <span className="text-yellow-500 text-sm">⭐</span>
-                        {reviewCount}건
-                        <span className="ml-auto text-gray-400 text-xs group-hover:text-yellow-600 transition">보기 →</span>
+                        {reviewCount} {t('profile.reviewsCount')}
+                        <span className="ml-auto text-gray-400 text-xs group-hover:text-yellow-600 transition">{t('profile.viewBtn')}</span>
                     </span>
                 </div>
             </div>
@@ -892,6 +926,10 @@ function CustomerProfile({ user }: { user: any }) {
 // 고수 프로필 (전문가 정보 관리)
 // ─────────────────────────────────────────────
 function ProProfile({ user }: { user: any }) {
+    const t = useTranslations();
+    const locale = typeof document !== 'undefined'
+        ? (document.cookie.split('; ').find(r => r.startsWith('locale='))?.split('=')[1] ?? 'en')
+        : 'en';
     const { showToast } = useToast();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -923,19 +961,25 @@ function ProProfile({ user }: { user: any }) {
     const [selectedCity, setSelectedCity] = useState<string>('');
 
     const [serviceCategories, setServiceCategories] = useState<Record<string, Record<string, string[]>>>({});
+    const [koToEnService, setKoToEnService] = useState<Record<string, string>>({});
 
     useEffect(() => {
         const loadCategories = async () => {
-            const { data } = await supabase.from('categories').select('name, depth1, depth2').eq('is_active', true).order('sort_order', { ascending: true });
+            const { data } = await supabase.from('categories').select('name, name_en, depth1, depth2').eq('is_active', true).order('sort_order', { ascending: true });
             if (data) {
                 const tree: Record<string, Record<string, string[]>> = {};
+                const enMap: Record<string, string> = {};
                 data.forEach(item => {
                     if (!item.depth1 || !item.depth2) return;
                     if (!tree[item.depth1]) tree[item.depth1] = {};
                     if (!tree[item.depth1][item.depth2]) tree[item.depth1][item.depth2] = [];
                     tree[item.depth1][item.depth2].push(item.name);
+                    if (item.name_en) {
+                        enMap[item.name] = item.name_en;
+                    }
                 });
                 setServiceCategories(tree);
+                setKoToEnService(enMap);
             }
         };
         loadCategories();
@@ -995,7 +1039,7 @@ function ProProfile({ user }: { user: any }) {
             .update({ is_accepting_requests: newVal })
             .eq('pro_id', user.id);
         if (error) {
-            showToast('상태 업데이트에 실패했습니다.', 'error');
+            showToast(t('profile.proStatusUpdateError'), 'error');
             setIsAcceptingRequests(!newVal);
         }
     };
@@ -1007,7 +1051,7 @@ function ProProfile({ user }: { user: any }) {
                 return { ...prev, services: prev.services.filter(s => s !== service) };
             } else {
                 if (prev.services.length >= 5) {
-                    showToast('제공 서비스는 최대 5개까지만 선택할 수 있습니다.', 'error');
+                    showToast(t('profile.maxServices'), 'error');
                     return prev;
                 }
                 return { ...prev, services: [...prev.services, service] };
@@ -1026,7 +1070,7 @@ function ProProfile({ user }: { user: any }) {
         }
 
         if (formData.services.length > 5) {
-            showToast('제공 서비스는 최대 5개까지만 선택할 수 있습니다.', 'error');
+            showToast(t('profile.maxServices'), 'error');
             return;
         }
 
@@ -1044,15 +1088,15 @@ function ProProfile({ user }: { user: any }) {
         setSaving(false);
 
         if (error) {
-            showToast('저장 중 오류가 발생했습니다: ' + error.message, 'error');
+            showToast(t('profile.proSaveError') + error.message, 'error');
         } else {
             setIsSaved(true);
             setTimeout(() => setIsSaved(false), 2500);
-            showToast('프로필이 성공적으로 저장되었습니다.', 'success');
+            showToast(t('profile.proSaveSuccess'), 'success');
         }
     };
 
-    if (loading) return <div className="text-center p-4 text-gray-500">프로필 정보를 불러오는 중입니다...</div>;
+    if (loading) return <div className="text-center p-4 text-gray-500">{t('profile.loading')}</div>;
 
     const depth1Keys = Object.keys(serviceCategories);
     const depth2Keys = selectedDepth1 ? Object.keys(serviceCategories[selectedDepth1] || {}) : [];
@@ -1062,7 +1106,7 @@ function ProProfile({ user }: { user: any }) {
     const cityItems = selectedReg ? PHILIPPINES_REGIONS[selectedReg] || [] : [];
 
     const handleFbLink = async () => {
-        if (!facebookInput.trim()) { showToast('URL을 입력해주세요.', 'error'); return; }
+        if (!facebookInput.trim()) { showToast(t('profile.facebookUrlRequired'), 'error'); return; }
         setLinkingFb(true);
         try {
             await mockLinkFacebook(user.id, facebookInput);
@@ -1075,7 +1119,7 @@ function ProProfile({ user }: { user: any }) {
     };
 
     const handlePhoneVerify = async () => {
-        if (!phoneInput.trim()) { showToast('전화번호를 입력해주세요.', 'error'); return; }
+        if (!phoneInput.trim()) { showToast(t('profile.proPhoneRequired'), 'error'); return; }
         setVerifyingPhone(true);
         try {
             await mockVerifyProPhone(user.id, phoneInput);
@@ -1090,16 +1134,16 @@ function ProProfile({ user }: { user: any }) {
 
     return (
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-            <h2 className="text-lg font-bold text-gray-800 border-b pb-4 mb-4">전문가 프로필</h2>
+            <h2 className="text-lg font-bold text-gray-800 border-b pb-4 mb-4">{t('profile.proProfileTitle')}</h2>
 
             {/* 매칭 일시 정지 토글 섹션 */}
             <div className="bg-blue-50 p-5 rounded-xl border border-blue-100 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h3 className="font-bold text-gray-800 flex items-center gap-2">
-                        {isAcceptingRequests ? '🔵 새로운 견적 요청 받기 (On)' : '⚪ 새로운 견적 요청 받기 (Off)'}
+                        {isAcceptingRequests ? t('profile.proAcceptingOn') : t('profile.proAcceptingOff')}
                     </h3>
                     <p className="text-sm text-gray-500 mt-1">
-                        일정이 꽉 찼거나, 수면·휴식 등으로 알림을 원하지 않을 때 잠시 꺼두세요. 매칭 알림이 차단되며 요청 리스트가 일시적으로 숨겨집니다.
+                        {t('profile.proAcceptingDesc')}
                     </p>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer flex-shrink-0">
@@ -1126,19 +1170,19 @@ function ProProfile({ user }: { user: any }) {
                     </span>
                 )}
                 {!isPhoneVerified && !facebookUrl && (
-                    <span className="text-xs text-gray-400">아직 인증된 항목이 없습니다.</span>
+                    <span className="text-xs text-gray-400">{t('profile.proNoBadges')}</span>
                 )}
             </div>
 
             {/* 전화번호 인증 섹션 */}
             <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 mb-4 space-y-3">
                 <label className="text-sm font-bold text-gray-700 flex items-center gap-2">
-                    📞 전화번호 인증
-                    {isPhoneVerified && <span className="text-green-600 text-xs">(인증 완료)</span>}
+                    {t('profile.proPhoneVerifyLabel')}
+                    {isPhoneVerified && <span className="text-green-600 text-xs">{t('profile.proPhoneVerified')}</span>}
                 </label>
                 {isPhoneVerified ? (
                     <div className="bg-green-50 text-green-700 p-3 rounded-lg text-sm font-medium border border-green-200">
-                        ✅ 인증 완료: {proPhone}
+                        {t('profile.proPhoneVerifiedText')} {proPhone}
                     </div>
                 ) : (
                     <div className="flex gap-2">
@@ -1146,7 +1190,7 @@ function ProProfile({ user }: { user: any }) {
                             type="tel"
                             value={phoneInput}
                             onChange={e => setPhoneInput(e.target.value)}
-                            placeholder="예: 09171234567"
+                            placeholder={t('profile.proPhonePlaceholder')}
                             className="flex-1 p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:outline-none transition text-sm"
                         />
                         <button
@@ -1155,7 +1199,7 @@ function ProProfile({ user }: { user: any }) {
                             disabled={verifyingPhone}
                             className="bg-green-600 hover:bg-green-700 text-white font-bold px-4 py-3 rounded-xl transition text-sm whitespace-nowrap disabled:bg-green-300"
                         >
-                            {verifyingPhone ? '처리 중...' : '인증하기'}
+                            {verifyingPhone ? t('profile.proPhoneProcessing') : t('profile.proPhoneVerifyBtn')}
                         </button>
                     </div>
                 )}
@@ -1164,8 +1208,8 @@ function ProProfile({ user }: { user: any }) {
             {/* Facebook 연동 섹션 */}
             <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 mb-4 space-y-3">
                 <label className="text-sm font-bold text-gray-700 flex items-center gap-2">
-                    🔵 Facebook 연동
-                    {facebookUrl && <span className="text-blue-600 text-xs">(연동 완료)</span>}
+                    {t('profile.proFbLinkLabel')}
+                    {facebookUrl && <span className="text-blue-600 text-xs">{t('profile.proFbLinked')}</span>}
                 </label>
                 {facebookUrl && !editingFb ? (
                     <div className="flex items-center gap-2">
@@ -1177,7 +1221,7 @@ function ProProfile({ user }: { user: any }) {
                             onClick={() => setEditingFb(true)}
                             className="flex-shrink-0 text-xs font-bold text-blue-600 hover:text-blue-800 bg-white px-3 py-2 rounded-lg border border-blue-200 hover:bg-blue-50 transition"
                         >
-                            수정
+                            {t('profile.proFbEditBtn')}
                         </button>
                     </div>
                 ) : (
@@ -1198,7 +1242,7 @@ function ProProfile({ user }: { user: any }) {
                             disabled={linkingFb}
                             className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-3 rounded-xl transition text-sm whitespace-nowrap disabled:bg-blue-300"
                         >
-                            {linkingFb ? '처리 중...' : '연동하기'}
+                            {linkingFb ? t('profile.proFbProcessing') : t('profile.proFbLinkBtn')}
                         </button>
                         {facebookUrl && (
                             <button
@@ -1209,7 +1253,7 @@ function ProProfile({ user }: { user: any }) {
                                 }}
                                 className="text-gray-400 hover:text-gray-600 font-bold px-2 transition text-sm"
                             >
-                                취소
+                                {t('profile.proFbCancelBtn')}
                             </button>
                         )}
                     </div>
@@ -1218,13 +1262,13 @@ function ProProfile({ user }: { user: any }) {
 
             <form onSubmit={handleSave} className="space-y-6">
                 <div className="flex flex-col space-y-2">
-                    <label className="text-sm font-bold text-gray-700">한 줄 소개 <span className="text-xs text-gray-400 font-normal ml-1">(50자 이내)</span></label>
+                    <label className="text-sm font-bold text-gray-700">{t('profile.proIntroLabel')} <span className="text-xs text-gray-400 font-normal ml-1">{t('profile.proIntroLimit')}</span></label>
                     <input
                         type="text"
                         value={formData.intro}
                         onChange={e => setFormData({ ...formData, intro: e.target.value })}
                         maxLength={50}
-                        placeholder="고객을 사로잡을 한 줄 소개를 입력하세요."
+                        placeholder={t('profile.proIntroPlaceholder')}
                         className="p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
                         required
                     />
@@ -1232,18 +1276,18 @@ function ProProfile({ user }: { user: any }) {
                 </div>
 
                 <div className="flex flex-col space-y-2">
-                    <label className="text-sm font-bold text-gray-700">상세 소개 <span className="text-xs text-gray-400 font-normal ml-1">(영업시간, 서비스 상세 등)</span></label>
+                    <label className="text-sm font-bold text-gray-700">{t('profile.proDetailedLabel')} <span className="text-xs text-gray-400 font-normal ml-1">{t('profile.proDetailedLimit')}</span></label>
                     <textarea
                         value={formData.detailed_intro}
                         onChange={e => setFormData({ ...formData, detailed_intro: e.target.value })}
                         rows={5}
-                        placeholder="영업시간, 제공 서비스 상세, 경력 등을 자유롭게 작성해주세요."
+                        placeholder={t('profile.proDetailedPlaceholder')}
                         className="p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition resize-none text-sm"
                     />
                 </div>
 
                 <div className="flex flex-col space-y-3">
-                    <label className="text-sm font-bold text-gray-700">활동 지역 (필리핀)</label>
+                    <label className="text-sm font-bold text-gray-700">{t('profile.proRegionLabel')}</label>
                     <div className="grid grid-cols-2 gap-3">
                         <select
                             value={selectedReg}
@@ -1254,9 +1298,9 @@ function ProProfile({ user }: { user: any }) {
                             className="p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition bg-white"
                             required
                         >
-                            <option value="" disabled>Region 선택</option>
+                            <option value="" disabled>{t('profile.proRegionPlaceholder')}</option>
                             {regionKeys.map(r => (
-                                <option key={r} value={r}>{r}</option>
+                                <option key={r} value={r}>{(locale === 'en' && r === '전체') ? 'All Regions' : r}</option>
                             ))}
                         </select>
                         <select
@@ -1266,7 +1310,7 @@ function ProProfile({ user }: { user: any }) {
                             required
                             disabled={!selectedReg}
                         >
-                            <option value="" disabled>City 선택</option>
+                            <option value="" disabled>{t('profile.proCityPlaceholder')}</option>
                             {cityItems.map(c => (
                                 <option key={c} value={c}>{c}</option>
                             ))}
@@ -1276,7 +1320,7 @@ function ProProfile({ user }: { user: any }) {
 
                 <div className="flex flex-col space-y-3 border-t pt-4 border-gray-100">
                     <div className="flex justify-between items-end">
-                        <label className="text-sm font-bold text-gray-700">제공 서비스 (최대 5개)</label>
+                        <label className="text-sm font-bold text-gray-700">{t('profile.proServicesLabel')}</label>
                         <span className="text-xs font-bold text-blue-600">{formData.services.length} / 5</span>
                     </div>
 
@@ -1290,8 +1334,8 @@ function ProProfile({ user }: { user: any }) {
                             }}
                             className="p-2 border border-gray-200 rounded-lg text-sm bg-gray-50"
                         >
-                            <option value="">1뎁스 분류</option>
-                            {depth1Keys.map(k => <option key={k} value={k}>{k}</option>)}
+                            <option value="">{t('profile.depth1Placeholder')}</option>
+                            {depth1Keys.map(k => <option key={k} value={k}>{locale === 'en' ? (DEPTH1_EN[k] ?? k) : k}</option>)}
                         </select>
                         <select
                             value={selectedDepth2}
@@ -1299,8 +1343,8 @@ function ProProfile({ user }: { user: any }) {
                             className="p-2 border border-gray-200 rounded-lg text-sm bg-gray-50 disabled:opacity-50"
                             disabled={!selectedDepth1}
                         >
-                            <option value="">2뎁스 분류</option>
-                            {depth2Keys.map(k => <option key={k} value={k}>{k}</option>)}
+                            <option value="">{t('profile.depth2Placeholder')}</option>
+                            {depth2Keys.map(k => <option key={k} value={k}>{locale === 'en' ? (DEPTH2_EN[k] ?? k) : k}</option>)}
                         </select>
                     </div>
 
@@ -1309,6 +1353,7 @@ function ProProfile({ user }: { user: any }) {
                         <div className="bg-gray-50 p-3 rounded-xl border border-gray-200 max-h-48 overflow-y-auto flex flex-col space-y-2">
                             {depth3Items.map(service => {
                                 const isSelected = formData.services.includes(service);
+                                const displayName = (locale === 'en' && koToEnService[service]) ? koToEnService[service] : service;
                                 return (
                                     <label key={service} className="flex items-center space-x-3 p-2 hover:bg-white rounded-lg cursor-pointer transition">
                                         <input
@@ -1318,7 +1363,7 @@ function ProProfile({ user }: { user: any }) {
                                             className="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
                                         />
                                         <span className={`text-sm ${isSelected ? 'font-bold text-blue-700' : 'text-gray-700'}`}>
-                                            {service}
+                                            {displayName}
                                         </span>
                                     </label>
                                 );
@@ -1326,7 +1371,7 @@ function ProProfile({ user }: { user: any }) {
                         </div>
                     ) : (
                         <div className="text-center p-4 bg-gray-50 rounded-xl border border-gray-200 text-xs text-gray-400">
-                            상위 카테고리를 먼저 선택해주세요.
+                            {t('profile.selectParentFirst')}
                         </div>
                     )}
 
@@ -1335,7 +1380,7 @@ function ProProfile({ user }: { user: any }) {
                         <div className="flex flex-wrap gap-2 mt-3 p-3 border border-blue-100 bg-blue-50/50 rounded-xl">
                             {formData.services.map(s => (
                                 <span key={s} className="inline-flex items-center bg-white border border-blue-200 text-blue-700 text-xs px-2 py-1.5 rounded-md shadow-sm">
-                                    {s}
+                                    {(locale === 'en' && koToEnService[s]) ? koToEnService[s] : s}
                                     <button
                                         type="button"
                                         onClick={() => handleServiceToggle(s)}
@@ -1355,7 +1400,7 @@ function ProProfile({ user }: { user: any }) {
                     className={`w-full font-bold py-4 rounded-xl shadow-[0_4px_14px_0_rgba(37,99,235,0.39)] transition mt-4 text-white ${isSaved ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300'
                         }`}
                 >
-                    {saving ? '저장 중...' : isSaved ? '✅ 저장 완료' : '저장하기'}
+                    {saving ? t('profile.savingBtn') : isSaved ? t('profile.savedBtn') : t('profile.saveBtn')}
                 </button>
             </form>
         </div>
@@ -1366,6 +1411,7 @@ function ProProfile({ user }: { user: any }) {
 // 고객 지원 (Customer Support)
 // ─────────────────────────────────────────────
 function CustomerSupportSection() {
+    const t = useTranslations();
     const [categories, setCategories] = useState<any[]>([]);
     const [pages, setPages] = useState<any[]>([]);
     const [expandedCatId, setExpandedCatId] = useState<number | null>(null);
@@ -1387,14 +1433,14 @@ function CustomerSupportSection() {
 
     return (
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <h2 className="text-lg font-bold text-gray-800 p-6 pb-2 border-b border-gray-100">고객 지원</h2>
+            <h2 className="text-lg font-bold text-gray-800 p-6 pb-2 border-b border-gray-100">{t('profile.customerSupport')}</h2>
             <ul className="flex flex-col">
                 <li className="border-b border-gray-50 last:border-0 hover:bg-gray-50 transition cursor-pointer">
                     <Link href="/support/inquiry" className="w-full flex justify-between items-center p-4">
                         <span className="text-sm font-bold text-blue-600 flex items-center gap-2">
-                            <span className="text-lg">💬</span> 1:1 문의하기
+                            <span className="text-lg">💬</span> {t('profile.inquiryLink')}
                         </span>
-                        <span className="text-blue-400 text-xs text-right">내역 확인 &rarr;</span>
+                        <span className="text-blue-400 text-xs text-right">{t('profile.inquiryHistory')}</span>
                     </Link>
                 </li>
                 {categories.map(cat => {
@@ -1413,7 +1459,7 @@ function CustomerSupportSection() {
                             {isExpanded && (
                                 <ul className="bg-gray-50 flex flex-col pt-1 pb-3 px-4 shadow-inner">
                                     {catPages.length === 0 ? (
-                                        <li className="text-xs text-gray-400 py-2 pl-2">등록된 문서가 없습니다.</li>
+                                        <li className="text-xs text-gray-400 py-2 pl-2">{t('profile.noPages')}</li>
                                     ) : (
                                         catPages.map(page => (
                                             <li key={page.id} className="py-1">

@@ -3,8 +3,10 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 export default function NotificationsPage() {
+    const t = useTranslations();
     const router = useRouter();
     const [notifications, setNotifications] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -54,7 +56,7 @@ export default function NotificationsPage() {
                                 name:
                                     u.nickname && u.nickname.trim() !== ''
                                         ? u.nickname
-                                        : u.name || '알 수 없음',
+                                        : u.name || 'Unknown',
                                 avatar: u.avatar_url || null
                             };
                         });
@@ -98,7 +100,7 @@ export default function NotificationsPage() {
 
                 if (userData) {
                     newNotif.sender = {
-                        name: (userData.nickname && userData.nickname.trim() !== '') ? userData.nickname : (userData.name || '알 수 없음'),
+                        name: (userData.nickname && userData.nickname.trim() !== '') ? userData.nickname : (userData.name || 'Unknown'),
                         avatar: userData.avatar_url || null
                     };
                 }
@@ -204,20 +206,20 @@ export default function NotificationsPage() {
         <div className="min-h-screen bg-gray-50 flex flex-col" onClick={() => setOpenMenuId(null)}>
             <header className="bg-white p-4 border-b border-gray-100 sticky top-0 z-10 flex justify-between items-center">
                 <h1 className="text-xl font-bold flex items-center gap-2">
-                    알림
+                    {t('notifications.title')}
                 </h1>
             </header>
 
             <div className="flex-1 overflow-y-auto p-4 space-y-3 pb-24">
                 {loading ? (
-                    <div className="text-center py-10 text-gray-400">알림을 불러오는 중...</div>
+                    <div className="text-center py-10 text-gray-400">{t('notifications.loading')}</div>
                 ) : !currentUser ? (
                     <div className="text-center py-10 text-gray-500 bg-white rounded-xl shadow-sm border border-gray-100">
-                        <p>로그인이 필요합니다.</p>
+                        <p>{t('notifications.loginRequired')}</p>
                     </div>
                 ) : notifications.length === 0 ? (
                     <div className="text-center py-10 text-gray-500 bg-white rounded-xl shadow-sm border border-gray-100 mt-4">
-                        <p>아직 도착한 알림이 없습니다.</p>
+                        <p>{t('notifications.empty')}</p>
                     </div>
                 ) : (
                     notifications.map(notif => (
@@ -283,7 +285,7 @@ export default function NotificationsPage() {
                                         onClick={(e) => deleteNotification(e, notif.id)}
                                         className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50 font-medium"
                                     >
-                                        삭제
+                                        {t('notifications.delete')}
                                     </button>
                                 </div>
                             )}

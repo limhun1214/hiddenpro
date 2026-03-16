@@ -4,10 +4,11 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import QuoteDetailModal from '@/components/customer/QuoteDetailModal';
+import { useTranslations } from 'next-intl';
 
-function ProReviewCard({ review, customerProfile, onClickViewQuote }: { review: any; customerProfile?: { name: string, avatar: string | null }; onClickViewQuote: (review: any) => void }) {
+function ProReviewCard({ review, customerProfile, onClickViewQuote, t }: { review: any; customerProfile?: { name: string, avatar: string | null }; onClickViewQuote: (review: any) => void; t: any }) {
     const [expanded, setExpanded] = useState(false);
-    const comment = review.comment || '코멘트 없음';
+    const comment = review.comment || t('proReviews.noComment');
 
     return (
         <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 space-y-3">
@@ -15,12 +16,12 @@ function ProReviewCard({ review, customerProfile, onClickViewQuote }: { review: 
                 <div className="flex items-center gap-2">
                     <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden border border-gray-200">
                         {customerProfile?.avatar ? (
-                            <img src={customerProfile.avatar} alt="고객 프로필" className="w-full h-full object-cover" />
+                            <img src={customerProfile.avatar} alt="Customer Profile" className="w-full h-full object-cover" />
                         ) : (
                             <svg className="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" /></svg>
                         )}
                     </div>
-                    <span className="font-bold text-gray-800 text-sm">{customerProfile?.name || '고객'}</span>
+                    <span className="font-bold text-gray-800 text-sm">{customerProfile?.name || t('proReviews.unknownCustomer')}</span>
                 </div>
                 <span className="text-xs text-gray-400">{new Date(review.created_at).toLocaleDateString()}</span>
             </div>
@@ -39,7 +40,7 @@ function ProReviewCard({ review, customerProfile, onClickViewQuote }: { review: 
             </div>
             {comment.length > 50 && (
                 <button onClick={() => setExpanded(!expanded)} className="text-xs text-blue-500 font-medium hover:underline">
-                    {expanded ? '접기 ▲' : '더보기 ▼'}
+                    {expanded ? t('proReviews.collapse') : t('proReviews.expand')}
                 </button>
             )}
 
@@ -49,7 +50,7 @@ function ProReviewCard({ review, customerProfile, onClickViewQuote }: { review: 
                         onClick={() => onClickViewQuote(review)}
                         className="w-full sm:w-auto justify-center text-xs font-bold text-blue-600 hover:text-blue-800 bg-blue-50 px-4 py-2 rounded-lg border border-blue-200 transition-colors flex items-center gap-1"
                     >
-                        <span>📋</span> 관련 견적 보기
+                        <span>📋</span> {t('proReviews.viewQuote')}
                     </button>
                 </div>
             )}
@@ -58,6 +59,7 @@ function ProReviewCard({ review, customerProfile, onClickViewQuote }: { review: 
 }
 
 export default function ProReviewsPage() {
+    const t = useTranslations();
     const router = useRouter();
     const [reviews, setReviews] = useState<any[]>([]);
     const [customerProfiles, setCustomerProfiles] = useState<Record<string, { name: string, avatar: string | null }>>({});
@@ -105,7 +107,7 @@ export default function ProReviewsPage() {
                         const cMap: Record<string, { name: string, avatar: string | null }> = {};
                         customerData.forEach(c => {
                             cMap[c.user_id] = {
-                                name: (c.nickname && c.nickname.trim() !== '') ? c.nickname : (c.name || '고객'),
+                                name: (c.nickname && c.nickname.trim() !== '') ? c.nickname : (c.name || t('proReviews.unknownCustomer')),
                                 avatar: c.avatar_url || null
                             };
                         });
@@ -161,7 +163,7 @@ export default function ProReviewsPage() {
                         }
                     }
                 } catch (e) {
-                    console.warn('견적 데이터 패칭 실패, 리뷰 기본 데이터만 렌더링합니다:', e);
+                    console.warn(t('proReviews.fetchWarning'), e);
                 }
 
                 setReviews(enrichedReviews);
@@ -173,18 +175,18 @@ export default function ProReviewsPage() {
         fetchData();
     }, [router]);
 
-    if (loading) return <div className="p-10 text-center text-gray-500">불러오는 중...</div>;
+    if (loading) return <div className="p-10 text-center text-gray-500">{t('proReviews.loading')}</div>;
 
     return (
         <div className="min-h-screen bg-gray-50 p-4 pb-24 space-y-4">
             <div className="flex items-center gap-3 bg-white p-4 rounded-xl shadow-sm border border-gray-100 sticky top-0 z-10">
                 <button onClick={() => router.back()} className="text-gray-500 hover:text-gray-800 text-xl font-bold">←</button>
-                <h1 className="text-xl font-bold text-gray-800">⭐ 내 평판 / 리뷰 관리</h1>
+                <h1 className="text-xl font-bold text-gray-800">{t('proReviews.title')}</h1>
             </div>
 
             {/* 평점 대시보드 */}
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center space-y-3">
-                <span className="text-sm font-bold text-gray-500 uppercase tracking-wider">나의 평균 평점</span>
+                <span className="text-sm font-bold text-gray-500 uppercase tracking-wider">{t('proReviews.avgRating')}</span>
                 <div className="flex items-center gap-2">
                     <div className="flex">
                         {[1, 2, 3, 4, 5].map(s => (
@@ -193,19 +195,19 @@ export default function ProReviewsPage() {
                     </div>
                     <span className="text-3xl font-black text-gray-800">{avgRating.toFixed(1)}</span>
                 </div>
-                <span className="text-sm text-gray-500 font-medium">총 <strong className="text-blue-600">{reviewCount}</strong>개의 리뷰</span>
+                <span className="text-sm text-gray-500 font-medium"><strong className="text-blue-600">{reviewCount}</strong> {t('proReviews.totalReviews')}</span>
             </div>
 
             {/* 리뷰 목록 */}
             {reviews.length === 0 ? (
                 <div className="text-center p-16 bg-white rounded-2xl shadow-sm border border-gray-100">
                     <div className="text-4xl mb-4">📭</div>
-                    <p className="text-gray-500 font-medium">아직 받은 리뷰가 없습니다.</p>
-                    <p className="text-xs text-gray-400 mt-2">고객에게 훌륭한 서비스를 제공하고 리뷰를 받아보세요!</p>
+                    <p className="text-gray-500 font-medium">{t('proReviews.noReviews')}</p>
+                    <p className="text-xs text-gray-400 mt-2">{t('proReviews.noReviewsSub')}</p>
                 </div>
             ) : (
                 <div className="space-y-3">
-                    <h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider px-1">리뷰 목록</h2>
+                    <h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider px-1">{t('proReviews.reviewList')}</h2>
                     {reviews.map((review: any) => (
                         <ProReviewCard
                             key={review.review_id}
@@ -218,6 +220,7 @@ export default function ProReviewsPage() {
                                     request: r.request
                                 });
                             }}
+                            t={t}
                         />
                     ))}
                 </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useCallback, createContext, useContext, useRef, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 
 type ToastType = 'success' | 'error' | 'warning' | 'info';
 
@@ -20,6 +21,7 @@ const ToastContext = createContext<ToastContextType>({ showToast: () => { } });
 export const useToast = () => useContext(ToastContext);
 
 function ToastEntry({ toast, onRemove }: { toast: ToastItem; onRemove: (id: number) => void }) {
+    const t = useTranslations();
     const needsConfirm = toast.type === 'error' || !!toast.requireConfirm;
     const [exiting, setExiting] = useState(false);
 
@@ -54,7 +56,7 @@ function ToastEntry({ toast, onRemove }: { toast: ToastItem; onRemove: (id: numb
                 <button
                     onClick={remove}
                     className="flex-shrink-0 text-white/70 hover:text-white text-sm ml-1 transition"
-                    aria-label="닫기"
+                    aria-label={t('toast.close')}
                 >✕</button>
             </div>
             {needsConfirm && (
@@ -62,7 +64,7 @@ function ToastEntry({ toast, onRemove }: { toast: ToastItem; onRemove: (id: numb
                     onClick={remove}
                     className="mt-2 w-full text-xs font-bold py-1.5 rounded-lg bg-white/20 hover:bg-white/30 text-white transition"
                 >
-                    확인
+                    {t('toast.confirm')}
                 </button>
             )}
         </div>

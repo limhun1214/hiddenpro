@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
+import { useTranslations } from 'next-intl';
 
 interface ProProfileDetailModalProps {
     proId: string;
@@ -12,6 +13,7 @@ interface ProProfileDetailModalProps {
 }
 
 export default function ProProfileDetailModal({ proId, requestId, hideChat, onClose, onStartChat }: ProProfileDetailModalProps) {
+    const t = useTranslations();
     const [activeTab, setActiveTab] = useState<'INFO' | 'REVIEWS'>('INFO');
     const [proProfile, setProProfile] = useState<any>(null);
     const [proName, setProName] = useState('');
@@ -38,7 +40,7 @@ export default function ProProfileDetailModal({ proId, requestId, hideChat, onCl
             if (profile) {
                 setProProfile(profile);
             }
-            setProName(profile?.nickname || userData?.nickname || userData?.name || '전문가');
+            setProName(profile?.nickname || userData?.nickname || userData?.name || t('proProfileModal.defaultProName'));
             setAvatarUrl(userData?.avatar_url || null);
 
             // 리뷰 조회 (독립 쿼리 — FK 없이도 동작)
@@ -64,7 +66,7 @@ export default function ProProfileDetailModal({ proId, requestId, hideChat, onCl
 
                 const enrichedReviews = reviewsData.map((r: any) => ({
                     ...r,
-                    reviewer_name: nameMap[r.customer_id] || '고객'
+                    reviewer_name: nameMap[r.customer_id] || t('proProfileModal.unknownCustomer')
                 }));
                 setReviews(enrichedReviews);
             } else {
@@ -80,7 +82,7 @@ export default function ProProfileDetailModal({ proId, requestId, hideChat, onCl
         return (
             <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-50 p-4">
                 <div className="bg-white rounded-2xl w-full max-w-md p-8 text-center text-gray-500">
-                    프로필 정보를 불러오는 중...
+                    {t('proProfileModal.loading')}
                 </div>
             </div>
         );
@@ -100,12 +102,12 @@ export default function ProProfileDetailModal({ proId, requestId, hideChat, onCl
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden border border-gray-200">
                                 {avatarUrl ? (
-                                    <img src={avatarUrl} alt="프로필" className="w-full h-full object-cover" />
+                                    <img src={avatarUrl} alt={t('proProfileModal.avatarAlt')} className="w-full h-full object-cover" />
                                 ) : (
                                     <svg className="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" /></svg>
                                 )}
                             </div>
-                            <h2 className="text-lg font-bold text-gray-800">{proName}님 프로필</h2>
+                            <h2 className="text-lg font-bold text-gray-800">{proName}{t('proProfileModal.profileTitle')}</h2>
                         </div>
                         <button
                             onClick={onClose}
@@ -119,7 +121,7 @@ export default function ProProfileDetailModal({ proId, requestId, hideChat, onCl
                     <div className="px-4 py-3 bg-yellow-50 border-b border-yellow-100 flex items-center gap-2">
                         <span className="text-yellow-500 text-lg">⭐</span>
                         <span className="font-bold text-gray-800">{Number(avgRating).toFixed(1)}</span>
-                        <span className="text-sm text-gray-500">({reviewCount}개 리뷰)</span>
+                        <span className="text-sm text-gray-500">({reviewCount}{t('proProfileModal.reviewCount')})</span>
                     </div>
 
                     {/* 2단 탭 */}
@@ -128,13 +130,13 @@ export default function ProProfileDetailModal({ proId, requestId, hideChat, onCl
                             onClick={() => setActiveTab('INFO')}
                             className={`flex-1 py-3 text-sm font-bold transition ${activeTab === 'INFO' ? 'text-blue-600 border-b-2 border-blue-600 bg-white' : 'text-gray-500 hover:text-gray-700'}`}
                         >
-                            고수 정보
+                            {t('proProfileModal.tabInfo')}
                         </button>
                         <button
                             onClick={() => setActiveTab('REVIEWS')}
                             className={`flex-1 py-3 text-sm font-bold transition ${activeTab === 'REVIEWS' ? 'text-blue-600 border-b-2 border-blue-600 bg-white' : 'text-gray-500 hover:text-gray-700'}`}
                         >
-                            고객 리뷰
+                            {t('proProfileModal.tabReviews')}
                         </button>
                     </div>
 
@@ -146,31 +148,31 @@ export default function ProProfileDetailModal({ proId, requestId, hideChat, onCl
                                 <div className="flex flex-wrap gap-2">
                                     {proProfile?.is_phone_verified && (
                                         <span className="inline-flex items-center bg-green-50 text-green-700 text-xs font-bold px-3 py-1.5 rounded-full border border-green-200 shadow-sm whitespace-nowrap">
-                                            ✅ 전화번호 인증
+                                            {t('proProfileModal.phoneVerified')}
                                         </span>
                                     )}
                                     {proProfile?.facebook_url && (
                                         <span className="inline-flex items-center bg-blue-50 text-blue-700 text-xs font-bold px-3 py-1.5 rounded-full border border-blue-200 shadow-sm whitespace-nowrap">
-                                            🔵 Facebook 연동
+                                            {t('proProfileModal.facebookLinked')}
                                         </span>
                                     )}
                                     {!proProfile?.is_phone_verified && !proProfile?.facebook_url && (
-                                        <span className="text-xs text-gray-400">아직 인증된 항목이 없습니다.</span>
+                                        <span className="text-xs text-gray-400">{t('proProfileModal.noVerification')}</span>
                                     )}
                                 </div>
 
                                 {/* 한 줄 소개 */}
                                 <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                                    <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">한 줄 소개</h3>
+                                    <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t('proProfileModal.introTitle')}</h3>
                                     <p className="text-sm text-gray-800 leading-relaxed">
-                                        {proProfile?.intro || '아직 소개가 작성되지 않았습니다.'}
+                                        {proProfile?.intro || t('proProfileModal.noIntro')}
                                     </p>
                                 </div>
 
                                 {/* 상세 소개 */}
                                 {proProfile?.detailed_intro && (
                                     <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                                        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">상세 소개</h3>
+                                        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t('proProfileModal.detailedIntroTitle')}</h3>
                                         <p className="text-sm text-gray-800 leading-relaxed whitespace-pre-wrap">
                                             {proProfile.detailed_intro}
                                         </p>
@@ -180,7 +182,7 @@ export default function ProProfileDetailModal({ proId, requestId, hideChat, onCl
                                 {/* 지역 */}
                                 {proProfile?.region && (
                                     <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                                        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">활동 지역</h3>
+                                        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t('proProfileModal.regionTitle')}</h3>
                                         <p className="text-sm text-gray-800 font-medium">📍 {proProfile.region}</p>
                                     </div>
                                 )}
@@ -188,7 +190,7 @@ export default function ProProfileDetailModal({ proId, requestId, hideChat, onCl
                                 {/* 서비스 목록 */}
                                 {services.length > 0 && (
                                     <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                                        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">제공 서비스</h3>
+                                        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t('proProfileModal.servicesTitle')}</h3>
                                         <div className="flex flex-wrap gap-2">
                                             {services.map((s: string) => (
                                                 <span key={s} className="bg-white text-gray-700 text-xs px-2.5 py-1.5 rounded-lg border border-gray-200 shadow-sm">
@@ -205,7 +207,7 @@ export default function ProProfileDetailModal({ proId, requestId, hideChat, onCl
                                 {reviews.length === 0 ? (
                                     <div className="text-center p-8 text-gray-400">
                                         <p className="text-3xl mb-2">📝</p>
-                                        <p className="text-sm">아직 리뷰가 없습니다.</p>
+                                        <p className="text-sm">{t('proProfileModal.noReviews')}</p>
                                     </div>
                                 ) : (
                                     reviews.map((review: any) => (
@@ -220,7 +222,7 @@ export default function ProProfileDetailModal({ proId, requestId, hideChat, onCl
                                                 <span className="text-xs text-gray-400">{new Date(review.created_at).toLocaleDateString()}</span>
                                             </div>
                                             <p className="text-sm text-gray-700 leading-relaxed">{review.comment}</p>
-                                            <p className="text-xs text-gray-400">{review.reviewer_name || '고객'}</p>
+                                            <p className="text-xs text-gray-400">{review.reviewer_name || t('proProfileModal.unknownCustomer')}</p>
                                         </div>
                                     ))
                                 )}
@@ -235,7 +237,7 @@ export default function ProProfileDetailModal({ proId, requestId, hideChat, onCl
                                 onClick={() => onStartChat({ pro_id: proId, request_id: requestId })}
                                 className="w-full bg-yellow-400 hover:bg-yellow-500 text-white font-bold py-4 rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-base"
                             >
-                                <span className="text-lg">💬</span> 채팅방으로 이동
+                                {t('proProfileModal.chatBtn')}
                             </button>
                         </div>
                     )}

@@ -6,8 +6,13 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import BadgeCleaner from '@/components/BadgeCleaner';
 import ProProfileDetailModal from '@/components/customer/ProProfileDetailModal';
 import QuoteDetailModal from '@/components/customer/QuoteDetailModal';
+import { useTranslations } from 'next-intl';
 
 export default function CustomerQuotesClient() {
+    const t = useTranslations();
+    const locale = typeof document !== 'undefined'
+        ? (document.cookie.split('; ').find(r => r.startsWith('locale='))?.split('=')[1] ?? 'en')
+        : 'en';
     const router = useRouter();
     const searchParams = useSearchParams();
     const [requests, setRequests] = useState<any[]>([]);
@@ -80,7 +85,7 @@ export default function CustomerQuotesClient() {
                 .select(`
                     request_id, status, dynamic_answers, customer_id, quote_count, created_at, updated_at,
                     service_type, region, category_id,
-                    categories ( name ),
+                    categories ( name, name_en ),
                     match_quotes (
                         quote_id, pro_id, created_at, status, price, description, image_url, is_read,
                         pro_profiles (pro_id, average_rating, review_count, is_phone_verified, facebook_url, intro, detailed_intro, users (name, nickname, avatar_url))
@@ -224,7 +229,7 @@ export default function CustomerQuotesClient() {
     const handleStartChat = async (quote: any) => {
         try {
             // State에 저장된 customerId 사용
-            if (!customerId) throw new Error("고객 ID를 찾을 수 없습니다. 페이지를 새로고침 해주세요.");
+            if (!customerId) throw new Error(t('customerQuotes.customerIdError'));
 
             const { data: existingRoom, error: fetchError } = await supabase
                 .from('chat_rooms')
@@ -257,13 +262,13 @@ export default function CustomerQuotesClient() {
             router.push(`/chat/${room.room_id}`);
         } catch (error: any) {
             console.error("채팅방 입장 에러:", error);
-            alert("채팅 연결 중 오류가 발생했습니다: " + error.message);
+            alert(t('customerQuotes.chatError') + error.message);
         }
     };
 
     const openReviewModal = async (quote: any, request_id: string) => {
         const { data: room } = await supabase.from('chat_rooms').select('room_id').eq('request_id', request_id).eq('pro_id', quote.pro_id).single();
-        if (!room) return alert("채팅방 정보를 찾을 수 없거나 아직 개설되지 않았습니다.");
+        if (!room) return alert(t('customerQuotes.reviewRoomError'));
 
         setReviewTarget({ request_id, pro_id: quote.pro_id, room_id: room.room_id });
         setReviewRating(5);
@@ -273,7 +278,7 @@ export default function CustomerQuotesClient() {
 
     const handleReviewSubmit = async () => {
         if (!reviewTarget) return;
-        if (!reviewComment.trim()) return alert("리뷰 내용을 입력해주세요.");
+        if (!reviewComment.trim()) return alert(t('customerQuotes.reviewEmpty'));
 
         const { data: authData } = await supabase.auth.getUser();
 
@@ -287,9 +292,9 @@ export default function CustomerQuotesClient() {
 
         if (error) {
             if (error.code === '23505') {
-                alert("이미 작성한 리뷰가 있습니다.");
+                alert(t('customerQuotes.reviewDuplicate'));
             } else {
-                alert("리뷰 등록 실패: " + error.message);
+                alert(t('customerQuotes.reviewSubmitError') + error.message);
             }
         } else {
             await supabase.from('notifications').insert({
@@ -300,7 +305,7 @@ export default function CustomerQuotesClient() {
                 message: `고객님이 ⭐${reviewRating}점의 리뷰를 남겼습니다.`
             });
 
-            alert("리뷰가 성공적으로 등록되었습니다.");
+            alert(t('customerQuotes.reviewSubmitSuccess'));
             setIsReviewModalOpen(false);
             setReviewedRoomIds(prev => new Set(prev).add(reviewTarget.room_id));
             setRefreshTrigger(prev => prev + 1);
@@ -364,7 +369,7 @@ export default function CustomerQuotesClient() {
                     });
                 }
             });
-            alert('요청이 취소되었습니다.');
+            alert(t('customerQuotes.cancelSuccess'));
         } catch (err: any) {
             // ── 실패 시 Optimistic UI 롤백 ──
             setRequests(prevRequests);
@@ -372,7 +377,7 @@ export default function CustomerQuotesClient() {
                 detail: { hasNewQuotes: canceledUnreadCount > 0 || remainingUnread > 0 }
             }));
             console.error('요청 취소 실패:', err);
-            alert('요청 취소 중 오류가 발생했습니다: ' + err.message);
+            alert(t('customerQuotes.cancelError') + err.message);
         } finally {
             setCancelLoading(false);
         }
@@ -407,7 +412,7 @@ export default function CustomerQuotesClient() {
     };
     ── 원본 백업 끝 ── */
 
-    if (loading) return <div className="p-4 text-center mt-20 text-gray-500">요청 내역을 불러오는 중입니다...</div>;
+    if (loading) return <div className="p-4 text-center mt-20 text-gray-500">{t('customerQuotes.loading')}</div>;
 
     const categorizeRequest = (req: any) => {
         const isCanceled = req?.status === 'CANCELED';
@@ -471,7 +476,7 @@ export default function CustomerQuotesClient() {
             <BadgeCleaner type="quotes-read" />
             <div className="lg:text-left lg:mb-8">
                 <h1 className="text-2xl lg:text-2xl lg:font-bold bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between sticky top-0 z-10 text-center lg:text-left">
-                    요청 및 받은 견적함
+                    {t('customerQuotes.pageTitle')}
                 </h1>
             </div>
 
@@ -480,25 +485,25 @@ export default function CustomerQuotesClient() {
                     onClick={() => setActiveTab('IN_PROGRESS')}
                     className={`flex-1 py-2 text-sm font-bold rounded-lg transition ${activeTab === 'IN_PROGRESS' ? 'bg-blue-600 text-white shadow-md' : 'text-gray-500 hover:bg-gray-50'}`}
                 >
-                    진행 중인 견적
+                    {t('customerQuotes.tabInProgress')}
                 </button>
                 <button
                     onClick={() => setActiveTab('CLOSED')}
                     className={`flex-1 py-2 text-sm font-bold rounded-lg transition ${activeTab === 'CLOSED' ? 'bg-gray-600 text-white shadow-md' : 'text-gray-500 hover:bg-gray-50'}`}
                 >
-                    마감된 견적
+                    {t('customerQuotes.tabClosed')}
                 </button>
             </div>
 
             {activeTab === 'CLOSED' && (
                 <div className="bg-gray-50 border border-gray-200 text-gray-600 text-sm font-medium p-4 rounded-xl shadow-sm leading-relaxed">
-                    💡 마감된 견적 내역은 고객의 개인정보 보호 및 화면 최적화를 위해 7일 후 자동 숨김 처리됩니다.
+                    {t('customerQuotes.closedBanner')}
                 </div>
             )}
 
             {errorMsg && (
                 <div className="text-red-500 font-bold mb-4 bg-red-50 p-4 rounded-xl border border-red-200">
-                    데이터 조회 오류: {errorMsg}
+                    {t('customerQuotes.dataError')}{errorMsg}
                 </div>
             )}
 
@@ -507,17 +512,17 @@ export default function CustomerQuotesClient() {
                     {activeTab === 'IN_PROGRESS' ? (
                         <div className="flex flex-col items-center gap-3">
                             <span className="text-4xl">📋</span>
-                            <p className="text-gray-600 font-bold text-sm">진행 중인 요청이 없습니다.</p>
-                            <p className="text-xs text-gray-400">새로운 전문가를 찾아 견적을 요청해 보세요.</p>
+                            <p className="text-gray-600 font-bold text-sm">{t('customerQuotes.noInProgress')}</p>
+                            <p className="text-xs text-gray-400">{t('customerQuotes.noInProgressSub')}</p>
                             <button
                                 onClick={() => router.push('/request')}
                                 className="mt-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded-xl transition text-sm"
                             >
-                                새 요청서 작성하기
+                                {t('customerQuotes.newRequestBtn')}
                             </button>
                         </div>
                     ) : (
-                        <p className="text-gray-500">마감된 요청서가 없습니다.</p>
+                        <p className="text-gray-500">{t('customerQuotes.noClosed')}</p>
                     )}
                 </div>
             ) : (
@@ -533,10 +538,10 @@ export default function CustomerQuotesClient() {
                     const minutesRemaining = Math.max(0, Math.floor((timeRemainingMs % (1000 * 60 * 60)) / (1000 * 60)));
                     const isHurry = hoursRemaining < 24 && !isExpired;
 
-                    let statusLabel = '견적 모집 중';
+                    let statusLabel = t('customerQuotes.statusRecruiting');
                     let statusColor = 'bg-blue-50 text-blue-600';
-                    if (isMatched) { statusLabel = '매칭 성사'; statusColor = 'bg-green-100 text-green-700'; }
-                    else if (isFull || isExpired) { statusLabel = '마감됨'; statusColor = 'bg-gray-100 text-gray-500'; }
+                    if (isMatched) { statusLabel = t('customerQuotes.statusMatched'); statusColor = 'bg-green-100 text-green-700'; }
+                    else if (isFull || isExpired) { statusLabel = t('customerQuotes.statusClosed'); statusColor = 'bg-gray-100 text-gray-500'; }
 
                     const reqQuotes = (Array.isArray(request.match_quotes) ? request.match_quotes : [])
                         .slice()
@@ -553,14 +558,14 @@ export default function CustomerQuotesClient() {
                             <div className="flex justify-between items-start mb-3 border-b pb-3 border-gray-100">
                                 <div>
                                     <h2 className="text-base font-bold text-gray-800">
-                                        {request.categories?.name || request.service_type || '서비스 요청'}
+                                        {(locale === 'en' ? request.categories?.name_en : null) || request.categories?.name || request.service_type || t('customerQuotes.defaultService')}
                                     </h2>
                                     <div className="flex items-center gap-2 mt-1 font-medium">
                                         <span className="text-sm text-gray-700 flex items-center gap-1">
-                                            📍 {request.region || '지역 정보 없음'}
+                                            📍 {request.region || t('customerQuotes.noRegion')}
                                         </span>
                                         <span className="text-xs text-gray-500">
-                                            • 요청일: {new Date(request.created_at).toLocaleDateString()}
+                                            {t('customerQuotes.requestDate')}{new Date(request.created_at).toLocaleDateString()}
                                         </span>
                                     </div>
                                 </div>
@@ -568,7 +573,7 @@ export default function CustomerQuotesClient() {
                                     <span className={`${statusColor} font-bold px-2 py-1 rounded text-xs whitespace-nowrap`}>{statusLabel}</span>
                                     {activeTab === 'IN_PROGRESS' && (
                                         <div className={`text-xs mt-2 font-bold ${isHurry ? 'text-red-500 animate-pulse' : 'text-blue-500'}`}>
-                                            ⏳ 마감까지 {hoursRemaining}시간 {minutesRemaining}분 남음
+                                            {t('customerQuotes.timeLeft')}{hoursRemaining}{t('customerQuotes.hours')} {minutesRemaining}{t('customerQuotes.minutes')}
                                         </div>
                                     )}
                                 </div>
@@ -581,7 +586,7 @@ export default function CustomerQuotesClient() {
                                         onClick={() => setViewRequestModal({ request })}
                                         className="flex-1 bg-white hover:bg-gray-50 text-gray-700 font-bold py-2 rounded-lg text-xs border border-gray-200 transition flex items-center justify-center gap-1"
                                     >
-                                        📄 내 요청서 보기
+                                        {t('customerQuotes.viewMyRequest')}
                                     </button>
                                 </div>
                             )}
@@ -589,17 +594,17 @@ export default function CustomerQuotesClient() {
                             {activeTab === 'IN_PROGRESS' && (
                                 <div className="mb-4 bg-blue-50/50 p-3 rounded-xl border border-blue-100 flex items-center justify-between">
                                     <span className="text-sm text-blue-800 font-medium">
-                                        🚀 현재 <strong className="text-blue-600 text-base">{request.quote_count || 0} / 5</strong>명 견적 접수
+                                        🚀 {request.quote_count || 0} / 5 {t('customerQuotes.quoteCount')}
                                     </span>
                                     {(request.quote_count || 0) === 0 && (
-                                        <span className="text-xs text-blue-500 animate-pulse">고수들의 응답을 기다리는 중...</span>
+                                        <span className="text-xs text-blue-500 animate-pulse">{t('customerQuotes.waitingPros')}</span>
                                     )}
                                 </div>
                             )}
 
                             {reqQuotes.length > 0 ? (
                                 <div className="space-y-3">
-                                    <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">도착한 견적 ({reqQuotes.length}건)</h3>
+                                    <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">{t('customerQuotes.quotesArrived')} ({reqQuotes.length})</h3>
                                     {reqQuotes.map((quote: any) => {
                                         const profilesArray = Array.isArray(quote.pro_profiles) ? quote.pro_profiles : [quote.pro_profiles];
                                         const proUser = profilesArray.find((p: any) => p?.user_id === quote.pro_id || p?.pro_id === quote.pro_id) || profilesArray[0];
@@ -623,7 +628,7 @@ export default function CustomerQuotesClient() {
                                                             </div>
                                                             <span className="font-medium text-gray-400 text-sm">{proName}님</span>
                                                         </div>
-                                                        <span className="text-xs text-gray-400 bg-gray-200 px-2 py-0.5 rounded-full">미선택</span>
+                                                        <span className="text-xs text-gray-400 bg-gray-200 px-2 py-0.5 rounded-full">{t('customerQuotes.notSelected')}</span>
                                                     </div>
                                                 </div>
                                             );
@@ -646,7 +651,7 @@ export default function CustomerQuotesClient() {
                                                             {/* 고수 아바타 아이콘 */}
                                                             <div className="w-7 h-7 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden border border-gray-200">
                                                                 {avatarUrl ? (
-                                                                    <img src={avatarUrl} alt="프로필" className="w-full h-full object-cover" />
+                                                                    <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" />
                                                                 ) : (
                                                                     <svg className="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
                                                                         <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
@@ -655,24 +660,24 @@ export default function CustomerQuotesClient() {
                                                             </div>
                                                             <span className="font-bold text-blue-600">{proName}님</span>
                                                             {proUser?.is_phone_verified && (
-                                                                <span className="inline-flex items-center gap-0.5 text-[10px] bg-green-50 text-green-700 font-bold px-1.5 py-0.5 rounded-full border border-green-200 whitespace-nowrap flex-shrink-0">✅ 전화번호 인증</span>
+                                                                <span className="inline-flex items-center gap-0.5 text-[10px] bg-green-50 text-green-700 font-bold px-1.5 py-0.5 rounded-full border border-green-200 whitespace-nowrap flex-shrink-0">{t('customerQuotes.phoneVerified')}</span>
                                                             )}
                                                             {proUser?.facebook_url && (
-                                                                <span className="inline-flex items-center gap-0.5 text-[10px] bg-blue-50 text-blue-700 font-bold px-1.5 py-0.5 rounded-full border border-blue-200 whitespace-nowrap flex-shrink-0">🔵 Facebook 연동</span>
+                                                                <span className="inline-flex items-center gap-0.5 text-[10px] bg-blue-50 text-blue-700 font-bold px-1.5 py-0.5 rounded-full border border-blue-200 whitespace-nowrap flex-shrink-0">{t('customerQuotes.facebookLinked')}</span>
                                                             )}
                                                             <span className="text-xs font-bold text-yellow-500">⭐ {Number(avgRating).toFixed(1)}</span>
                                                             <span className="text-xs text-gray-400">({reviewCount}개)</span>
                                                         </div>
                                                         <span className="text-xs text-gray-400 flex-shrink-0">{new Date(quote.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                                                     </div>
-                                                    <p className="text-xs text-gray-500 text-right">프로필 상세 보기 〉</p>
+                                                    <p className="text-xs text-gray-500 text-right">{t('customerQuotes.viewProfile')}</p>
                                                 </div>
 
                                                 {activeTab === 'IN_PROGRESS' ? (
                                                     // ── [확장] 이미 다른 고수와 MATCHED된 요청건의 미확정 고수 카드 버튼 비활성화 ──
                                                     request.status === 'MATCHED' && quote.status !== 'ACCEPTED' ? (
                                                         <div className="mt-2 bg-gray-100 text-gray-400 font-bold py-2.5 rounded-lg text-sm text-center border border-gray-200">
-                                                            ❌ 다른 고수님과 매칭이 확정되었습니다
+                                                            {t('customerQuotes.matchedOther')}
                                                         </div>
                                                     ) : (
                                                         <div className="flex gap-2 mt-2">
@@ -687,13 +692,13 @@ export default function CustomerQuotesClient() {
                                                                     : 'bg-white text-gray-500 border-gray-200 hover:bg-gray-50'
                                                                     }`}
                                                             >
-                                                                {!quote.is_read ? '🚨 새 견적 확인하기' : '📋 견적 다시보기'}
+                                                                {!quote.is_read ? t('customerQuotes.newQuoteBtn') : t('customerQuotes.viewQuoteBtn')}
                                                             </button>
                                                             <button
                                                                 onClick={() => handleStartChat({ ...quote, request_id: request.request_id })}
                                                                 className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-white font-bold py-2.5 rounded-lg shadow-sm transition text-sm"
                                                             >
-                                                                상담 / 채팅하기
+                                                                {t('customerQuotes.chatBtn')}
                                                             </button>
                                                         </div>
                                                     )
@@ -706,7 +711,7 @@ export default function CustomerQuotesClient() {
                                                             return (
                                                                 <div className="flex flex-col gap-2">
                                                                     <div className="bg-green-100 text-green-700 py-2 rounded-lg text-sm font-bold border border-green-200">
-                                                                        ✅ 최종 매칭 고수
+                                                                        {t('customerQuotes.finalMatch')}
                                                                     </div>
                                                                     <button
                                                                         onClick={(e) => {
@@ -716,7 +721,7 @@ export default function CustomerQuotesClient() {
                                                                         }}
                                                                         className="w-full bg-white hover:bg-gray-50 text-blue-600 font-bold py-2.5 rounded-lg shadow-sm transition text-sm border border-blue-200 flex items-center justify-center gap-2"
                                                                     >
-                                                                        <span>📋</span> 견적 상세 보기
+                                                                        {t('customerQuotes.viewQuoteDetail')}
                                                                     </button>
 
                                                                     {isReviewed ? (
@@ -724,14 +729,14 @@ export default function CustomerQuotesClient() {
                                                                             disabled
                                                                             className="w-full bg-gray-200 text-gray-500 font-bold py-2.5 rounded-lg shadow-sm transition text-sm flex items-center justify-center gap-2 cursor-not-allowed"
                                                                         >
-                                                                            <span>🔒</span> 거래 완료 (대화 종료)
+                                                                            {t('customerQuotes.dealDone')}
                                                                         </button>
                                                                     ) : (
                                                                         <button
                                                                             onClick={() => handleStartChat({ ...quote, request_id: request.request_id })}
                                                                             className="w-full bg-yellow-400 hover:bg-yellow-500 text-white font-bold py-2.5 rounded-lg shadow-sm transition text-sm flex items-center justify-center gap-2"
                                                                         >
-                                                                            <span>💬</span> 채팅방으로 이동
+                                                                            {t('customerQuotes.chatRoomBtn')}
                                                                         </button>
                                                                     )}
 
@@ -740,21 +745,21 @@ export default function CustomerQuotesClient() {
                                                                             disabled
                                                                             className="w-full bg-gray-200 text-gray-500 font-bold py-2.5 rounded-lg text-sm flex items-center justify-center gap-2 cursor-not-allowed border border-gray-300"
                                                                         >
-                                                                            <span>✅</span> 리뷰 작성 완료
+                                                                            {t('customerQuotes.reviewDone')}
                                                                         </button>
                                                                     ) : (
                                                                         <button
                                                                             onClick={() => openReviewModal(quote, request.request_id)}
                                                                             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-lg shadow-sm transition text-sm flex items-center justify-center gap-2"
                                                                         >
-                                                                            <span>⭐</span> 이 고수에게 리뷰 남기기
+                                                                            {t('customerQuotes.leaveReview')}
                                                                         </button>
                                                                     )}
                                                                 </div>
                                                             );
                                                         })() : (quote.status === 'REJECTED' || request.status === 'MATCHED') ? (
                                                             <div className="bg-gray-200 text-gray-500 py-2 rounded-lg text-sm font-bold border border-gray-300">
-                                                                {request.status === 'MATCHED' ? '❌ 매칭 실패' : '❌ 거절됨'}
+                                                                {request.status === 'MATCHED' ? t('customerQuotes.matchFailed') : t('customerQuotes.rejected')}
                                                             </div>
                                                         ) : (
                                                             /* 입찰만 마감(5명 도달 또는 48h 경과)되었지만 아직 매칭 미확정 → 고객이 검토·채팅·매칭 확정 가능 */
@@ -767,13 +772,13 @@ export default function CustomerQuotesClient() {
                                                                     }}
                                                                     className="w-full bg-white hover:bg-gray-50 text-blue-600 font-bold py-2.5 rounded-lg shadow-sm transition text-sm border border-blue-200 flex items-center justify-center gap-2"
                                                                 >
-                                                                    <span>📋</span> 견적 상세 보기
+                                                                    {t('customerQuotes.viewQuoteDetail2')}
                                                                 </button>
                                                                 <button
                                                                     onClick={() => handleStartChat({ ...quote, request_id: request.request_id })}
                                                                     className="w-full bg-yellow-400 hover:bg-yellow-500 text-white font-bold py-2.5 rounded-lg shadow-sm transition text-sm flex items-center justify-center gap-2"
                                                                 >
-                                                                    <span>💬</span> 상담 / 채팅하기
+                                                                    {t('customerQuotes.consultChat')}
                                                                 </button>
                                                             </div>
                                                         )}
@@ -788,17 +793,17 @@ export default function CustomerQuotesClient() {
                                     {activeTab === 'IN_PROGRESS' ? (
                                         <div className="flex flex-col items-center gap-2 py-2">
                                             <div className="w-6 h-6 border-3 border-blue-200 border-t-blue-500 rounded-full animate-spin" />
-                                            <p className="text-blue-600 font-medium text-xs">💡 알고리즘이 주변 우수 고수들에게 매칭 알림을 발송 중입니다.</p>
+                                            <p className="text-blue-600 font-medium text-xs">{t('customerQuotes.noQuotesInProgress')}</p>
                                         </div>
                                     ) : (
-                                        <span className="text-gray-400">도착한 견적이 없습니다.</span>
+                                        <span className="text-gray-400">{t('customerQuotes.noQuotesClosed')}</span>
                                     )}
                                 </div>
                             )}
 
                             {activeTab === 'CLOSED' && (
                                 <button disabled className="w-full mt-4 bg-gray-100 text-gray-400 font-bold py-3 rounded-xl shadow-none cursor-not-allowed text-sm">
-                                    마감된 요청서입니다
+                                    {t('customerQuotes.closedRequest')}
                                 </button>
                             )}
                         </div>
@@ -811,9 +816,9 @@ export default function CustomerQuotesClient() {
                 isReviewModalOpen && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
                         <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-xl flex flex-col gap-4">
-                            <h2 className="text-lg font-bold text-center">리뷰 작성</h2>
+                            <h2 className="text-lg font-bold text-center">{t('customerQuotes.reviewTitle')}</h2>
                             <div className="flex flex-col items-center">
-                                <span className="text-sm text-gray-500 mb-2">만족도를 평가해주세요</span>
+                                <span className="text-sm text-gray-500 mb-2">{t('customerQuotes.reviewRatingLabel')}</span>
                                 <div className="flex gap-2">
                                     {[1, 2, 3, 4, 5].map((star) => (
                                         <button
@@ -829,7 +834,7 @@ export default function CustomerQuotesClient() {
                             <textarea
                                 value={reviewComment}
                                 onChange={(e) => setReviewComment(e.target.value)}
-                                placeholder="고수님과의 서비스 진행이 어떠셨나요?"
+                                placeholder={t('customerQuotes.reviewPlaceholder')}
                                 className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]"
                             />
                             <div className="flex gap-2 mt-2">
@@ -837,13 +842,13 @@ export default function CustomerQuotesClient() {
                                     onClick={() => setIsReviewModalOpen(false)}
                                     className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 rounded-xl transition text-sm"
                                 >
-                                    취소
+                                    {t('customerQuotes.reviewCancel')}
                                 </button>
                                 <button
                                     onClick={handleReviewSubmit}
                                     className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition text-sm"
                                 >
-                                    리뷰 등록
+                                    {t('customerQuotes.reviewSubmit')}
                                 </button>
                             </div>
                         </div>
@@ -886,55 +891,89 @@ export default function CustomerQuotesClient() {
                 try {
                     answers = typeof req.dynamic_answers === 'string' ? JSON.parse(req.dynamic_answers) : (req.dynamic_answers || {});
                 } catch { answers = {}; }
-                const answerEntries = Object.entries(answers);
+                const historyData: { stepText: string; userAnswer: any }[] = answers._history || [];
+                const baseKeys = ['depth1', 'depth2', 'service_type', 'region_reg', 'region_city', '_history'];
+                const fallbackEntries = Object.entries(answers).filter(([key]) => !baseKeys.includes(key));
 
                 return (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
                         <div className="bg-white rounded-2xl w-full max-w-md max-h-[80vh] overflow-y-auto shadow-xl">
                             <div className="sticky top-0 bg-white p-5 pb-3 border-b border-gray-100 rounded-t-2xl">
                                 <div className="flex justify-between items-center">
-                                    <h2 className="text-lg font-bold">📄 내 요청서</h2>
+                                    <h2 className="text-lg font-bold">{t('customerQuotes.viewRequestTitle')}</h2>
                                     <button onClick={() => setViewRequestModal(null)} className="text-gray-400 hover:text-gray-600 text-xl">✕</button>
                                 </div>
                                 {hasQuotes && (
                                     <div className="mt-3 bg-amber-50 border border-amber-200 text-amber-700 text-xs font-bold p-3 rounded-lg">
-                                        🔒 견적이 도착하여 수정이 불가합니다.
+                                        {t('customerQuotes.quoteLocked')}
                                     </div>
                                 )}
                             </div>
                             <div className="p-5 space-y-4">
                                 <div className="space-y-3">
                                     <div className="bg-gray-50 p-3 rounded-lg">
-                                        <span className="text-xs font-bold text-gray-400">서비스</span>
-                                        <p className="text-sm font-bold text-gray-800 mt-1">{req.categories?.name || req.service_type || '-'}</p>
+                                        <span className="text-xs font-bold text-gray-400">{t('customerQuotes.serviceLabel')}</span>
+                                        <p className="text-sm font-bold text-gray-800 mt-1">{(locale === 'en' ? req.categories?.name_en : null) || req.categories?.name || req.service_type || '-'}</p>
                                     </div>
                                     <div className="bg-gray-50 p-3 rounded-lg">
-                                        <span className="text-xs font-bold text-gray-400">지역</span>
+                                        <span className="text-xs font-bold text-gray-400">{t('customerQuotes.regionLabel')}</span>
                                         <p className="text-sm font-bold text-gray-800 mt-1">📍 {req.region || '-'}</p>
                                     </div>
                                     <div className="bg-gray-50 p-3 rounded-lg">
-                                        <span className="text-xs font-bold text-gray-400">요청일</span>
+                                        <span className="text-xs font-bold text-gray-400">{t('customerQuotes.requestDateLabel')}</span>
                                         <p className="text-sm font-bold text-gray-800 mt-1">{new Date(req.created_at).toLocaleDateString()}</p>
                                     </div>
                                 </div>
-                                {answerEntries.length > 0 && (
+
+                                {/* _history가 있으면 질문-답변 형식, 없으면 기존 fallback */}
+                                {historyData.length > 0 ? (
                                     <div className="space-y-3 border-t pt-4 border-gray-100">
-                                        <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">상세 응답</h3>
-                                        {answerEntries.map(([key, value]) => (
+                                        <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">{t('customerQuotes.detailedAnswers')}</h3>
+                                        {historyData
+                                            .filter((item) => {
+                                                const text = item.stepText || '';
+                                                const skipTexts = [
+                                                    'What type of professional are you looking for?',
+                                                    'What service do you need?',
+                                                    'Please select the detailed service.',
+                                                    'Please select the region where you need the service.',
+                                                    'Please select the city.',
+                                                    '어떤 전문가를 찾고 계신가요?',
+                                                    '어떤 서비스가 필요하신가요?',
+                                                    '상세 서비스를 선택해주세요.',
+                                                    '서비스 지역을 선택해주세요.',
+                                                    '도시를 선택해주세요.'
+                                                ];
+                                                return !skipTexts.some(s => text.includes(s));
+                                            })
+                                            .map((item, idx) => (
+                                                <div key={idx} className="bg-gray-50 p-3 rounded-lg">
+                                                    <span className="text-xs font-bold text-blue-500">Q. {item.stepText}</span>
+                                                    <p className="text-sm text-gray-800 mt-1 font-medium">
+                                                        {Array.isArray(item.userAnswer) ? item.userAnswer.join(', ') : String(item.userAnswer)}
+                                                    </p>
+                                                </div>
+                                            ))
+                                        }
+                                    </div>
+                                ) : fallbackEntries.length > 0 ? (
+                                    <div className="space-y-3 border-t pt-4 border-gray-100">
+                                        <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">{t('customerQuotes.detailedAnswers')}</h3>
+                                        {fallbackEntries.map(([key, value]) => (
                                             <div key={key} className="bg-gray-50 p-3 rounded-lg">
                                                 <span className="text-xs font-bold text-gray-400">{key}</span>
-                                                <p className="text-sm text-gray-800 mt-1">{String(value)}</p>
+                                                <p className="text-sm text-gray-800 mt-1">{Array.isArray(value) ? value.join(', ') : String(value)}</p>
                                             </div>
                                         ))}
                                     </div>
-                                )}
+                                ) : null}
                             </div>
                             <div className="sticky bottom-0 bg-white p-5 pt-3 border-t border-gray-100 rounded-b-2xl">
                                 <button
                                     onClick={() => setViewRequestModal(null)}
                                     className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 rounded-xl transition text-sm"
                                 >
-                                    닫기
+                                    {t('customerQuotes.closeBtn')}
                                 </button>
                             </div>
                         </div>
@@ -952,18 +991,18 @@ export default function CustomerQuotesClient() {
                 return (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
                         <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-xl flex flex-col gap-4">
-                            <h2 className="text-lg font-bold text-center">요청 취소</h2>
+                            <h2 className="text-lg font-bold text-center">{t('customerQuotes.cancelTitle')}</h2>
                             <div className="text-sm text-gray-600 text-center space-y-2">
-                                <p><strong>{req.categories?.name || req.service_type || '서비스 요청'}</strong>을<br />정말 취소하시겠습니까?</p>
+                                <p><strong>{(locale === 'en' ? req.categories?.name_en : null) || req.categories?.name || req.service_type || t('customerQuotes.defaultService')}</strong>{t('customerQuotes.cancelConfirm')}</p>
                                 {hasQuotes && (
                                     <div className="bg-red-50 border border-red-200 text-red-600 text-xs font-bold p-3 rounded-lg mt-3 text-left">
-                                        ⚠️ 취소 시 고수의 견적이 무효화됩니다. 잦은 취소는 이용 제한의 사유가 될 수 있습니다.
+                                        {t('customerQuotes.cancelHasQuotes')}
                                     </div>
                                 )}
                                 {/* ── [확장] 미열람 견적 환불 안내 ── */}
                                 {unreadQuoteCount > 0 && (
                                     <div className="bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold p-3 rounded-lg mt-2 text-left">
-                                        💰 아직 확인하지 않은 견적 <strong>{unreadQuoteCount}건</strong>에 대해 고수에게 소모된 코인이 보너스 캐시로 100% 자동 환급됩니다.
+                                        {t('customerQuotes.cancelUnreadRefund').replace('{count}', String(unreadQuoteCount))}
                                     </div>
                                 )}
                             </div>
@@ -973,14 +1012,14 @@ export default function CustomerQuotesClient() {
                                     disabled={cancelLoading}
                                     className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 rounded-xl transition text-sm"
                                 >
-                                    돌아가기
+                                    {t('customerQuotes.cancelBack')}
                                 </button>
                                 <button
                                     onClick={() => handleCancelRequest(req)}
                                     disabled={cancelLoading}
                                     className="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-xl transition text-sm"
                                 >
-                                    {cancelLoading ? '처리 중...' : '취소 확인'}
+                                    {cancelLoading ? t('customerQuotes.cancelLoading') : t('customerQuotes.cancelConfirmBtn')}
                                 </button>
                             </div>
                         </div>

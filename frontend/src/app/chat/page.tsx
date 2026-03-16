@@ -4,8 +4,10 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 export default function ChatListPage() {
+    const t = useTranslations();
     const router = useRouter();
     const [rooms, setRooms] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -23,11 +25,11 @@ export default function ChatListPage() {
         const isYesterday = date.getDate() === yesterday.getDate() && date.getMonth() === yesterday.getMonth() && date.getFullYear() === yesterday.getFullYear();
 
         if (isToday) {
-            return date.toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit', hour12: true });
+            return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
         } else if (isYesterday) {
-            return '어제';
+            return t('chatList.yesterday');
         } else {
-            return `${date.getMonth() + 1}월 ${date.getDate()}일`;
+            return `${date.getMonth() + 1}/${date.getDate()}`;
         }
     };
 
@@ -76,7 +78,7 @@ export default function ChatListPage() {
                 const avatarMap: Record<string, string | null> = {}; // 아바타 맵 추가
                 if (usersData) {
                     usersData.forEach(u => {
-                        userMap[u.user_id] = (u.nickname && u.nickname.trim() !== '') ? u.nickname : (u.name || '알 수 없음');
+                        userMap[u.user_id] = (u.nickname && u.nickname.trim() !== '') ? u.nickname : (u.name || t('chatList.unknown'));
                         avatarMap[u.user_id] = u.avatar_url || null; // 아바타 저장
                     });
                 }
@@ -100,8 +102,8 @@ export default function ChatListPage() {
 
                 const mappedRooms = roomsData.map(room => ({
                     ...room,
-                    customer_name: userMap[room.customer_id] || '고객',
-                    pro_name: userMap[room.pro_id] || '고수',
+                    customer_name: userMap[room.customer_id] || t('chatList.defaultCustomer'),
+                    pro_name: userMap[room.pro_id] || t('chatList.defaultPro'),
                     customer_avatar: avatarMap[room.customer_id] || null, // 고객 아바타 추가
                     pro_avatar: avatarMap[room.pro_id] || null, // 고수 아바타 추가
                     unread_count: unreadMap[room.room_id] || 0
@@ -120,9 +122,9 @@ export default function ChatListPage() {
                         if (!lastMsgMap[msg.room_id]) {
                             // 시스템 메시지는 별도 표시
                             if (msg.message_type === 'SYSTEM' || msg.message_type === 'SYSTEM_CLOSE' || msg.message_type === 'SYSTEM_REVIEWED' || msg.message_type === 'SYSTEM_PRIVATE') {
-                                lastMsgMap[msg.room_id] = '📢 시스템 메시지';
+                                lastMsgMap[msg.room_id] = t('chatList.systemMessage');
                             } else if (msg.content === 'IMAGE') {
-                                lastMsgMap[msg.room_id] = '🖼️ 사진';
+                                lastMsgMap[msg.room_id] = t('chatList.imageMessage');
                             } else {
                                 lastMsgMap[msg.room_id] = msg.content || '';
                             }
@@ -200,7 +202,7 @@ export default function ChatListPage() {
         <div className="min-h-screen bg-white flex items-center justify-center">
             <div className="flex flex-col items-center gap-3">
                 <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
-                <p className="text-sm text-gray-400">채팅방 목록을 불러오는 중...</p>
+                <p className="text-sm text-gray-400">{t('chatList.loading')}</p>
             </div>
         </div>
     );
@@ -210,18 +212,17 @@ export default function ChatListPage() {
             {/* 헤더 */}
             <div className="sticky top-0 z-10 bg-white border-b border-gray-100">
                 <div className="flex items-center justify-between px-4 py-4">
-                    <h1 className="text-xl font-black text-gray-900">채팅</h1>
+                    <h1 className="text-xl font-black text-gray-900">{t('chatList.title')}</h1>
                 </div>
                 {/* 안내 배너 */}
                 <div className="mx-4 mb-3 bg-blue-50 text-blue-700 px-3 py-2 rounded-xl text-xs flex items-center gap-2">
-                    <span>💡</span>
-                    <span>안전한 거래를 위해 대화 내역은 90일 보관 후 자동 삭제됩니다.</span>
+                    <span>{t('chatList.banner')}</span>
                 </div>
             </div>
 
             {errorMsg && (
                 <div className="mx-4 mt-3 text-red-500 text-sm bg-red-50 p-3 rounded-xl border border-red-100">
-                    데이터 조회 오류: {errorMsg}
+                    {t('chatList.dataError')}{errorMsg}
                 </div>
             )}
 
@@ -229,12 +230,12 @@ export default function ChatListPage() {
             {!errorMsg && rooms.length === 0 ? (
                 <div className="flex-1 flex flex-col items-center justify-center gap-3 text-gray-400">
                     <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center text-3xl">💬</div>
-                    <p className="text-sm font-medium">아직 채팅방이 없습니다.</p>
+                    <p className="text-sm font-medium">{t('chatList.noRooms')}</p>
                 </div>
             ) : (
                 <ul className="flex-1 divide-y divide-gray-100">
                     {rooms.map((room) => {
-                        const partnerName = room.pro_id === currentUserId ? (room.customer_name || '이름 없음') : (room.pro_name || '이름 없음');
+                        const partnerName = room.pro_id === currentUserId ? (room.customer_name || t('chatList.unknown')) : (room.pro_name || t('chatList.unknown'));
                         const partnerAvatar = room.pro_id === currentUserId ? room.customer_avatar : room.pro_avatar;
                         const unread = room.unread_count || 0;
                         const isClosed = room.status === 'CLOSED';
@@ -249,7 +250,7 @@ export default function ChatListPage() {
                                     <div className="relative flex-shrink-0">
                                         <div className="w-12 h-12 rounded-full bg-gray-100 overflow-hidden border border-gray-200 flex items-center justify-center">
                                             {partnerAvatar ? (
-                                                <img src={partnerAvatar} alt="프로필" className="w-full h-full object-cover" />
+                                                <img src={partnerAvatar} alt="Profile" className="w-full h-full object-cover" />
                                             ) : (
                                                 <svg className="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
                                                     <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
@@ -259,7 +260,7 @@ export default function ChatListPage() {
                                         {/* 종료됨 오버레이 */}
                                         {isClosed && (
                                             <div className="absolute inset-0 rounded-full bg-black/30 flex items-center justify-center">
-                                                <span className="text-white text-[9px] font-bold">종료</span>
+                                                <span className="text-white text-[9px] font-bold">{t('chatList.closedOverlay')}</span>
                                             </div>
                                         )}
                                     </div>
@@ -268,16 +269,16 @@ export default function ChatListPage() {
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-1.5">
                                             <span className={`text-[15px] font-bold truncate ${isClosed ? 'text-gray-400' : 'text-gray-900'}`}>
-                                                {partnerName}님
+                                                {partnerName}{t('chatList.proSuffix')}
                                             </span>
                                             {isClosed && (
-                                                <span className="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-full flex-shrink-0">종료</span>
+                                                <span className="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-full flex-shrink-0">{t('chatList.closedBadge')}</span>
                                             )}
                                         </div>
                                         <p className="text-xs text-gray-400 mt-0.5 truncate">
                                             {isClosed
-                                                ? (lastMessageMap[room.room_id] || '🔒 종료된 채팅방입니다.')
-                                                : (lastMessageMap[room.room_id] || (room.status === 'MATCHED' ? '🤝 매칭이 성사되었습니다.' : '대화를 시작해보세요.'))}
+                                                ? (lastMessageMap[room.room_id] || t('chatList.closedMsg'))
+                                                : (lastMessageMap[room.room_id] || (room.status === 'MATCHED' ? t('chatList.matched') : t('chatList.startChat')))}
                                         </p>
                                     </div>
 
@@ -289,9 +290,9 @@ export default function ChatListPage() {
                                                 {unread > 99 ? '99+' : unread}
                                             </span>
                                         ) : room.status === 'MATCHED' ? (
-                                            <span className="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full">매칭 성사</span>
+                                            <span className="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full">{t('chatList.matchedBadge')}</span>
                                         ) : !isClosed ? (
-                                            <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">진행 중</span>
+                                            <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">{t('chatList.inProgress')}</span>
                                         ) : null}
                                     </div>
                                 </Link>

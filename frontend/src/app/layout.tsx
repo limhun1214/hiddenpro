@@ -3,6 +3,8 @@ import ClientLayout from './ClientLayout';
 import './globals.css';
 import GlobalFooter from '@/components/common/GlobalFooter';
 import type { Metadata } from 'next';
+import { NextIntlClientProvider } from 'next-intl';
+import { getMessages, getLocale } from 'next-intl/server';
 
 export const metadata: Metadata = {
     icons: {
@@ -11,11 +13,15 @@ export const metadata: Metadata = {
     },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+    const locale = await getLocale();
+    const messages = await getMessages();
     return (
-        <html lang="ko">
+        <html lang={locale}>
             <body suppressHydrationWarning>
-                <ClientLayout>{children}</ClientLayout>
+                <NextIntlClientProvider locale={locale} messages={messages}>
+                    <ClientLayout>{children}</ClientLayout>
+                </NextIntlClientProvider>
             </body>
         </html>
     );

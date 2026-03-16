@@ -21,6 +21,7 @@
 
 
 
+
 ## 4. [Go-Live Pending Checklist] (런칭 전 필수 보류 - 현재 절대 활성화 금지)
 1. Sentry 에러 트래킹 전면 연결 및 Key 주입
 2. Supabase Rate Limit 전면 활성화 (DDoS 방어)
@@ -52,3 +53,12 @@
 | 고객 무응답 48시간 만료 (추가됨) | 보낸 견적 > 보관함 | 견적 발송 후 고객이 48시간 내에 아무도 낙찰하지 않아 만료된 경우 보관함으로 이동 |
 | 고객이 요청서 취소 / 낙찰 후 취소 (CANCELED - 삭제 활성) | 보낸 견적 > 보관함 | 낙찰 전/후 관계없이 요청이 취소된 경우 보관함으로 이동 (고객 정책과 동일하게 삭제 처리) |
 | 보관함 이동 후 7일 경과 | 숨김 처리 (화면 노출 안 됨) | 기준 시각(updated_at) 7일 경과 시 DB 쿼리 레벨 필터링 + 프론트엔드 이중 방어로 화면에서 숨김 |
+
+## 6. [i18n 인프라 현황]
+- 방식: next-intl, 쿠키 기반 locale (URL 구조 변경 없음)
+- 지원 언어: EN / KO
+- 설정 파일: `frontend/src/i18n.ts`, `frontend/next.config.js`
+- 번역 파일: `frontend/messages/en.json`, `frontend/messages/ko.json`
+- 전환 컴포넌트: `frontend/src/components/common/LanguageSwitcher.tsx`
+- 완료된 파일: 23개 (i18n 완료 보고서 참조)
+- 미완료: `admin/page.tsx`, 모바일 GNB LanguageSwitcher
