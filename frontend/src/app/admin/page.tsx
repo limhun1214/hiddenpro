@@ -7,29 +7,44 @@ import { AdminRole, maskPrivateInfo } from '@/lib/adminAuth';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { optimizeImage } from '@/utils/imageOptimizer';
 import { useToast } from '@/components/ui/Toast';
+import { useTranslations } from 'next-intl';
 // ─── 타입 ───
 type AdminTab = 'dashboard' | 'ledger' | 'pro' | 'customer' | 'admin_mgmt' | 'quotes' | 'reviews' | 'search_logs' | 'settings' | 'cms' | 'inquiries' | 'categories' | 'abuse' | 'reports' | 'payout' | 'audit_log';
 type UserDetailTab = 'info' | 'ledger' | 'quotes' | 'reviews';
 
-const txLabel = (t: string) => ({ CHARGE: '충전', DEDUCT_QUOTE: '견적 차감', REFUND: '환불', BONUS: '보너스', ADMIN_CHARGE: '관리자 충전', ADMIN_REFUND: '관리자 환불', ADMIN_DEDUCT: '관리자 차감', BONUS_REFUND: '미열람 보상', ADMIN_BONUS_CHARGE: '관리자 보너스 지급', ADMIN_BONUS_REFUND: '관리자 보너스 차감' }[t] || t);
-const txDesc = (txType: string, desc: string | null | undefined): string => {
+const txLabel = (t: string, locale: string = 'en') => {
+    const map: Record<string, Record<string, string>> = {
+        en: { CHARGE: 'Top-up', DEDUCT_QUOTE: 'Quote deduction', REFUND: 'Refund', BONUS: 'Bonus', ADMIN_CHARGE: 'Admin top-up', ADMIN_REFUND: 'Admin refund', ADMIN_DEDUCT: 'Admin deduction', BONUS_REFUND: 'Unread refund', ADMIN_BONUS_CHARGE: 'Admin bonus', ADMIN_BONUS_REFUND: 'Admin bonus deduction' },
+        ko: { CHARGE: '충전', DEDUCT_QUOTE: '견적 차감', REFUND: '환불', BONUS: '보너스', ADMIN_CHARGE: '관리자 충전', ADMIN_REFUND: '관리자 환불', ADMIN_DEDUCT: '관리자 차감', BONUS_REFUND: '미열람 보상', ADMIN_BONUS_CHARGE: '관리자 보너스 지급', ADMIN_BONUS_REFUND: '관리자 보너스 차감' },
+    };
+    return (map[locale] || map.en)[t] || t;
+};
+const txDesc = (txType: string, desc: string | null | undefined, locale: string = 'en'): string => {
     if (desc) return desc;
-    if (['CHARGE', 'ADMIN_CHARGE', 'ADMIN_BONUS_CHARGE', 'BONUS'].includes(txType)) return '캐시 충전';
-    if (txType === 'DEDUCT_QUOTE') return '견적 발송';
-    if (['REFUND', 'ADMIN_REFUND', 'BONUS_REFUND'].includes(txType)) return '캐시 환불';
+    if (['CHARGE', 'ADMIN_CHARGE', 'ADMIN_BONUS_CHARGE', 'BONUS'].includes(txType)) return locale === 'ko' ? '캐시 충전' : 'Cash top-up';
+    if (txType === 'DEDUCT_QUOTE') return locale === 'ko' ? '견적 발송' : 'Quote sent';
+    if (['REFUND', 'ADMIN_REFUND', 'BONUS_REFUND'].includes(txType)) return locale === 'ko' ? '캐시 환불' : 'Cash refund';
     return '-';
 };
 type LedgerCategory = 'all' | 'DEDUCT_QUOTE' | 'ADMIN_CHARGE' | 'CHARGE' | 'REFUND';
 type LedgerPeriod = 'all' | 'today' | '7d' | '30d' | '90d';
-const fmtDate = (d: string) => new Date(d).toLocaleString('ko-KR', { year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+const fmtDate = (d: string, locale: string = 'en') => new Date(d).toLocaleString(locale === 'ko' ? 'ko-KR' : 'en-US', { year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
 const fmtNum = (n: number) => n.toLocaleString();
-const statusLabel = (s: string) => ({ OPEN: '대기 중', MATCHED: '매칭 완료', EXPIRED: '만료됨', CLOSED: '종료' }[s] || s);
+const statusLabel = (s: string, locale: string = 'en') => {
+    const map: Record<string, Record<string, string>> = {
+        en: { OPEN: 'Pending', MATCHED: 'Matched', EXPIRED: 'Expired', CLOSED: 'Closed' },
+        ko: { OPEN: '대기 중', MATCHED: '매칭 완료', EXPIRED: '만료됨', CLOSED: '종료' },
+    };
+    return (map[locale] || map.en)[s] || s;
+};
 const statusColor = (s: string) => ({ OPEN: 'bg-green-900/50 text-green-300', MATCHED: 'bg-blue-900/50 text-blue-300', EXPIRED: 'bg-gray-700/50 text-gray-400', CLOSED: 'bg-gray-700/50 text-gray-400' }[s] || 'bg-gray-700/50 text-gray-400');
 
 function AdminDashboardPageContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { showToast } = useToast();
+    const t = useTranslations('admin');
+    const [adminLocale, setAdminLocale] = useState<string>('en');
     const [authorized, setAuthorized] = useState(false);
     const [loading, setLoading] = useState(true);
     const [adminRole, setAdminRole] = useState<AdminRole | null>(null);
@@ -200,7 +215,9 @@ function AdminDashboardPageContent() {
     const [searchLogs, setSearchLogs] = useState<any[]>([]);
     const [searchLogsLoading, setSearchLogsLoading] = useState(false);
     const [selectedCategoryMapping, setSelectedCategoryMapping] = useState<Record<string, string>>({});
-    const MAPPING_CATEGORIES = ['이사/청소', '설치/수리', '인테리어/시공', '비즈니스/외주', '이벤트/파티', '레슨/튜터링'];
+    const MAPPING_CATEGORIES = adminLocale === 'ko'
+        ? ['이사/청소', '설치/수리', '인테리어/시공', '비즈니스/외주', '이벤트/파티', '레슨/튜터링']
+        : ['Moving/Cleaning', 'Installation/Repair', 'Interior/Construction', 'Business/Outsourcing', 'Events/Parties', 'Lessons/Tutoring'];
 
     // ── [확장] 어뷰징/패널티 관리 ──
     const [abuseData, setAbuseData] = useState<any[]>([]);
@@ -279,7 +296,7 @@ function AdminDashboardPageContent() {
                 const allowedAdminRoles: AdminRole[] = ['ADMIN', 'ADMIN_OPERATION', 'ADMIN_VIEWER'];
                 if (!allowedAdminRoles.includes(role as AdminRole)) {
                     console.log('[CG_DEBUG] Role not allowed, redirecting...');
-                    alert('관리자 계정만 접근할 수 있습니다.');
+                    alert(adminLocale === 'ko' ? '관리자 계정만 접근할 수 있습니다.' : 'Admin accounts only.');
                     router.replace('/');
                     return;
                 }
@@ -293,6 +310,11 @@ function AdminDashboardPageContent() {
         checkAuth();
         return () => { isMounted = false; };
     }, [router]);
+
+    React.useEffect(() => {
+        const saved = document.cookie.split('; ').find(r => r.startsWith('locale='))?.split('=')[1];
+        if (saved) setAdminLocale(saved);
+    }, []);
 
     // ─── 비활성 자동 로그아웃 타이머 ───
     useEffect(() => {
@@ -504,7 +526,7 @@ function AdminDashboardPageContent() {
 
     // ─── 관리자 승급 핸들러 ───
     const handlePromoteAdmin = async () => {
-        if (!promoteEmail.trim()) { setModal({ type: 'error', title: '입력 오류', message: '이메일을 입력하세요.' }); return; }
+        if (!promoteEmail.trim()) { setModal({ type: 'error', title: adminLocale === 'ko' ? '입력 오류' : 'Input Error', message: adminLocale === 'ko' ? '이메일을 입력하세요.' : 'Please enter an email.' }); return; }
         setPromoting(true);
         try {
             const { data: { session } } = await supabase.auth.getSession();
@@ -516,18 +538,18 @@ function AdminDashboardPageContent() {
                 .select('user_id, role, status')
                 .eq('email', promoteEmail.trim())
                 .single();
-            if (findErr || !targetUser) { setModal({ type: 'error', title: '계정 없음', message: '존재하지 않는 계정입니다.' }); return; }
-            if (['ADMIN', 'ADMIN_OPERATION', 'ADMIN_VIEWER'].includes(targetUser.role)) { setModal({ type: 'error', title: '승급 불가', message: '이미 관리자 계정입니다.' }); return; }
-            if (targetUser.user_id === currentAdminId) { setModal({ type: 'error', title: '승급 불가', message: '본인 계정은 변경할 수 없습니다.' }); return; }
+            if (findErr || !targetUser) { setModal({ type: 'error', title: adminLocale === 'ko' ? '계정 없음' : 'Account Not Found', message: adminLocale === 'ko' ? '존재하지 않는 계정입니다.' : 'This account does not exist.' }); return; }
+            if (['ADMIN', 'ADMIN_OPERATION', 'ADMIN_VIEWER'].includes(targetUser.role)) { setModal({ type: 'error', title: adminLocale === 'ko' ? '승급 불가' : 'Cannot Promote', message: adminLocale === 'ko' ? '이미 관리자 계정입니다.' : 'Already an admin account.' }); return; }
+            if (targetUser.user_id === currentAdminId) { setModal({ type: 'error', title: adminLocale === 'ko' ? '승급 불가' : 'Cannot Promote', message: adminLocale === 'ko' ? '본인 계정은 변경할 수 없습니다.' : 'You cannot change your own account.' }); return; }
 
             // 2. RPC 호출 (DB role + JWT app_metadata 동시 업데이트, 감사 로그 RPC 내부 처리)
             const { error: rpcError } = await supabase.rpc('promote_admin', {
                 target_email: promoteEmail.trim(),
                 new_role: promoteRole,
             });
-            if (rpcError) { setModal({ type: 'error', title: '승급 실패', message: rpcError.message }); return; }
+            if (rpcError) { setModal({ type: 'error', title: adminLocale === 'ko' ? '승급 실패' : 'Promotion Failed', message: rpcError.message }); return; }
 
-            setModal({ type: 'success', title: '승급 완료', message: `${promoteEmail} 계정이 ${promoteRole === 'ADMIN_OPERATION' ? '운영 관리자' : '뷰어'}로 승급되었습니다.` });
+            setModal({ type: 'success', title: adminLocale === 'ko' ? '승급 완료' : 'Promotion Complete', message: adminLocale === 'ko' ? `${promoteEmail} 계정이 ${promoteRole === 'ADMIN_OPERATION' ? '운영 관리자' : '뷰어'}로 승급되었습니다.` : `${promoteEmail} has been promoted to ${promoteRole === 'ADMIN_OPERATION' ? 'Operations Admin' : 'Viewer'}.` });
             setPromoteEmail('');
             loadAdmins();
         } finally {
@@ -546,9 +568,9 @@ function AdminDashboardPageContent() {
             const { error: rpcError } = await supabase.rpc('revoke_admin', {
                 target_user_id: targetUserId,
             });
-            if (rpcError) { setModal({ type: 'error', title: '권한 회수 실패', message: rpcError.message }); return; }
+            if (rpcError) { setModal({ type: 'error', title: adminLocale === 'ko' ? '권한 회수 실패' : 'Revoke Failed', message: rpcError.message }); return; }
 
-            setModal({ type: 'success', title: '권한 회수 완료', message: '해당 계정의 권한이 회수되고 계정이 정지되었습니다.' });
+            setModal({ type: 'success', title: adminLocale === 'ko' ? '권한 회수 완료' : 'Revoke Complete', message: adminLocale === 'ko' ? '해당 계정의 권한이 회수되고 계정이 정지되었습니다.' : 'The account has been revoked and suspended.' });
             loadAdmins();
         } finally {
             setRevokeLoading(null);
@@ -590,7 +612,7 @@ function AdminDashboardPageContent() {
                 matchedProName = acceptedQuote.pro?.nickname || acceptedQuote.pro?.name || acceptedQuote.pro_id?.slice(0, 8);
                 matchedPrice = acceptedQuote.price || 0;
             } else {
-                matchedProName = r.status === 'OPEN' ? `대기 중 (${(r.match_quotes || []).length}명 입찰)` : '-';
+                matchedProName = r.status === 'OPEN' ? (adminLocale === 'ko' ? `대기 중 (${(r.match_quotes || []).length}명 입찰)` : `Pending (${(r.match_quotes || []).length} bids)`) : '-';
             }
 
             return {
@@ -608,7 +630,7 @@ function AdminDashboardPageContent() {
         const { data: usersData } = await supabase.from('users').select('user_id, name, nickname').in('user_id', userIds.length ? userIds : ['']);
         const nameMap: Record<string, string> = {};
         (usersData || []).forEach(u => { nameMap[u.user_id] = u.nickname || u.name || u.user_id.slice(0, 8); });
-        setReviews((data || []).map(r => ({ ...r, customerName: nameMap[r.customer_id] || '고객', proName: nameMap[r.pro_id] || '고수' })));
+        setReviews((data || []).map(r => ({ ...r, customerName: nameMap[r.customer_id] || (adminLocale === 'ko' ? '고객' : 'Customer'), proName: nameMap[r.pro_id] || (adminLocale === 'ko' ? '고수' : 'Pro') })));
     }, []);
 
     // ─── User Detail Loader ───
@@ -756,7 +778,7 @@ function AdminDashboardPageContent() {
             setEditingCategory(null);
             loadDbCategories();
         } catch (e: any) {
-            alert('저장 실패: ' + e.message);
+            alert((adminLocale === 'ko' ? '저장 실패: ' : 'Save failed: ') + e.message);
         }
     };
 
@@ -780,7 +802,7 @@ function AdminDashboardPageContent() {
             if (proErr) throw proErr;
 
             if ((reqUse && reqUse.length > 0) || (proUse && proUse.length > 0)) {
-                alert("현재 견적 요청이나 고수 프로필에서 사용 중인 카테고리이므로 삭제할 수 없습니다. 대신 [활성 상태]를 '운영 중지'로 변경해 주세요.");
+                alert(adminLocale === 'ko' ? "현재 견적 요청이나 고수 프로필에서 사용 중인 카테고리이므로 삭제할 수 없습니다. 대신 [활성 상태]를 '운영 중지'로 변경해 주세요." : "This category is in use by quote requests or pro profiles and cannot be deleted. Please set its status to 'Inactive' instead.");
                 setDeletingCategory(null);
                 return;
             }
@@ -791,7 +813,7 @@ function AdminDashboardPageContent() {
             setDeletingCategory(null);
             loadDbCategories();
         } catch (e: any) {
-            alert('삭제 실패: ' + e.message);
+            alert((adminLocale === 'ko' ? '삭제 실패: ' : 'Delete failed: ') + e.message);
         }
     };
 
@@ -816,7 +838,7 @@ function AdminDashboardPageContent() {
 
             if (fetchError) {
                 console.error('❌ [Abuse] user_penalty_stats 조회 실패:', fetchError);
-                alert('어뷰징 데이터 조회 실패: ' + fetchError.message);
+                alert((adminLocale === 'ko' ? '어뷰징 데이터 조회 실패: ' : 'Abuse data load failed: ') + fetchError.message);
                 setAbuseData([]);
                 return;
             }
@@ -853,9 +875,9 @@ function AdminDashboardPageContent() {
         });
         setUnflagConfirmModal(null);
         if (error) {
-            showToast('해제 실패: ' + error.message, 'error');
+            showToast((adminLocale === 'ko' ? '해제 실패: ' : 'Unflag failed: ') + error.message, 'error');
         } else {
-            showToast('패널티가 해제되었습니다.', 'success');
+            showToast(adminLocale === 'ko' ? '패널티가 해제되었습니다.' : 'Penalty has been removed.', 'success');
             loadAbuseData();
         }
     };
@@ -963,7 +985,7 @@ function AdminDashboardPageContent() {
             .update(updateData)
             .eq('user_id', reportSuspendModal.userId);
         if (userError) {
-            showToast('제재 처리 실패: ' + userError.message, 'error');
+            showToast((adminLocale === 'ko' ? '제재 처리 실패: ' : 'Sanction failed: ') + userError.message, 'error');
             setSuspendSubmitting(false);
             return;
         }
@@ -994,14 +1016,14 @@ function AdminDashboardPageContent() {
             console.log('[handleSuspend] chat_rooms CLOSED result:', roomError ? roomError.message : 'success');
         }
         const targetUserId = reportSuspendModal.userId;
-        const suspendLabel = suspendType === 'warning' ? '경고' : suspendType === 'temporary' ? `${suspendDays}일 임시정지` : '영구정지';
+        const suspendLabel = suspendType === 'warning' ? (adminLocale === 'ko' ? '경고' : 'Warning') : suspendType === 'temporary' ? (adminLocale === 'ko' ? `${suspendDays}일 임시정지` : `${suspendDays}-day suspension`) : (adminLocale === 'ko' ? '영구정지' : 'Permanent ban');
 
         // 1. 앱 알림 발송
         await supabase.from('notifications').insert({
             user_id: targetUserId,
             sender_id: adminId,
             type: 'SYSTEM',
-            message: `[관리자] 귀하의 계정에 ${suspendLabel} 처리가 되었습니다. 사유: ${reportSuspendReason}`,
+            message: adminLocale === 'ko' ? `[관리자] 귀하의 계정에 ${suspendLabel} 처리가 되었습니다. 사유: ${reportSuspendReason}` : `[Admin] Your account has been ${suspendLabel}. Reason: ${reportSuspendReason}`,
             reference_id: targetRoomId || null,
             is_read: false,
         });
@@ -1027,10 +1049,10 @@ function AdminDashboardPageContent() {
             });
 
             const systemMsg = suspendType === 'warning'
-                ? `🚨 [관리자] 귀하의 계정에 경고가 부과되었습니다.\n사유: ${reportSuspendReason}\n반복 위반 시 정지 처리될 수 있습니다.`
+                ? (adminLocale === 'ko' ? `🚨 [관리자] 귀하의 계정에 경고가 부과되었습니다.\n사유: ${reportSuspendReason}\n반복 위반 시 정지 처리될 수 있습니다.` : `🚨 [Admin] A warning has been issued to your account.\nReason: ${reportSuspendReason}\nRepeated violations may result in suspension.`)
                 : suspendType === 'temporary'
-                    ? `🚫 [관리자] 귀하의 계정이 ${suspendDays}일간 임시정지 처리되었습니다.\n사유: ${reportSuspendReason}`
-                    : `🚫 [관리자] 귀하의 계정이 영구정지 처리되었습니다.\n사유: ${reportSuspendReason}`;
+                    ? (adminLocale === 'ko' ? `🚫 [관리자] 귀하의 계정이 ${suspendDays}일간 임시정지 처리되었습니다.\n사유: ${reportSuspendReason}` : `🚫 [Admin] Your account has been suspended for ${suspendDays} days.\nReason: ${reportSuspendReason}`)
+                    : (adminLocale === 'ko' ? `🚫 [관리자] 귀하의 계정이 영구정지 처리되었습니다.\n사유: ${reportSuspendReason}` : `🚫 [Admin] Your account has been permanently banned.\nReason: ${reportSuspendReason}`);
 
             // 피신고자에게 제재 메시지 (본인만 보임)
             await supabase.from('chat_messages').insert({
@@ -1047,7 +1069,7 @@ function AdminDashboardPageContent() {
                     room_id: targetRoomId,
                     sender_id: adminId,
                     receiver_id: activeReport.reporter.user_id,
-                    content: `✅ [관리자] 신고하신 내용이 검토되어 처리 완료되었습니다.\n해당 사용자에게 ${suspendLabel} 조치가 취해졌습니다.`,
+                    content: adminLocale === 'ko' ? `✅ [관리자] 신고하신 내용이 검토되어 처리 완료되었습니다.\n해당 사용자에게 ${suspendLabel} 조치가 취해졌습니다.` : `✅ [Admin] Your report has been reviewed.\nThe user has received a ${suspendLabel} action.`,
                     message_type: 'SYSTEM_PRIVATE',
                 });
             }
@@ -1059,13 +1081,13 @@ function AdminDashboardPageContent() {
                 user_id: activeReport.reporter.user_id,
                 sender_id: adminId,
                 type: 'SYSTEM',
-                message: `✅ 신고하신 내용이 검토되어 처리 완료되었습니다.`,
+                message: adminLocale === 'ko' ? `✅ 신고하신 내용이 검토되어 처리 완료되었습니다.` : `✅ Your report has been reviewed and processed.`,
                 reference_id: targetRoomId || null,
                 is_read: false,
             });
         }
 
-        showToast(`✅ ${reportUserName}님 제재 완료`, 'success', true);
+        showToast(adminLocale === 'ko' ? `✅ ${reportUserName}님 제재 완료` : `✅ ${reportUserName} sanctioned`, 'success', true);
         fetchReports();
     };
 
@@ -1127,28 +1149,28 @@ function AdminDashboardPageContent() {
 
     const handleMapSearchTag = async (keyword: string) => {
         const category = selectedCategoryMapping[keyword];
-        if (!category) return alert('매핑할 카테고리를 먼저 선택해주세요.');
-        if (!window.confirm(`'${keyword}' 단어를 '${category}' 카테고리의 동의어(search_tags)에 추가하고 로그에서 즉시 삭제하시겠습니까?`)) return;
+        if (!category) return alert(adminLocale === 'ko' ? '매핑할 카테고리를 먼저 선택해주세요.' : 'Please select a category to map first.');
+        if (!window.confirm(adminLocale === 'ko' ? `'${keyword}' 단어를 '${category}' 카테고리의 동의어(search_tags)에 추가하고 로그에서 즉시 삭제하시겠습니까?` : `Add '${keyword}' as a synonym for '${category}' and delete from logs?`)) return;
 
         const { error } = await supabase.rpc('map_search_tag_to_category', {
             target_keyword: keyword,
             target_category: category
         });
 
-        if (error) return alert('매핑 실패: ' + error.message);
+        if (error) return alert((adminLocale === 'ko' ? '매핑 실패: ' : 'Mapping failed: ') + error.message);
 
         setSearchLogs(prev => prev.filter(log => log.keyword !== keyword));
-        alert('매핑 및 로그 삭제가 완료되었습니다.');
+        alert(adminLocale === 'ko' ? '매핑 및 로그 삭제가 완료되었습니다.' : 'Mapping and log deletion complete.');
     };
 
     const handleIgnoreSearchKeyword = async (keyword: string) => {
-        if (!window.confirm(`'${keyword}' 로그를 영구 삭제(무시)하시겠습니까?`)) return;
+        if (!window.confirm(adminLocale === 'ko' ? `'${keyword}' 로그를 영구 삭제(무시)하시겠습니까?` : `Permanently delete '${keyword}' log?`)) return;
 
         const { error } = await supabase.rpc('ignore_search_fail_keyword', {
             target_keyword: keyword
         });
 
-        if (error) return alert('삭제 실패: ' + error.message);
+        if (error) return alert((adminLocale === 'ko' ? '삭제 실패: ' : 'Delete failed: ') + error.message);
 
         setSearchLogs(prev => prev.filter(log => log.keyword !== keyword));
     };
@@ -1157,7 +1179,7 @@ function AdminDashboardPageContent() {
         const files = Array.from(e.target.files || []);
         if (!files.length) return;
         const remaining = 5 - replyImages.length;
-        if (remaining <= 0) { showToast('이미지는 최대 5장까지 첨부할 수 있습니다.', 'error'); return; }
+        if (remaining <= 0) { showToast(adminLocale === 'ko' ? '이미지는 최대 5장까지 첨부할 수 있습니다.' : 'Maximum 5 images allowed.', 'error'); return; }
         const selected = files.slice(0, remaining);
         setReplyImages(prev => [...prev, ...selected]);
         selected.forEach(file => {
@@ -1181,7 +1203,7 @@ function AdminDashboardPageContent() {
             const { error: upErr } = await supabase.storage
                 .from('quote_images')
                 .upload(`inquiries/replies/${fileName}`, optimizedFile);
-            if (upErr) throw new Error('이미지 업로드 실패: ' + upErr.message);
+            if (upErr) throw new Error((adminLocale === 'ko' ? '이미지 업로드 실패: ' : 'Image upload failed: ') + upErr.message);
             const { data: { publicUrl } } = supabase.storage
                 .from('quote_images')
                 .getPublicUrl(`inquiries/replies/${fileName}`);
@@ -1212,7 +1234,7 @@ function AdminDashboardPageContent() {
 
         if (error) {
             setReplySaving(false);
-            showToast('답변 저장에 실패했습니다.', 'error');
+            showToast(adminLocale === 'ko' ? '답변 저장에 실패했습니다.' : 'Failed to save reply.', 'error');
             return;
         }
 
@@ -1221,13 +1243,13 @@ function AdminDashboardPageContent() {
             user_id: selectedInquiry.user_id,
             sender_id: adminId,
             type: 'SYSTEM',
-            message: `✅ 1:1 문의 답변이 등록되었습니다. [${selectedInquiry.title}]`,
+            message: adminLocale === 'ko' ? `✅ 1:1 문의 답변이 등록되었습니다. [${selectedInquiry.title}]` : `✅ Your inquiry has been answered. [${selectedInquiry.title}]`,
             reference_id: selectedInquiry.id,
             is_read: false,
         });
 
         setReplySaving(false);
-        showToast('답변이 성공적으로 등록되었습니다.', 'success');
+        showToast(adminLocale === 'ko' ? '답변이 성공적으로 등록되었습니다.' : 'Reply submitted successfully.', 'success');
         setSelectedInquiry(null);
         setReplyContent('');
         setReplyImages([]);
@@ -1242,7 +1264,7 @@ function AdminDashboardPageContent() {
             .update({ status: newStatus, updated_at: new Date().toISOString() })
             .eq('id', inquiryId);
         if (error) {
-            showToast('상태 변경에 실패했습니다.', 'error');
+            showToast(adminLocale === 'ko' ? '상태 변경에 실패했습니다.' : 'Failed to change status.', 'error');
             setInquiryStatusUpdating(false);
             return;
         }
@@ -1250,7 +1272,7 @@ function AdminDashboardPageContent() {
         if (selectedInquiry?.id === inquiryId) {
             setSelectedInquiry((prev: any) => prev ? { ...prev, status: newStatus } : prev);
         }
-        showToast('상태가 변경되었습니다.', 'success');
+        showToast(adminLocale === 'ko' ? '상태가 변경되었습니다.' : 'Status changed.', 'success');
         setInquiryStatusUpdating(false);
     };
 
@@ -1270,9 +1292,9 @@ function AdminDashboardPageContent() {
             .eq('id', editingSupportPage.id);
 
         if (error) {
-            alert('저장 중 오류 발생: ' + error.message);
+            alert((adminLocale === 'ko' ? '저장 중 오류 발생: ' : 'Error saving: ') + error.message);
         } else {
-            alert('성공적으로 저장되었습니다.');
+            alert(adminLocale === 'ko' ? '성공적으로 저장되었습니다.' : 'Saved successfully.');
             setSupportPages(prev => prev.map(p => p.id === editingSupportPage.id ? editingSupportPage : p));
             setEditingSupportPage(null);
         }
@@ -1312,9 +1334,9 @@ function AdminDashboardPageContent() {
         }
 
         if (error) {
-            alert('저장 중 오류 발생: ' + error.message);
+            alert((adminLocale === 'ko' ? '저장 중 오류 발생: ' : 'Error saving: ') + error.message);
         } else {
-            alert('성공적으로 저장되었습니다.');
+            alert(adminLocale === 'ko' ? '성공적으로 저장되었습니다.' : 'Saved successfully.');
             loadCms();
             setEditingLegalDoc(null);
         }
@@ -1342,7 +1364,7 @@ function AdminDashboardPageContent() {
             .eq('user_id', userId);
 
         if (error) {
-            setModal({ type: 'error', title: '처리 실패', message: error.message });
+            setModal({ type: 'error', title: adminLocale === 'ko' ? '처리 실패' : 'Action Failed', message: error.message });
             return;
         }
 
@@ -1357,8 +1379,8 @@ function AdminDashboardPageContent() {
 
         setModal({
             type: 'success',
-            title: next === 'SUSPENDED' ? '정지 완료' : '정지 해제 완료',
-            message: `계정이 ${next === 'SUSPENDED' ? '정지' : '활성화'} 되었습니다.`,
+            title: next === 'SUSPENDED' ? (adminLocale === 'ko' ? '정지 완료' : 'Suspended') : (adminLocale === 'ko' ? '정지 해제 완료' : 'Unsuspended'),
+            message: adminLocale === 'ko' ? `계정이 ${next === 'SUSPENDED' ? '정지' : '활성화'} 되었습니다.` : `Account has been ${next === 'SUSPENDED' ? 'suspended' : 'activated'}.`,
         });
 
         // 목록 상태 업데이트
@@ -1370,7 +1392,7 @@ function AdminDashboardPageContent() {
     };
 
     const handleCashAction = async () => {
-        if (!cashModal || !cashAmount || Number(cashAmount) <= 0) { setModal({ type: 'error', title: '입력 오류', message: '유효한 금액을 입력하세요.' }); return; }
+        if (!cashModal || !cashAmount || Number(cashAmount) <= 0) { setModal({ type: 'error', title: adminLocale === 'ko' ? '입력 오류' : 'Input Error', message: adminLocale === 'ko' ? '유효한 금액을 입력하세요.' : 'Please enter a valid amount.' }); return; }
         setCashProcessing(true);
         const { pro, type } = cashModal;
         const amt = Number(cashAmount);
@@ -1382,12 +1404,12 @@ function AdminDashboardPageContent() {
             p_target_pro_id: pro.pro_id,
             p_amount: amt,
             p_tx_type: txType,
-            p_description: cashDesc || (type === 'charge' ? '관리자 수동 충전' : '관리자 수동 환불/차감'),
+            p_description: cashDesc || (type === 'charge' ? (adminLocale === 'ko' ? '관리자 수동 충전' : 'Admin manual top-up') : (adminLocale === 'ko' ? '관리자 수동 환불/차감' : 'Admin manual refund/deduction')),
             p_cash_type: cashType  // [보너스 캐시 확장] 'REAL' 또는 'BONUS'
         });
 
         if (rpcError) {
-            setModal({ type: 'error', title: '트랜잭션 실패', message: '전체 롤백됨: ' + rpcError.message });
+            setModal({ type: 'error', title: adminLocale === 'ko' ? '트랜잭션 실패' : 'Transaction Failed', message: (adminLocale === 'ko' ? '전체 롤백됨: ' : 'Rolled back: ') + rpcError.message });
             setCashProcessing(false);
             return;
         }
@@ -1400,17 +1422,17 @@ function AdminDashboardPageContent() {
             target_user_id: pro.pro_id,
             admin_id: adminId,
             action_type: type === 'charge' ? 'CASH_CHARGE' : 'CASH_REFUND',
-            reason: `${cashType === 'BONUS' ? '[보너스] ' : '[유상] '}₱${amt.toLocaleString()} ${type === 'charge' ? '충전' : '환불/차감'} — ${cashDesc || '사유 없음'}`,
+            reason: adminLocale === 'ko' ? `${cashType === 'BONUS' ? '[보너스] ' : '[유상] '}₱${amt.toLocaleString()} ${type === 'charge' ? '충전' : '환불/차감'} — ${cashDesc || '사유 없음'}` : `${cashType === 'BONUS' ? '[Bonus] ' : '[Paid] '}₱${amt.toLocaleString()} ${type === 'charge' ? 'Top-up' : 'Refund/Deduction'} — ${cashDesc || 'No reason'}`,
         });
         if (logErr) console.error('❌ 캐시 감사 로그 실패:', logErr);
 
         setCashModal(null); setCashAmount(''); setCashDesc(''); setCashProcessing(false); setCashType('REAL');
-        setModal({ type: 'success', title: '처리 완료', message: `${cashType === 'BONUS' ? '🎁 보너스 ' : ''}₱${fmtNum(amt)} ${type === 'charge' ? '충전' : '환불/차감'} 완료 (원자적 트랜잭션 + 원장 기록 완료)` });
+        setModal({ type: 'success', title: adminLocale === 'ko' ? '처리 완료' : 'Complete', message: adminLocale === 'ko' ? `${cashType === 'BONUS' ? '🎁 보너스 ' : ''}₱${fmtNum(amt)} ${type === 'charge' ? '충전' : '환불/차감'} 완료 (원자적 트랜잭션 + 원장 기록 완료)` : `${cashType === 'BONUS' ? '🎁 Bonus ' : ''}₱${fmtNum(amt)} ${type === 'charge' ? 'top-up' : 'refund/deduction'} complete (atomic transaction + ledger recorded)` });
     };
 
     const toggleReviewFeatured = async (reviewId: number, curFeatured: boolean) => {
-        const action = curFeatured ? '메인 노출 제외' : '메인 노출';
-        if (!window.confirm(`이 리뷰를 ${action} 처리하겠습니까?\n(실제 메인에는 평점 4.5 이상이고 길이가 50자 이상인 경우에만 노출됩니다.)`)) return;
+        const action = curFeatured ? (adminLocale === 'ko' ? '메인 노출 제외' : 'Remove from main') : (adminLocale === 'ko' ? '메인 노출' : 'Feature on main');
+        if (!window.confirm(adminLocale === 'ko' ? `이 리뷰를 ${action} 처리하겠습니까?\n(실제 메인에는 평점 4.5 이상이고 길이가 50자 이상인 경우에만 노출됩니다.)` : `${action} this review?\n(Only reviews with 4.5+ rating and 50+ characters are shown on main.)`)) return;
         await supabase.from('reviews').update({ is_featured_on_main: !curFeatured }).eq('review_id', reviewId);
         setReviews(r => r.map(x => x.review_id === reviewId ? { ...x, is_featured_on_main: !curFeatured } : x));
         // ── 감사 로그 기록 ──
@@ -1418,14 +1440,14 @@ function AdminDashboardPageContent() {
             target_user_id: null,
             admin_id: adminId,
             action_type: 'REVIEW_FEATURE',
-            reason: `리뷰 ID ${reviewId} — ${action}`,
+            reason: `Review ID ${reviewId} — ${action}`,
         });
         if (logErr) console.error('❌ 리뷰 메인노출 감사 로그 실패:', logErr);
     };
 
     const toggleReviewHidden = async (reviewId: number, curHidden: boolean) => {
-        const action = curHidden ? '복원' : '블라인드';
-        if (!window.confirm(`이 리뷰를 ${action} 처리하겠습니까?`)) return;
+        const action = curHidden ? (adminLocale === 'ko' ? '복원' : 'Restore') : (adminLocale === 'ko' ? '블라인드' : 'Blind');
+        if (!window.confirm(adminLocale === 'ko' ? `이 리뷰를 ${action} 처리하겠습니까?` : `${action} this review?`)) return;
         await supabase.from('reviews').update({ is_hidden: !curHidden }).eq('review_id', reviewId);
         setReviews(r => r.map(x => x.review_id === reviewId ? { ...x, is_hidden: !curHidden } : x));
         // ── 감사 로그 기록 ──
@@ -1433,13 +1455,13 @@ function AdminDashboardPageContent() {
             target_user_id: null,
             admin_id: adminId,
             action_type: 'REVIEW_BLIND',
-            reason: `리뷰 ID ${reviewId} — ${action}`,
+            reason: `Review ID ${reviewId} — ${action}`,
         });
         if (logErr) console.error('❌ 리뷰 블라인드 감사 로그 실패:', logErr);
     };
 
     const deleteReview = async (reviewId: number) => {
-        if (!window.confirm('이 리뷰를 영구 삭제하겠습니까? 이 작업은 되돌릴 수 없습니다.')) return;
+        if (!window.confirm(adminLocale === 'ko' ? '이 리뷰를 영구 삭제하겠습니까? 이 작업은 되돌릴 수 없습니다.' : 'Permanently delete this review? This cannot be undone.')) return;
         await supabase.from('reviews').delete().eq('review_id', reviewId);
         setReviews(r => r.filter(x => x.review_id !== reviewId));
         // ── 감사 로그 기록 ──
@@ -1447,7 +1469,7 @@ function AdminDashboardPageContent() {
             target_user_id: null,
             admin_id: adminId,
             action_type: 'REVIEW_DELETE',
-            reason: `리뷰 ID ${reviewId} 영구 삭제`,
+            reason: `Review ID ${reviewId} permanently deleted`,
         });
         if (logErr) console.error('❌ 리뷰 삭제 감사 로그 실패:', logErr);
     };
@@ -1480,8 +1502,8 @@ function AdminDashboardPageContent() {
         }
 
         setCsContactInfo({
-            customer: cData || { nickname: r.customerName, email: '가져오기 실패' },
-            pro: proId ? { ...(pData || {}), phone: pProfile?.phone || pData?.phone || '번호 없음' } : null
+            customer: cData || { nickname: r.customerName, email: adminLocale === 'ko' ? '가져오기 실패' : 'Load failed' },
+            pro: proId ? { ...(pData || {}), phone: pProfile?.phone || pData?.phone || (adminLocale === 'ko' ? '번호 없음' : 'No phone') } : null
         });
 
         // Load Chat logs if room exists
@@ -1653,7 +1675,7 @@ function AdminDashboardPageContent() {
 
     const handleForceCancelMatch = async () => {
         if (!selectedRequest) return;
-        const confirmMsg = "정말로 이 매칭을 강제 취소하시겠습니까?\n이 작업은 'CANCELED_BY_ADMIN' 상태로 기록되며 복구할 수 없습니다.";
+        const confirmMsg = adminLocale === 'ko' ? "정말로 이 매칭을 강제 취소하시겠습니까?\n이 작업은 'CANCELED_BY_ADMIN' 상태로 기록되며 복구할 수 없습니다." : "Force cancel this match?\nThis will be recorded as 'CANCELED_BY_ADMIN' and cannot be undone.";
         if (!window.confirm(confirmMsg)) return;
 
         // DB Migration required for CANCELED_BY_ADMIN in request_status
@@ -1662,9 +1684,9 @@ function AdminDashboardPageContent() {
         }).eq('request_id', selectedRequest.request_id);
 
         if (error) {
-            alert('강제 취소 실패: ' + error.message);
+            alert((adminLocale === 'ko' ? '강제 취소 실패: ' : 'Force cancel failed: ') + error.message);
         } else {
-            alert('매칭이 강제 취소되었습니다.');
+            alert(adminLocale === 'ko' ? '매칭이 강제 취소되었습니다.' : 'Match has been force-cancelled.');
             setSelectedRequest({ ...selectedRequest, status: 'CANCELED_BY_ADMIN' });
             setRequests(prev => prev.map(req => req.request_id === selectedRequest.request_id ? { ...req, status: 'CANCELED_BY_ADMIN' } : req));
         }
@@ -1675,7 +1697,7 @@ function AdminDashboardPageContent() {
         const nextStatus = suspendModal.currentStatus === 'SUSPENDED' ? 'ACTIVE' : 'SUSPENDED';
 
         if (nextStatus === 'SUSPENDED' && (!suspendReason || suspendReason.trim().length < 5)) {
-            alert('정지 사유를 5자 이상 입력해주세요 (감사 로그용).');
+            alert(adminLocale === 'ko' ? '정지 사유를 5자 이상 입력해주세요 (감사 로그용).' : 'Please enter a reason (min 5 chars) for the audit log.');
             return;
         }
 
@@ -1685,21 +1707,21 @@ function AdminDashboardPageContent() {
         }).eq('user_id', suspendModal.userId);
 
         if (error) {
-            alert('유저 상태 변경 실패: ' + error.message);
+            alert((adminLocale === 'ko' ? '유저 상태 변경 실패: ' : 'User status change failed: ') + error.message);
         } else {
             // ── [확장] 제재 이력 Audit Log INSERT (동기 await — 에러 즉시 표출) ──
             const { error: logErr } = await supabase.from('admin_action_logs').insert({
                 target_user_id: suspendModal.userId,
                 admin_id: adminId,
                 action_type: nextStatus === 'SUSPENDED' ? 'SUSPEND' : 'UNSUSPEND',
-                reason: nextStatus === 'SUSPENDED' ? suspendReason : '관리자 정지 해제',
+                reason: nextStatus === 'SUSPENDED' ? suspendReason : (adminLocale === 'ko' ? '관리자 정지 해제' : 'Admin unsuspended'),
             });
             if (logErr) {
                 console.error('❌ Audit Log INSERT 실패:', logErr);
-                alert('⚠️ 정지 처리는 성공했으나 이력 기록 실패: ' + logErr.message);
+                alert((adminLocale === 'ko' ? '⚠️ 정지 처리는 성공했으나 이력 기록 실패: ' : '⚠️ Suspension succeeded but audit log failed: ') + logErr.message);
             }
 
-            alert(`계정이 ${nextStatus === 'SUSPENDED' ? '정지' : '활성화'} 되었습니다.`);
+            alert(adminLocale === 'ko' ? `계정이 ${nextStatus === 'SUSPENDED' ? '정지' : '활성화'} 되었습니다.` : `Account has been ${nextStatus === 'SUSPENDED' ? 'suspended' : 'activated'}.`);
             // View Update
             if (suspendModal.role === 'PRO') {
                 setPros(p => p.map(x => x.pro_id === suspendModal.userId ? { ...x, status: nextStatus } : x));
@@ -1716,10 +1738,10 @@ function AdminDashboardPageContent() {
     };
 
     const handleDeleteUser = async (userId: string, role: 'PRO' | 'CUSTOMER') => {
-        if (!window.confirm('⚠️ 이 사용자를 삭제 처리하시겠습니까?\n(소프트 삭제: 데이터는 보존되며, status가 DELETED로 변경됩니다)')) return;
-        const deleteReason = window.prompt('삭제 사유를 입력하세요 (5자 이상, 감사 로그용):');
+        if (!window.confirm(adminLocale === 'ko' ? '⚠️ 이 사용자를 삭제 처리하시겠습니까?\n(소프트 삭제: 데이터는 보존되며, status가 DELETED로 변경됩니다)' : '⚠️ Delete this user?\n(Soft delete: data is preserved, status changes to DELETED)')) return;
+        const deleteReason = window.prompt(adminLocale === 'ko' ? '삭제 사유를 입력하세요 (5자 이상, 감사 로그용):' : 'Enter delete reason (min 5 chars, for audit log):');
         if (!deleteReason || deleteReason.trim().length < 5) {
-            setModal({ type: 'error', title: '입력 오류', message: '삭제 사유를 5자 이상 입력해야 합니다.' });
+            setModal({ type: 'error', title: adminLocale === 'ko' ? '입력 오류' : 'Input Error', message: adminLocale === 'ko' ? '삭제 사유를 5자 이상 입력해야 합니다.' : 'Delete reason must be at least 5 characters.' });
             return;
         }
 
@@ -1729,7 +1751,7 @@ function AdminDashboardPageContent() {
         }).eq('user_id', userId);
 
         if (error) {
-            setModal({ type: 'error', title: '삭제 실패', message: '삭제 처리 실패: ' + error.message });
+            setModal({ type: 'error', title: adminLocale === 'ko' ? '삭제 실패' : 'Delete Failed', message: (adminLocale === 'ko' ? '삭제 처리 실패: ' : 'Delete failed: ') + error.message });
             return;
         }
 
@@ -1748,11 +1770,11 @@ function AdminDashboardPageContent() {
         });
         if (logErr) {
             console.error('❌ Audit Log INSERT 실패:', logErr);
-            setModal({ type: 'error', title: '이력 기록 실패', message: '삭제 처리는 성공했으나 이력 기록 실패: ' + logErr.message });
+            setModal({ type: 'error', title: adminLocale === 'ko' ? '이력 기록 실패' : 'Audit Log Failed', message: (adminLocale === 'ko' ? '삭제 처리는 성공했으나 이력 기록 실패: ' : 'Delete succeeded but audit log failed: ') + logErr.message });
             return;
         }
 
-        setModal({ type: 'success', title: '삭제 완료', message: '계정이 삭제 처리되었습니다.' });
+        setModal({ type: 'success', title: adminLocale === 'ko' ? '삭제 완료' : 'Deleted', message: adminLocale === 'ko' ? '계정이 삭제 처리되었습니다.' : 'Account has been deleted.' });
     };
 
     // ─── Filters ───
@@ -1779,44 +1801,44 @@ function AdminDashboardPageContent() {
         return !q || [r.customerName, r.proName, r.comment].some(v => (v || '').toLowerCase().includes(q));
     });
 
-    if (!authorized || loading) return <div className="min-h-screen bg-gray-900 flex items-center justify-center text-gray-400 text-lg">인증 확인 중...</div>;
+    if (!authorized || loading) return <div className="min-h-screen bg-gray-900 flex items-center justify-center text-gray-400 text-lg">{adminLocale === 'ko' ? '인증 확인 중...' : 'Authenticating...'}</div>;
 
     // 📊 대시보드 및 통계
     const menuGroup1: { key: AdminTab; icon: string; label: string }[] = [
-        { key: 'dashboard', icon: '📊', label: '대시보드' },
-        { key: 'search_logs', icon: '🔍', label: '검색/유입 분석' },
+        { key: 'dashboard', icon: '📊', label: adminLocale === 'ko' ? '대시보드' : 'Dashboard' },
+        { key: 'search_logs', icon: '🔍', label: adminLocale === 'ko' ? '검색/유입 분석' : 'Search Analytics' },
     ];
     // 👥 사용자 관리 (접이식 서브메뉴 — role 기반 필터링)
     const userSubMenuItems: { key: AdminTab; icon: string; label: string }[] = [
         ...(adminRole === 'ADMIN' || adminRole === 'ADMIN_OPERATION' ? [
-            { key: 'customer' as AdminTab, icon: '👥', label: '고객 관리' },
-            { key: 'pro' as AdminTab, icon: '🔧', label: '고수 관리' },
+            { key: 'customer' as AdminTab, icon: '👥', label: adminLocale === 'ko' ? '고객 관리' : 'Customers' },
+            { key: 'pro' as AdminTab, icon: '🔧', label: adminLocale === 'ko' ? '고수 관리' : 'Pros' },
         ] : []),
         ...(adminRole === 'ADMIN' ? [
-            { key: 'admin_mgmt' as AdminTab, icon: '🛡️', label: '관리자 관리' },
+            { key: 'admin_mgmt' as AdminTab, icon: '🛡️', label: adminLocale === 'ko' ? '관리자 관리' : 'Admin Mgmt' },
         ] : []),
     ];
     // 💰 재무 및 자산 관리
     const menuGroup3: { key: AdminTab; icon: string; label: string }[] = [
-        { key: 'ledger', icon: '💰', label: '캐시 원장' },
-        { key: 'payout', icon: '💸', label: '출금 관리' },
+        { key: 'ledger', icon: '💰', label: adminLocale === 'ko' ? '캐시 원장' : 'Cash Ledger' },
+        { key: 'payout', icon: '💸', label: adminLocale === 'ko' ? '출금 관리' : 'Payouts' },
     ];
     // 📋 서비스 매칭 운영
     const menuGroup4: { key: AdminTab; icon: string; label: string }[] = [
-        { key: 'quotes', icon: '📋', label: '견적/매칭 내역' },
-        { key: 'reviews', icon: '⭐', label: '리뷰 관리' },
+        { key: 'quotes', icon: '📋', label: adminLocale === 'ko' ? '견적/매칭 내역' : 'Quotes & Matches' },
+        { key: 'reviews', icon: '⭐', label: adminLocale === 'ko' ? '리뷰 관리' : 'Reviews' },
     ];
     // 🚨 CS 및 리스크 관리 (신고 관리는 nav JSX에서 별도 렌더링 유지)
     const menuGroup5: { key: AdminTab; icon: string; label: string }[] = [
-        { key: 'inquiries', icon: '💬', label: '1:1 문의 관리' },
-        { key: 'abuse', icon: '⚠️', label: '어뷰징 관리' },
+        { key: 'inquiries', icon: '💬', label: adminLocale === 'ko' ? '1:1 문의 관리' : 'Inquiries' },
+        { key: 'abuse', icon: '⚠️', label: adminLocale === 'ko' ? '어뷰징 관리' : 'Abuse Mgmt' },
     ];
     // ⚙️ 시스템 및 환경 설정
     const menuGroup6: { key: AdminTab; icon: string; label: string }[] = [
-        { key: 'categories', icon: '🏷️', label: '카테고리/단가표 설정' },
-        { key: 'cms', icon: '🖼️', label: 'CMS (홈/접객 관리)' },
-        { key: 'audit_log', icon: '🔒', label: '감사 로그' },
-        { key: 'settings', icon: '⚙️', label: '환경 설정' },
+        { key: 'categories', icon: '🏷️', label: adminLocale === 'ko' ? '카테고리/단가표 설정' : 'Categories & Pricing' },
+        { key: 'cms', icon: '🖼️', label: adminLocale === 'ko' ? 'CMS (홈/접객 관리)' : 'CMS (Home Mgmt)' },
+        { key: 'audit_log', icon: '🔒', label: adminLocale === 'ko' ? '감사 로그' : 'Audit Log' },
+        { key: 'settings', icon: '⚙️', label: adminLocale === 'ko' ? '환경 설정' : 'Settings' },
     ];
 
     const handleTabClick = (key: AdminTab) => { setTab(key); setUserDetail(null); setSelectedRequest(null); window.history.replaceState(null, '', `/admin?tab=${key}`); };
@@ -1853,7 +1875,7 @@ function AdminDashboardPageContent() {
                         <button onClick={() => setGroup1Open(!group1Open)}
                             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition ${['dashboard', 'search_logs'].includes(tab) ? 'bg-blue-600/20 text-blue-400' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`}>
                             <span className="text-base">📊</span>
-                            {sidebarOpen && <><span className="flex-1 text-left">대시보드 및 통계</span><span className={`text-xs transition-transform ${group1Open ? 'rotate-180' : ''}`}>▾</span></>}
+                            {sidebarOpen && <><span className="flex-1 text-left">{adminLocale === 'ko' ? '대시보드 및 통계' : 'Dashboard & Stats'}</span><span className={`text-xs transition-transform ${group1Open ? 'rotate-180' : ''}`}>▾</span></>}
                         </button>
                         {group1Open && sidebarOpen && (
                             <div className="ml-4 border-l border-gray-700 pl-2 space-y-0.5">
@@ -1874,7 +1896,7 @@ function AdminDashboardPageContent() {
                         <button onClick={() => setUserMenuOpen(!userMenuOpen)}
                             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition ${isUserTab(tab) ? 'bg-blue-600/20 text-blue-400' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`}>
                             <span className="text-base">👤</span>
-                            {sidebarOpen && <><span className="flex-1 text-left">사용자 관리</span><span className={`text-xs transition-transform ${userMenuOpen ? 'rotate-180' : ''}`}>▾</span></>}
+                            {sidebarOpen && <><span className="flex-1 text-left">{adminLocale === 'ko' ? '사용자 관리' : 'User Mgmt'}</span><span className={`text-xs transition-transform ${userMenuOpen ? 'rotate-180' : ''}`}>▾</span></>}
                         </button>
                         {userMenuOpen && sidebarOpen && (
                             <div className="ml-4 border-l border-gray-700 pl-2 space-y-0.5">
@@ -1896,7 +1918,7 @@ function AdminDashboardPageContent() {
                         <button onClick={() => setGroup3Open(!group3Open)}
                             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition ${['ledger', 'payout'].includes(tab) ? 'bg-blue-600/20 text-blue-400' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`}>
                             <span className="text-base">💰</span>
-                            {sidebarOpen && <><span className="flex-1 text-left">재무 및 자산 관리</span><span className={`text-xs transition-transform ${group3Open ? 'rotate-180' : ''}`}>▾</span></>}
+                            {sidebarOpen && <><span className="flex-1 text-left">{adminLocale === 'ko' ? '재무 및 자산 관리' : 'Finance & Assets'}</span><span className={`text-xs transition-transform ${group3Open ? 'rotate-180' : ''}`}>▾</span></>}
                         </button>
                         {group3Open && sidebarOpen && (
                             <div className="ml-4 border-l border-gray-700 pl-2 space-y-0.5">
@@ -1918,7 +1940,7 @@ function AdminDashboardPageContent() {
                         <button onClick={() => setGroup4Open(!group4Open)}
                             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition ${['quotes', 'reviews'].includes(tab) ? 'bg-blue-600/20 text-blue-400' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`}>
                             <span className="text-base">📋</span>
-                            {sidebarOpen && <><span className="flex-1 text-left">서비스 매칭 운영</span><span className={`text-xs transition-transform ${group4Open ? 'rotate-180' : ''}`}>▾</span></>}
+                            {sidebarOpen && <><span className="flex-1 text-left">{adminLocale === 'ko' ? '서비스 매칭 운영' : 'Matching Ops'}</span><span className={`text-xs transition-transform ${group4Open ? 'rotate-180' : ''}`}>▾</span></>}
                         </button>
                         {group4Open && sidebarOpen && (
                             <div className="ml-4 border-l border-gray-700 pl-2 space-y-0.5">
@@ -1940,7 +1962,7 @@ function AdminDashboardPageContent() {
                         <button onClick={() => setGroup5Open(!group5Open)}
                             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition ${['inquiries', 'abuse', 'reports'].includes(tab) ? 'bg-blue-600/20 text-blue-400' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`}>
                             <span className="text-base">🚨</span>
-                            {sidebarOpen && <><span className="flex-1 text-left">CS 및 리스크 관리</span><span className={`text-xs transition-transform ${group5Open ? 'rotate-180' : ''}`}>▾</span></>}
+                            {sidebarOpen && <><span className="flex-1 text-left">{adminLocale === 'ko' ? 'CS 및 리스크 관리' : 'CS & Risk'}</span><span className={`text-xs transition-transform ${group5Open ? 'rotate-180' : ''}`}>▾</span></>}
                         </button>
                         {group5Open && sidebarOpen && (
                             <div className="ml-4 border-l border-gray-700 pl-2 space-y-0.5">
@@ -1957,7 +1979,7 @@ function AdminDashboardPageContent() {
                                     className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition ${tab === 'reports' ? 'bg-red-500/20 text-red-400' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`}
                                 >
                                     <span>🚨</span>
-                                    <span className="flex-1 text-left">신고 관리</span>
+                                    <span className="flex-1 text-left">{adminLocale === 'ko' ? '신고 관리' : 'Reports'}</span>
                                     {reports.filter(r => r.status === 'pending').length > 0 && (
                                         <span className="ml-auto bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">
                                             {reports.filter(r => r.status === 'pending').length}
@@ -1975,7 +1997,7 @@ function AdminDashboardPageContent() {
                         <button onClick={() => setGroup6Open(!group6Open)}
                             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition ${['categories', 'cms', 'audit_log', 'settings'].includes(tab) ? 'bg-blue-600/20 text-blue-400' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`}>
                             <span className="text-base">⚙️</span>
-                            {sidebarOpen && <><span className="flex-1 text-left">시스템 및 환경 설정</span><span className={`text-xs transition-transform ${group6Open ? 'rotate-180' : ''}`}>▾</span></>}
+                            {sidebarOpen && <><span className="flex-1 text-left">{adminLocale === 'ko' ? '시스템 및 환경 설정' : 'System & Settings'}</span><span className={`text-xs transition-transform ${group6Open ? 'rotate-180' : ''}`}>▾</span></>}
                         </button>
                         {group6Open && sidebarOpen && (
                             <div className="ml-4 border-l border-gray-700 pl-2 space-y-0.5">
@@ -1991,13 +2013,25 @@ function AdminDashboardPageContent() {
                     </div>
                     )}
 
+                    {/* ── 언어 토글 ── */}
+                        <button
+                            onClick={() => {
+                                const next = adminLocale === 'ko' ? 'en' : 'ko';
+                                document.cookie = `locale=${next};path=/;max-age=${365 * 24 * 60 * 60}`;
+                                setAdminLocale(next);
+                            }}
+                            className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-500 hover:text-blue-400 hover:bg-gray-800 transition ${!sidebarOpen ? 'justify-center' : ''}`}
+                        >
+                            <span>🌐</span>
+                            {sidebarOpen && <span>{adminLocale === 'ko' ? 'EN' : '한'}</span>}
+                        </button>
                     {/* ── 로그아웃 ── */}
                     <button
                         onClick={async () => { await supabase.auth.signOut(); window.location.href = '/'; }}
                         className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-500 hover:text-red-400 hover:bg-gray-800 transition mt-1 ${!sidebarOpen ? 'justify-center' : ''}`}
                     >
                         <span>🚪</span>
-                        {sidebarOpen && <span>로그아웃</span>}
+                        {sidebarOpen && <span>{adminLocale === 'ko' ? '로그아웃' : 'Logout'}</span>}
                     </button>
                 </nav>
             </aside>
@@ -2009,25 +2043,25 @@ function AdminDashboardPageContent() {
                     {/* ─── User Detail Panel ─── */}
                     {userDetail ? (
                         <div>
-                            <button onClick={() => setUserDetail(null)} className="text-sm text-gray-400 hover:text-white mb-4 flex items-center gap-1">← 목록으로</button>
+                            <button onClick={() => setUserDetail(null)} className="text-sm text-gray-400 hover:text-white mb-4 flex items-center gap-1">{adminLocale === 'ko' ? '← 목록으로' : '← Back to list'}</button>
                             <div className="bg-gray-800 rounded-2xl border border-gray-700 p-6 mb-6">
                                 <div className="flex items-center gap-4">
                                     <div className="w-14 h-14 bg-gray-700 rounded-full flex items-center justify-center text-2xl overflow-hidden flex-shrink-0">
                                         {detailData.user?.avatar_url ? (
-                                            <img src={detailData.user.avatar_url} alt="프로필" className="w-full h-full object-cover rounded-full" />
+                                            <img src={detailData.user.avatar_url} alt={adminLocale === 'ko' ? '프로필' : 'Profile'} className="w-full h-full object-cover rounded-full" />
                                         ) : (
                                             userDetail.role === 'PRO' ? '🔧' : '👤'
                                         )}
                                     </div>
                                     <div>
-                                        <h2 className="text-xl font-bold">{detailData.user?.nickname || detailData.user?.name || '사용자'}</h2>
+                                        <h2 className="text-xl font-bold">{detailData.user?.nickname || detailData.user?.name || (adminLocale === 'ko' ? '사용자' : 'User')}</h2>
                                         <p className="text-xs text-gray-500">{userDetail.role} · {detailData.user?.status || 'ACTIVE'}</p>
                                     </div>
                                     {userDetail.role === 'PRO' && detailData.profile && (
                                         <div className="ml-auto text-right">
                                             <p className="text-2xl font-black text-blue-400">₱{fmtNum(detailData.profile.current_cash || 0)}</p>
-                                            {(detailData.profile.bonus_cash || 0) > 0 && <p className="text-sm font-bold text-green-400">+🎁{fmtNum(detailData.profile.bonus_cash)} 보너스</p>}
-                                            <p className="text-xs text-gray-500">캐시 잔액</p>
+                                            {(detailData.profile.bonus_cash || 0) > 0 && <p className="text-sm font-bold text-green-400">+🎁{fmtNum(detailData.profile.bonus_cash)} {adminLocale === 'ko' ? '보너스' : 'Bonus'}</p>}
+                                            <p className="text-xs text-gray-500">{adminLocale === 'ko' ? '캐시 잔액' : 'Cash Balance'}</p>
                                         </div>
                                     )}
                                 </div>
@@ -2039,7 +2073,7 @@ function AdminDashboardPageContent() {
                                     return (
                                         <button key={t} onClick={() => !isDisabled && setUserDetailTab(t)}
                                             className={`flex-1 py-2 text-sm font-semibold rounded-lg transition ${isDisabled ? 'text-gray-600 bg-gray-800/50 cursor-not-allowed opacity-50' : userDetailTab === t ? 'bg-gray-700 text-white' : 'text-gray-500 hover:text-white'}`}>
-                                            {{ info: '기본 정보', ledger: '캐시 내역', quotes: '견적', reviews: '리뷰' }[t]}
+                                            {adminLocale === 'ko' ? { info: '기본 정보', ledger: '캐시 내역', quotes: '견적', reviews: '리뷰' }[t] : { info: 'Info', ledger: 'Ledger', quotes: 'Quotes', reviews: 'Reviews' }[t]}
                                         </button>
                                     );
                                 })}
@@ -2047,23 +2081,23 @@ function AdminDashboardPageContent() {
                             <div className="bg-gray-800 rounded-2xl border border-gray-700 p-6">
                                 {userDetailTab === 'info' && (
                                     <div className="grid grid-cols-2 gap-4 text-sm">
-                                        <div><span className="text-gray-500 block text-xs mb-1">이름</span><span className="text-white">{detailData.user?.name || '-'}</span></div>
-                                        <div><span className="text-gray-500 block text-xs mb-1">활동명</span><span className="text-white">{detailData.user?.nickname || '-'}</span></div>
-                                        <div><span className="text-gray-500 block text-xs mb-1">역할</span><span className="text-white">{detailData.user?.role || '-'}</span></div>
-                                        <div><span className="text-gray-500 block text-xs mb-1">상태</span><span className="text-white">{detailData.user?.status || '-'}</span></div>
-                                        <div><span className="text-gray-500 block text-xs mb-1">전화번호</span><span className="text-white">{detailData.user?.phone || '-'}</span></div>
-                                        <div><span className="text-gray-500 block text-xs mb-1">가입일</span><span className="text-white">{detailData.user?.created_at ? fmtDate(detailData.user.created_at) : '-'}</span></div>
+                                        <div><span className="text-gray-500 block text-xs mb-1">{adminLocale === 'ko' ? '이름' : 'Name'}</span><span className="text-white">{detailData.user?.name || '-'}</span></div>
+                                        <div><span className="text-gray-500 block text-xs mb-1">{adminLocale === 'ko' ? '활동명' : 'Nickname'}</span><span className="text-white">{detailData.user?.nickname || '-'}</span></div>
+                                        <div><span className="text-gray-500 block text-xs mb-1">{adminLocale === 'ko' ? '역할' : 'Role'}</span><span className="text-white">{detailData.user?.role || '-'}</span></div>
+                                        <div><span className="text-gray-500 block text-xs mb-1">{adminLocale === 'ko' ? '상태' : 'Status'}</span><span className="text-white">{detailData.user?.status || '-'}</span></div>
+                                        <div><span className="text-gray-500 block text-xs mb-1">{adminLocale === 'ko' ? '전화번호' : 'Phone'}</span><span className="text-white">{detailData.user?.phone || '-'}</span></div>
+                                        <div><span className="text-gray-500 block text-xs mb-1">{adminLocale === 'ko' ? '가입일' : 'Joined'}</span><span className="text-white">{detailData.user?.created_at ? fmtDate(detailData.user.created_at) : '-'}</span></div>
                                         {userDetail.role === 'PRO' && detailData.profile && (<>
-                                            <div><span className="text-gray-500 block text-xs mb-1">인증 상태</span><span className='text-green-400'>자동 인증됨</span></div>
-                                            <div><span className="text-gray-500 block text-xs mb-1">서비스</span><span className="text-white">{(detailData.profile.services || []).join(', ') || '-'}</span></div>
-                                            <div><span className="text-gray-500 block text-xs mb-1">지역</span><span className="text-white">{detailData.profile.region || '-'}</span></div>
+                                            <div><span className="text-gray-500 block text-xs mb-1">{adminLocale === 'ko' ? '인증 상태' : 'Verification'}</span><span className='text-green-400'>{adminLocale === 'ko' ? '자동 인증됨' : 'Auto-verified'}</span></div>
+                                            <div><span className="text-gray-500 block text-xs mb-1">{adminLocale === 'ko' ? '서비스' : 'Services'}</span><span className="text-white">{(detailData.profile.services || []).join(', ') || '-'}</span></div>
+                                            <div><span className="text-gray-500 block text-xs mb-1">{adminLocale === 'ko' ? '지역' : 'Region'}</span><span className="text-white">{detailData.profile.region || '-'}</span></div>
                                             <div><span className="text-gray-500 block text-xs mb-1">Facebook</span><span className="text-white">{detailData.profile.facebook_url || '-'}</span></div>
                                         </>)}
                                     </div>
                                 )}
                                 {userDetailTab === 'ledger' && (
                                     <table className="w-full text-sm">
-                                        <thead><tr className="border-b border-gray-700 text-gray-400 text-xs uppercase"><th className="p-2 text-left">시간</th><th className="p-2 text-left">유형</th><th className="p-2 text-right">금액</th><th className="p-2 text-right">잔액</th><th className="p-2 text-left">설명</th></tr></thead>
+                                        <thead><tr className="border-b border-gray-700 text-gray-400 text-xs uppercase"><th className="p-2 text-left">{adminLocale === 'ko' ? '시간' : 'Time'}</th><th className="p-2 text-left">{adminLocale === 'ko' ? '유형' : 'Type'}</th><th className="p-2 text-right">{adminLocale === 'ko' ? '금액' : 'Amount'}</th><th className="p-2 text-right">{adminLocale === 'ko' ? '잔액' : 'Balance'}</th><th className="p-2 text-left">{adminLocale === 'ko' ? '설명' : 'Desc'}</th></tr></thead>
                                         <tbody>{(detailData.ledger || []).map((tx: any, i: number) => (
                                             <tr key={i} className="border-b border-gray-700/50">
                                                 <td className="p-2 text-gray-400 text-xs">{fmtDate(tx.created_at)}</td>
@@ -2072,7 +2106,7 @@ function AdminDashboardPageContent() {
                                                 <td className="p-2 text-right text-gray-400 text-xs">{fmtNum(Number(tx.balance_snapshot))}</td>
                                                 <td className="p-2 text-gray-500 text-xs">{txDesc(tx.tx_type, tx.description)}</td>
                                             </tr>
-                                        ))}{(detailData.ledger || []).length === 0 && <tr><td colSpan={5} className="p-6 text-center text-gray-500">내역 없음</td></tr>}</tbody>
+                                        ))}{(detailData.ledger || []).length === 0 && <tr><td colSpan={5} className="p-6 text-center text-gray-500">{adminLocale === 'ko' ? '내역 없음' : 'No records'}</td></tr>}</tbody>
                                     </table>
                                 )}
                                 {userDetailTab === 'quotes' && (
@@ -2080,10 +2114,10 @@ function AdminDashboardPageContent() {
                                         {userDetail.role === 'CUSTOMER' ? (detailData.requests || []).map((r: any) => (
                                             <div key={r.request_id} className="p-3 bg-gray-700/30 rounded-xl">
                                                 <div className="flex justify-between items-center">
-                                                    <span className="font-semibold text-sm">{r.service_type || '서비스'}</span>
+                                                    <span className="font-semibold text-sm">{r.service_type || (adminLocale === 'ko' ? '서비스' : 'Service')}</span>
                                                     <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${statusColor(r.status)}`}>{statusLabel(r.status)}</span>
                                                 </div>
-                                                <p className="text-xs text-gray-400 mt-1">{r.region} · {fmtDate(r.created_at)} · 견적 {(r.match_quotes || []).length}건</p>
+                                                <p className="text-xs text-gray-400 mt-1">{r.region} · {fmtDate(r.created_at)} · {adminLocale === 'ko' ? `견적 ${(r.match_quotes || []).length}건` : `${(r.match_quotes || []).length} quotes`}</p>
                                             </div>
                                         )) : (detailData.quotes || []).map((q: any) => (
                                             <div key={q.quote_id} className="p-3 bg-gray-700/30 rounded-xl flex justify-between items-center">
@@ -2091,7 +2125,7 @@ function AdminDashboardPageContent() {
                                                 <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${statusColor(q.status || 'OPEN')}`}>{q.status || 'PENDING'}</span>
                                             </div>
                                         ))}
-                                        {((userDetail.role === 'CUSTOMER' ? detailData.requests : detailData.quotes) || []).length === 0 && <p className="text-center text-gray-500 py-6">데이터 없음</p>}
+                                        {((userDetail.role === 'CUSTOMER' ? detailData.requests : detailData.quotes) || []).length === 0 && <p className="text-center text-gray-500 py-6">{adminLocale === 'ko' ? '데이터 없음' : 'No data'}</p>}
                                     </div>
                                 )}
                                 {userDetailTab === 'reviews' && (
@@ -2102,10 +2136,10 @@ function AdminDashboardPageContent() {
                                                     <div className="flex">{[1, 2, 3, 4, 5].map(s => <span key={s} className={`text-sm ${s <= r.rating ? 'text-yellow-400' : 'text-gray-600'}`}>★</span>)}</div>
                                                     <span className="text-xs text-gray-400">{fmtDate(r.created_at)}</span>
                                                 </div>
-                                                <p className="text-sm text-gray-300 mt-1">{r.comment || '코멘트 없음'}</p>
+                                                <p className="text-sm text-gray-300 mt-1">{r.comment || (adminLocale === 'ko' ? '코멘트 없음' : 'No comment')}</p>
                                             </div>
                                         ))}
-                                        {(detailData.reviews || []).length === 0 && <p className="text-center text-gray-500 py-6">리뷰 없음</p>}
+                                        {(detailData.reviews || []).length === 0 && <p className="text-center text-gray-500 py-6">{adminLocale === 'ko' ? '리뷰 없음' : 'No reviews'}</p>}
                                     </div>
                                 )}
                             </div>
@@ -2114,7 +2148,7 @@ function AdminDashboardPageContent() {
 
                         {/* ═══ DASHBOARD ═══ */}
                         {tab === 'dashboard' && (<>
-                            <h1 className="text-2xl font-black mb-6">📊 대시보드 개요</h1>
+                            <h1 className="text-2xl font-black mb-6">{adminLocale === 'ko' ? '📊 대시보드 개요' : '📊 Dashboard Overview'}</h1>
                             <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-8">
                                 {/* 미답변 1:1 문의 카드 (최우선 배치) */}
                                 <div
@@ -2127,7 +2161,7 @@ function AdminDashboardPageContent() {
                                     </span>
                                   )}
                                   <span className="text-gray-400 text-sm flex items-center gap-1">
-                                    💬 미답변 문의
+                                    {adminLocale === 'ko' ? '💬 미답변 문의' : '💬 Unanswered Inquiries'}
                                   </span>
                                   <span className={`text-2xl font-black ${pendingInquiries > 0 ? 'text-orange-400' : 'text-white'}`}>
                                     {pendingInquiries}
@@ -2135,16 +2169,16 @@ function AdminDashboardPageContent() {
                                 </div>
 
                                 {[
-                                    { l: '🚨 신고 대기', v: stats.pendingReports, c: 'text-red-400', onClick: () => handleTabClick('reports') },
-                                    { l: '💸 출금 신청 (검토중)', v: stats.payoutPending, c: stats.payoutPending > 0 ? 'text-blue-400' : 'text-white', onClick: () => { setPayoutFilter('PENDING'); handleTabClick('payout'); } },
-                                    { l: '👥 고객', v: stats.customers, onClick: () => handleTabClick('customer') },
-                                    { l: '🔧 고수', v: stats.pros, onClick: () => handleTabClick('pro') },
-                                    { l: '🤝 진행 중 매칭', v: stats.openReq, c: 'text-green-400', onClick: () => { setReqFilter('OPEN'); handleTabClick('quotes'); } },
-                                    { l: '✅ 마감된 매칭', v: stats.closedReq, onClick: () => { setReqFilter('all'); handleTabClick('quotes'); } },
-                                    { l: '💎 24h 충전', v: stats.charge24h, c: 'text-blue-400', p: '+', onClick: () => { setLedgerCategory('CHARGE'); setLedgerPeriod('today'); setLedgerPage(1); handleTabClick('ledger'); } },
-                                    { l: '🔥 24h 차감', v: stats.deduct24h, c: 'text-red-400', p: '-', onClick: () => { setLedgerCategory('DEDUCT_QUOTE'); setLedgerPeriod('today'); setLedgerPage(1); handleTabClick('ledger'); } },
-                                    { l: '⚠️ 어뷰징', v: stats.abuseCount, c: 'text-orange-400', onClick: () => handleTabClick('abuse') },
-                                    { l: '⏸️ 출금 홀드 (7일)', v: stats.payoutHeld, c: stats.payoutHeld > 0 ? 'text-yellow-400' : 'text-white', onClick: () => { setPayoutFilter('HELD'); handleTabClick('payout'); } },
+                                    { l: adminLocale === 'ko' ? '🚨 신고 대기' : '🚨 Pending Reports', v: stats.pendingReports, c: 'text-red-400', onClick: () => handleTabClick('reports') },
+                                    { l: adminLocale === 'ko' ? '💸 출금 신청 (검토중)' : '💸 Withdrawal Request (Review)', v: stats.payoutPending, c: stats.payoutPending > 0 ? 'text-blue-400' : 'text-white', onClick: () => { setPayoutFilter('PENDING'); handleTabClick('payout'); } },
+                                    { l: adminLocale === 'ko' ? '👥 고객' : '👥 Customers', v: stats.customers, onClick: () => handleTabClick('customer') },
+                                    { l: adminLocale === 'ko' ? '🔧 고수' : '🔧 Pros', v: stats.pros, onClick: () => handleTabClick('pro') },
+                                    { l: adminLocale === 'ko' ? '🤝 진행 중 매칭' : '🤝 Active Matches', v: stats.openReq, c: 'text-green-400', onClick: () => { setReqFilter('OPEN'); handleTabClick('quotes'); } },
+                                    { l: adminLocale === 'ko' ? '✅ 마감된 매칭' : '✅ Closed Matches', v: stats.closedReq, onClick: () => { setReqFilter('all'); handleTabClick('quotes'); } },
+                                    { l: adminLocale === 'ko' ? '💎 24h 충전' : '💎 24h Charge', v: stats.charge24h, c: 'text-blue-400', p: '+', onClick: () => { setLedgerCategory('CHARGE'); setLedgerPeriod('today'); setLedgerPage(1); handleTabClick('ledger'); } },
+                                    { l: adminLocale === 'ko' ? '🔥 24h 차감' : '🔥 24h Deduct', v: stats.deduct24h, c: 'text-red-400', p: '-', onClick: () => { setLedgerCategory('DEDUCT_QUOTE'); setLedgerPeriod('today'); setLedgerPage(1); handleTabClick('ledger'); } },
+                                    { l: adminLocale === 'ko' ? '⚠️ 어뷰징' : '⚠️ Abuse', v: stats.abuseCount, c: 'text-orange-400', onClick: () => handleTabClick('abuse') },
+                                    { l: adminLocale === 'ko' ? '⏸️ 출금 홀드 (7일)' : '⏸️ Payout Hold (7d)', v: stats.payoutHeld, c: stats.payoutHeld > 0 ? 'text-yellow-400' : 'text-white', onClick: () => { setPayoutFilter('HELD'); handleTabClick('payout'); } },
                                 ].map((s, i) => (
                                     <div
                                         key={i}
@@ -2157,35 +2191,35 @@ function AdminDashboardPageContent() {
                                 ))}
                             </div>
                             <div className="bg-gradient-to-r from-blue-900/30 to-purple-900/30 rounded-xl border border-blue-800/40 p-5">
-                                <p className="text-gray-300 text-sm">💡 상세 캐시 거래 내역은 좌측 메뉴의 <button onClick={() => handleTabClick('ledger')} className="text-blue-400 font-bold hover:underline">💰 캐시 원장</button> 메뉴에서 확인하세요.</p>
+                                <p className="text-gray-300 text-sm">{adminLocale === 'ko' ? <>💡 상세 캐시 거래 내역은 좌측 메뉴의 <button onClick={() => handleTabClick('ledger')} className="text-blue-400 font-bold hover:underline">💰 캐시 원장</button> 메뉴에서 확인하세요.</> : <>💡 View detailed cash transactions in the <button onClick={() => handleTabClick('ledger')} className="text-blue-400 font-bold hover:underline">💰 Cash Ledger</button> menu on the left.</>}</p>
                             </div>
                         </>)}
 
                         {/* ═══ CASH LEDGER ═══ */}
                         {tab === 'ledger' && (<>
-                            <h1 className="text-2xl font-black mb-6">💰 통합 캐시 거래 원장</h1>
+                            <h1 className="text-2xl font-black mb-6">{adminLocale === 'ko' ? '💰 통합 캐시 거래 원장' : '💰 Cash Transaction Ledger'}</h1>
                             {/* ── Stats Summary ── */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
                                 <div className="bg-gradient-to-br from-purple-900/40 to-purple-800/20 rounded-xl p-4 border border-purple-700/40">
-                                    <p className="text-purple-300 text-xs font-bold uppercase mb-1">🏦 총 부채 (전체 고수 잔액)</p>
+                                    <p className="text-purple-300 text-xs font-bold uppercase mb-1">{adminLocale === 'ko' ? '🏦 총 부채 (전체 고수 잔액)' : '🏦 Total Liability (All Pro Balances)'}</p>
                                     <p className="text-2xl font-black text-purple-400">₱{fmtNum(totalProBalance)}</p>
                                 </div>
                                 <div className="bg-gradient-to-br from-blue-900/40 to-blue-800/20 rounded-xl p-4 border border-blue-700/40">
-                                    <p className="text-blue-300 text-xs font-bold uppercase mb-1">📈 유입 합계 (충전)</p>
+                                    <p className="text-blue-300 text-xs font-bold uppercase mb-1">{adminLocale === 'ko' ? '📈 유입 합계 (충전)' : '📈 Total In (Charges)'}</p>
                                     <p className="text-2xl font-black text-blue-400">+₱{fmtNum(ledgerStats.totalIn)}</p>
                                 </div>
                                 <div className="bg-gradient-to-br from-red-900/40 to-red-800/20 rounded-xl p-4 border border-red-700/40">
-                                    <p className="text-red-300 text-xs font-bold uppercase mb-1">📉 유출 합계 (차감/환불)</p>
+                                    <p className="text-red-300 text-xs font-bold uppercase mb-1">{adminLocale === 'ko' ? '📉 유출 합계 (차감/환불)' : '📉 Total Out (Deduct/Refund)'}</p>
                                     <p className="text-2xl font-black text-red-400">-₱{fmtNum(ledgerStats.totalOut)}</p>
                                 </div>
                                 <div className="bg-gradient-to-br from-gray-800 to-gray-700/30 rounded-xl p-4 border border-gray-600/40">
-                                    <p className="text-gray-300 text-xs font-bold uppercase mb-1">🔢 조회 건수</p>
-                                    <p className="text-2xl font-black text-white">{fmtNum(ledgerStats.filtered)}건</p>
+                                    <p className="text-gray-300 text-xs font-bold uppercase mb-1">{adminLocale === 'ko' ? '🔢 조회 건수' : '🔢 Result Count'}</p>
+                                    <p className="text-2xl font-black text-white">{fmtNum(ledgerStats.filtered)}{adminLocale === 'ko' ? '건' : ''}</p>
                                 </div>
                             </div>
                             {/* ── Category Tabs ── */}
                             <div className="flex flex-wrap gap-1 mb-4 bg-gray-800/50 rounded-xl p-1">
-                                {([['all', '전체'], ['DEDUCT_QUOTE', '견적 차감'], ['ADMIN_CHARGE', '관리자 충전'], ['CHARGE', '고수 직접 충전'], ['REFUND', '환불(운영 취소)']] as [LedgerCategory, string][]).map(([k, label]) => (
+                                {((adminLocale === 'ko' ? [['all', '전체'], ['DEDUCT_QUOTE', '견적 차감'], ['ADMIN_CHARGE', '관리자 충전'], ['CHARGE', '고수 직접 충전'], ['REFUND', '환불(운영 취소)']] : [['all', 'All'], ['DEDUCT_QUOTE', 'Quote Deduct'], ['ADMIN_CHARGE', 'Admin Charge'], ['CHARGE', 'Pro Charge'], ['REFUND', 'Refund']]) as [LedgerCategory, string][]).map(([k, label]) => (
                                     <button key={k} onClick={() => { setLedgerCategory(k); setLedgerPage(1); loadLedger(1, k, ledgerPeriod, ledgerSearch); }}
                                         className={`px-4 py-2 text-sm font-semibold rounded-lg transition whitespace-nowrap ${ledgerCategory === k ? 'bg-blue-600 text-white shadow' : 'text-gray-400 hover:text-white hover:bg-gray-700'}`}>
                                         {label}
@@ -2197,18 +2231,18 @@ function AdminDashboardPageContent() {
                                 <div className="flex gap-2 flex-1">
                                     <input type="text" value={ledgerSearchInput} onChange={e => setLedgerSearchInput(e.target.value)}
                                         onKeyDown={e => { if (e.key === 'Enter') { setLedgerSearch(ledgerSearchInput); setLedgerPage(1); loadLedger(1, ledgerCategory, ledgerPeriod, ledgerSearchInput); } }}
-                                        placeholder="고수 이름 / 이메일 / 전화번호 검색..."
+                                        placeholder={adminLocale === 'ko' ? '고수 이름 / 이메일 / 전화번호 검색...' : 'Search pro name / email / phone...'}
                                         className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                     <button onClick={() => { setLedgerSearch(ledgerSearchInput); setLedgerPage(1); loadLedger(1, ledgerCategory, ledgerPeriod, ledgerSearchInput); }}
-                                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg text-sm font-bold">검색</button>
+                                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg text-sm font-bold">{adminLocale === 'ko' ? '검색' : 'Search'}</button>
                                 </div>
                                 <select value={ledgerPeriod} onChange={e => { const v = e.target.value as LedgerPeriod; setLedgerPeriod(v); setLedgerPage(1); loadLedger(1, ledgerCategory, v, ledgerSearch); }}
                                     className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white">
-                                    <option value="all">전체 기간</option><option value="today">오늘</option><option value="7d">최근 1주일</option><option value="30d">최근 1개월</option><option value="90d">최근 3개월</option>
+                                    {adminLocale === 'ko' ? <><option value="all">전체 기간</option><option value="today">오늘</option><option value="7d">최근 1주일</option><option value="30d">최근 1개월</option><option value="90d">최근 3개월</option></> : <><option value="all">All Time</option><option value="today">Today</option><option value="7d">Last 7 Days</option><option value="30d">Last 30 Days</option><option value="90d">Last 90 Days</option></>}
                                 </select>
                                 <button onClick={() => {
                                     // CSV download
-                                    const header = '시간,고수명,이메일,전화번호,유형,금액,잔액,설명\n';
+                                    const header = adminLocale === 'ko' ? '시간,고수명,이메일,전화번호,유형,금액,잔액,설명\n' : 'Time,Pro Name,Email,Phone,Type,Amount,Balance,Description\n';
                                     const csvRows = ledgerData.map(r => [
                                         r.created_at ? new Date(r.created_at).toLocaleString('ko-KR') : '',
                                         r.proName || '', r.proEmail || '', r.proPhone || '',
@@ -2220,23 +2254,23 @@ function AdminDashboardPageContent() {
                                     const a = document.createElement('a'); a.href = url;
                                     a.download = `cash_ledger_${new Date().toISOString().slice(0, 10)}.csv`;
                                     a.click(); URL.revokeObjectURL(url);
-                                }} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 rounded-lg text-sm font-bold whitespace-nowrap">📥 CSV 다운로드</button>
+                                }} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 rounded-lg text-sm font-bold whitespace-nowrap">{adminLocale === 'ko' ? '📥 CSV 다운로드' : '📥 Download CSV'}</button>
                             </div>
                             {/* ── Table ── */}
                             <div className="bg-gray-800 rounded-xl border border-gray-700 overflow-x-auto">
                                 {ledgerLoading ? (
-                                    <div className="p-12 text-center text-gray-500">불러오는 중...</div>
+                                    <div className="p-12 text-center text-gray-500">{adminLocale === 'ko' ? '불러오는 중...' : 'Loading...'}</div>
                                 ) : (
                                     <table className="w-full text-sm">
                                         <thead><tr className="border-b border-gray-700 text-gray-400 text-xs uppercase">
-                                            <th className="p-2.5 text-left">시간</th>
-                                            <th className="p-2.5 text-left">고수명</th>
-                                            <th className="p-2.5 text-left">이메일</th>
-                                            <th className="p-2.5 text-left">전화번호</th>
-                                            <th className="p-2.5 text-left">유형</th>
-                                            <th className="p-2.5 text-right">금액</th>
-                                            <th className="p-2.5 text-right">잔액</th>
-                                            <th className="p-2.5 text-left">설명</th>
+                                            <th className="p-2.5 text-left">{adminLocale === 'ko' ? '시간' : 'Time'}</th>
+                                            <th className="p-2.5 text-left">{adminLocale === 'ko' ? '고수명' : 'Pro Name'}</th>
+                                            <th className="p-2.5 text-left">{adminLocale === 'ko' ? '이메일' : 'Email'}</th>
+                                            <th className="p-2.5 text-left">{adminLocale === 'ko' ? '전화번호' : 'Phone'}</th>
+                                            <th className="p-2.5 text-left">{adminLocale === 'ko' ? '유형' : 'Type'}</th>
+                                            <th className="p-2.5 text-right">{adminLocale === 'ko' ? '금액' : 'Amount'}</th>
+                                            <th className="p-2.5 text-right">{adminLocale === 'ko' ? '잔액' : 'Balance'}</th>
+                                            <th className="p-2.5 text-left">{adminLocale === 'ko' ? '설명' : 'Description'}</th>
                                         </tr></thead>
                                         <tbody>
                                             {ledgerData.map(tx => (
@@ -2255,7 +2289,7 @@ function AdminDashboardPageContent() {
                                                     <td className="p-2.5 text-gray-500 text-xs max-w-[200px] truncate">{txDesc(tx.tx_type, tx.description)}</td>
                                                 </tr>
                                             ))}
-                                            {ledgerData.length === 0 && <tr><td colSpan={8} className="p-8 text-center text-gray-500">거래 내역이 없습니다.</td></tr>}
+                                            {ledgerData.length === 0 && <tr><td colSpan={8} className="p-8 text-center text-gray-500">{adminLocale === 'ko' ? '거래 내역이 없습니다.' : 'No transactions found.'}</td></tr>}
                                         </tbody>
                                     </table>
                                 )}
@@ -2263,13 +2297,13 @@ function AdminDashboardPageContent() {
                             {/* ── Pagination ── */}
                             {ledgerTotal > LEDGER_PAGE_SIZE && (
                                 <div className="flex items-center justify-between mt-4">
-                                    <p className="text-xs text-gray-500">{fmtNum(ledgerTotal)}건 중 {(ledgerPage - 1) * LEDGER_PAGE_SIZE + 1}~{Math.min(ledgerPage * LEDGER_PAGE_SIZE, ledgerTotal)}건</p>
+                                    <p className="text-xs text-gray-500">{adminLocale === 'ko' ? <>{fmtNum(ledgerTotal)}건 중 {(ledgerPage - 1) * LEDGER_PAGE_SIZE + 1}~{Math.min(ledgerPage * LEDGER_PAGE_SIZE, ledgerTotal)}건</> : <>{(ledgerPage - 1) * LEDGER_PAGE_SIZE + 1}–{Math.min(ledgerPage * LEDGER_PAGE_SIZE, ledgerTotal)} of {fmtNum(ledgerTotal)}</>}</p>
                                     <div className="flex gap-1">
                                         <button disabled={ledgerPage <= 1} onClick={() => { const p = ledgerPage - 1; setLedgerPage(p); loadLedger(p, ledgerCategory, ledgerPeriod, ledgerSearch); }}
-                                            className="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded-lg font-bold disabled:opacity-30">← 이전</button>
+                                            className="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded-lg font-bold disabled:opacity-30">{adminLocale === 'ko' ? '← 이전' : '← Prev'}</button>
                                         <span className="px-3 py-1.5 text-sm text-gray-400">{ledgerPage} / {Math.ceil(ledgerTotal / LEDGER_PAGE_SIZE)}</span>
                                         <button disabled={ledgerPage >= Math.ceil(ledgerTotal / LEDGER_PAGE_SIZE)} onClick={() => { const p = ledgerPage + 1; setLedgerPage(p); loadLedger(p, ledgerCategory, ledgerPeriod, ledgerSearch); }}
-                                            className="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded-lg font-bold disabled:opacity-30">다음 →</button>
+                                            className="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded-lg font-bold disabled:opacity-30">{adminLocale === 'ko' ? '다음 →' : 'Next →'}</button>
                                     </div>
                                 </div>
                             )}
@@ -2279,30 +2313,30 @@ function AdminDashboardPageContent() {
                         {tab === 'abuse' && (<>
                             <div className="flex justify-between items-center mb-6">
                                 <div>
-                                    <h1 className="text-2xl font-black text-white">⚠️ 어뷰징/패널티 관리</h1>
-                                    <p className="text-sm text-gray-400 mt-1">3-15-0 룰 기반으로 자동 적발된 윈도우 쇼퍼 고객을 관리합니다.</p>
+                                    <h1 className="text-2xl font-black text-white">{adminLocale === 'ko' ? '⚠️ 어뷰징/패널티 관리' : '⚠️ Abuse / Penalty Management'}</h1>
+                                    <p className="text-sm text-gray-400 mt-1">{adminLocale === 'ko' ? '3-15-0 룰 기반으로 자동 적발된 윈도우 쇼퍼 고객을 관리합니다.' : 'Manage window-shopper customers auto-flagged by the 3-15-0 rule.'}</p>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <div className="flex bg-gray-800 rounded-lg p-0.5">
-                                        <button onClick={() => setAbuseFilter('flagged')} className={`px-3 py-1.5 text-xs font-bold rounded-md transition ${abuseFilter === 'flagged' ? 'bg-red-600 text-white' : 'text-gray-400 hover:text-white'}`}>🚨 적발된 유저</button>
-                                        <button onClick={() => setAbuseFilter('all')} className={`px-3 py-1.5 text-xs font-bold rounded-md transition ${abuseFilter === 'all' ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'}`}>📊 전체 보기</button>
+                                        <button onClick={() => setAbuseFilter('flagged')} className={`px-3 py-1.5 text-xs font-bold rounded-md transition ${abuseFilter === 'flagged' ? 'bg-red-600 text-white' : 'text-gray-400 hover:text-white'}`}>{adminLocale === 'ko' ? '🚨 적발된 유저' : '🚨 Flagged Users'}</button>
+                                        <button onClick={() => setAbuseFilter('all')} className={`px-3 py-1.5 text-xs font-bold rounded-md transition ${abuseFilter === 'all' ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'}`}>{adminLocale === 'ko' ? '📊 전체 보기' : '📊 View All'}</button>
                                     </div>
-                                    <button onClick={loadAbuseData} className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition">🔄 새로고침</button>
+                                    <button onClick={loadAbuseData} className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition">{adminLocale === 'ko' ? '🔄 새로고침' : '🔄 Refresh'}</button>
                                 </div>
                             </div>
 
                             {/* 요약 카드 */}
                             <div className="grid grid-cols-3 gap-4 mb-6">
                                 <div className="bg-red-900/20 border border-red-800/30 rounded-xl p-5">
-                                    <p className="text-xs text-red-300/70 font-bold uppercase">총 적발 고객</p>
+                                    <p className="text-xs text-red-300/70 font-bold uppercase">{adminLocale === 'ko' ? '총 적발 고객' : 'Total Flagged'}</p>
                                     <p className="text-3xl font-black text-red-400 mt-1">{abuseData.filter(a => a.is_flagged).length}</p>
                                 </div>
                                 <div className="bg-orange-900/20 border border-orange-800/30 rounded-xl p-5">
-                                    <p className="text-xs text-orange-300/70 font-bold uppercase">최근 7일 신규 적발</p>
+                                    <p className="text-xs text-orange-300/70 font-bold uppercase">{adminLocale === 'ko' ? '최근 7일 신규 적발' : 'New Flags (7d)'}</p>
                                     <p className="text-3xl font-black text-orange-400 mt-1">{abuseData.filter(a => a.is_flagged && a.flagged_at && new Date(a.flagged_at).getTime() > Date.now() - 7 * 86400000).length}</p>
                                 </div>
                                 <div className="bg-green-900/20 border border-green-800/30 rounded-xl p-5">
-                                    <p className="text-xs text-green-300/70 font-bold uppercase">해제 완료</p>
+                                    <p className="text-xs text-green-300/70 font-bold uppercase">{adminLocale === 'ko' ? '해제 완료' : 'Unflagged'}</p>
                                     <p className="text-3xl font-black text-green-400 mt-1">{abuseData.filter(a => !a.is_flagged && a.total_noshow > 0).length}</p>
                                 </div>
                             </div>
@@ -2310,45 +2344,45 @@ function AdminDashboardPageContent() {
                             {/* 3-15-0 룰 설명 */}
                             <div className="bg-gray-800/50 border border-gray-700/50 rounded-xl p-4 mb-6 text-sm text-gray-400">
                                 <div className="flex items-center justify-between mb-2">
-                                    <p className="font-bold text-white">📋 3-15-0 자동 적발 조건 (AND)</p>
-                                    <p className="text-xs text-orange-300 font-bold">전체 조건 달성: {abuseData.filter(a => a.is_abuse_target).length}명</p>
+                                    <p className="font-bold text-white">{adminLocale === 'ko' ? '📋 3-15-0 자동 적발 조건 (AND)' : '📋 3-15-0 Auto-Flag Conditions (AND)'}</p>
+                                    <p className="text-xs text-orange-300 font-bold">{adminLocale === 'ko' ? `전체 조건 달성: ${abuseData.filter(a => a.is_abuse_target).length}명` : `All conditions met: ${abuseData.filter(a => a.is_abuse_target).length}`}</p>
                                 </div>
                                 <div className="grid grid-cols-3 gap-3">
                                     <div className="bg-gray-900/50 p-3 rounded-lg text-center">
                                         <p className="text-2xl font-black text-red-400">3</p>
-                                        <p className="text-xs text-gray-500 mt-1">연속 노쇼 횟수</p>
-                                        <p className="text-xs text-red-400/70 mt-1">{abuseData.filter(a => a.consecutive_noshow >= 3).length}명 달성</p>
+                                        <p className="text-xs text-gray-500 mt-1">{adminLocale === 'ko' ? '연속 노쇼 횟수' : 'Consecutive No-shows'}</p>
+                                        <p className="text-xs text-red-400/70 mt-1">{adminLocale === 'ko' ? `${abuseData.filter(a => a.consecutive_noshow >= 3).length}명 달성` : `${abuseData.filter(a => a.consecutive_noshow >= 3).length} reached`}</p>
                                     </div>
                                     <div className="bg-gray-900/50 p-3 rounded-lg text-center">
                                         <p className="text-2xl font-black text-orange-400">15</p>
-                                        <p className="text-xs text-gray-500 mt-1">누적 열람 견적</p>
-                                        <p className="text-xs text-orange-400/70 mt-1">{abuseData.filter(a => a.total_read_quotes >= 15).length}명 달성</p>
+                                        <p className="text-xs text-gray-500 mt-1">{adminLocale === 'ko' ? '누적 열람 견적' : 'Cumulative Quotes Read'}</p>
+                                        <p className="text-xs text-orange-400/70 mt-1">{adminLocale === 'ko' ? `${abuseData.filter(a => a.total_read_quotes >= 15).length}명 달성` : `${abuseData.filter(a => a.total_read_quotes >= 15).length} reached`}</p>
                                     </div>
                                     <div className="bg-gray-900/50 p-3 rounded-lg text-center">
                                         <p className="text-2xl font-black text-gray-400">0%</p>
-                                        <p className="text-xs text-gray-500 mt-1">누적 매칭률</p>
-                                        <p className="text-xs text-gray-400/70 mt-1">{abuseData.filter(a => a.match_rate === 0).length}명 달성</p>
+                                        <p className="text-xs text-gray-500 mt-1">{adminLocale === 'ko' ? '누적 매칭률' : 'Cumulative Match Rate'}</p>
+                                        <p className="text-xs text-gray-400/70 mt-1">{adminLocale === 'ko' ? `${abuseData.filter(a => a.match_rate === 0).length}명 달성` : `${abuseData.filter(a => a.match_rate === 0).length} reached`}</p>
                                     </div>
                                 </div>
                             </div>
 
-                            {abuseLoading ? <div className="text-center text-gray-500 py-20">데이터를 불러오는 중...</div> : (
+                            {abuseLoading ? <div className="text-center text-gray-500 py-20">{adminLocale === 'ko' ? '데이터를 불러오는 중...' : 'Loading data...'}</div> : (
                                 <div className="bg-gray-800/40 border border-gray-700/50 rounded-2xl overflow-hidden">
                                     <table className="w-full text-sm">
                                         <thead>
                                             <tr className="border-b border-gray-700 text-gray-400 text-xs uppercase">
-                                                <th className="p-4 text-left">고객</th>
-                                                <th className="p-4 text-center">연속 노쇼</th>
-                                                <th className="p-4 text-center">열람 견적</th>
-                                                <th className="p-4 text-center">매칭률</th>
-                                                <th className="p-4 text-center">상태</th>
-                                                <th className="p-4 text-center">적발일</th>
-                                                <th className="p-4 text-center">액션</th>
+                                                <th className="p-4 text-left">{adminLocale === 'ko' ? '고객' : 'Customer'}</th>
+                                                <th className="p-4 text-center">{adminLocale === 'ko' ? '연속 노쇼' : 'No-shows'}</th>
+                                                <th className="p-4 text-center">{adminLocale === 'ko' ? '열람 견적' : 'Quotes Read'}</th>
+                                                <th className="p-4 text-center">{adminLocale === 'ko' ? '매칭률' : 'Match Rate'}</th>
+                                                <th className="p-4 text-center">{adminLocale === 'ko' ? '상태' : 'Status'}</th>
+                                                <th className="p-4 text-center">{adminLocale === 'ko' ? '적발일' : 'Flagged At'}</th>
+                                                <th className="p-4 text-center">{adminLocale === 'ko' ? '액션' : 'Action'}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {abuseData.length === 0 ? (
-                                                <tr><td colSpan={7} className="p-12 text-center text-gray-500">추적 대상 고객이 없습니다.</td></tr>
+                                                <tr><td colSpan={7} className="p-12 text-center text-gray-500">{adminLocale === 'ko' ? '추적 대상 고객이 없습니다.' : 'No customers to track.'}</td></tr>
                                             ) : abuseData.map((a: any) => {
                                                 const matchRateVal = a.match_rate !== null && a.match_rate !== undefined ? a.match_rate : (a.total_requests > 0 ? Math.round((a.total_matched / a.total_requests) * 100) : null);
                                                 return (
@@ -2357,28 +2391,28 @@ function AdminDashboardPageContent() {
                                                             <p className="font-bold text-white">{a.nickname || a.name || a.userName}</p>
                                                             <p className="text-xs text-gray-500">{a.userEmail}</p>
                                                         </td>
-                                                        <td className={`p-4 text-center font-bold ${a.consecutive_noshow >= 3 ? 'text-red-400' : 'text-gray-400'}`}>{a.consecutive_noshow}회</td>
-                                                        <td className={`p-4 text-center font-bold ${a.total_read_quotes >= 15 ? 'text-orange-400' : 'text-gray-400'}`}>{a.total_read_quotes}건</td>
+                                                        <td className={`p-4 text-center font-bold ${a.consecutive_noshow >= 3 ? 'text-red-400' : 'text-gray-400'}`}>{a.consecutive_noshow}{adminLocale === 'ko' ? '회' : 'x'}</td>
+                                                        <td className={`p-4 text-center font-bold ${a.total_read_quotes >= 15 ? 'text-orange-400' : 'text-gray-400'}`}>{a.total_read_quotes}{adminLocale === 'ko' ? '건' : ''}</td>
                                                         <td className={`p-4 text-center font-bold ${matchRateVal === 0 ? 'text-red-400' : 'text-green-400'}`}>{matchRateVal !== null ? `${matchRateVal}%` : '-'}</td>
                                                         <td className="p-4 text-center">
                                                             {a.is_flagged ? (
-                                                                <span className="bg-red-900/50 text-red-300 text-xs font-bold px-2 py-1 rounded-full">적발</span>
+                                                                <span className="bg-red-900/50 text-red-300 text-xs font-bold px-2 py-1 rounded-full">{adminLocale === 'ko' ? '적발' : 'Flagged'}</span>
                                                             ) : (
-                                                                <span className="bg-green-900/50 text-green-300 text-xs font-bold px-2 py-1 rounded-full">해제</span>
+                                                                <span className="bg-green-900/50 text-green-300 text-xs font-bold px-2 py-1 rounded-full">{adminLocale === 'ko' ? '해제' : 'Cleared'}</span>
                                                             )}
                                                             {(a.status === 'SUSPENDED' || a.userStatus === 'SUSPENDED') && (
                                                                 <span className="relative group ml-1">
-                                                                    <span className="bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded cursor-help">정지</span>
+                                                                    <span className="bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded cursor-help">{adminLocale === 'ko' ? '정지' : 'Suspended'}</span>
                                                                     {a.suspensionReason && (
                                                                         <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block bg-white text-gray-900 text-xs rounded-lg px-3 py-2.5 whitespace-nowrap shadow-2xl z-50 max-w-xs border border-gray-200">
-                                                                            <span className="block font-bold text-red-600 mb-1">📝 정지 사유</span>
+                                                                            <span className="block font-bold text-red-600 mb-1">{adminLocale === 'ko' ? '📝 정지 사유' : '📝 Suspension Reason'}</span>
                                                                             {a.suspensionReason}
                                                                         </span>
                                                                     )}
                                                                 </span>
                                                             )}
                                                             {a.total_reports >= 3 && (
-                                                                <span className="ml-1 bg-orange-900/50 text-orange-300 text-[10px] font-bold px-1.5 py-0.5 rounded-full">신고{a.total_reports}</span>
+                                                                <span className="ml-1 bg-orange-900/50 text-orange-300 text-[10px] font-bold px-1.5 py-0.5 rounded-full">{adminLocale === 'ko' ? `신고${a.total_reports}` : `Rep.${a.total_reports}`}</span>
                                                             )}
                                                         </td>
                                                         <td className="p-4 text-center text-xs text-gray-500">{a.flagged_at ? fmtDate(a.flagged_at) : '-'}</td>
@@ -2388,18 +2422,18 @@ function AdminDashboardPageContent() {
                                                                     <button
                                                                         onClick={() => setUnflagConfirmModal({ userId: a.user_id, nickname: a.nickname || a.name || a.user_id })}
                                                                         className="bg-green-600 hover:bg-green-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition"
-                                                                    >해제</button>
+                                                                    >{adminLocale === 'ko' ? '해제' : 'Unflag'}</button>
                                                                 )}
                                                                 {a.userStatus !== 'SUSPENDED' ? (
                                                                     <button
                                                                         onClick={() => setSuspendModal({ isOpen: true, userId: a.user_id, role: 'CUSTOMER', currentStatus: a.userStatus })}
                                                                         className="bg-gradient-to-r from-red-700 to-red-600 hover:from-red-600 hover:to-red-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition shadow-[0_0_8px_rgba(220,38,38,0.4)] hover:shadow-[0_0_14px_rgba(220,38,38,0.6)]"
-                                                                    >정지</button>
+                                                                    >{adminLocale === 'ko' ? '정지' : 'Suspend'}</button>
                                                                 ) : (
                                                                     <button
                                                                         onClick={() => setSuspendModal({ isOpen: true, userId: a.user_id, role: 'CUSTOMER', currentStatus: 'SUSPENDED' })}
                                                                         className="bg-orange-600 hover:bg-orange-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition"
-                                                                    >🔓 정지 해제</button>
+                                                                    >{adminLocale === 'ko' ? '🔓 정지 해제' : '🔓 Unsuspend'}</button>
                                                                 )}
                                                                 <button
                                                                     onClick={async () => {
@@ -2413,7 +2447,7 @@ function AdminDashboardPageContent() {
                                                                         setAbuseTimeline({ user: a, logs: logs || [], loading: false });
                                                                     }}
                                                                     className="bg-gray-600 hover:bg-gray-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition"
-                                                                >이력</button>
+                                                                >{adminLocale === 'ko' ? '이력' : 'History'}</button>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -2428,20 +2462,20 @@ function AdminDashboardPageContent() {
                             {unflagConfirmModal && (
                                 <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
                                     <div className="bg-gray-900 rounded-xl p-6 w-full max-w-sm border border-gray-700 shadow-2xl">
-                                        <h3 className="text-lg font-bold text-white mb-2">패널티 해제</h3>
+                                        <h3 className="text-lg font-bold text-white mb-2">{adminLocale === 'ko' ? '패널티 해제' : 'Remove Penalty'}</h3>
                                         <p className="text-sm text-gray-400 mb-1">
-                                            <span className="font-bold text-white">{unflagConfirmModal.nickname}</span>님의 패널티를 해제하시겠습니까?
+                                            {adminLocale === 'ko' ? <><span className="font-bold text-white">{unflagConfirmModal.nickname}</span>님의 패널티를 해제하시겠습니까?</> : <>Remove penalty for <span className="font-bold text-white">{unflagConfirmModal.nickname}</span>?</>}
                                         </p>
-                                        <p className="text-xs text-gray-500 mb-6">연속 노쇼 카운트도 0으로 초기화됩니다.</p>
+                                        <p className="text-xs text-gray-500 mb-6">{adminLocale === 'ko' ? '연속 노쇼 카운트도 0으로 초기화됩니다.' : 'The consecutive no-show count will also be reset to 0.'}</p>
                                         <div className="flex gap-2 justify-end">
                                             <button
                                                 onClick={() => setUnflagConfirmModal(null)}
                                                 className="px-4 py-2 rounded-lg text-sm text-gray-400 hover:text-white transition"
-                                            >취소</button>
+                                            >{adminLocale === 'ko' ? '취소' : 'Cancel'}</button>
                                             <button
                                                 onClick={handleUnflagConfirm}
                                                 className="px-4 py-2 rounded-lg text-sm font-bold bg-green-600 hover:bg-green-500 text-white transition"
-                                            >해제 확인</button>
+                                            >{adminLocale === 'ko' ? '해제 확인' : 'Confirm Remove'}</button>
                                         </div>
                                     </div>
                                 </div>
@@ -2453,7 +2487,7 @@ function AdminDashboardPageContent() {
                                     <div className="bg-gray-900 rounded-2xl w-full max-w-lg max-h-[80vh] overflow-y-auto shadow-2xl border border-gray-700" onClick={e => e.stopPropagation()}>
                                         <div className="sticky top-0 bg-gray-900 border-b border-gray-700 p-5 flex justify-between items-center z-10">
                                             <div>
-                                                <h2 className="text-lg font-black text-white flex items-center gap-2">📋 제재 이력 타임라인</h2>
+                                                <h2 className="text-lg font-black text-white flex items-center gap-2">{adminLocale === 'ko' ? '📋 제재 이력 타임라인' : '📋 Penalty History Timeline'}</h2>
                                                 <p className="text-sm text-gray-400 mt-1">{abuseTimeline.user.userName} ({abuseTimeline.user.userEmail})</p>
                                             </div>
                                             <button onClick={() => setAbuseTimeline(null)} className="text-gray-400 hover:text-white text-xl font-bold px-2">✕</button>
@@ -2464,15 +2498,15 @@ function AdminDashboardPageContent() {
                                             <div className="flex gap-3">
                                                 <div className="bg-gradient-to-br from-red-900/50 to-red-800/30 border-2 border-red-500/60 rounded-xl px-4 py-3 flex-1 text-center shadow-[0_0_12px_rgba(239,68,68,0.2)]">
                                                     <p className="text-3xl font-black text-red-400 drop-shadow-lg">{abuseTimeline.logs.filter(l => l.action_type === 'SUSPEND').length}</p>
-                                                    <p className="text-xs text-red-300 font-bold mt-0.5">누적 정지</p>
+                                                    <p className="text-xs text-red-300 font-bold mt-0.5">{adminLocale === 'ko' ? '누적 정지' : 'Total Suspensions'}</p>
                                                 </div>
                                                 <div className="bg-gradient-to-br from-green-900/50 to-green-800/30 border-2 border-green-500/60 rounded-xl px-4 py-3 flex-1 text-center shadow-[0_0_12px_rgba(34,197,94,0.2)]">
                                                     <p className="text-3xl font-black text-green-400 drop-shadow-lg">{abuseTimeline.logs.filter(l => l.action_type === 'UNSUSPEND').length}</p>
-                                                    <p className="text-xs text-green-300 font-bold mt-0.5">해제 횟수</p>
+                                                    <p className="text-xs text-green-300 font-bold mt-0.5">{adminLocale === 'ko' ? '해제 횟수' : 'Unsuspensions'}</p>
                                                 </div>
                                                 <div className="bg-gradient-to-br from-gray-700/50 to-gray-800/30 border-2 border-gray-500/60 rounded-xl px-4 py-3 flex-1 text-center shadow-[0_0_12px_rgba(156,163,175,0.15)]">
                                                     <p className="text-3xl font-black text-white drop-shadow-lg">{abuseTimeline.logs.length}</p>
-                                                    <p className="text-xs text-gray-300 font-bold mt-0.5">전체 로그</p>
+                                                    <p className="text-xs text-gray-300 font-bold mt-0.5">{adminLocale === 'ko' ? '전체 로그' : 'Total Logs'}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -2480,9 +2514,9 @@ function AdminDashboardPageContent() {
                                         {/* 타임라인 */}
                                         <div className="px-5 py-4">
                                             {abuseTimeline.loading ? (
-                                                <div className="text-center py-10 text-gray-500">불러오는 중...</div>
+                                                <div className="text-center py-10 text-gray-500">{adminLocale === 'ko' ? '불러오는 중...' : 'Loading...'}</div>
                                             ) : abuseTimeline.logs.length === 0 ? (
-                                                <div className="text-center py-10 text-gray-500">제재 이력이 없습니다.</div>
+                                                <div className="text-center py-10 text-gray-500">{adminLocale === 'ko' ? '제재 이력이 없습니다.' : 'No penalty history.'}</div>
                                             ) : (
                                                 <div className="relative border-l-2 border-gray-700 ml-3 space-y-4">
                                                     {abuseTimeline.logs.map((log: any, i: number) => (
@@ -2498,7 +2532,7 @@ function AdminDashboardPageContent() {
                                                                         log.action_type === 'UNSUSPEND' ? 'bg-green-900/50 text-green-300' :
                                                                             log.action_type === 'FLAG' ? 'bg-orange-900/50 text-orange-300' :
                                                                                 'bg-blue-900/50 text-blue-300'
-                                                                        }`}>{log.action_type === 'SUSPEND' ? '⛔ 정지' : log.action_type === 'UNSUSPEND' ? '✅ 해제' : log.action_type === 'FLAG' ? '🚨 적발' : '🔓 적발 해제'}</span>
+                                                                        }`}>{log.action_type === 'SUSPEND' ? (adminLocale === 'ko' ? '⛔ 정지' : '⛔ Suspend') : log.action_type === 'UNSUSPEND' ? (adminLocale === 'ko' ? '✅ 해제' : '✅ Unsuspend') : log.action_type === 'FLAG' ? (adminLocale === 'ko' ? '🚨 적발' : '🚨 Flag') : (adminLocale === 'ko' ? '🔓 적발 해제' : '🔓 Unflag')}</span>
                                                                     <span className="text-xs text-gray-500">{log.created_at ? new Date(log.created_at).toLocaleString('ko-KR') : '-'}</span>
                                                                 </div>
                                                                 {log.reason && <p className="text-sm text-gray-300">{log.reason}</p>}
@@ -2518,11 +2552,11 @@ function AdminDashboardPageContent() {
                             <div className="space-y-6">
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <h2 className="text-xl font-bold text-white">🚨 신고 관리</h2>
-                                        <p className="text-gray-400 text-sm mt-1">채팅방에서 접수된 신고를 검토하고 제재를 처리합니다.</p>
+                                        <h2 className="text-xl font-bold text-white">{adminLocale === 'ko' ? '🚨 신고 관리' : '🚨 Report Management'}</h2>
+                                        <p className="text-gray-400 text-sm mt-1">{adminLocale === 'ko' ? '채팅방에서 접수된 신고를 검토하고 제재를 처리합니다.' : 'Review reports submitted from chat rooms and process sanctions.'}</p>
                                     </div>
                                     <button onClick={fetchReports} className="text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg transition">
-                                        🔄 새로고침
+                                        {adminLocale === 'ko' ? '🔄 새로고침' : '🔄 Refresh'}
                                     </button>
                                 </div>
 
@@ -2535,7 +2569,7 @@ function AdminDashboardPageContent() {
                                                 onClick={() => setReportFilter(f)}
                                                 className={`text-xs px-3 py-1.5 rounded-lg font-medium transition ${reportFilter === f ? 'bg-red-500 text-white' : 'bg-white/10 text-gray-400 hover:bg-white/20'}`}
                                             >
-                                                {f === 'all' ? '전체' : f === 'pending' ? '미처리' : '처리완료'}
+                                                {adminLocale === 'ko' ? (f === 'all' ? '전체' : f === 'pending' ? '미처리' : '처리완료') : (f === 'all' ? 'All' : f === 'pending' ? 'Pending' : 'Resolved')}
                                             </button>
                                         ))}
                                     </div>
@@ -2543,7 +2577,7 @@ function AdminDashboardPageContent() {
                                         type="text"
                                         value={reportSearch}
                                         onChange={e => setReportSearch(e.target.value)}
-                                        placeholder="신고자/피신고자/사유 검색..."
+                                        placeholder={adminLocale === 'ko' ? '신고자/피신고자/사유 검색...' : 'Search reporter/reported/reason...'}
                                         className="flex-1 min-w-[160px] bg-white/10 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-red-500"
                                     />
                                     <select
@@ -2551,16 +2585,15 @@ function AdminDashboardPageContent() {
                                         onChange={e => setReportSort(e.target.value as 'latest' | 'most_reported')}
                                         className="bg-white/10 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-red-500"
                                     >
-                                        <option value="latest">최신순</option>
-                                        <option value="most_reported">누적 신고 많은 순</option>
+                                        {adminLocale === 'ko' ? <><option value="latest">최신순</option><option value="most_reported">누적 신고 많은 순</option></> : <><option value="latest">Latest</option><option value="most_reported">Most Reported</option></>}
                                     </select>
                                 </div>
 
                                 {reportsLoading ? (
-                                    <div className="text-center py-10 text-gray-400">신고 목록 로딩 중...</div>
+                                    <div className="text-center py-10 text-gray-400">{adminLocale === 'ko' ? '신고 목록 로딩 중...' : 'Loading reports...'}</div>
                                 ) : filteredReports.length === 0 ? (
                                     <div className="text-center py-10 text-gray-400">
-                                        {reports.length === 0 ? '접수된 신고가 없습니다.' : '검색/필터 조건에 맞는 신고가 없습니다.'}
+                                        {reports.length === 0 ? (adminLocale === 'ko' ? '접수된 신고가 없습니다.' : 'No reports submitted.') : (adminLocale === 'ko' ? '검색/필터 조건에 맞는 신고가 없습니다.' : 'No reports match the search/filter.')}
                                     </div>
                                 ) : (
                                     <div className="space-y-4">
@@ -2569,7 +2602,7 @@ function AdminDashboardPageContent() {
                                                 <div className="flex justify-between items-start mb-3">
                                                     <div className="flex items-center gap-2">
                                                         <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${report.status === 'pending' ? 'bg-red-500 text-white' : 'bg-gray-600 text-gray-300'}`}>
-                                                            {report.status === 'pending' ? '미처리' : '처리완료'}
+                                                            {adminLocale === 'ko' ? (report.status === 'pending' ? '미처리' : '처리완료') : (report.status === 'pending' ? 'Pending' : 'Resolved')}
                                                         </span>
                                                         <span className="text-xs text-gray-500">{fmtDate(report.created_at)}</span>
                                                     </div>
@@ -2577,42 +2610,42 @@ function AdminDashboardPageContent() {
                                                         onClick={() => chatPreview?.reportId === report.id ? setChatPreview(null) : fetchChatPreview(report.id, report.room_id)}
                                                         className="text-xs text-blue-400 hover:text-blue-300 transition"
                                                     >
-                                                        💬 채팅 내역 {chatPreview?.reportId === report.id ? '닫기' : '보기'}
+                                                        {adminLocale === 'ko' ? `💬 채팅 내역 ${chatPreview?.reportId === report.id ? '닫기' : '보기'}` : `💬 Chat Log ${chatPreview?.reportId === report.id ? 'Close' : 'View'}`}
                                                     </button>
                                                 </div>
 
                                                 <div className="grid grid-cols-2 gap-2 text-sm mb-3">
                                                     <div>
-                                                        <span className="text-gray-500 text-xs">신고자</span>
+                                                        <span className="text-gray-500 text-xs">{adminLocale === 'ko' ? '신고자' : 'Reporter'}</span>
                                                         <p className="text-white font-medium">{report.reporter?.nickname || report.reporter?.name}
                                                             <span className="text-gray-500 text-xs ml-1">({report.reporter?.role})</span>
                                                         </p>
                                                     </div>
                                                     <div>
-                                                        <span className="text-gray-500 text-xs">피신고자</span>
+                                                        <span className="text-gray-500 text-xs">{adminLocale === 'ko' ? '피신고자' : 'Reported'}</span>
                                                         <p className="text-red-400 font-medium flex items-center gap-1 flex-wrap">
                                                             {report.reported?.nickname || report.reported?.name}
                                                             <span className="text-gray-500 text-xs">({report.reported?.role})</span>
                                                             {report.reported?.status === 'SUSPENDED' && (
-                                                                <span className="text-xs bg-red-900/50 text-red-400 px-1.5 py-0.5 rounded-full">정지됨</span>
+                                                                <span className="text-xs bg-red-900/50 text-red-400 px-1.5 py-0.5 rounded-full">{adminLocale === 'ko' ? '정지됨' : 'Suspended'}</span>
                                                             )}
                                                             <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${report.reportedTotalCount >= 5 ? 'bg-red-500 text-white' :
                                                                     report.reportedTotalCount >= 3 ? 'bg-orange-500 text-white' :
                                                                         'bg-yellow-500/20 text-yellow-400'
                                                                 }`}>
-                                                                🚨 누적 {report.reportedTotalCount}회
+                                                                {adminLocale === 'ko' ? `🚨 누적 ${report.reportedTotalCount}회` : `🚨 Rep.${report.reportedTotalCount}`}
                                                             </span>
                                                         </p>
                                                     </div>
                                                 </div>
 
                                                 <div className="text-sm text-gray-300 mb-3">
-                                                    <span className="text-gray-500">신고 사유: </span>{report.reason}
+                                                    <span className="text-gray-500">{adminLocale === 'ko' ? '신고 사유: ' : 'Reason: '}</span>{report.reason}
                                                 </div>
 
                                                 {chatPreview?.reportId === report.id && (
                                                     <div className="bg-black/30 border border-white/10 rounded-lg p-3 mb-3 max-h-48 overflow-y-auto">
-                                                        <p className="text-xs font-bold text-gray-500 mb-2">채팅 내역 (최근 30건)</p>
+                                                        <p className="text-xs font-bold text-gray-500 mb-2">{adminLocale === 'ko' ? '채팅 내역 (최근 30건)' : 'Chat Log (Last 30)'}</p>
                                                         {chatPreview?.messages?.map((msg, i) => (
                                                             <div key={i} className="text-xs text-gray-400 mb-1">
                                                                 <span className="text-gray-600">{new Date(msg.created_at).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}</span>
@@ -2631,10 +2664,10 @@ function AdminDashboardPageContent() {
                                                             onClick={() => setReportSuspendModal({ userId: report.reported?.user_id, role: (report.reported?.role?.toUpperCase() || '') as 'PRO' | 'CUSTOMER' | '', currentStatus: report.reported?.status || 'ACTIVE' })}
                                                             className="text-xs bg-red-500 hover:bg-red-600 text-white font-bold px-4 py-2 rounded-lg transition"
                                                         >
-                                                            ⚡ 제재 처리
+                                                            {adminLocale === 'ko' ? '⚡ 제재 처리' : '⚡ Sanction'}
                                                         </button>
                                                     ) : (
-                                                        <p className="text-xs text-gray-500">처리 메모: {report.admin_note}</p>
+                                                        <p className="text-xs text-gray-500">{adminLocale === 'ko' ? `처리 메모: ${report.admin_note}` : `Memo: ${report.admin_note}`}</p>
                                                     )}
                                                 </div>
                                             </div>
@@ -2646,8 +2679,8 @@ function AdminDashboardPageContent() {
                                 {reportSuspendModal && (
                                     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
                                         <div className="bg-gray-900 border border-white/10 rounded-2xl p-6 max-w-md w-full shadow-2xl">
-                                            <h3 className="text-lg font-bold text-white mb-1">⚡ 제재 처리</h3>
-                                            <p className="text-sm text-gray-400 mb-4">대상: <span className="font-bold text-red-400">{reports.find(r => r.reported?.user_id === reportSuspendModal.userId && r.status === 'pending')?.reported?.nickname || reports.find(r => r.reported?.user_id === reportSuspendModal.userId && r.status === 'pending')?.reported?.name || reportSuspendModal.userId}</span></p>
+                                            <h3 className="text-lg font-bold text-white mb-1">{adminLocale === 'ko' ? '⚡ 제재 처리' : '⚡ Sanction'}</h3>
+                                            <p className="text-sm text-gray-400 mb-4">{adminLocale === 'ko' ? '대상: ' : 'Target: '}<span className="font-bold text-red-400">{reports.find(r => r.reported?.user_id === reportSuspendModal.userId && r.status === 'pending')?.reported?.nickname || reports.find(r => r.reported?.user_id === reportSuspendModal.userId && r.status === 'pending')?.reported?.name || reportSuspendModal.userId}</span></p>
                                             <div className="flex gap-2 mb-4">
                                                 {(['warning', 'temporary', 'permanent'] as const).map(type => (
                                                     <button
@@ -2655,28 +2688,26 @@ function AdminDashboardPageContent() {
                                                         onClick={() => setSuspendType(type)}
                                                         className={`flex-1 py-2 rounded-lg text-xs font-bold border transition ${suspendType === type ? 'bg-red-500 text-white border-red-500' : 'bg-white/5 text-gray-400 border-white/10 hover:border-red-400'}`}
                                                     >
-                                                        {type === 'warning' ? '⚠️ 경고' : type === 'temporary' ? '⏱ 임시정지' : '🚫 영구정지'}
+                                                        {adminLocale === 'ko' ? (type === 'warning' ? '⚠️ 경고' : type === 'temporary' ? '⏱ 임시정지' : '🚫 영구정지') : (type === 'warning' ? '⚠️ Warning' : type === 'temporary' ? '⏱ Temp Suspend' : '🚫 Permanent Ban')}
                                                     </button>
                                                 ))}
                                             </div>
                                             {suspendType === 'temporary' && (
                                                 <div className="mb-4">
-                                                    <label className="block text-xs font-bold text-gray-400 mb-1">정지 기간</label>
+                                                    <label className="block text-xs font-bold text-gray-400 mb-1">{adminLocale === 'ko' ? '정지 기간' : 'Suspension Period'}</label>
                                                     <select
                                                         value={suspendDays}
                                                         onChange={(e) => setSuspendDays(Number(e.target.value))}
                                                         className="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-red-500"
                                                     >
-                                                        <option value={1}>1일</option>
-                                                        <option value={3}>3일</option>
-                                                        <option value={7}>7일</option>
+                                                        {adminLocale === 'ko' ? <><option value={1}>1일</option><option value={3}>3일</option><option value={7}>7일</option></> : <><option value={1}>1 day</option><option value={3}>3 days</option><option value={7}>7 days</option></>}
                                                     </select>
                                                 </div>
                                             )}
                                             <textarea
                                                 value={reportSuspendReason}
                                                 onChange={(e) => setReportSuspendReason(e.target.value)}
-                                                placeholder="제재 사유를 입력하세요 (유저에게 표시됩니다)"
+                                                placeholder={adminLocale === 'ko' ? '제재 사유를 입력하세요 (유저에게 표시됩니다)' : 'Enter sanction reason (shown to user)'}
                                                 className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm text-white h-24 resize-none focus:outline-none focus:ring-2 focus:ring-red-500 mb-4"
                                             />
                                             <div className="flex gap-2">
@@ -2684,14 +2715,14 @@ function AdminDashboardPageContent() {
                                                     onClick={() => { setReportSuspendModal(null); setReportSuspendReason(''); setSuspendType('warning'); }}
                                                     className="flex-1 border border-white/10 text-gray-400 font-bold py-2 rounded-xl text-sm hover:bg-white/5 transition"
                                                 >
-                                                    취소
+                                                    {adminLocale === 'ko' ? '취소' : 'Cancel'}
                                                 </button>
                                                 <button
                                                     onClick={handleSuspend}
                                                     disabled={suspendSubmitting || !reportSuspendReason.trim()}
                                                     className="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-2 rounded-xl text-sm disabled:opacity-50 transition"
                                                 >
-                                                    {suspendSubmitting ? '처리 중...' : '제재 확정'}
+                                                    {suspendSubmitting ? (adminLocale === 'ko' ? '처리 중...' : 'Processing...') : (adminLocale === 'ko' ? '제재 확정' : 'Confirm Sanction')}
                                                 </button>
                                             </div>
                                         </div>
@@ -2704,8 +2735,8 @@ function AdminDashboardPageContent() {
                         {tab === 'categories' && (<>
                             <div className="flex justify-between items-center mb-6">
                                 <div>
-                                    <h1 className="text-2xl font-black text-white">🏷️ 카테고리/단가표 관리</h1>
-                                    <p className="text-sm text-gray-400 mt-1">플랫폼의 서비스 카테고리와 견적 발송 단가를 관리합니다.</p>
+                                    <h1 className="text-2xl font-black text-white">{adminLocale === 'ko' ? '🏷️ 카테고리/단가표 관리' : '🏷️ Category / Pricing Management'}</h1>
+                                    <p className="text-sm text-gray-400 mt-1">{adminLocale === 'ko' ? '플랫폼의 서비스 카테고리와 견적 발송 단가를 관리합니다.' : 'Manage service categories and quote sending prices for the platform.'}</p>
                                 </div>
                                 <div className="flex items-center gap-3">
                                     <select
@@ -2713,7 +2744,7 @@ function AdminDashboardPageContent() {
                                         onChange={e => { setCategoryDepth1Filter(e.target.value); setCategoryDepth2Filter('all'); }}
                                         className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     >
-                                        <option value="all">Depth 1 (전체)</option>
+                                        <option value="all">{adminLocale === 'ko' ? 'Depth 1 (전체)' : 'Depth 1 (All)'}</option>
                                         {Array.from(new Set(dbCategories.map(c => c.depth1).filter(Boolean))).sort().map((d1: any) => (
                                             <option key={d1} value={d1}>{d1}</option>
                                         ))}
@@ -2724,7 +2755,7 @@ function AdminDashboardPageContent() {
                                             onChange={e => setCategoryDepth2Filter(e.target.value)}
                                             className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         >
-                                            <option value="all">Depth 2 (전체)</option>
+                                            <option value="all">{adminLocale === 'ko' ? 'Depth 2 (전체)' : 'Depth 2 (All)'}</option>
                                             {Array.from(new Set(
                                                 dbCategories
                                                     .filter(c => c.depth1 === categoryDepth1Filter)
@@ -2735,7 +2766,7 @@ function AdminDashboardPageContent() {
                                             ))}
                                         </select>
                                     )}
-                                    <button onClick={() => { setIsAddingCategory(true); setEditingCategory({ name: '', base_price: 500, is_active: true }); }} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-md transition">+ 새 카테고리 추가</button>
+                                    <button onClick={() => { setIsAddingCategory(true); setEditingCategory({ name: '', base_price: 500, is_active: true }); }} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-md transition">{adminLocale === 'ko' ? '+ 새 카테고리 추가' : '+ Add Category'}</button>
                                 </div>
                             </div>
 
@@ -2746,11 +2777,11 @@ function AdminDashboardPageContent() {
                                             <tr>
                                                 <th className="px-5 py-4 font-black text-gray-300">Depth 1</th>
                                                 <th className="px-5 py-4 font-black text-gray-300">Depth 2</th>
-                                                <th className="px-5 py-4 font-black text-gray-300">카테고리명</th>
-                                                <th className="px-5 py-4 font-black text-gray-300 text-right">기본 견적단가 (Cost)</th>
-                                                <th className="px-5 py-4 font-black text-gray-300 text-center">활성 상태</th>
-                                                <th className="px-5 py-4 font-black text-gray-300 text-center">수정일</th>
-                                                <th className="px-5 py-4 text-right">관리</th>
+                                                <th className="px-5 py-4 font-black text-gray-300">{adminLocale === 'ko' ? '카테고리명' : 'Category Name'}</th>
+                                                <th className="px-5 py-4 font-black text-gray-300 text-right">{adminLocale === 'ko' ? '기본 견적단가 (Cost)' : 'Base Quote Price'}</th>
+                                                <th className="px-5 py-4 font-black text-gray-300 text-center">{adminLocale === 'ko' ? '활성 상태' : 'Active'}</th>
+                                                <th className="px-5 py-4 font-black text-gray-300 text-center">{adminLocale === 'ko' ? '수정일' : 'Updated'}</th>
+                                                <th className="px-5 py-4 text-right">{adminLocale === 'ko' ? '관리' : 'Actions'}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -2765,13 +2796,13 @@ function AdminDashboardPageContent() {
                                                     <td className="px-5 py-3 text-right font-mono font-bold text-blue-400">₱{fmtNum(cat.base_price)}</td>
                                                     <td className="px-5 py-3 text-center">
                                                         <span className={`px-2 py-1 rounded text-xs font-bold ${cat.is_active ? 'bg-green-900/50 text-green-400' : 'bg-red-900/50 text-red-500'}`}>
-                                                            {cat.is_active ? '운영 중' : '사용 안함'}
+                                                            {adminLocale === 'ko' ? (cat.is_active ? '운영 중' : '사용 안함') : (cat.is_active ? 'Active' : 'Inactive')}
                                                         </span>
                                                     </td>
                                                     <td className="px-5 py-3 text-center text-gray-500 text-xs">{fmtDate(cat.updated_at || cat.created_at)}</td>
                                                     <td className="px-5 py-3 text-right">
-                                                        <button onClick={() => setEditingCategory({ ...cat })} className="text-blue-500 hover:text-blue-300 font-bold px-3 py-1 bg-blue-900/20 rounded transition text-xs mr-2">수정</button>
-                                                        <button onClick={() => setDeletingCategory(cat)} className="text-red-500 hover:text-red-300 font-bold px-3 py-1 bg-red-900/20 rounded transition text-xs">삭제</button>
+                                                        <button onClick={() => setEditingCategory({ ...cat })} className="text-blue-500 hover:text-blue-300 font-bold px-3 py-1 bg-blue-900/20 rounded transition text-xs mr-2">{adminLocale === 'ko' ? '수정' : 'Edit'}</button>
+                                                        <button onClick={() => setDeletingCategory(cat)} className="text-red-500 hover:text-red-300 font-bold px-3 py-1 bg-red-900/20 rounded transition text-xs">{adminLocale === 'ko' ? '삭제' : 'Delete'}</button>
                                                     </td>
                                                 </tr>
                                             ))}
@@ -2779,7 +2810,7 @@ function AdminDashboardPageContent() {
                                                 (categoryDepth1Filter === 'all' || cat.depth1 === categoryDepth1Filter) &&
                                                 (categoryDepth2Filter === 'all' || cat.depth2 === categoryDepth2Filter)
                                             ).length === 0 && (
-                                                    <tr><td colSpan={7} className="px-5 py-8 text-center text-gray-500">카테고리 데이터가 없습니다. DB 마이그레이션을 확인하세요.</td></tr>
+                                                    <tr><td colSpan={7} className="px-5 py-8 text-center text-gray-500">{adminLocale === 'ko' ? '카테고리 데이터가 없습니다. DB 마이그레이션을 확인하세요.' : 'No category data. Check DB migration.'}</td></tr>
                                                 )}
                                         </tbody>
                                     </table>
@@ -2787,43 +2818,43 @@ function AdminDashboardPageContent() {
                             ) : (
                                 <form onSubmit={handleSaveCategory} className="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-md max-w-2xl">
                                     <div className="flex justify-between items-center mb-6 border-b border-gray-700 pb-4">
-                                        <h3 className="font-bold text-xl text-white">{isAddingCategory ? '새 카테고리 추가' : '카테고리 단가 수정'}</h3>
+                                        <h3 className="font-bold text-xl text-white">{isAddingCategory ? (adminLocale === 'ko' ? '새 카테고리 추가' : 'Add Category') : (adminLocale === 'ko' ? '카테고리 단가 수정' : 'Edit Category Price')}</h3>
                                         <button type="button" onClick={() => { setEditingCategory(null); setIsAddingCategory(false); }} className="text-gray-400 hover:text-white font-bold p-2 bg-gray-700 rounded-full hover:bg-gray-600 transition">✕</button>
                                     </div>
                                     <div className="space-y-6">
                                         <div>
                                             <div className="flex gap-4 mb-4">
                                                 <div className="flex-1">
-                                                    <label className="block text-sm font-bold text-gray-300 mb-2">대분류 (Depth 1)</label>
-                                                    <input type="text" value={editingCategory.depth1 || ''} onChange={e => setEditingCategory({ ...editingCategory, depth1: e.target.value })} className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold" disabled={!isAddingCategory} placeholder="예: 이사/청소" />
+                                                    <label className="block text-sm font-bold text-gray-300 mb-2">{adminLocale === 'ko' ? '대분류 (Depth 1)' : 'Category (Depth 1)'}</label>
+                                                    <input type="text" value={editingCategory.depth1 || ''} onChange={e => setEditingCategory({ ...editingCategory, depth1: e.target.value })} className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold" disabled={!isAddingCategory} placeholder={adminLocale === 'ko' ? '예: 이사/청소' : 'e.g. Moving/Cleaning'} />
                                                 </div>
                                                 <div className="flex-1">
-                                                    <label className="block text-sm font-bold text-gray-300 mb-2">중분류 (Depth 2)</label>
-                                                    <input type="text" value={editingCategory.depth2 || ''} onChange={e => setEditingCategory({ ...editingCategory, depth2: e.target.value })} className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold" disabled={!isAddingCategory} placeholder="예: 이사" />
+                                                    <label className="block text-sm font-bold text-gray-300 mb-2">{adminLocale === 'ko' ? '중분류 (Depth 2)' : 'Sub-category (Depth 2)'}</label>
+                                                    <input type="text" value={editingCategory.depth2 || ''} onChange={e => setEditingCategory({ ...editingCategory, depth2: e.target.value })} className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold" disabled={!isAddingCategory} placeholder={adminLocale === 'ko' ? '예: 이사' : 'e.g. Moving'} />
                                                 </div>
                                             </div>
-                                            <label className="block text-sm font-bold text-gray-300 mb-2">카테고리명 (리프 노드)</label>
-                                            <input type="text" value={editingCategory.name} onChange={e => setEditingCategory({ ...editingCategory, name: e.target.value })} className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold" required disabled={!isAddingCategory} placeholder="예: 소형 이사" />
-                                            {!isAddingCategory && <p className="text-xs text-orange-400 mt-2 font-bold py-1 px-2 bg-orange-900/20 rounded inline-block">🔗 기준 카테고리명 및 분류는 시스템 매칭 무결성을 위해 수정 불가합니다.</p>}
+                                            <label className="block text-sm font-bold text-gray-300 mb-2">{adminLocale === 'ko' ? '카테고리명 (리프 노드)' : 'Category Name (Leaf)'}</label>
+                                            <input type="text" value={editingCategory.name} onChange={e => setEditingCategory({ ...editingCategory, name: e.target.value })} className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold" required disabled={!isAddingCategory} placeholder={adminLocale === 'ko' ? '예: 소형 이사' : 'e.g. Small Moving'} />
+                                            {!isAddingCategory && <p className="text-xs text-orange-400 mt-2 font-bold py-1 px-2 bg-orange-900/20 rounded inline-block">{adminLocale === 'ko' ? '🔗 기준 카테고리명 및 분류는 시스템 매칭 무결성을 위해 수정 불가합니다.' : '🔗 Category name and classification cannot be edited to preserve system integrity.'}</p>}
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-bold text-gray-300 mb-2">기본 견적단가 (캐시 차감액)</label>
+                                            <label className="block text-sm font-bold text-gray-300 mb-2">{adminLocale === 'ko' ? '기본 견적단가 (캐시 차감액)' : 'Base Quote Price (Cash Deducted)'}</label>
                                             <div className="relative">
                                                 <span className="absolute left-4 top-3 text-gray-500 font-bold">₱</span>
                                                 <input type="number" min="0" value={editingCategory.base_price} onChange={e => setEditingCategory({ ...editingCategory, base_price: parseInt(e.target.value) || 0 })} className="w-full bg-gray-900 border border-gray-700 rounded-lg pl-10 pr-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-lg font-bold" required />
                                             </div>
-                                            <p className="text-xs text-blue-400 mt-2">이 카테고리에서 고수가 견적서를 낼 때마다 차감할 캐시 비용입니다.</p>
+                                            <p className="text-xs text-blue-400 mt-2">{adminLocale === 'ko' ? '이 카테고리에서 고수가 견적서를 낼 때마다 차감할 캐시 비용입니다.' : 'The cash amount deducted each time a pro sends a quote in this category.'}</p>
                                         </div>
                                         <div>
                                             <label className="flex items-center gap-3 bg-gray-900 p-4 rounded-xl border border-gray-700 cursor-pointer">
                                                 <input type="checkbox" checked={editingCategory.is_active} onChange={e => setEditingCategory({ ...editingCategory, is_active: e.target.checked })} className="w-5 h-5 accent-blue-600 rounded" />
-                                                <span className="text-sm font-bold text-gray-200">서비스 활성화 상태 여부</span>
+                                                <span className="text-sm font-bold text-gray-200">{adminLocale === 'ko' ? '서비스 활성화 상태 여부' : 'Service active status'}</span>
                                             </label>
                                         </div>
                                     </div>
                                     <div className="mt-8 pt-6 border-t border-gray-700 flex justify-end gap-3">
-                                        <button type="button" onClick={() => { setEditingCategory(null); setIsAddingCategory(false); }} className="px-5 py-2.5 rounded-lg text-sm font-bold text-gray-400 hover:text-white transition">취소</button>
-                                        <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm font-bold shadow-md transition">{isAddingCategory ? '저장하기' : '수정 내역 반영'}</button>
+                                        <button type="button" onClick={() => { setEditingCategory(null); setIsAddingCategory(false); }} className="px-5 py-2.5 rounded-lg text-sm font-bold text-gray-400 hover:text-white transition">{adminLocale === 'ko' ? '취소' : 'Cancel'}</button>
+                                        <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm font-bold shadow-md transition">{isAddingCategory ? (adminLocale === 'ko' ? '저장하기' : 'Save') : (adminLocale === 'ko' ? '수정 내역 반영' : 'Apply Changes')}</button>
                                     </div>
                                 </form>
                             )}
@@ -2832,14 +2863,14 @@ function AdminDashboardPageContent() {
                                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
                                     <div className="bg-gray-900 border border-red-900/50 rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden shadow-red-900/20">
                                         <div className="bg-red-950/40 p-5 border-b border-red-900/30">
-                                            <h2 className="text-red-400 font-bold text-lg mb-1">카테고리 삭제 확인</h2>
+                                            <h2 className="text-red-400 font-bold text-lg mb-1">{adminLocale === 'ko' ? '카테고리 삭제 확인' : 'Confirm Delete Category'}</h2>
                                             <p className="text-xs text-red-300/70 leading-relaxed">
-                                                정말 이 카테고리 <span className="text-red-400 font-bold">[{deletingCategory.name}]</span>를 삭제하시겠습니까?<br />이 작업은 되돌릴 수 없습니다.
+                                                {adminLocale === 'ko' ? <>정말 이 카테고리 <span className="text-red-400 font-bold">[{deletingCategory.name}]</span>를 삭제하시겠습니까?<br />이 작업은 되돌릴 수 없습니다.</> : <>Are you sure you want to delete <span className="text-red-400 font-bold">[{deletingCategory.name}]</span>?<br />This action cannot be undone.</>}
                                             </p>
                                         </div>
                                         <div className="p-5 flex gap-2 justify-end">
-                                            <button onClick={() => setDeletingCategory(null)} className="px-5 py-2.5 rounded-lg text-sm font-bold text-gray-400 hover:text-white transition">취소</button>
-                                            <button onClick={handleDeleteCategory} className="px-5 py-2.5 rounded-lg text-sm font-bold bg-red-600 hover:bg-red-500 text-white transition">영구 삭제</button>
+                                            <button onClick={() => setDeletingCategory(null)} className="px-5 py-2.5 rounded-lg text-sm font-bold text-gray-400 hover:text-white transition">{adminLocale === 'ko' ? '취소' : 'Cancel'}</button>
+                                            <button onClick={handleDeleteCategory} className="px-5 py-2.5 rounded-lg text-sm font-bold bg-red-600 hover:bg-red-500 text-white transition">{adminLocale === 'ko' ? '영구 삭제' : 'Delete Permanently'}</button>
                                         </div>
                                     </div>
                                 </div>
@@ -2848,80 +2879,80 @@ function AdminDashboardPageContent() {
 
                         {/* ═══ PRO MANAGEMENT ═══ */}
                         {tab === 'pro' && (<>
-                            <h1 className="text-2xl font-black mb-4">🔧 고수 관리</h1>
+                            <h1 className="text-2xl font-black mb-4">{adminLocale === 'ko' ? '🔧 고수 관리' : '🔧 Pro Management'}</h1>
                             <div className="flex flex-col sm:flex-row gap-2 mb-4">
-                                <input type="text" value={proSearch} onChange={e => setProSearch(e.target.value)} placeholder="이름 / 활동명 / 이메일 / ID 검색..." className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                                <select value={proFilter} onChange={e => setProFilter(e.target.value as any)} className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white"><option value="all">전체</option><option value="suspended">정지됨</option><option value="deleted">탈퇴됨</option></select>
+                                <input type="text" value={proSearch} onChange={e => setProSearch(e.target.value)} placeholder={adminLocale === 'ko' ? '이름 / 활동명 / 이메일 / ID 검색...' : 'Search name / nickname / email / ID...'} className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                <select value={proFilter} onChange={e => setProFilter(e.target.value as any)} className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white"><option value="all">{adminLocale === 'ko' ? '전체' : 'All'}</option><option value="suspended">{adminLocale === 'ko' ? '정지됨' : 'Suspended'}</option><option value="deleted">{adminLocale === 'ko' ? '탈퇴됨' : 'Deleted'}</option></select>
                             </div>
                             <div className="bg-gray-800 rounded-xl border border-gray-700 overflow-x-auto">
-                                <table className="w-full text-sm"><thead><tr className="border-b border-gray-700 text-gray-400 text-xs uppercase"><th className="p-2.5 text-left">이름</th><th className="p-2.5 text-left">이메일/ID</th><th className="p-2.5 text-left">전화번호</th><th className="p-2.5 text-right">캐시</th><th className="p-2.5 text-center">상태</th><th className="p-2.5 text-center">액션</th></tr></thead>
+                                <table className="w-full text-sm"><thead><tr className="border-b border-gray-700 text-gray-400 text-xs uppercase"><th className="p-2.5 text-left">{adminLocale === 'ko' ? '이름' : 'Name'}</th><th className="p-2.5 text-left">{adminLocale === 'ko' ? '이메일/ID' : 'Email/ID'}</th><th className="p-2.5 text-left">{adminLocale === 'ko' ? '전화번호' : 'Phone'}</th><th className="p-2.5 text-right">{adminLocale === 'ko' ? '캐시' : 'Cash'}</th><th className="p-2.5 text-center">{adminLocale === 'ko' ? '상태' : 'Status'}</th><th className="p-2.5 text-center">{adminLocale === 'ko' ? '액션' : 'Actions'}</th></tr></thead>
                                     <tbody>{filteredPros.map(p => (
                                         <tr key={p.pro_id} className={`border-b border-gray-700/50 hover:bg-gray-700/20 cursor-pointer ${(p.status === 'SUSPENDED' || p.status === 'DELETED') ? 'opacity-40' : ''}`}>
-                                            <td className="p-2.5" onClick={() => loadUserDetail(p.pro_id, 'PRO')}><div className="font-semibold text-white hover:text-blue-400 transition">{p.nickname || p.name || '(미설정)'}</div></td>
+                                            <td className="p-2.5" onClick={() => loadUserDetail(p.pro_id, 'PRO')}><div className="font-semibold text-white hover:text-blue-400 transition">{p.nickname || p.name || (adminLocale === 'ko' ? '(미설정)' : '(Not set)')}</div></td>
                                             <td className="p-2.5 text-gray-400 text-xs font-mono" onClick={() => loadUserDetail(p.pro_id, 'PRO')}>{p.email || p.pro_id.slice(0, 12) + '...'}</td>
                                             <td className="p-2.5 text-gray-300 text-xs">{p.phone || '-'}</td>
                                             <td className="p-2.5 text-right">
                                                 <span className="font-bold text-blue-400">₱{fmtNum(p.current_cash)}</span>
                                                 {(p.bonus_cash || 0) > 0 && <span className="text-green-400 text-xs ml-1">(+🎁{fmtNum(p.bonus_cash)})</span>}
                                             </td>
-                                            <td className="p-2.5 text-center"><span className={`text-xs font-bold px-2 py-0.5 rounded-full ${p.status === 'DELETED' ? 'bg-gray-900/50 text-gray-500 line-through' : p.status === 'SUSPENDED' ? 'bg-red-900/50 text-red-300' : 'bg-green-900/50 text-green-300'}`}>{p.status === 'DELETED' ? '삭제됨' : p.status === 'SUSPENDED' ? '정지' : '활성'}</span></td>
+                                            <td className="p-2.5 text-center"><span className={`text-xs font-bold px-2 py-0.5 rounded-full ${p.status === 'DELETED' ? 'bg-gray-900/50 text-gray-500 line-through' : p.status === 'SUSPENDED' ? 'bg-red-900/50 text-red-300' : 'bg-green-900/50 text-green-300'}`}>{p.status === 'DELETED' ? (adminLocale === 'ko' ? '삭제됨' : 'Deleted') : p.status === 'SUSPENDED' ? (adminLocale === 'ko' ? '정지' : 'Suspended') : (adminLocale === 'ko' ? '활성' : 'Active')}</span></td>
                                             <td className="p-2.5 text-center"><div className="flex items-center justify-center gap-1">
                                                 {/* 충전/환불 버튼 — ADMIN 전용 */}
                                                 {adminRole === 'ADMIN' && (<>
-                                                <button onClick={() => { setCashModal({ pro: p, type: 'charge' }); setCashAmount(''); setCashDesc(''); }} disabled={p.status === 'DELETED'} className={`text-xs px-2 py-1 rounded font-bold ${p.status === 'DELETED' ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}>충전</button>
-                                                <button onClick={() => { setCashModal({ pro: p, type: 'refund' }); setCashAmount(''); setCashDesc(''); }} disabled={p.status === 'DELETED'} className={`text-xs px-2 py-1 rounded font-bold ${p.status === 'DELETED' ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-orange-600 hover:bg-orange-700 text-white'}`}>환불</button>
+                                                <button onClick={() => { setCashModal({ pro: p, type: 'charge' }); setCashAmount(''); setCashDesc(''); }} disabled={p.status === 'DELETED'} className={`text-xs px-2 py-1 rounded font-bold ${p.status === 'DELETED' ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}>{adminLocale === 'ko' ? '충전' : 'Top-up'}</button>
+                                                <button onClick={() => { setCashModal({ pro: p, type: 'refund' }); setCashAmount(''); setCashDesc(''); }} disabled={p.status === 'DELETED'} className={`text-xs px-2 py-1 rounded font-bold ${p.status === 'DELETED' ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-orange-600 hover:bg-orange-700 text-white'}`}>{adminLocale === 'ko' ? '환불' : 'Refund'}</button>
                                                 </>)}
                                                 {/* 정지 버튼 — ADMIN, ADMIN_OPERATION 모두 표시 */}
                                                 {(adminRole === 'ADMIN' || adminRole === 'ADMIN_OPERATION') && (
-                                                <button onClick={() => toggleSuspend(p.pro_id, p.status || 'ACTIVE', true)} disabled={p.status === 'DELETED'} className={`text-xs px-2 py-1 rounded font-bold ${p.status === 'DELETED' ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : p.status === 'SUSPENDED' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}>{p.status === 'SUSPENDED' ? '해제' : '정지'}</button>
+                                                <button onClick={() => toggleSuspend(p.pro_id, p.status || 'ACTIVE', true)} disabled={p.status === 'DELETED'} className={`text-xs px-2 py-1 rounded font-bold ${p.status === 'DELETED' ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : p.status === 'SUSPENDED' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}>{p.status === 'SUSPENDED' ? (adminLocale === 'ko' ? '해제' : 'Unsuspend') : (adminLocale === 'ko' ? '정지' : 'Suspend')}</button>
                                                 )}
                                                 {/* [운영정책] 삭제 버튼 비활성화 — 데이터 무결성 보호 (정지 기능으로 대체 운영) */}
                                             </div></td>
                                         </tr>
-                                    ))}{filteredPros.length === 0 && <tr><td colSpan={6} className="p-6 text-center text-gray-500">결과 없음</td></tr>}</tbody></table>
+                                    ))}{filteredPros.length === 0 && <tr><td colSpan={6} className="p-6 text-center text-gray-500">{adminLocale === 'ko' ? '결과 없음' : 'No results'}</td></tr>}</tbody></table>
                             </div>
-                            <p className="text-xs text-gray-600 mt-2">{filteredPros.length}명 / 전체 {pros.length}명</p>
+                            <p className="text-xs text-gray-600 mt-2">{adminLocale === 'ko' ? `${filteredPros.length}명 / 전체 ${pros.length}명` : `${filteredPros.length} / ${pros.length} total`}</p>
                         </>)}
 
                         {/* ═══ CUSTOMER MANAGEMENT ═══ */}
                         {tab === 'customer' && (<>
-                            <h1 className="text-2xl font-black mb-4">👥 고객 관리</h1>
-                            <input type="text" value={custSearch} onChange={e => setCustSearch(e.target.value)} placeholder="이름 / 활동명 / 이메일 / 전화번호 검색..." className="w-full sm:w-96 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4" />
+                            <h1 className="text-2xl font-black mb-4">{adminLocale === 'ko' ? '👥 고객 관리' : '👥 Customer Management'}</h1>
+                            <input type="text" value={custSearch} onChange={e => setCustSearch(e.target.value)} placeholder={adminLocale === 'ko' ? '이름 / 활동명 / 이메일 / 전화번호 검색...' : 'Search name / nickname / email / phone...'} className="w-full sm:w-96 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4" />
                             <div className="bg-gray-800 rounded-xl border border-gray-700 overflow-x-auto">
-                                <table className="w-full text-sm"><thead><tr className="border-b border-gray-700 text-gray-400 text-xs uppercase"><th className="p-2.5 text-left">이름</th><th className="p-2.5 text-left">이메일</th><th className="p-2.5 text-left">전화번호</th><th className="p-2.5 text-center">가입일</th><th className="p-2.5 text-center">상태</th><th className="p-2.5 text-center">액션</th></tr></thead>
+                                <table className="w-full text-sm"><thead><tr className="border-b border-gray-700 text-gray-400 text-xs uppercase"><th className="p-2.5 text-left">{adminLocale === 'ko' ? '이름' : 'Name'}</th><th className="p-2.5 text-left">{adminLocale === 'ko' ? '이메일' : 'Email'}</th><th className="p-2.5 text-left">{adminLocale === 'ko' ? '전화번호' : 'Phone'}</th><th className="p-2.5 text-center">{adminLocale === 'ko' ? '가입일' : 'Joined'}</th><th className="p-2.5 text-center">{adminLocale === 'ko' ? '상태' : 'Status'}</th><th className="p-2.5 text-center">{adminLocale === 'ko' ? '액션' : 'Actions'}</th></tr></thead>
                                     <tbody>{filteredCustomers.map(c => (
                                         <tr key={c.user_id} className={`border-b border-gray-700/50 hover:bg-gray-700/20 cursor-pointer ${(c.status === 'SUSPENDED' || c.status === 'DELETED') ? 'opacity-40' : ''}`}>
-                                            <td className="p-2.5" onClick={() => loadUserDetail(c.user_id, 'CUSTOMER')}><div className="font-semibold text-white hover:text-blue-400">{c.nickname || c.name || '(미설정)'}</div><div className="text-xs text-gray-500 font-mono">{c.user_id.slice(0, 12)}...</div></td>
+                                            <td className="p-2.5" onClick={() => loadUserDetail(c.user_id, 'CUSTOMER')}><div className="font-semibold text-white hover:text-blue-400">{c.nickname || c.name || (adminLocale === 'ko' ? '(미설정)' : '(Not set)')}</div><div className="text-xs text-gray-500 font-mono">{c.user_id.slice(0, 12)}...</div></td>
                                             <td className="p-2.5 text-gray-400 text-xs">{c.email || '-'}</td>
                                             <td className="p-2.5 text-gray-300 text-sm">{c.phone || '-'}</td>
                                             <td className="p-2.5 text-center text-gray-400 text-xs">{c.created_at ? fmtDate(c.created_at) : '-'}</td>
-                                            <td className="p-2.5 text-center"><span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.status === 'DELETED' ? 'bg-gray-900/50 text-gray-500 line-through' : c.status === 'SUSPENDED' ? 'bg-red-900/50 text-red-300' : 'bg-green-900/50 text-green-300'}`}>{c.status === 'DELETED' ? '삭제됨' : c.status === 'SUSPENDED' ? '정지' : '활성'}</span></td>
+                                            <td className="p-2.5 text-center"><span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.status === 'DELETED' ? 'bg-gray-900/50 text-gray-500 line-through' : c.status === 'SUSPENDED' ? 'bg-red-900/50 text-red-300' : 'bg-green-900/50 text-green-300'}`}>{c.status === 'DELETED' ? (adminLocale === 'ko' ? '삭제됨' : 'Deleted') : c.status === 'SUSPENDED' ? (adminLocale === 'ko' ? '정지' : 'Suspended') : (adminLocale === 'ko' ? '활성' : 'Active')}</span></td>
                                             <td className="p-2.5 text-center">
                                                 {/* 정지 버튼 — ADMIN, ADMIN_OPERATION 모두 표시 */}
                                                 {(adminRole === 'ADMIN' || adminRole === 'ADMIN_OPERATION') && (
-                                                <button onClick={() => toggleSuspend(c.user_id, c.status || 'ACTIVE', false)} className={`text-xs px-3 py-1 rounded font-bold ${c.status === 'SUSPENDED' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}>{c.status === 'SUSPENDED' ? '해제' : '정지'}</button>
+                                                <button onClick={() => toggleSuspend(c.user_id, c.status || 'ACTIVE', false)} className={`text-xs px-3 py-1 rounded font-bold ${c.status === 'SUSPENDED' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}>{c.status === 'SUSPENDED' ? (adminLocale === 'ko' ? '해제' : 'Unsuspend') : (adminLocale === 'ko' ? '정지' : 'Suspend')}</button>
                                                 )}
                                                 {/* [운영정책] 삭제 버튼 비활성화 — 데이터 무결성 보호 (정지 기능으로 대체 운영) */}
                                             </td>
                                         </tr>
-                                    ))}{filteredCustomers.length === 0 && <tr><td colSpan={6} className="p-6 text-center text-gray-500">결과 없음</td></tr>}</tbody></table>
+                                    ))}{filteredCustomers.length === 0 && <tr><td colSpan={6} className="p-6 text-center text-gray-500">{adminLocale === 'ko' ? '결과 없음' : 'No results'}</td></tr>}</tbody></table>
                             </div>
-                            <p className="text-xs text-gray-600 mt-2">{filteredCustomers.length}명 / 전체 {customers.length}명</p>
+                            <p className="text-xs text-gray-600 mt-2">{adminLocale === 'ko' ? `${filteredCustomers.length}명 / 전체 ${customers.length}명` : `${filteredCustomers.length} / ${customers.length} total`}</p>
                         </>)}
 
                         {/* ═══ ADMIN MANAGEMENT ═══ */}
                         {tab === 'admin_mgmt' && (<>
-                            <h1 className="text-2xl font-black mb-4">🛡️ 관리자 관리</h1>
+                            <h1 className="text-2xl font-black mb-4">{adminLocale === 'ko' ? '🛡️ 관리자 관리' : '🛡️ Admin Management'}</h1>
 
                             {/* ── 신규 관리자 승급 섹션 ── */}
                             <div className="bg-gray-800 border border-gray-700 rounded-xl p-4 mb-6">
-                                <h2 className="text-sm font-bold text-gray-300 mb-3">➕ 신규 관리자 승급</h2>
+                                <h2 className="text-sm font-bold text-gray-300 mb-3">{adminLocale === 'ko' ? '➕ 신규 관리자 승급' : '➕ Promote New Admin'}</h2>
                                 <div className="flex flex-wrap gap-2 items-center">
                                     <input
                                         type="email"
                                         value={promoteEmail}
                                         onChange={e => setPromoteEmail(e.target.value)}
-                                        placeholder="승급할 계정 이메일 입력"
+                                        placeholder={adminLocale === 'ko' ? '승급할 계정 이메일 입력' : 'Enter email to promote'}
                                         className="bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 w-72"
                                     />
                                     <select
@@ -2929,73 +2960,73 @@ function AdminDashboardPageContent() {
                                         onChange={e => setPromoteRole(e.target.value as 'ADMIN_OPERATION' | 'ADMIN_VIEWER')}
                                         className="bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     >
-                                        <option value="ADMIN_OPERATION">🔧 운영 관리자 (ADMIN_OPERATION)</option>
-                                        <option value="ADMIN_VIEWER">📊 뷰어 (ADMIN_VIEWER)</option>
+                                        <option value="ADMIN_OPERATION">{adminLocale === 'ko' ? '🔧 운영 관리자 (ADMIN_OPERATION)' : '🔧 Operations Admin (ADMIN_OPERATION)'}</option>
+                                        <option value="ADMIN_VIEWER">{adminLocale === 'ko' ? '📊 뷰어 (ADMIN_VIEWER)' : '📊 Viewer (ADMIN_VIEWER)'}</option>
                                     </select>
                                     <button
                                         onClick={handlePromoteAdmin}
                                         disabled={promoting}
                                         className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:text-gray-500 text-white text-sm font-bold px-4 py-2 rounded-lg transition"
                                     >
-                                        {promoting ? '처리 중...' : '승급'}
+                                        {promoting ? (adminLocale === 'ko' ? '처리 중...' : 'Processing...') : (adminLocale === 'ko' ? '승급' : 'Promote')}
                                     </button>
                                 </div>
-                                <p className="text-xs text-gray-500 mt-2">※ ADMIN(최고 관리자) 등급은 이 화면에서 부여할 수 없습니다.</p>
+                                <p className="text-xs text-gray-500 mt-2">{adminLocale === 'ko' ? '※ ADMIN(최고 관리자) 등급은 이 화면에서 부여할 수 없습니다.' : '※ ADMIN (Super Admin) role cannot be granted from this screen.'}</p>
                             </div>
 
                             {/* ── 관리자 목록 ── */}
                             <div className="bg-gray-800 rounded-xl border border-gray-700 overflow-x-auto">
                                 <table className="w-full text-sm">
                                     <thead><tr className="border-b border-gray-700 text-gray-400 text-xs uppercase">
-                                        <th className="p-2.5 text-left">이름</th>
-                                        <th className="p-2.5 text-left">이메일</th>
-                                        <th className="p-2.5 text-center">등급</th>
-                                        <th className="p-2.5 text-center">가입일</th>
-                                        <th className="p-2.5 text-center">상태</th>
-                                        <th className="p-2.5 text-center">액션</th>
+                                        <th className="p-2.5 text-left">{adminLocale === 'ko' ? '이름' : 'Name'}</th>
+                                        <th className="p-2.5 text-left">{adminLocale === 'ko' ? '이메일' : 'Email'}</th>
+                                        <th className="p-2.5 text-center">{adminLocale === 'ko' ? '등급' : 'Role'}</th>
+                                        <th className="p-2.5 text-center">{adminLocale === 'ko' ? '가입일' : 'Joined'}</th>
+                                        <th className="p-2.5 text-center">{adminLocale === 'ko' ? '상태' : 'Status'}</th>
+                                        <th className="p-2.5 text-center">{adminLocale === 'ko' ? '액션' : 'Actions'}</th>
                                     </tr></thead>
                                     <tbody>{admins.map(a => (
                                         <tr key={a.user_id} className="border-b border-gray-700/50 hover:bg-gray-700/20">
-                                            <td className="p-2.5"><div className="font-semibold text-white">{a.nickname || a.name || '(미설정)'}</div><div className="text-xs text-gray-500 font-mono">{a.user_id.slice(0, 12)}...</div></td>
+                                            <td className="p-2.5"><div className="font-semibold text-white">{a.nickname || a.name || (adminLocale === 'ko' ? '(미설정)' : '(Not set)')}</div><div className="text-xs text-gray-500 font-mono">{a.user_id.slice(0, 12)}...</div></td>
                                             <td className="p-2.5 text-gray-400 text-xs">{a.email || '-'}</td>
                                             <td className="p-2.5 text-center">
-                                                {a.role === 'ADMIN' && <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-yellow-900/50 text-yellow-300">👑 최고 관리자</span>}
-                                                {a.role === 'ADMIN_OPERATION' && <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-blue-900/50 text-blue-300">🔧 운영 관리자</span>}
-                                                {a.role === 'ADMIN_VIEWER' && <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-gray-700/50 text-gray-300">📊 뷰어</span>}
+                                                {a.role === 'ADMIN' && <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-yellow-900/50 text-yellow-300">{adminLocale === 'ko' ? '👑 최고 관리자' : '👑 Super Admin'}</span>}
+                                                {a.role === 'ADMIN_OPERATION' && <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-blue-900/50 text-blue-300">{adminLocale === 'ko' ? '🔧 운영 관리자' : '🔧 Ops Admin'}</span>}
+                                                {a.role === 'ADMIN_VIEWER' && <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-gray-700/50 text-gray-300">{adminLocale === 'ko' ? '📊 뷰어' : '📊 Viewer'}</span>}
                                             </td>
                                             <td className="p-2.5 text-center text-gray-400 text-xs">{a.created_at ? fmtDate(a.created_at) : '-'}</td>
-                                            <td className="p-2.5 text-center"><span className={`text-xs font-bold px-2 py-0.5 rounded-full ${a.status === 'SUSPENDED' ? 'bg-red-900/50 text-red-300' : 'bg-green-900/50 text-green-300'}`}>{a.status === 'SUSPENDED' ? '정지' : '활성'}</span></td>
+                                            <td className="p-2.5 text-center"><span className={`text-xs font-bold px-2 py-0.5 rounded-full ${a.status === 'SUSPENDED' ? 'bg-red-900/50 text-red-300' : 'bg-green-900/50 text-green-300'}`}>{a.status === 'SUSPENDED' ? (adminLocale === 'ko' ? '정지' : 'Suspended') : (adminLocale === 'ko' ? '활성' : 'Active')}</span></td>
                                             <td className="p-2.5 text-center">
                                                 {/* 본인 계정 및 ADMIN 등급은 회수 불가 */}
                                                 {a.user_id !== adminId && a.role !== 'ADMIN' && (
                                                     <button
                                                         onClick={() => setModal({
                                                             type: 'confirm',
-                                                            title: '권한 회수',
-                                                            message: '권한을 회수하면 해당 계정이 즉시 정지됩니다.\n계속하시겠습니까?',
+                                                            title: adminLocale === 'ko' ? '권한 회수' : 'Revoke Admin',
+                                                            message: adminLocale === 'ko' ? '권한을 회수하면 해당 계정이 즉시 정지됩니다.\n계속하시겠습니까?' : 'Revoking admin will immediately suspend the account.\nContinue?',
                                                             onConfirm: () => handleRevokeAdmin(a.user_id, a.email),
                                                         })}
                                                         disabled={revokeLoading === a.user_id}
                                                         className="text-xs px-2 py-1 rounded font-bold bg-red-900/50 text-red-300 hover:bg-red-700 hover:text-white disabled:opacity-50 transition"
                                                     >
-                                                        {revokeLoading === a.user_id ? '처리 중...' : '권한 회수'}
+                                                        {revokeLoading === a.user_id ? (adminLocale === 'ko' ? '처리 중...' : 'Processing...') : (adminLocale === 'ko' ? '권한 회수' : 'Revoke')}
                                                     </button>
                                                 )}
                                             </td>
                                         </tr>
-                                    ))}{admins.length === 0 && <tr><td colSpan={6} className="p-6 text-center text-gray-500">관리자 없음</td></tr>}</tbody>
+                                    ))}{admins.length === 0 && <tr><td colSpan={6} className="p-6 text-center text-gray-500">{adminLocale === 'ko' ? '관리자 없음' : 'No admins'}</td></tr>}</tbody>
                                 </table>
                             </div>
-                            <p className="text-xs text-gray-600 mt-2">{admins.length}명</p>
+                            <p className="text-xs text-gray-600 mt-2">{admins.length}{adminLocale === 'ko' ? '명' : ''}</p>
                         </>)}
 
                         {/* ═══ QUOTES/MATCHING ═══ */}
                         {tab === 'quotes' && (<>
                             {selectedRequest ? (
                                 <div>
-                                    <button onClick={() => setSelectedRequest(null)} className="text-sm text-gray-400 hover:text-white mb-4 flex items-center gap-1">← 요청 목록</button>
+                                    <button onClick={() => setSelectedRequest(null)} className="text-sm text-gray-400 hover:text-white mb-4 flex items-center gap-1">{adminLocale === 'ko' ? '← 요청 목록' : '← Request List'}</button>
 
-                                    <h1 className="text-2xl font-black mb-6 text-yellow-400">🚨 CS 관제탑 (Control Tower)</h1>
+                                    <h1 className="text-2xl font-black mb-6 text-yellow-400">{adminLocale === 'ko' ? '🚨 CS 관제탑 (Control Tower)' : '🚨 CS Control Tower'}</h1>
 
                                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                                         {/* 기본 요청 정보 */}
@@ -3007,12 +3038,12 @@ function AdminDashboardPageContent() {
                                                 </div>
                                                 <span className={`text-xs font-bold px-3 py-1.5 rounded-full ${statusColor(selectedRequest.status)}`}>{statusLabel(selectedRequest.status)}</span>
                                             </div>
-                                            <p className="text-xs text-gray-500">생성: {fmtDate(selectedRequest.created_at)}</p>
+                                            <p className="text-xs text-gray-500">{adminLocale === 'ko' ? '생성' : 'Created'}: {fmtDate(selectedRequest.created_at, adminLocale)}</p>
 
                                             {/* 고객 요청 상세 답변 */}
                                             {selectedRequest.dynamic_answers && typeof selectedRequest.dynamic_answers === 'object' && Object.keys(selectedRequest.dynamic_answers).length > 0 && (
                                                 <div className="mt-4 pt-4 border-t border-gray-700">
-                                                    <h4 className="text-xs font-bold text-gray-400 mb-2">📋 고객 요청 상세 내용</h4>
+                                                    <h4 className="text-xs font-bold text-gray-400 mb-2">{adminLocale === 'ko' ? '📋 고객 요청 상세 내용' : '📋 Customer Request Details'}</h4>
                                                     <div className="space-y-1.5">
                                                         {(() => {
                                                             const ORDERED_KEYS = [
@@ -3081,178 +3112,178 @@ function AdminDashboardPageContent() {
                                                                 'details'
                                                             ];
                                                             const labelMap: Record<string, string> = {
-                                                                service_type: '상세 서비스', merged_region: '서비스를 받으실 지역',
-                                                                move_type: '이사 서비스 종류', move_date: '이사 날짜',
-                                                                from_region: '출발 지역', from_floor: '출발지 층수', from_size: '출발지 면적 / 인원', from_elevator: '출발지 현장 상황',
-                                                                appliances: '이전 가전', furniture: '이전 가구', images: '첨부 사진',
-                                                                to_region: '도착 지역', to_floor: '도착지 층수', to_elevator: '도착지 현장 상황',
-                                                                house_type: '주거 형태 및 크기', service_frequency: '서비스 주기',
-                                                                extra_services: '추가 서비스', cleaning_supplies: '청소 도구/세제 준비', has_pets: '반려동물 여부',
-                                                                visit_timing: '희망 방문 시기', care_schedule: '돌봄 시간대 및 형태',
-                                                                children_info: '아이 인원 및 나이', language_pref: '선호 소통 언어',
-                                                                extra_tasks: '추가 업무', child_health_note: '아이 건강 특이사항',
-                                                                meal_headcount: '식사 인원', meal_time: '요리 시간대/목적',
-                                                                cuisine_style: '요리 스타일', grocery_needed: '식재료 장보기 대행', allergy_note: '알레르기/피해야 할 식재료',
-                                                                deep_clean_type: '딥클리닝 종류', house_size: '집 규모 및 형태',
-                                                                furnished_status: '가구/가전 입주 상태', utilities_status: '전기/수도 사용 여부', special_options: '추가 특수 방역/청소 옵션',
-                                                                cleaning_cycle: '청소 서비스 주기', focus_areas: '집중 청소 구역',
-                                                                pool_type: '수영장 종류 및 규모', pool_condition: '수질 상태',
-                                                                chemicals_supply: '약품 준비 방법', extra_repair: '추가 점검/수리 설비',
-                                                                clean_items: '딥클리닝 대상 품목', item_size_qty: '품목 크기 및 수량',
-                                                                material_type: '제품 소재', stain_issues: '오염/문제 종류',
-                                                                ac_quantity: '에어컨 수량', ac_size: '에어컨 마력(HP)',
-                                                                ac_symptoms: '에어컨 증상', ac_height: '에어컨 설치 높이',
-                                                                ac_clean_date: '청소/점검 희망 날짜', visit_time: '희망 방문 시간대',
-                                                                outdoor_unit_location: '실외기 위치', indoor_unit_access: '실내기 하단 공간',
-                                                                work_time: '작업 시간대', ac_types: '에어컨 종류', ceiling_height: '천장 층고',
-                                                                visit_date: '방문 희망 날짜', building_type: '건물 형태',
-                                                                damage_status: '흰개미 피해 상황', area_size: '공간 면적',
-                                                                treatment_method: '흰개미 퇴치 방식', children_pets: '어린아이/반려동물 여부',
-                                                                pest_types: '퇴치 대상 해충',
-                                                                problem_types: '주요 문제 종류', problem_locations: '문제 발생 위치', mold_severity: '곰팡이 피해 심각도',
-                                                                pickup_date: '수거 희망 날짜', waste_items: '폐기 품목',
-                                                                waste_volume: '폐기물 양(부피)', floor_access: '층수 및 엘리베이터 여부', disassembly_needed: '분해 작업 필요 여부',
-                                                                leak_problems: '누수/배관 문제', leak_locations: '문제 발생 위치',
-                                                                main_valve_status: '메인 수도 밸브 상태',
-                                                                equipment_types: '점검 대상 장비', pump_symptoms: '워터펌프 증상',
-                                                                pump_hp: '워터펌프 마력(HP)', pump_location: '워터펌프/물탱크 위치',
-                                                                clog_locations: '막힘 발생 위치', clog_severity: '막힘 심각도',
-                                                                prior_attempts: '직접 시도한 방법', clog_cause: '이물질 원인',
-                                                                service_type_wh: '온수기 서비스 종류', heater_type: '온수기 종류',
-                                                                heater_symptoms: '온수기 증상', electrical_ready: '전선/차단기 준비 상태',
-                                                                electrical_symptoms: '전기 증상', outage_scope: '정전 범위', panel_board_access: '메인 분전함 위치',
-                                                                service_type_gen: '발전기 서비스 종류', fuel_type: '발전기 연료 타입',
-                                                                gen_capacity: '발전기 용량(kVA)', gen_symptoms: '발전기 증상',
-                                                                work_types: '작업 종류', ceiling_type: '천장 형태 및 높이',
-                                                                materials_ready: '조명/자재 준비 여부', wiring_condition: '벽/천장 배선 상태',
-                                                                service_type_solar: '태양광 서비스 종류', system_type: '태양광 시스템 방식',
-                                                                system_capacity: '태양광 시스템 용량', roof_type: '지붕 형태',
-                                                                ac_hp: '에어컨 마력(HP)', appliance_type: '수리 대상 가전',
-                                                                appliance_symptoms: '가전 증상', appliance_brand: '가전 브랜드', appliance_age: '가전 사용 기간',
-                                                                tv_size: 'TV 크기', install_type: '설치 방식',
-                                                                bracket_ready: '브라켓 보유 여부', wall_type: '벽 재질',
-                                                                service_type_cctv: 'CCTV 서비스 종류', camera_count: '카메라 설치 대수',
-                                                                install_location: '설치 장소 형태', wifi_available: '인터넷(Wi-Fi) 연결 여부',
-                                                                screen_locations: '방충망 시공 위치', screen_qty: '방충망 시공 수량',
-                                                                screen_material: '방충망 재질/기능', screen_frame_status: '창문/틀 상태',
-                                                                lock_service_type: '열쇠/도어락 서비스 종류', door_material: '문 재질',
-                                                                lock_type_new: '자물쇠 종류', lock_product_supply: '제품 준비 방법',
-                                                                furniture_types: '조립 가구 종류', furniture_brand: '가구 브랜드/구매처',
-                                                                furniture_qty: '가구 수량 및 규모', wall_mount_needed: '벽 고정 작업 필요 여부',
-                                                                gas_service_type: 'LPG 서비스 종류', gas_brand: '가스통 브랜드',
-                                                                gas_capacity: '가스통 용량', empty_cylinder: '빈 가스통 보유 여부', gas_symptoms: '가스 증상/문제',
-                                                                remodel_scope: '리모델링 범위', remodel_start: '공사 시작 시기',
-                                                                permit_status: '공사 허가 상태', material_supply: '자재 수급 방식',
-                                                                site_infra: '현장 인프라 상태', remodel_budget: '총 공사 예산',
-                                                                interior_scope: '인테리어 범위', unit_condition: '유닛 상태',
-                                                                condo_permit_status: '콘도 공사 허가 상태', work_schedule: '작업 가능 시간대',
-                                                                interior_supply: '자재 수급 방식', interior_budget: '인테리어 예산',
-                                                                commercial_space_type: '상업 공간 종류', commercial_unit_condition: '매장 상태',
-                                                                commercial_permit_status: '공사 허가 상태', admin_requirements: '행정/안전 요건',
-                                                                design_status: '디자인 도면 보유 여부', commercial_budget: '인테리어 예산',
-                                                                commercial_start: '공사 시작 시기',
-                                                                tile_spaces: '시공 공간', floor_material: '바닥재 종류',
-                                                                floor_condition: '현재 바닥 상태', tile_material_supply: '자재 준비 방식',
-                                                                tile_permit_status: '공사 허가 상태', tile_site_access: '현장 반입 환경',
-                                                                tile_area_sqm: '시공 면적', tile_work_schedule: '작업 가능 시간대',
-                                                                paint_scope: '페인트 시공 범위', paint_site_condition: '현장 상태',
-                                                                wall_condition: '벽면 상태 및 사전 작업', paint_material_supply: '페인트 자재 준비',
-                                                                paint_permit_status: '공사 허가 상태', floor_height: '층수/층고',
-                                                                paint_work_schedule: '작업 가능 시간대',
-                                                                carpentry_work_types: '목공 작업 종류', carpentry_material: '자재 및 마감 방식',
-                                                                design_doc: '도면 보유 여부', carpentry_site_condition: '작업 장소 상태',
-                                                                carpentry_permit_status: '공사 허가 상태', carpentry_work_schedule: '작업 가능 시간대',
-                                                                drywall_purpose: '시공 목적', insulation_needed: '방음/단열 필요 여부',
-                                                                ceiling_height_drywall: '층고', finish_level: '마감 단계',
-                                                                drywall_permit_status: '공사 허가 상태', drywall_material_supply: '자재 준비 방식',
-                                                                drywall_work_schedule: '작업 가능 시간대',
-                                                                roofing_work_types: '지붕 공사 종류', roof_problem_status: '문제 상황',
-                                                                roof_material: '지붕/바닥 재질', roof_access: '층수 및 접근성',
-                                                                roof_permit_status: '공사 허가 상태', roof_work_schedule: '작업 가능 시간대',
-                                                                landscaping_work_types: '조경/정원 관리 작업 종류', garden_condition: '정원 현재 상태',
-                                                                garden_area_sqm: '정원 면적', garden_infra: '현장 인프라 (수도/전기)',
-                                                                garden_material_supply: '자재/식물 준비 방식', garden_permit_status: '공사 허가 상태',
-                                                                garden_work_schedule: '작업 가능 시간대',
-                                                                signage_types: '간판/작업 종류', signage_location: '간판 설치 위치 및 높이',
-                                                                signage_design_status: '디자인 시안 준비 여부', signage_power: '전기 공급 여부',
-                                                                signage_permit_status: '관할 허가 상태', signage_size: '간판 크기',
-                                                                signage_work_schedule: '작업 가능 시간대',
-                                                                deck_fence_types: '시공 항목', deck_material: '주요 자재',
-                                                                deck_ground_condition: '지면/기존 구조물 상태', deck_material_supply: '자재 준비 방식',
-                                                                deck_permit_status: '공사 허가 상태', deck_size: '시공 면적 및 길이',
-                                                                deck_work_schedule: '작업 가능 시간대',
-                                                                va_tasks: '주요 업무', va_english_level: '영어 능통 수준',
-                                                                va_work_schedule: '근무 형태 및 시간대', va_tools: '필수 소프트웨어/툴',
-                                                                va_wfh_infra: '재택근무 인프라 요건', va_budget: '월간 예산/급여 수준',
-                                                                va_start_date: '업무 시작 희망 날짜',
-                                                                cs_channels: 'CS 지원 채널', cs_languages: '지원 언어',
-                                                                cs_agent_count: '상담원 규모', cs_coverage: '서비스 제공 시간대',
-                                                                cs_infra: '인프라 및 운영 방식', cs_ticket_volume: '월간 콜/티켓 볼륨',
-                                                                cs_start_date: '프로젝트 시작 희망일',
-                                                                tm_campaign_goal: '캠페인 주요 목적', tm_target_country: '타겟 고객 국가',
-                                                                tm_script_db: '콜 리스트/스크립트 준비 여부', tm_payment_type: '보상 및 지불 방식',
-                                                                tm_dialer: '다이얼러 시스템 준비 방식', tm_agent_count: '투입 인원 규모',
-                                                                tm_start_date: '캠페인 시작 희망일',
-                                                                bizreg_entity_type: '사업체 형태', bizreg_foreign_ownership: '외국인 지분율',
-                                                                bizreg_scope: '대행 업무 범위', bizreg_address_status: '사업장 주소지 확보 여부',
-                                                                bizreg_capital: '예상 자본금 규모', bizreg_start_date: '대행 업무 시작 희망일',
-                                                                tax_service_types: '세무 서비스 종류', tax_vat_status: 'BIR 납세자 형태',
-                                                                tax_transaction_volume: '월 평균 거래 건수', tax_bir_status: 'BIR 등록 상태',
-                                                                tax_accounting_system: '회계/POS 시스템', tax_start_date: '서비스 시작 희망 날짜',
-                                                                visa_service_types: '비자/이민 서류 업무 종류', visa_headcount: '수속 대상자 인원',
-                                                                visa_stay_status: '현재 체류 상태', visa_sponsor_docs: '스폰서 법인 서류 상태',
-                                                                visa_new_or_renewal: '신규/갱신 여부', visa_start_date: '서류 접수 대행 시작 희망일',
-                                                                permit_types: '인허가/면허 종류', permit_current_status: '인허가 진행 상태',
-                                                                permit_biz_docs: '기본 사업 서류 구비 상태', permit_item_count: '대상 물품/사업장 수',
-                                                                permit_inspection_ready: '실사 준비 여부', permit_start_date: '대행 업무 시작 희망일',
-                                                                tl_service_types: '통번역 서비스 종류', tl_field: '통번역 분야/문맥',
-                                                                tl_doc_volume: '번역 분량', tl_interp_duration: '통역 소요 시간',
-                                                                tl_notarization: '공증/확인서 필요 여부', tl_location: '통역 장소 형태',
-                                                                tl_start_date: '희망 날짜',
-                                                                vi_service_types: '통번역 서비스 종류', vi_dialect: '비사야어 방언',
-                                                                vi_field: '통번역 분야/문맥', vi_doc_volume: '번역 분량',
-                                                                vi_interp_duration: '통역 소요 시간', vi_location: '통역 장소 형태',
-                                                                vi_start_date: '희망 날짜',
-                                                                en_service_types: '통번역 서비스 종류', en_field: '전문 분야',
-                                                                en_target_country: '타겟 국가/문맥', en_doc_volume: '번역 분량',
-                                                                en_interp_duration: '통역 소요 시간', en_apostille: '공증/아포스티유 필요 여부',
-                                                                en_start_date: '희망 날짜',
-                                                                ml_language_pair: '언어 쌍', ml_service_types: '통번역 서비스 종류',
-                                                                ml_field: '통번역 분야/문맥', ml_doc_volume: '번역 분량',
-                                                                ml_interp_duration: '통역 소요 시간', ml_location: '장소/제출처',
-                                                                ml_start_date: '희망 날짜',
-                                                                gd_work_types: '디자인 작업 종류', gd_reference_status: '기획/레퍼런스 보유 상태',
-                                                                gd_usage_purpose: '결과물 활용 목적', gd_source_files: '원본 파일/저작권 양도 여부',
-                                                                gd_meeting_type: '소통 방식', gd_start_date: '납품 희망 날짜',
-                                                                wd_platform_types: '개발 플랫폼 종류', wd_project_stage: '프로젝트 준비 단계',
-                                                                wd_local_integration: '현지 결제/물류 연동', wd_hosting_status: '서버/도메인 준비 상태',
-                                                                wd_budget: '프로젝트 예산', wd_start_date: '프로젝트 시작 희망일',
-                                                                ve_platform_purpose: '영상 활용 플랫폼/목적', ve_footage_status: '원본 소스 상태',
-                                                                ve_video_length: '완성본 길이', ve_edit_elements: '필수 편집 요소',
-                                                                ve_work_style: '작업 및 소통 방식', ve_start_date: '납품 희망 날짜',
-                                                                sns_platforms: '타겟 플랫폼', sns_target_audience: '타겟 고객층',
-                                                                sns_work_scope: '업무 범위', sns_ads_budget_type: '광고비 처리 방식',
-                                                                sns_page_status: '페이지 활성화 상태', sns_start_date: '대행 시작 희망일',
-                                                                debut_theme: '파티 컨셉/테마', debut_scope: '서비스 범위',
-                                                                debut_guest_count: '예상 하객 수', debut_venue_status: '베뉴 섭외 상태',
-                                                                debut_catering_rules: '케이터링/레촌 반입 규정', debut_budget: '총 예상 예산',
-                                                                debut_date: '행사 예정일',
-                                                                ch_scope: '기획 범위', ch_guest_count: '하객 규모',
-                                                                ch_church_status: '성당/교회 예약 상태', ch_reception_venue: '리셉션 장소 형태',
-                                                                ch_catering_style: '케이터링 스타일', ch_date: '행사 예정일',
-                                                                bday_party_type: '파티 종류', bday_scope: '기획 범위',
-                                                                bday_guest_count: '예상 하객 수', bday_venue_status: '베뉴 섭외 상태',
-                                                                bday_vendor_rules: '외부 업체 반입 규정', bday_budget: '총 예상 예산',
-                                                                bday_date: '파티 예정일',
-                                                                wed_service_scope: '플래닝 서비스 범위', wed_venue_type: '웨딩 형태 및 베뉴',
-                                                                wed_guest_count: '하객 규모', wed_booked_items: '예약 완료 항목',
-                                                                wed_logistics: '날씨/이동 대비', wed_budget: '총 예상 예산',
-                                                                wed_date: '예식 예정일',
-                                                                corp_event_types: '행사 종류', corp_headcount: '예상 참여 인원',
-                                                                corp_work_scope: '업무 범위', corp_venue_status: '베뉴 준비 상태',
-                                                                corp_billing_req: '결제/행정 요건', corp_setup_timing: '셋업 가능 시간',
-                                                                corp_date: '행사 예정일',
-                                                                details: '추가 요청사항 / 특이사항',
+                                                                service_type: 'Detailed Service', merged_region: 'Service Area',
+                                                                move_type: 'Moving Service Type', move_date: 'Moving Date',
+                                                                from_region: 'Origin Area', from_floor: 'Origin Floor', from_size: 'Origin Size / Headcount', from_elevator: 'Origin Site Conditions',
+                                                                appliances: 'Appliances to Move', furniture: 'Furniture to Move', images: 'Attached Photos',
+                                                                to_region: 'Destination Area', to_floor: 'Destination Floor', to_elevator: 'Destination Site Conditions',
+                                                                house_type: 'Housing Type & Size', service_frequency: 'Service Frequency',
+                                                                extra_services: 'Additional Services', cleaning_supplies: 'Cleaning Supplies Ready', has_pets: 'Pets in Home',
+                                                                visit_timing: 'Preferred Visit Time', care_schedule: 'Care Schedule & Format',
+                                                                children_info: 'Children Count & Age', language_pref: 'Preferred Language',
+                                                                extra_tasks: 'Additional Tasks', child_health_note: 'Child Health Notes',
+                                                                meal_headcount: 'Number of Diners', meal_time: 'Cooking Time / Purpose',
+                                                                cuisine_style: 'Cuisine Style', grocery_needed: 'Grocery Shopping Needed', allergy_note: 'Allergies / Dietary Restrictions',
+                                                                deep_clean_type: 'Deep Cleaning Type', house_size: 'House Size & Type',
+                                                                furnished_status: 'Furniture/Appliance Status', utilities_status: 'Electricity/Water Available', special_options: 'Special Cleaning Options',
+                                                                cleaning_cycle: 'Cleaning Frequency', focus_areas: 'Focus Cleaning Areas',
+                                                                pool_type: 'Pool Type & Size', pool_condition: 'Water Quality',
+                                                                chemicals_supply: 'Chemical Supply Method', extra_repair: 'Additional Equipment Check',
+                                                                clean_items: 'Deep Cleaning Items', item_size_qty: 'Item Size & Quantity',
+                                                                material_type: 'Material Type', stain_issues: 'Stain / Issue Type',
+                                                                ac_quantity: 'AC Quantity', ac_size: 'AC Horsepower (HP)',
+                                                                ac_symptoms: 'AC Symptoms', ac_height: 'AC Installation Height',
+                                                                ac_clean_date: 'Preferred Cleaning Date', visit_time: 'Preferred Visit Time',
+                                                                outdoor_unit_location: 'Outdoor Unit Location', indoor_unit_access: 'Indoor Unit Clearance',
+                                                                work_time: 'Work Time', ac_types: 'AC Types', ceiling_height: 'Ceiling Height',
+                                                                visit_date: 'Preferred Visit Date', building_type: 'Building Type',
+                                                                damage_status: 'Termite Damage Status', area_size: 'Area Size',
+                                                                treatment_method: 'Termite Treatment Method', children_pets: 'Children / Pets Present',
+                                                                pest_types: 'Target Pests',
+                                                                problem_types: 'Problem Types', problem_locations: 'Problem Locations', mold_severity: 'Mold Severity',
+                                                                pickup_date: 'Pickup Date', waste_items: 'Waste Items',
+                                                                waste_volume: 'Waste Volume', floor_access: 'Floor & Elevator Access', disassembly_needed: 'Disassembly Needed',
+                                                                leak_problems: 'Leak / Plumbing Issues', leak_locations: 'Problem Locations',
+                                                                main_valve_status: 'Main Water Valve Status',
+                                                                equipment_types: 'Equipment to Inspect', pump_symptoms: 'Water Pump Symptoms',
+                                                                pump_hp: 'Water Pump HP', pump_location: 'Pump / Tank Location',
+                                                                clog_locations: 'Clog Locations', clog_severity: 'Clog Severity',
+                                                                prior_attempts: 'Prior Attempts', clog_cause: 'Clog Cause',
+                                                                service_type_wh: 'Water Heater Service Type', heater_type: 'Water Heater Type',
+                                                                heater_symptoms: 'Water Heater Symptoms', electrical_ready: 'Electrical Readiness',
+                                                                electrical_symptoms: 'Electrical Symptoms', outage_scope: 'Outage Scope', panel_board_access: 'Panel Board Location',
+                                                                service_type_gen: 'Generator Service Type', fuel_type: 'Generator Fuel Type',
+                                                                gen_capacity: 'Generator Capacity (kVA)', gen_symptoms: 'Generator Symptoms',
+                                                                work_types: 'Work Types', ceiling_type: 'Ceiling Type & Height',
+                                                                materials_ready: 'Lighting/Materials Ready', wiring_condition: 'Wall/Ceiling Wiring Condition',
+                                                                service_type_solar: 'Solar Service Type', system_type: 'Solar System Type',
+                                                                system_capacity: 'Solar System Capacity', roof_type: 'Roof Type',
+                                                                ac_hp: 'AC Horsepower (HP)', appliance_type: 'Appliance Type',
+                                                                appliance_symptoms: 'Appliance Symptoms', appliance_brand: 'Appliance Brand', appliance_age: 'Appliance Age',
+                                                                tv_size: 'TV Size', install_type: 'Installation Type',
+                                                                bracket_ready: 'Bracket Available', wall_type: 'Wall Material',
+                                                                service_type_cctv: 'CCTV Service Type', camera_count: 'Camera Count',
+                                                                install_location: 'Installation Location', wifi_available: 'Wi-Fi Available',
+                                                                screen_locations: 'Screen Locations', screen_qty: 'Screen Quantity',
+                                                                screen_material: 'Screen Material', screen_frame_status: 'Window Frame Condition',
+                                                                lock_service_type: 'Lock Service Type', door_material: 'Door Material',
+                                                                lock_type_new: 'Lock Type', lock_product_supply: 'Product Supply Method',
+                                                                furniture_types: 'Furniture Types', furniture_brand: 'Furniture Brand',
+                                                                furniture_qty: 'Furniture Quantity & Size', wall_mount_needed: 'Wall Mount Needed',
+                                                                gas_service_type: 'LPG Service Type', gas_brand: 'Gas Tank Brand',
+                                                                gas_capacity: 'Gas Tank Capacity', empty_cylinder: 'Empty Cylinder Available', gas_symptoms: 'Gas Symptoms',
+                                                                remodel_scope: 'Remodeling Scope', remodel_start: 'Construction Start Date',
+                                                                permit_status: 'Permit Status', material_supply: 'Material Supply Method',
+                                                                site_infra: 'Site Infrastructure', remodel_budget: 'Total Construction Budget',
+                                                                interior_scope: 'Interior Scope', unit_condition: 'Unit Condition',
+                                                                condo_permit_status: 'Condo Permit Status', work_schedule: 'Work Schedule',
+                                                                interior_supply: 'Material Supply Method', interior_budget: 'Interior Budget',
+                                                                commercial_space_type: 'Commercial Space Type', commercial_unit_condition: 'Store Condition',
+                                                                commercial_permit_status: 'Permit Status', admin_requirements: 'Admin / Safety Requirements',
+                                                                design_status: 'Design Drawing Available', commercial_budget: 'Interior Budget',
+                                                                commercial_start: 'Construction Start Date',
+                                                                tile_spaces: 'Tiling Spaces', floor_material: 'Floor Material',
+                                                                floor_condition: 'Current Floor Condition', tile_material_supply: 'Material Supply Method',
+                                                                tile_permit_status: 'Permit Status', tile_site_access: 'Site Access',
+                                                                tile_area_sqm: 'Tiling Area (sqm)', tile_work_schedule: 'Work Schedule',
+                                                                paint_scope: 'Painting Scope', paint_site_condition: 'Site Condition',
+                                                                wall_condition: 'Wall Condition & Prep', paint_material_supply: 'Paint Supply',
+                                                                paint_permit_status: 'Permit Status', floor_height: 'Floor / Ceiling Height',
+                                                                paint_work_schedule: 'Work Schedule',
+                                                                carpentry_work_types: 'Carpentry Work Types', carpentry_material: 'Material & Finish',
+                                                                design_doc: 'Design Drawing Available', carpentry_site_condition: 'Work Site Condition',
+                                                                carpentry_permit_status: 'Permit Status', carpentry_work_schedule: 'Work Schedule',
+                                                                drywall_purpose: 'Purpose', insulation_needed: 'Soundproofing / Insulation Needed',
+                                                                ceiling_height_drywall: 'Ceiling Height', finish_level: 'Finish Level',
+                                                                drywall_permit_status: 'Permit Status', drywall_material_supply: 'Material Supply Method',
+                                                                drywall_work_schedule: 'Work Schedule',
+                                                                roofing_work_types: 'Roofing Work Types', roof_problem_status: 'Problem Status',
+                                                                roof_material: 'Roof / Floor Material', roof_access: 'Floor & Access',
+                                                                roof_permit_status: 'Permit Status', roof_work_schedule: 'Work Schedule',
+                                                                landscaping_work_types: 'Landscaping Work Types', garden_condition: 'Garden Condition',
+                                                                garden_area_sqm: 'Garden Area (sqm)', garden_infra: 'Site Infrastructure (Water/Electric)',
+                                                                garden_material_supply: 'Material Supply Method', garden_permit_status: 'Permit Status',
+                                                                garden_work_schedule: 'Work Schedule',
+                                                                signage_types: 'Signage Work Types', signage_location: 'Signage Location & Height',
+                                                                signage_design_status: 'Design Ready', signage_power: 'Power Supply Available',
+                                                                signage_permit_status: 'Permit Status', signage_size: 'Signage Size',
+                                                                signage_work_schedule: 'Work Schedule',
+                                                                deck_fence_types: 'Deck / Fence Work Types', deck_material: 'Main Material',
+                                                                deck_ground_condition: 'Ground / Existing Structure Condition', deck_material_supply: 'Material Supply Method',
+                                                                deck_permit_status: 'Permit Status', deck_size: 'Work Area & Length',
+                                                                deck_work_schedule: 'Work Schedule',
+                                                                va_tasks: 'Main Tasks', va_english_level: 'English Proficiency',
+                                                                va_work_schedule: 'Work Format & Hours', va_tools: 'Required Software / Tools',
+                                                                va_wfh_infra: 'WFH Infrastructure Requirements', va_budget: 'Monthly Budget / Salary',
+                                                                va_start_date: 'Preferred Start Date',
+                                                                cs_channels: 'CS Support Channels', cs_languages: 'Support Languages',
+                                                                cs_agent_count: 'Agent Count', cs_coverage: 'Service Hours',
+                                                                cs_infra: 'Infrastructure & Operations', cs_ticket_volume: 'Monthly Call / Ticket Volume',
+                                                                cs_start_date: 'Preferred Start Date',
+                                                                tm_campaign_goal: 'Campaign Goal', tm_target_country: 'Target Country',
+                                                                tm_script_db: 'Call List / Script Ready', tm_payment_type: 'Compensation & Payment',
+                                                                tm_dialer: 'Dialer System Setup', tm_agent_count: 'Agent Count',
+                                                                tm_start_date: 'Preferred Start Date',
+                                                                bizreg_entity_type: 'Business Entity Type', bizreg_foreign_ownership: 'Foreign Ownership %',
+                                                                bizreg_scope: 'Service Scope', bizreg_address_status: 'Business Address Ready',
+                                                                bizreg_capital: 'Expected Capital', bizreg_start_date: 'Preferred Start Date',
+                                                                tax_service_types: 'Tax Service Types', tax_vat_status: 'BIR Taxpayer Type',
+                                                                tax_transaction_volume: 'Monthly Transaction Volume', tax_bir_status: 'BIR Registration Status',
+                                                                tax_accounting_system: 'Accounting / POS System', tax_start_date: 'Preferred Start Date',
+                                                                visa_service_types: 'Visa / Immigration Service Types', visa_headcount: 'Number of Applicants',
+                                                                visa_stay_status: 'Current Stay Status', visa_sponsor_docs: 'Sponsor Documents Ready',
+                                                                visa_new_or_renewal: 'New or Renewal', visa_start_date: 'Preferred Start Date',
+                                                                permit_types: 'Permit / License Types', permit_current_status: 'Current Permit Status',
+                                                                permit_biz_docs: 'Business Documents Ready', permit_item_count: 'Number of Items / Locations',
+                                                                permit_inspection_ready: 'Inspection Ready', permit_start_date: 'Preferred Start Date',
+                                                                tl_service_types: 'Translation / Interpretation Service Types', tl_field: 'Field / Context',
+                                                                tl_doc_volume: 'Document Volume', tl_interp_duration: 'Interpretation Duration',
+                                                                tl_notarization: 'Notarization Needed', tl_location: 'Interpretation Location',
+                                                                tl_start_date: 'Preferred Date',
+                                                                vi_service_types: 'Translation / Interpretation Service Types', vi_dialect: 'Visayan Dialect',
+                                                                vi_field: 'Field / Context', vi_doc_volume: 'Document Volume',
+                                                                vi_interp_duration: 'Interpretation Duration', vi_location: 'Interpretation Location',
+                                                                vi_start_date: 'Preferred Date',
+                                                                en_service_types: 'Translation / Interpretation Service Types', en_field: 'Field of Expertise',
+                                                                en_target_country: 'Target Country / Context', en_doc_volume: 'Document Volume',
+                                                                en_interp_duration: 'Interpretation Duration', en_apostille: 'Notarization / Apostille Needed',
+                                                                en_start_date: 'Preferred Date',
+                                                                ml_language_pair: 'Language Pair', ml_service_types: 'Translation / Interpretation Service Types',
+                                                                ml_field: 'Field / Context', ml_doc_volume: 'Document Volume',
+                                                                ml_interp_duration: 'Interpretation Duration', ml_location: 'Location / Submission',
+                                                                ml_start_date: 'Preferred Date',
+                                                                gd_work_types: 'Design Work Types', gd_reference_status: 'Brief / Reference Ready',
+                                                                gd_usage_purpose: 'Usage Purpose', gd_source_files: 'Source Files / Copyright Transfer',
+                                                                gd_meeting_type: 'Communication Method', gd_start_date: 'Preferred Delivery Date',
+                                                                wd_platform_types: 'Development Platform Types', wd_project_stage: 'Project Stage',
+                                                                wd_local_integration: 'Local Payment / Logistics Integration', wd_hosting_status: 'Server / Domain Ready',
+                                                                wd_budget: 'Project Budget', wd_start_date: 'Preferred Start Date',
+                                                                ve_platform_purpose: 'Video Platform / Purpose', ve_footage_status: 'Source Footage Status',
+                                                                ve_video_length: 'Final Video Length', ve_edit_elements: 'Required Edit Elements',
+                                                                ve_work_style: 'Work & Communication Style', ve_start_date: 'Preferred Delivery Date',
+                                                                sns_platforms: 'Target Platforms', sns_target_audience: 'Target Audience',
+                                                                sns_work_scope: 'Work Scope', sns_ads_budget_type: 'Ad Budget Handling',
+                                                                sns_page_status: 'Page Status', sns_start_date: 'Preferred Start Date',
+                                                                debut_theme: 'Party Concept / Theme', debut_scope: 'Service Scope',
+                                                                debut_guest_count: 'Expected Guest Count', debut_venue_status: 'Venue Status',
+                                                                debut_catering_rules: 'Catering / Lechon Rules', debut_budget: 'Total Budget',
+                                                                debut_date: 'Event Date',
+                                                                ch_scope: 'Planning Scope', ch_guest_count: 'Guest Count',
+                                                                ch_church_status: 'Church / Chapel Booking Status', ch_reception_venue: 'Reception Venue Type',
+                                                                ch_catering_style: 'Catering Style', ch_date: 'Event Date',
+                                                                bday_party_type: 'Party Type', bday_scope: 'Planning Scope',
+                                                                bday_guest_count: 'Expected Guest Count', bday_venue_status: 'Venue Status',
+                                                                bday_vendor_rules: 'External Vendor Rules', bday_budget: 'Total Budget',
+                                                                bday_date: 'Party Date',
+                                                                wed_service_scope: 'Planning Service Scope', wed_venue_type: 'Wedding Type & Venue',
+                                                                wed_guest_count: 'Guest Count', wed_booked_items: 'Already Booked Items',
+                                                                wed_logistics: 'Weather / Transportation Plan', wed_budget: 'Total Budget',
+                                                                wed_date: 'Wedding Date',
+                                                                corp_event_types: 'Event Types', corp_headcount: 'Expected Attendees',
+                                                                corp_work_scope: 'Work Scope', corp_venue_status: 'Venue Status',
+                                                                corp_billing_req: 'Billing / Admin Requirements', corp_setup_timing: 'Setup Time Available',
+                                                                corp_date: 'Event Date',
+                                                                details: 'Additional Notes / Special Requests',
                                                             };
                                                             const entries = Object.entries(selectedRequest.dynamic_answers as Record<string, any>)
                                                                 .filter(([, v]) => v !== null && v !== undefined && v !== '')
@@ -3280,38 +3311,38 @@ function AdminDashboardPageContent() {
                                             {/* Chat Audit Button */}
                                             {chatLogs.length > 0 && (
                                                 <button onClick={() => setIsChatOpen(true)} className="mt-4 w-full bg-blue-600/20 hover:bg-blue-600/40 border border-blue-500/50 text-blue-400 font-bold py-2.5 rounded-lg transition text-sm flex items-center justify-center gap-2">
-                                                    💬 양방향 채팅 로그 열람 ({chatLogs.length}개)
+                                                    {adminLocale === 'ko' ? `💬 양방향 채팅 로그 열람 (${chatLogs.length}개)` : `💬 Chat Log Viewer (${chatLogs.length})`}
                                                 </button>
                                             )}
                                         </div>
 
                                         {/* 당사자 연락처 강제 열람 (CS Only) */}
                                         <div className="bg-gray-800 rounded-xl border border-gray-700 p-6 flex flex-col justify-center">
-                                            <h3 className="text-sm font-black text-gray-400 mb-4 border-b border-gray-700 pb-2">당사자 연락처 (마스킹 해제)</h3>
+                                            <h3 className="text-sm font-black text-gray-400 mb-4 border-b border-gray-700 pb-2">{adminLocale === 'ko' ? '당사자 연락처 (마스킹 해제)' : 'Party Contacts (Unmasked)'}</h3>
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div className="bg-gray-900/50 p-3 rounded-lg border border-gray-700/50">
-                                                    <span className="text-xs font-bold text-green-400 mb-1 block">고객 (Customer)</span>
+                                                    <span className="text-xs font-bold text-green-400 mb-1 block">Customer</span>
                                                     <p className="text-white font-semibold text-sm">{csContactInfo?.customer?.nickname || csContactInfo?.customer?.name || selectedRequest.customerName}</p>
-                                                    <p className="text-xs text-gray-400 mt-1">{csContactInfo?.customer?.email || '이메일 없음'}</p>
-                                                    <p className="text-xs text-gray-300 font-mono mt-1">{csContactInfo?.customer?.phone || '연락처 미등록'}</p>
+                                                    <p className="text-xs text-gray-400 mt-1">{csContactInfo?.customer?.email || (adminLocale === 'ko' ? '이메일 없음' : 'No email')}</p>
+                                                    <p className="text-xs text-gray-300 font-mono mt-1">{csContactInfo?.customer?.phone || (adminLocale === 'ko' ? '연락처 미등록' : 'No phone')}</p>
                                                 </div>
                                                 <div className="bg-gray-900/50 p-3 rounded-lg border border-gray-700/50">
-                                                    <span className="text-xs font-bold text-blue-400 mb-1 block">매칭된 고수 (Pro)</span>
+                                                    <span className="text-xs font-bold text-blue-400 mb-1 block">Matched Pro</span>
                                                     {csContactInfo?.pro ? (
                                                         <>
                                                             <p className="text-white font-semibold text-sm">{csContactInfo.pro.nickname || csContactInfo.pro.name}</p>
-                                                            <p className="text-xs text-gray-400 mt-1">{csContactInfo.pro.email || '이메일 없음'}</p>
-                                                            <p className="text-xs text-gray-300 font-mono mt-1 text-blue-300">{csContactInfo.pro.phone || '연락처 미등록'}</p>
+                                                            <p className="text-xs text-gray-400 mt-1">{csContactInfo.pro.email || 'No email'}</p>
+                                                            <p className="text-xs text-gray-300 font-mono mt-1 text-blue-300">{csContactInfo.pro.phone || 'No phone'}</p>
                                                         </>
                                                     ) : (
-                                                        <p className="text-xs text-gray-500 mt-4 flex items-center justify-center">매칭 됨/수락된 고수 없음</p>
+                                                        <p className="text-xs text-gray-500 mt-4 flex items-center justify-center">No matched pro</p>
                                                     )}
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <h3 className="text-sm font-bold text-gray-300 mb-3 border-t border-gray-800 pt-6">📝 요청서에 발송된 견적 내역 ({(selectedRequest.match_quotes || []).length}건)</h3>
+                                    <h3 className="text-sm font-bold text-gray-300 mb-3 border-t border-gray-800 pt-6">📝 Quotes Sent for This Request ({(selectedRequest.match_quotes || []).length})</h3>
                                     <div className="space-y-2 mb-6">
                                         {(selectedRequest.match_quotes || []).sort((a: any, b: any) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()).map((q: any, i: number) => (
                                             <div key={q.quote_id} className={`bg-gray-800 rounded-xl border p-4 flex items-center gap-4 relative ${q.status === 'ACCEPTED' ? 'border-blue-500/50 bg-blue-900/10' : 'border-gray-700'}`}>
@@ -3321,7 +3352,7 @@ function AdminDashboardPageContent() {
                                                         <span className={`font-bold ${q.status === 'ACCEPTED' ? 'text-blue-400' : 'text-white'}`}>₱{fmtNum(q.price || 0)}</span>
                                                         <span className="text-xs text-gray-500">{fmtDate(q.created_at)}</span>
                                                     </div>
-                                                    <p className="text-xs text-gray-400 mt-1">{q.description || '설명 없음'}</p>
+                                                    <p className="text-xs text-gray-400 mt-1">{q.description || 'No description'}</p>
                                                     {q.image_url && (() => {
                                                         let imgs: string[] = [];
                                                         if (q.image_url.startsWith('[')) {
@@ -3331,7 +3362,7 @@ function AdminDashboardPageContent() {
                                                             <div className="flex flex-wrap gap-1.5 mt-2">
                                                                 {imgs.map((url: string, idx: number) => (
                                                                     <a key={idx} href={url} target="_blank" rel="noopener noreferrer" className="inline-block">
-                                                                        <img src={url} alt={`견적 첨부 이미지 ${idx + 1}`} className="w-20 h-20 object-cover rounded-lg border border-gray-600 hover:opacity-80 transition" />
+                                                                        <img src={url} alt={`Quote attachment ${idx + 1}`} className="w-20 h-20 object-cover rounded-lg border border-gray-600 hover:opacity-80 transition" />
                                                                     </a>
                                                                 ))}
                                                             </div>
@@ -3339,12 +3370,12 @@ function AdminDashboardPageContent() {
                                                     })()}
                                                     <div className="flex justify-between items-center mt-2">
                                                         <div className="flex items-center gap-2">
-                                                            <p className="text-xs font-mono text-gray-500">고수: {q.pro?.nickname || q.pro?.name || q.pro_id?.slice(0, 12)}</p>
+                                                            <p className="text-xs font-mono text-gray-500">Pro: {q.pro?.nickname || q.pro?.name || q.pro_id?.slice(0, 12)}</p>
                                                             <button
                                                                 onClick={() => handleOpenProDetail(q.pro_id)}
                                                                 className="text-[10px] bg-blue-800/50 hover:bg-blue-700 text-blue-300 px-2 py-0.5 rounded font-bold transition"
                                                             >
-                                                                상세 보기
+                                                                View Detail
                                                             </button>
                                                             <button
                                                                 onClick={() => handleOpenCsChat(
@@ -3352,11 +3383,11 @@ function AdminDashboardPageContent() {
                                                                     q.pro?.nickname || q.pro?.name || 'Pro',
                                                                     selectedRequest.request_id,
                                                                     selectedRequest.customer_id,
-                                                                    csContactInfo?.customer?.nickname || csContactInfo?.customer?.name || '고객'
+                                                                    csContactInfo?.customer?.nickname || csContactInfo?.customer?.name || 'Customer'
                                                                 )}
                                                                 className="text-[10px] bg-green-800/50 hover:bg-green-700 text-green-300 px-2 py-0.5 rounded font-bold transition"
                                                             >
-                                                                💬 채팅보기
+                                                                💬 Chat Log
                                                             </button>
                                                         </div>
                                                         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${q.status === 'ACCEPTED' ? 'bg-blue-900/50 text-blue-300' : 'bg-gray-700 text-gray-400'}`}>{q.status}</span>
@@ -3364,13 +3395,13 @@ function AdminDashboardPageContent() {
                                                 </div>
                                             </div>
                                         ))}
-                                        {(selectedRequest.match_quotes || []).length === 0 && <p className="text-center text-gray-500 py-8 bg-gray-800/50 border border-gray-800 rounded-xl border-dashed">발송된 견적이 없습니다.</p>}
+                                        {(selectedRequest.match_quotes || []).length === 0 && <p className="text-center text-gray-500 py-8 bg-gray-800/50 border border-gray-800 rounded-xl border-dashed">No quotes sent.</p>}
                                     </div>
 
                                     {/* Danger Zone */}
                                     <div className="bg-red-950/20 border border-red-900/50 rounded-xl p-6 mb-6">
-                                        <h3 className="text-red-500 font-black mb-1 flex items-center gap-2">⚠️ DANGER ZONE (관리자 강제 개입)</h3>
-                                        <p className="text-xs text-red-400/80 mb-4">이 곳의 액션은 플랫폼 기록에 영구적인 영향을 미치며 감사 로그(Audit Trail)에 기록됩니다.</p>
+                                        <h3 className="text-red-500 font-black mb-1 flex items-center gap-2">⚠️ DANGER ZONE (Admin Override)</h3>
+                                        <p className="text-xs text-red-400/80 mb-4">Actions here permanently affect platform records and are logged in the Audit Trail.</p>
 
                                         <div className="flex flex-wrap gap-3">
                                             <button
@@ -3378,58 +3409,58 @@ function AdminDashboardPageContent() {
                                                 disabled={selectedRequest.status === 'CANCELED_BY_ADMIN'}
                                                 className={`px-4 py-2 rounded-lg text-sm font-bold border transition ${selectedRequest.status === 'CANCELED_BY_ADMIN' ? 'bg-gray-800 text-gray-500 border-gray-700 cursor-not-allowed' : 'bg-red-900/40 text-red-300 border-red-800 hover:bg-red-800 hover:text-white'}`}
                                             >
-                                                직권 매칭/요청 취소
+                                                Force Cancel Match/Request
                                             </button>
 
                                             <button
                                                 onClick={() => setSuspendModal({ isOpen: true, userId: selectedRequest.customer_id, role: 'CUSTOMER', currentStatus: 'ACTIVE' })}
                                                 className="px-4 py-2 bg-gray-800 text-gray-300 border border-gray-700 hover:bg-gray-700 hover:text-white rounded-lg text-sm font-bold transition"
                                             >
-                                                고객 계정 정지
+                                                Suspend Customer Account
                                             </button>
 
-                                            {selectedRequest.matchedProName && selectedRequest.matchedProName !== '-' && !selectedRequest.matchedProName.includes('입찰') && csContactInfo?.pro && (
+                                            {selectedRequest.matchedProName && selectedRequest.matchedProName !== '-' && !selectedRequest.matchedProName.includes('bids') && csContactInfo?.pro && (
                                                 <button
                                                     onClick={() => setSuspendModal({ isOpen: true, userId: csContactInfo.pro.user_id, role: 'PRO', currentStatus: 'ACTIVE' })}
                                                     className="px-4 py-2 bg-gray-800 text-yellow-500 border border-yellow-900/50 hover:bg-yellow-900/30 hover:border-yellow-600 rounded-lg text-sm font-bold transition"
                                                 >
-                                                    매칭 고수 계정 정지
+                                                    Suspend Matched Pro Account
                                                 </button>
                                             )}
                                         </div>
                                     </div>
                                 </div>
                             ) : (<>
-                                <h1 className="text-2xl font-black mb-4">📋 견적/매칭 관리</h1>
+                                <h1 className="text-2xl font-black mb-4">📋 Quotes / Matching</h1>
 
                                 {/* Advanced Filters */}
                                 <div className="bg-gray-800 border border-gray-700 rounded-xl p-4 mb-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
                                     <div className="flex flex-col">
-                                        <label className="text-xs text-gray-500 mb-1 font-bold">검색어</label>
-                                        <input type="text" value={reqSearch} onChange={e => setReqSearch(e.target.value)} placeholder="서비스 / 지역 / 이름..." className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500" />
+                                        <label className="text-xs text-gray-500 mb-1 font-bold">Search</label>
+                                        <input type="text" value={reqSearch} onChange={e => setReqSearch(e.target.value)} placeholder="Service / Region / Name..." className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500" />
                                     </div>
                                     <div className="flex flex-col">
-                                        <label className="text-xs text-gray-500 mb-1 font-bold">진행 상태</label>
-                                        <select value={reqFilter} onChange={e => setReqFilter(e.target.value as any)} className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500"><option value="all">전체 상태</option><option value="OPEN">대기 중</option><option value="MATCHED">매칭 완료</option><option value="EXPIRED">만료됨</option></select>
+                                        <label className="text-xs text-gray-500 mb-1 font-bold">Status</label>
+                                        <select value={reqFilter} onChange={e => setReqFilter(e.target.value as any)} className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500"><option value="all">All Status</option><option value="OPEN">Pending</option><option value="MATCHED">Matched</option><option value="EXPIRED">Expired</option></select>
                                     </div>
                                     <div className="flex flex-col">
-                                        <label className="text-xs text-gray-500 mb-1 font-bold">카테고리</label>
+                                        <label className="text-xs text-gray-500 mb-1 font-bold">Category</label>
                                         <select value={reqCategory} onChange={e => setReqCategory(e.target.value)} className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500">
-                                            <option value="all">전체 분류</option>
-                                            <option value="청소">청소</option>
-                                            <option value="이사">이사</option>
-                                            <option value="시공">인테리어/시공</option>
-                                            <option value="설치">수리/설치</option>
-                                            <option value="비즈니스">비즈니스</option>
-                                            <option value="이벤트">이벤트</option>
+                                            <option value="all">All Categories</option>
+                                            <option value="Cleaning">Cleaning</option>
+                                            <option value="Moving">Moving</option>
+                                            <option value="Interior">Interior/Construction</option>
+                                            <option value="Repair">Repair/Installation</option>
+                                            <option value="Business">Business</option>
+                                            <option value="Event">Events</option>
                                         </select>
                                     </div>
                                     <div className="flex flex-col">
-                                        <label className="text-xs text-gray-500 mb-1 font-bold">시작일</label>
+                                        <label className="text-xs text-gray-500 mb-1 font-bold">Start Date</label>
                                         <input type="date" value={reqStartDate} onChange={e => setReqStartDate(e.target.value)} className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 [color-scheme:dark]" />
                                     </div>
                                     <div className="flex flex-col">
-                                        <label className="text-xs text-gray-500 mb-1 font-bold">종료일</label>
+                                        <label className="text-xs text-gray-500 mb-1 font-bold">End Date</label>
                                         <input type="date" value={reqEndDate} onChange={e => setReqEndDate(e.target.value)} className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 [color-scheme:dark]" />
                                     </div>
                                 </div>
@@ -3438,13 +3469,13 @@ function AdminDashboardPageContent() {
                                     <table className="w-full text-sm">
                                         <thead>
                                             <tr className="border-b border-gray-700 text-gray-400 text-xs uppercase whitespace-nowrap">
-                                                <th className="p-3 text-left">서비스 / 지역</th>
-                                                <th className="p-3 text-left">고객</th>
-                                                <th className="p-3 text-left">매칭 전문가</th>
-                                                <th className="p-3 text-right">견적 금액</th>
-                                                <th className="p-3 text-center">상태</th>
-                                                <th className="p-3 text-center">생성일</th>
-                                                <th className="p-3 text-right">관리</th>
+                                                <th className="p-3 text-left">Service / Region</th>
+                                                <th className="p-3 text-left">Customer</th>
+                                                <th className="p-3 text-left">Matched Pro</th>
+                                                <th className="p-3 text-right">Quote Amount</th>
+                                                <th className="p-3 text-center">Status</th>
+                                                <th className="p-3 text-center">Created</th>
+                                                <th className="p-3 text-right">Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody>{filteredRequests.map(r => (
@@ -3460,11 +3491,11 @@ function AdminDashboardPageContent() {
                                                 <td className="p-3 text-center text-gray-400 text-xs">{fmtDate(r.created_at)}</td>
                                                 <td className="p-3 text-right">
                                                     <button onClick={() => handleSelectRequest(r)} className="text-xs bg-gray-700 hover:bg-gray-600 border border-gray-600 text-white px-3 py-1.5 rounded-lg font-bold transition">
-                                                        상세보기
+                                                        View Detail
                                                     </button>
                                                 </td>
                                             </tr>
-                                        ))}{filteredRequests.length === 0 && <tr><td colSpan={7} className="p-8 text-center text-gray-500">조회된 요청이 없습니다.</td></tr>}</tbody>
+                                        ))}{filteredRequests.length === 0 && <tr><td colSpan={7} className="p-8 text-center text-gray-500">No requests found.</td></tr>}</tbody>
                                     </table>
                                 </div>
                             </>)}
@@ -3472,10 +3503,10 @@ function AdminDashboardPageContent() {
 
                         {/* ═══ REVIEWS ═══ */}
                         {tab === 'reviews' && (<>
-                            <h1 className="text-2xl font-black mb-4">⭐ 리뷰 관리</h1>
-                            <input type="text" value={reviewSearch} onChange={e => setReviewSearch(e.target.value)} placeholder="고객명 / 고수명 / 코멘트 검색..." className="w-full sm:w-96 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4" />
+                            <h1 className="text-2xl font-black mb-4">⭐ Review Management</h1>
+                            <input type="text" value={reviewSearch} onChange={e => setReviewSearch(e.target.value)} placeholder="Search by customer / pro / comment..." className="w-full sm:w-96 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4" />
                             <div className="bg-gray-800 rounded-xl border border-gray-700 overflow-x-auto">
-                                <table className="w-full text-sm"><thead><tr className="border-b border-gray-700 text-gray-400 text-xs uppercase"><th className="p-2.5 text-left">고객</th><th className="p-2.5 text-left">고수</th><th className="p-2.5 text-center">평점</th><th className="p-2.5 text-left">코멘트</th><th className="p-2.5 text-center">작성일</th><th className="p-2.5 text-center">관리</th></tr></thead>
+                                <table className="w-full text-sm"><thead><tr className="border-b border-gray-700 text-gray-400 text-xs uppercase"><th className="p-2.5 text-left">Customer</th><th className="p-2.5 text-left">Pro</th><th className="p-2.5 text-center">Rating</th><th className="p-2.5 text-left">Comment</th><th className="p-2.5 text-center">Date</th><th className="p-2.5 text-center">Actions</th></tr></thead>
                                     <tbody>{filteredReviews.map(r => (
                                         <tr key={r.review_id} className={`border-b border-gray-700/50 hover:bg-gray-700/20 ${r.is_hidden ? 'opacity-40' : ''}`}>
                                             <td className="p-2.5 text-white text-sm">{r.customerName}</td>
@@ -3488,62 +3519,62 @@ function AdminDashboardPageContent() {
                                                     <span className="text-white font-bold text-xs ml-1">{Number(r.rating).toFixed(1)}</span>
                                                 </div>
                                             </td>
-                                            <td className="p-2.5 text-gray-400 text-xs max-w-xs truncate">{r.comment || '(없음)'}</td>
+                                            <td className="p-2.5 text-gray-400 text-xs max-w-xs truncate">{r.comment || '(none)'}</td>
                                             <td className="p-2.5 text-center text-gray-500 text-xs">{fmtDate(r.created_at)}</td>
                                             <td className="p-2.5 text-center"><div className="flex items-center justify-center gap-1">
                                                 {(() => {
                                                     const isEligible = r.rating >= 4.5 && (r.comment?.length || 0) >= 50;
                                                     return (
                                                         <button
-                                                            onClick={() => isEligible ? toggleReviewFeatured(r.review_id, !!r.is_featured_on_main) : alert('평점 4.5 이상, 50자 이상인 리뷰만 메인에 노출할 수 있습니다.')}
+                                                            onClick={() => isEligible ? toggleReviewFeatured(r.review_id, !!r.is_featured_on_main) : alert('Only reviews with rating 4.5+ and 50+ characters can be featured on the main page.')}
                                                             className={`text-xs px-2 py-1 rounded font-bold border transition-colors ${!isEligible ? 'border-gray-600 text-gray-500 bg-gray-800 opacity-50 cursor-not-allowed' :
                                                                 r.is_featured_on_main ? 'bg-blue-600 text-white border-blue-500' : 'bg-transparent text-blue-400 hover:bg-blue-900 border-blue-500 border-opacity-50'
                                                                 }`}
-                                                            title={!isEligible ? "조건 미달 (4.5점 이상 & 50자 이상 필요)" : "메인 화면 노출 토글"}
+                                                            title={!isEligible ? "Not eligible (requires 4.5+ rating & 50+ characters)" : "Toggle main page featured"}
                                                         >
-                                                            {r.is_featured_on_main ? '★ 메인' : '☆ 일반'}
+                                                            {r.is_featured_on_main ? '★ Featured' : '☆ Normal'}
                                                         </button>
                                                     );
                                                 })()}
-                                                <button onClick={() => toggleReviewHidden(r.review_id, !!r.is_hidden)} className={`text-xs px-2 py-1 rounded font-bold ${r.is_hidden ? 'bg-green-600 text-white' : 'bg-yellow-600 text-white'}`}>{r.is_hidden ? '복원' : '블라인드'}</button>
-                                                <button onClick={() => deleteReview(r.review_id)} className="text-xs bg-red-600 text-white px-2 py-1 rounded font-bold">삭제</button>
+                                                <button onClick={() => toggleReviewHidden(r.review_id, !!r.is_hidden)} className={`text-xs px-2 py-1 rounded font-bold ${r.is_hidden ? 'bg-green-600 text-white' : 'bg-yellow-600 text-white'}`}>{r.is_hidden ? 'Restore' : 'Hide'}</button>
+                                                <button onClick={() => deleteReview(r.review_id)} className="text-xs bg-red-600 text-white px-2 py-1 rounded font-bold">Delete</button>
                                             </div></td>
                                         </tr>
-                                    ))}{filteredReviews.length === 0 && <tr><td colSpan={6} className="p-6 text-center text-gray-500">리뷰 없음</td></tr>}</tbody></table>
+                                    ))}{filteredReviews.length === 0 && <tr><td colSpan={6} className="p-6 text-center text-gray-500">No reviews</td></tr>}</tbody></table>
                             </div>
                         </>)}
 
                         {/* ═══ SEARCH LOGS ═══ */}
                         {tab === 'search_logs' && (<>
-                            <h1 className="text-2xl font-black mb-4">🔍 검색/유입 분석 (Zero-Search)</h1>
-                            <p className="text-sm text-gray-400 mb-6">검색결과가 0건인 키워드들입니다. 유효한 키워드는 특정 카테고리에 매핑하여 다음 검색 시 결과를 반환하도록 조치할 수 있습니다.</p>
+                            <h1 className="text-2xl font-black mb-4">🔍 Search / Traffic Analysis (Zero-Search)</h1>
+                            <p className="text-sm text-gray-400 mb-6">These are keywords that returned 0 results. Valid keywords can be mapped to a specific category so future searches return results.</p>
 
                             <div className="bg-gray-800 rounded-xl border border-gray-700 overflow-x-auto">
                                 <table className="w-full text-sm">
                                     <thead><tr className="border-b border-gray-700 text-gray-400 text-xs uppercase">
-                                        <th className="p-3 text-center w-16">순위</th>
-                                        <th className="p-3 text-left">검색 실패 키워드</th>
-                                        <th className="p-3 text-center w-24">실패 횟수</th>
-                                        <th className="p-3 text-right">매핑 / 무시 액션</th>
+                                        <th className="p-3 text-center w-16">Rank</th>
+                                        <th className="p-3 text-left">Zero-Result Keyword</th>
+                                        <th className="p-3 text-center w-24">Fail Count</th>
+                                        <th className="p-3 text-right">Map / Ignore Action</th>
                                     </tr></thead>
                                     <tbody>
                                         {searchLogsLoading ? (
-                                            <tr><td colSpan={4} className="p-12 text-center text-gray-500">데이터를 집계 중입니다...</td></tr>
+                                            <tr><td colSpan={4} className="p-12 text-center text-gray-500">Aggregating data...</td></tr>
                                         ) : searchLogs.length === 0 ? (
-                                            <tr><td colSpan={4} className="p-12 text-center text-gray-500">조회된 이탈 검색어 로그가 없습니다. (Zero Search 청정 구역)</td></tr>
+                                            <tr><td colSpan={4} className="p-12 text-center text-gray-500">No zero-result search logs found. (Zero Search clean zone)</td></tr>
                                         ) : (
                                             searchLogs.map((log, idx) => (
                                                 <tr key={log.keyword} className="border-b border-gray-700/50 hover:bg-gray-700/20">
                                                     <td className="p-3 text-center text-yellow-400 font-bold">{idx + 1}</td>
                                                     <td className="p-3 text-white font-medium">{log.keyword}</td>
-                                                    <td className="p-3 text-center text-gray-300 font-mono text-xs">{fmtNum(Number(log.fail_count))}회</td>
+                                                    <td className="p-3 text-center text-gray-300 font-mono text-xs">{fmtNum(Number(log.fail_count))}</td>
                                                     <td className="p-3 text-right flex items-center justify-end gap-2">
                                                         <select
                                                             value={selectedCategoryMapping[log.keyword] || ''}
                                                             onChange={(e) => setSelectedCategoryMapping(prev => ({ ...prev, [log.keyword]: e.target.value }))}
                                                             className="bg-gray-900 border border-gray-600 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-blue-500"
                                                         >
-                                                            <option value="" disabled>카테고리 선택...</option>
+                                                            <option value="" disabled>Select category...</option>
                                                             {MAPPING_CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                                                         </select>
                                                         <button
@@ -3551,14 +3582,14 @@ function AdminDashboardPageContent() {
                                                             className={`text-xs px-3 py-1.5 rounded font-bold transition-colors ${selectedCategoryMapping[log.keyword] ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-gray-700 text-gray-500 cursor-not-allowed'}`}
                                                             disabled={!selectedCategoryMapping[log.keyword]}
                                                         >
-                                                            태그 추가
+                                                            Add Tag
                                                         </button>
                                                         <button
                                                             onClick={() => handleIgnoreSearchKeyword(log.keyword)}
                                                             className="text-xs text-gray-400 hover:text-red-400 px-2 py-1 flex items-center justify-center font-bold transition"
-                                                            title="해당 키워드를 매핑하지 않고 영구 삭제(무시)합니다."
+                                                            title="Permanently delete (ignore) this keyword without mapping."
                                                         >
-                                                            무시/삭제
+                                                            Ignore/Delete
                                                         </button>
                                                     </td>
                                                 </tr>
@@ -3571,16 +3602,16 @@ function AdminDashboardPageContent() {
 
                         {/* ═══ SETTINGS ═══ */}
                         {tab === 'settings' && (<>
-                            <h1 className="text-2xl font-black mb-6">⚙️ 과금 컨트롤러</h1>
+                            <h1 className="text-2xl font-black mb-6">⚙️ Billing Controller</h1>
                             <div className="bg-gray-800 rounded-xl border border-gray-700 p-6 space-y-6">
                                 {[
-                                    { key: 'quote_cost', t: '견적 발송 비용', d: '고수가 견적 1건 발송 시 차감되는 캐시' },
-                                    { key: 'max_quotes_per_request', t: '최대 견적 수신 수', d: '요청 1건당 최대 수신 견적 수' },
-                                    { key: 'signup_bonus', t: '신규 가입 보너스', d: '고수 신규 가입 시 자동 지급 캐시' },
+                                    { key: 'quote_cost', t: 'Quote Sending Cost', d: 'Cash deducted from a pro per quote sent' },
+                                    { key: 'max_quotes_per_request', t: 'Max Quotes per Request', d: 'Maximum number of quotes receivable per request' },
+                                    { key: 'signup_bonus', t: 'New Member Signup Bonus', d: 'Cash automatically granted to pros on signup' },
                                 ].map((s, i) => (
                                     <div key={s.key} className={i > 0 ? 'border-t border-gray-700 pt-6' : ''}>
                                         <h3 className="text-base font-bold mb-1">{s.t}</h3>
-                                        <p className="text-gray-400 text-sm mb-3">{s.d} (현재: <span className="text-white font-bold">{fmtNum(platformSettings[s.key] ?? 0)}</span>)</p>
+                                        <p className="text-gray-400 text-sm mb-3">{s.d} (Current: <span className="text-white font-bold">{fmtNum(platformSettings[s.key] ?? 0)}</span>)</p>
                                         <div className="flex items-center gap-3">
                                             <input
                                                 type="number"
@@ -3592,20 +3623,20 @@ function AdminDashboardPageContent() {
                                                 disabled={savingKey === s.key}
                                                 onClick={async () => {
                                                     const val = Number(settingsInputs[s.key]);
-                                                    if (isNaN(val) || val < 0) { alert('유효한 값을 입력하세요.'); return; }
+                                                    if (isNaN(val) || val < 0) { alert('Please enter a valid value.'); return; }
                                                     setSavingKey(s.key);
                                                     const { error } = await supabase.rpc('update_platform_setting', { p_key: s.key, p_value: val });
                                                     if (error) {
-                                                        alert('저장 실패: ' + error.message);
+                                                        alert('Save failed: ' + error.message);
                                                     } else {
                                                         setPlatformSettings(prev => ({ ...prev, [s.key]: val }));
-                                                        alert(`${s.t} 값이 ${fmtNum(val)}(으)로 저장되었습니다.`);
+                                                        alert(`${s.t} has been saved as ${fmtNum(val)}.`);
                                                     }
                                                     setSavingKey(null);
                                                 }}
                                                 className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-bold text-sm disabled:opacity-50"
                                             >
-                                                {savingKey === s.key ? '저장 중...' : '저장'}
+                                                {savingKey === s.key ? 'Saving...' : 'Save'}
                                             </button>
                                         </div>
                                     </div>
@@ -3615,17 +3646,17 @@ function AdminDashboardPageContent() {
                             {/* ── [확장] 테스트 데이터 초기화 위험 구역 ── */}
                             <div className="mt-8 bg-gradient-to-br from-red-900/30 to-red-800/20 rounded-xl border-2 border-red-600/50 p-6">
                                 <h2 className="text-lg font-black text-red-400 mb-2 flex items-center gap-2">
-                                    <span className="text-2xl">⚠️</span> DANGER ZONE — 테스트 데이터 초기화
+                                    <span className="text-2xl">⚠️</span> DANGER ZONE — Reset Test Data
                                 </h2>
                                 <p className="text-sm text-gray-400 mb-4 leading-relaxed break-keep">
-                                    모든 활동 내역(요청서, 견적서, 채팅, 리뷰, 결제, 알림, 제재 이력, 신고 내역, 문의, 템플릿)을 <strong className="text-red-400">영구 삭제</strong>하고 캐시와 통계를 0으로 리셋합니다.<br />
-                                    회원 계정(users, auth.users, pro_profiles)은 100% 보존됩니다. 삭제 전 자동 백업 스냅샷이 생성됩니다.
+                                    <strong className="text-red-400">Permanently deletes</strong> all activity records (requests, quotes, chats, reviews, payments, notifications, sanction history, reports, inquiries, templates) and resets cash and statistics to 0.<br />
+                                    Member accounts (users, auth.users, pro_profiles) are 100% preserved. An automatic backup snapshot is created before deletion.
                                 </p>
                                 <button
                                     onClick={() => { setShowResetModal(true); setResetConfirmText(''); }}
                                     className="bg-gradient-to-r from-red-700 to-red-600 hover:from-red-600 hover:to-red-500 text-white font-bold px-6 py-3 rounded-xl transition shadow-[0_0_12px_rgba(220,38,38,0.4)] hover:shadow-[0_0_20px_rgba(220,38,38,0.6)] text-sm"
                                 >
-                                    🗑️ 테스트 데이터 1초 초기화
+                                    🗑️ Reset Test Data
                                 </button>
                             </div>
 
@@ -3636,19 +3667,19 @@ function AdminDashboardPageContent() {
                                     <div className="relative bg-gray-900 rounded-2xl border-2 border-red-600/60 shadow-2xl max-w-md w-full mx-4 p-6">
                                         <div className="text-center mb-5">
                                             <span className="text-5xl block mb-3">💣</span>
-                                            <h3 className="text-xl font-black text-red-400">최종 확인</h3>
+                                            <h3 className="text-xl font-black text-red-400">Final Confirmation</h3>
                                             <p className="text-sm text-gray-400 mt-2 break-keep">
-                                                이 작업은 <strong className="text-white">10개 테이블의 모든 활동 데이터</strong>를 삭제하고<br />
-                                                캐시와 통계를 0으로 초기화합니다.
+                                                This action will delete <strong className="text-white">all activity data from 10 tables</strong><br />
+                                                and reset cash and statistics to 0.
                                             </p>
                                         </div>
 
                                         <div className="bg-gray-800 rounded-xl p-4 mb-4 border border-gray-700">
-                                            <p className="text-xs text-gray-400 mb-2 font-bold">아래 입력란에 <span className="text-red-400">"초기화 승인"</span>이라고 정확히 입력하세요.</p>
+                                            <p className="text-xs text-gray-400 mb-2 font-bold">Type <span className="text-red-400">"CONFIRM RESET"</span> exactly in the field below.</p>
                                             <input
                                                 value={resetConfirmText}
                                                 onChange={e => setResetConfirmText(e.target.value)}
-                                                placeholder="초기화 승인"
+                                                placeholder="CONFIRM RESET"
                                                 className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2.5 text-white text-center font-bold focus:outline-none focus:ring-2 focus:ring-red-500 placeholder:text-gray-600"
                                                 disabled={resetting}
                                             />
@@ -3659,9 +3690,9 @@ function AdminDashboardPageContent() {
                                                 onClick={() => setShowResetModal(false)}
                                                 disabled={resetting}
                                                 className="flex-1 bg-gray-700 hover:bg-gray-600 text-gray-300 font-bold py-3 rounded-xl transition text-sm"
-                                            >취소</button>
+                                            >Cancel</button>
                                             <button
-                                                disabled={resetConfirmText !== '초기화 승인' || resetting}
+                                                disabled={resetConfirmText !== 'CONFIRM RESET' || resetting}
                                                 onClick={async () => {
                                                     setResetting(true);
                                                     try {
@@ -3674,18 +3705,18 @@ function AdminDashboardPageContent() {
                                                         // 전역 상태 리프레시
                                                         window.dispatchEvent(new Event('wallet-updated'));
                                                         window.dispatchEvent(new Event('notifications-updated'));
-                                                        showToast('모든 테스트 데이터가 초기화되었습니다 (캐시/거래/신고 내역 포함). 백업 스냅샷이 backup_*_temp 테이블에 보존됩니다.', 'success');
+                                                        showToast('All test data has been reset (including cash/transactions/reports). Backup snapshots preserved in backup_*_temp tables.', 'success');
                                                     } catch (e: any) {
-                                                        showToast('초기화 실패: ' + e.message, 'error');
+                                                        showToast('Reset failed: ' + e.message, 'error');
                                                     } finally {
                                                         setResetting(false);
                                                     }
                                                 }}
-                                                className={`flex-1 font-bold py-3 rounded-xl transition text-sm ${resetConfirmText === '초기화 승인' && !resetting
+                                                className={`flex-1 font-bold py-3 rounded-xl transition text-sm ${resetConfirmText === 'CONFIRM RESET' && !resetting
                                                     ? 'bg-gradient-to-r from-red-700 to-red-600 hover:from-red-600 hover:to-red-500 text-white shadow-[0_0_12px_rgba(220,38,38,0.4)]'
                                                     : 'bg-gray-700 text-gray-500 cursor-not-allowed'
                                                     }`}
-                                            >{resetting ? '초기화 진행 중...' : '🗑️ 최종 초기화 실행'}</button>
+                                            >{resetting ? 'Resetting...' : '🗑️ Execute Final Reset'}</button>
                                         </div>
                                     </div>
                                 </div>
@@ -3693,15 +3724,15 @@ function AdminDashboardPageContent() {
                         </>)}
                         {/* ═══ CMS ═══ */}
                         {tab === 'cms' && (<>
-                            <h1 className="text-2xl font-black mb-6">🖼️ 홈페이지 CMS 제어</h1>
+                            <h1 className="text-2xl font-black mb-6">🖼️ Homepage CMS Control</h1>
 
                             <div className="space-y-8">
 
                                 {/* 배너 관리 */}
 
                                 {/* 배너 관리 */}
-                                <h2 className="text-xl font-bold mb-4">메인 배너 미디어</h2>
-                                <p className="text-sm text-gray-400 mb-6">고객 퍼넬 우측의 대형 배너(이미지 또는 비디오)를 교체합니다.</p>
+                                <h2 className="text-xl font-bold mb-4">Main Banner Media</h2>
+                                <p className="text-sm text-gray-400 mb-6">Replace the large banner (image or video) on the right side of the customer funnel.</p>
 
                                 <div className="flex flex-col md:flex-row gap-6 items-start">
                                     <div className="w-full md:w-1/2">
@@ -3714,7 +3745,7 @@ function AdminDashboardPageContent() {
                                                 )}
                                             </div>
                                         ) : (
-                                            <div className="rounded-xl border border-dashed border-gray-600 aspect-video flex items-center justify-center text-gray-500">배너 없음</div>
+                                            <div className="rounded-xl border border-dashed border-gray-600 aspect-video flex items-center justify-center text-gray-500">No banner</div>
                                         )}
                                     </div>
                                     <div className="w-full md:w-1/2 flex flex-col gap-4">
@@ -3724,7 +3755,7 @@ function AdminDashboardPageContent() {
                                             onClick={async () => {
                                                 const fileInput = document.getElementById('cmsUpload') as HTMLInputElement;
                                                 const file = fileInput.files?.[0];
-                                                if (!file) { alert('파일을 선택하세요.'); return; }
+                                                if (!file) { alert('Please select a file.'); return; }
                                                 setCmsUploading(true);
                                                 try {
                                                     const mType = file.type.startsWith('video/') ? 'VIDEO' : 'IMAGE';
@@ -3741,17 +3772,17 @@ function AdminDashboardPageContent() {
                                                     await supabase.from('cms_banners').insert({ media_url: publicUrl, media_type: mType, is_active: true });
 
                                                     fileInput.value = '';
-                                                    alert('배너가 교체되었습니다.');
+                                                    alert('Banner replaced successfully.');
                                                     loadCms();
                                                 } catch (err: any) {
-                                                    alert('업로드 실패: ' + err.message);
+                                                    alert('Upload failed: ' + err.message);
                                                 } finally {
                                                     setCmsUploading(false);
                                                 }
                                             }}
                                             className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-bold text-sm disabled:opacity-50"
                                         >
-                                            {cmsUploading ? '업로드 중...' : '새 미디어 업로드 및 교체'}
+                                            {cmsUploading ? 'Uploading...' : 'Upload & Replace Media'}
                                         </button>
                                     </div>
                                 </div>
@@ -3759,14 +3790,14 @@ function AdminDashboardPageContent() {
                                 <div className="bg-gray-800 rounded-xl border border-gray-700 p-6">
                                     <div className="flex justify-between items-center mb-6">
                                         <div>
-                                            <h2 className="text-xl font-bold">홈 카테고리 설정</h2>
-                                            <p className="text-sm text-gray-400 mt-1">홈페이지 하단의 카테고리 버튼들을 관리합니다.</p>
+                                            <h2 className="text-xl font-bold">Home Category Settings</h2>
+                                            <p className="text-sm text-gray-400 mt-1">Manage the category buttons at the bottom of the homepage.</p>
                                         </div>
                                     </div>
                                     <div className="overflow-x-auto">
                                         <table className="w-full text-sm text-left text-gray-400">
                                             <thead className="text-xs uppercase bg-gray-900/50 text-gray-500">
-                                                <tr><th className="px-4 py-3">아이콘</th><th className="px-4 py-3">타이틀</th><th className="px-4 py-3">설명</th><th className="px-4 py-3">연결 URL</th><th className="px-4 py-3">활성</th></tr>
+                                                <tr><th className="px-4 py-3">Icon</th><th className="px-4 py-3">Title</th><th className="px-4 py-3">Description</th><th className="px-4 py-3">Link URL</th><th className="px-4 py-3">Active</th></tr>
                                             </thead>
                                             <tbody>
                                                 {cmsCategories.map((cat, idx) => (
@@ -3775,21 +3806,21 @@ function AdminDashboardPageContent() {
                                                         <td className="px-4 py-3 font-bold text-white">{cat.title}</td>
                                                         <td className="px-4 py-3">{cat.description}</td>
                                                         <td className="px-4 py-3 font-mono text-xs text-blue-400">{cat.link_url}</td>
-                                                        <td className="px-4 py-3"><span className={`px-2 py-1 rounded text-xs font-bold ${cat.is_active ? 'bg-green-900/50 text-green-400' : 'bg-red-900/50 text-red-400'}`}>{cat.is_active ? '활성' : '비활성'}</span></td>
+                                                        <td className="px-4 py-3"><span className={`px-2 py-1 rounded text-xs font-bold ${cat.is_active ? 'bg-green-900/50 text-green-400' : 'bg-red-900/50 text-red-400'}`}>{cat.is_active ? 'Active' : 'Inactive'}</span></td>
                                                     </tr>
                                                 ))}
-                                                {cmsCategories.length === 0 && <tr><td colSpan={5} className="px-4 py-8 text-center text-gray-500">카테고리 데이터가 없습니다. SQL 문서를 통해 초기 셋업을 진행하세요.</td></tr>}
+                                                {cmsCategories.length === 0 && <tr><td colSpan={5} className="px-4 py-8 text-center text-gray-500">No category data. Please complete initial setup via SQL.</td></tr>}
                                             </tbody>
                                         </table>
-                                        <p className="text-xs text-gray-500 mt-4">* 카테고리의 구성(순서, 텍스트) 변경은 현재 DataGrip 등 DB 클라이언트를 통해 cms_categories 테이블에서 직접 제어하십시오. (추후 에디터 오픈 예정)</p>
+                                        <p className="text-xs text-gray-500 mt-4">* Category configuration changes (order, text) are currently managed directly in the cms_categories table via a DB client such as DataGrip. (Editor UI coming soon)</p>
                                     </div>
                                 </div>
                                 {/* 고객 지원 페이지 (CMS V2) 관리 */}
                                 <div className="bg-gray-800 rounded-xl border border-gray-700 p-6">
                                     <div className="flex justify-between items-center mb-6">
                                         <div>
-                                            <h2 className="text-xl font-bold">고객 지원 페이지 관리 (CMS V2)</h2>
-                                            <p className="text-sm text-gray-400 mt-1">플랫폼 소개, 고객 가이드 등 2-Depth 텍스트 문서를 직접 관리할 수 있습니다.</p>
+                                            <h2 className="text-xl font-bold">Support Page Management (CMS V2)</h2>
+                                            <p className="text-sm text-gray-400 mt-1">Directly manage 2-depth text documents such as platform introductions and customer guides.</p>
                                         </div>
                                     </div>
 
@@ -3798,11 +3829,11 @@ function AdminDashboardPageContent() {
                                             <table className="w-full text-sm text-left text-gray-400">
                                                 <thead className="text-xs uppercase bg-gray-900/50 text-gray-500">
                                                     <tr>
-                                                        <th className="px-4 py-3">분류 (Depth 1)</th>
+                                                        <th className="px-4 py-3">Category (Depth 1)</th>
                                                         <th className="px-4 py-3">Slug (URL)</th>
-                                                        <th className="px-4 py-3">페이지 타이틀 (Depth 2)</th>
-                                                        <th className="px-4 py-3 text-center">상태</th>
-                                                        <th className="px-4 py-3 text-right">관리</th>
+                                                        <th className="px-4 py-3">Page Title (Depth 2)</th>
+                                                        <th className="px-4 py-3 text-center">Status</th>
+                                                        <th className="px-4 py-3 text-right">Actions</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -3810,12 +3841,12 @@ function AdminDashboardPageContent() {
                                                         const cat = supportCategories.find(c => c.id === page.category_id);
                                                         return (
                                                             <tr key={page.id} className="border-b border-gray-700 hover:bg-gray-700/50 transition">
-                                                                <td className="px-4 py-3 font-bold text-gray-300">{cat ? cat.title : '미분류'}</td>
+                                                                <td className="px-4 py-3 font-bold text-gray-300">{cat ? cat.title : 'Uncategorized'}</td>
                                                                 <td className="px-4 py-3 font-mono text-xs text-blue-400">/support/{cat ? cat.slug : ''}/{page.slug}</td>
                                                                 <td className="px-4 py-3 font-bold text-white">{page.title}</td>
                                                                 <td className="px-4 py-3 text-center">
                                                                     <span className={`px-2 py-1 rounded text-xs font-bold ${page.is_active ? 'bg-green-900/50 text-green-400' : 'bg-red-900/50 text-red-400'}`}>
-                                                                        {page.is_active ? '공개중' : '비공개'}
+                                                                        {page.is_active ? 'Published' : 'Hidden'}
                                                                     </span>
                                                                 </td>
                                                                 <td className="px-4 py-3 text-right">
@@ -3823,7 +3854,7 @@ function AdminDashboardPageContent() {
                                                                         onClick={() => setEditingSupportPage({ ...page })}
                                                                         className="bg-blue-600/20 text-blue-400 hover:bg-blue-600/40 font-bold py-1 px-4 rounded text-sm transition"
                                                                     >
-                                                                        내용 수정
+                                                                        Edit Content
                                                                     </button>
                                                                 </td>
                                                             </tr>
@@ -3832,20 +3863,20 @@ function AdminDashboardPageContent() {
                                                 </tbody>
                                             </table>
                                             {supportPages.length === 0 && (
-                                                <div className="text-center p-8 text-gray-500">등록된 2-Depth 페이지가 없습니다.</div>
+                                                <div className="text-center p-8 text-gray-500">No 2-depth pages registered.</div>
                                             )}
                                         </div>
                                     ) : (
                                         <form onSubmit={handleSaveSupportPage} className="bg-gray-900/50 p-6 rounded-xl border border-gray-700">
                                             <div className="flex justify-between items-center mb-4">
-                                                <h3 className="font-bold text-lg text-white">문서 수정 <span className="text-gray-500 text-sm ml-2">(/support/{supportCategories.find(c => c.id === editingSupportPage.category_id)?.slug}/{editingSupportPage.slug})</span></h3>
-                                                <button type="button" onClick={() => setEditingSupportPage(null)} className="text-gray-400 hover:text-white">✕ 취소</button>
+                                                <h3 className="font-bold text-lg text-white">Edit Document <span className="text-gray-500 text-sm ml-2">(/support/{supportCategories.find(c => c.id === editingSupportPage.category_id)?.slug}/{editingSupportPage.slug})</span></h3>
+                                                <button type="button" onClick={() => setEditingSupportPage(null)} className="text-gray-400 hover:text-white">✕ Cancel</button>
                                             </div>
 
                                             <div className="space-y-4">
                                                 <div className="flex gap-4">
                                                     <div className="w-1/3">
-                                                        <label className="block text-sm font-bold text-gray-300 mb-1">상위 카테고리</label>
+                                                        <label className="block text-sm font-bold text-gray-300 mb-1">Parent Category</label>
                                                         <select
                                                             value={editingSupportPage.category_id}
                                                             onChange={e => setEditingSupportPage({ ...editingSupportPage, category_id: Number(e.target.value) })}
@@ -3855,7 +3886,7 @@ function AdminDashboardPageContent() {
                                                         </select>
                                                     </div>
                                                     <div className="w-2/3">
-                                                        <label className="block text-sm font-bold text-gray-300 mb-1">문서 고유 Slug</label>
+                                                        <label className="block text-sm font-bold text-gray-300 mb-1">Document Slug</label>
                                                         <input
                                                             type="text"
                                                             value={editingSupportPage.slug}
@@ -3866,7 +3897,7 @@ function AdminDashboardPageContent() {
                                                     </div>
                                                 </div>
                                                 <div>
-                                                    <label className="block text-sm font-bold text-gray-300 mb-1">페이지 제목 (Title)</label>
+                                                    <label className="block text-sm font-bold text-gray-300 mb-1">Page Title</label>
                                                     <input
                                                         type="text"
                                                         value={editingSupportPage.title}
@@ -3876,7 +3907,7 @@ function AdminDashboardPageContent() {
                                                     />
                                                 </div>
                                                 <div>
-                                                    <label className="block text-sm font-bold text-gray-300 mb-1">본문 (HTML 지원)</label>
+                                                    <label className="block text-sm font-bold text-gray-300 mb-1">Content (HTML supported)</label>
                                                     <textarea
                                                         value={editingSupportPage.content}
                                                         onChange={e => setEditingSupportPage({ ...editingSupportPage, content: e.target.value })}
@@ -3892,11 +3923,11 @@ function AdminDashboardPageContent() {
                                                         onChange={e => setEditingSupportPage({ ...editingSupportPage, is_active: e.target.checked })}
                                                         className="w-4 h-4 rounded bg-gray-800 border-gray-600 text-blue-600"
                                                     />
-                                                    <label htmlFor="support-active" className="text-sm font-bold text-gray-300">공개하기</label>
+                                                    <label htmlFor="support-active" className="text-sm font-bold text-gray-300">Publish</label>
                                                 </div>
                                                 <div className="pt-4 flex justify-end gap-2">
-                                                    <button type="button" onClick={() => setEditingSupportPage(null)} className="px-4 py-2 border border-gray-600 text-gray-400 font-bold rounded hover:bg-gray-800 transition">취소</button>
-                                                    <button type="submit" className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded transition">저장</button>
+                                                    <button type="button" onClick={() => setEditingSupportPage(null)} className="px-4 py-2 border border-gray-600 text-gray-400 font-bold rounded hover:bg-gray-800 transition">Cancel</button>
+                                                    <button type="submit" className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded transition">Save</button>
                                                 </div>
                                             </div>
                                         </form>
@@ -3908,15 +3939,15 @@ function AdminDashboardPageContent() {
                                 <div className="bg-gray-800 rounded-xl border border-gray-700 p-6">
                                     <div className="flex justify-between items-center mb-6">
                                         <div>
-                                            <h2 className="text-xl font-bold">법적 고지 관리 (버전 이력 관리)</h2>
-                                            <p className="text-sm text-gray-400 mt-1">이용약관, 개인정보처리방침 등 이력 관리가 중요한 문서를 관리합니다.</p>
+                                            <h2 className="text-xl font-bold">Legal Document Management (Version History)</h2>
+                                            <p className="text-sm text-gray-400 mt-1">Manage documents requiring version history such as Terms of Service and Privacy Policy.</p>
                                         </div>
                                         {!editingLegalDoc && (
                                             <button
                                                 onClick={() => setEditingLegalDoc({ document_type: 'TERMS', version: 'v1.1', title: '', content: '', effective_date: new Date().toISOString().split('T')[0], is_active: false })}
                                                 className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-bold text-sm transition"
                                             >
-                                                + 새 문서/버전 추가
+                                                + Add New Document/Version
                                             </button>
                                         )}
                                     </div>
@@ -3926,19 +3957,19 @@ function AdminDashboardPageContent() {
                                             <table className="w-full text-sm text-left text-gray-400">
                                                 <thead className="text-xs uppercase bg-gray-900/50 text-gray-500">
                                                     <tr>
-                                                        <th className="px-4 py-3">문서 타입 (라우트)</th>
-                                                        <th className="px-4 py-3 text-center">버전</th>
-                                                        <th className="px-4 py-3">문서 제목</th>
-                                                        <th className="px-4 py-3 text-center">시행일(Effective)</th>
-                                                        <th className="px-4 py-3 text-center">상태</th>
-                                                        <th className="px-4 py-3 text-right">관리</th>
+                                                        <th className="px-4 py-3">Document Type (Route)</th>
+                                                        <th className="px-4 py-3 text-center">Version</th>
+                                                        <th className="px-4 py-3">Document Title</th>
+                                                        <th className="px-4 py-3 text-center">Effective Date</th>
+                                                        <th className="px-4 py-3 text-center">Status</th>
+                                                        <th className="px-4 py-3 text-right">Actions</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     {legalDocs.map(doc => (
                                                         <tr key={doc.id} className="border-b border-gray-700 hover:bg-gray-700/50 transition">
                                                             <td className="px-4 py-3 font-bold text-white">
-                                                                {doc.document_type === 'TERMS' ? '이용약관 ' : '개인정보처리방침 '}
+                                                                {doc.document_type === 'TERMS' ? 'Terms of Service ' : 'Privacy Policy '}
                                                                 <span className="text-blue-400 font-mono text-xs font-normal">(/legal/{doc.document_type.toLowerCase()})</span>
                                                             </td>
                                                             <td className="px-4 py-3 text-center font-mono text-blue-300">{doc.version}</td>
@@ -3946,7 +3977,7 @@ function AdminDashboardPageContent() {
                                                             <td className="px-4 py-3 text-center font-mono text-xs">{doc.effective_date}</td>
                                                             <td className="px-4 py-3 text-center">
                                                                 <span className={`px-2 py-1 rounded text-xs font-bold ${doc.is_active ? 'bg-purple-900/50 text-purple-400' : 'bg-gray-700 text-gray-400'}`}>
-                                                                    {doc.is_active ? '현재 적용중' : '이전/대기'}
+                                                                    {doc.is_active ? 'Active' : 'Previous/Pending'}
                                                                 </span>
                                                             </td>
                                                             <td className="px-4 py-3 text-right">
@@ -3954,7 +3985,7 @@ function AdminDashboardPageContent() {
                                                                     onClick={() => setEditingLegalDoc({ ...doc })}
                                                                     className="bg-blue-600/20 text-blue-400 hover:bg-blue-600/40 font-bold py-1 px-4 rounded text-sm transition"
                                                                 >
-                                                                    수정
+                                                                    Edit
                                                                 </button>
                                                             </td>
                                                         </tr>
@@ -3962,43 +3993,43 @@ function AdminDashboardPageContent() {
                                                 </tbody>
                                             </table>
                                             {legalDocs.length === 0 && (
-                                                <div className="text-center p-8 text-gray-500">등록된 법적 고지가 없습니다.</div>
+                                                <div className="text-center p-8 text-gray-500">No legal documents registered.</div>
                                             )}
                                         </div>
                                     ) : (
                                         <form onSubmit={handleSaveLegalDoc} className="bg-gray-900/50 p-6 rounded-xl border border-gray-700">
                                             <div className="flex justify-between items-center mb-4">
-                                                <h3 className="font-bold text-lg text-white">법적 고지 {editingLegalDoc.id ? '수정' : '작성하기'} <span className="text-gray-500 text-sm ml-2">(/legal/{editingLegalDoc.document_type.toLowerCase()})</span></h3>
-                                                <button type="button" onClick={() => setEditingLegalDoc(null)} className="text-gray-400 hover:text-white">✕ 취소</button>
+                                                <h3 className="font-bold text-lg text-white">Legal Document {editingLegalDoc.id ? 'Edit' : 'Create'} <span className="text-gray-500 text-sm ml-2">(/legal/{editingLegalDoc.document_type.toLowerCase()})</span></h3>
+                                                <button type="button" onClick={() => setEditingLegalDoc(null)} className="text-gray-400 hover:text-white">✕ Cancel</button>
                                             </div>
 
                                             <div className="space-y-4">
                                                 <div className="flex gap-4">
                                                     <div className="w-1/3">
-                                                        <label className="block text-sm font-bold text-gray-300 mb-1">문서 타입</label>
+                                                        <label className="block text-sm font-bold text-gray-300 mb-1">Document Type</label>
                                                         <select
                                                             value={editingLegalDoc.document_type}
                                                             onChange={e => setEditingLegalDoc({ ...editingLegalDoc, document_type: e.target.value })}
                                                             className="w-full bg-gray-800 border border-gray-700 rounded p-2 text-white focus:ring-2 focus:ring-blue-500 outline-none"
                                                             disabled={!!editingLegalDoc.id}
                                                         >
-                                                            <option value="TERMS">이용약관 (TERMS)</option>
-                                                            <option value="PRIVACY">개인정보처리방침 (PRIVACY)</option>
+                                                            <option value="TERMS">Terms of Service (TERMS)</option>
+                                                            <option value="PRIVACY">Privacy Policy (PRIVACY)</option>
                                                         </select>
                                                     </div>
                                                     <div className="w-1/3">
-                                                        <label className="block text-sm font-bold text-gray-300 mb-1">버전 지정</label>
+                                                        <label className="block text-sm font-bold text-gray-300 mb-1">Version</label>
                                                         <input
                                                             type="text"
                                                             value={editingLegalDoc.version}
                                                             onChange={e => setEditingLegalDoc({ ...editingLegalDoc, version: e.target.value })}
                                                             className="w-full bg-gray-800 border border-gray-700 rounded p-2 text-white focus:ring-2 focus:ring-blue-500 outline-none"
-                                                            placeholder="예: v1.0, v2026.1"
+                                                            placeholder="e.g. v1.0, v2026.1"
                                                             required
                                                         />
                                                     </div>
                                                     <div className="w-1/3">
-                                                        <label className="block text-sm font-bold text-gray-300 mb-1">시행 일자 (Effective Date)</label>
+                                                        <label className="block text-sm font-bold text-gray-300 mb-1">Effective Date</label>
                                                         <input
                                                             type="date"
                                                             value={editingLegalDoc.effective_date}
@@ -4010,19 +4041,19 @@ function AdminDashboardPageContent() {
                                                 </div>
 
                                                 <div>
-                                                    <label className="block text-sm font-bold text-gray-300 mb-1">문서 제목</label>
+                                                    <label className="block text-sm font-bold text-gray-300 mb-1">Document Title</label>
                                                     <input
                                                         type="text"
                                                         value={editingLegalDoc.title}
                                                         onChange={e => setEditingLegalDoc({ ...editingLegalDoc, title: e.target.value })}
                                                         className="w-full bg-gray-800 border border-gray-700 rounded p-2 text-white focus:ring-2 focus:ring-blue-500 outline-none"
-                                                        placeholder="예: 히든프로 이용약관"
+                                                        placeholder="e.g., HiddenPro Terms of Service"
                                                         required
                                                     />
                                                 </div>
 
                                                 <div>
-                                                    <label className="block text-sm font-bold text-gray-300 mb-1">본문 (HTML 지원)</label>
+                                                    <label className="block text-sm font-bold text-gray-300 mb-1">Content (HTML supported)</label>
                                                     <textarea
                                                         value={editingLegalDoc.content}
                                                         onChange={e => setEditingLegalDoc({ ...editingLegalDoc, content: e.target.value })}
@@ -4039,12 +4070,12 @@ function AdminDashboardPageContent() {
                                                         onChange={e => setEditingLegalDoc({ ...editingLegalDoc, is_active: e.target.checked })}
                                                         className="w-4 h-4 rounded bg-gray-800 border-gray-600 text-purple-600"
                                                     />
-                                                    <label htmlFor="legal-active" className="text-sm font-bold text-purple-300">이 문서를 현재 활성(적용) 버전으로 공표합니다. (기존 버전들을 대체하게 됩니다)</label>
+                                                    <label htmlFor="legal-active" className="text-sm font-bold text-purple-300">Publish this document as the current active version. (Will replace existing versions)</label>
                                                 </div>
 
                                                 <div className="pt-4 flex justify-end gap-2">
-                                                    <button type="button" onClick={() => setEditingLegalDoc(null)} className="px-4 py-2 border border-gray-600 text-gray-400 font-bold rounded hover:bg-gray-800 transition">취소</button>
-                                                    <button type="submit" className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded transition">저장 및 반영</button>
+                                                    <button type="button" onClick={() => setEditingLegalDoc(null)} className="px-4 py-2 border border-gray-600 text-gray-400 font-bold rounded hover:bg-gray-800 transition">Cancel</button>
+                                                    <button type="submit" className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded transition">Save & Apply</button>
                                                 </div>
                                             </div>
                                         </form>
@@ -4054,7 +4085,7 @@ function AdminDashboardPageContent() {
                         </>
                         )}                        {/* ═══ Inquiries (1:1 문의) ═══ */}
                         {tab === 'inquiries' && (<>
-                            <h1 className="text-2xl font-black mb-6">🎧 1:1 문의 관리</h1>
+                            <h1 className="text-2xl font-black mb-6">🎧 1:1 Inquiry Management</h1>
                             <div className="flex flex-wrap gap-2 mb-6">
                                 <div className="flex items-center gap-2 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2">
                                     <span className="text-gray-400 text-sm">🔍</span>
@@ -4063,7 +4094,7 @@ function AdminDashboardPageContent() {
                                         value={inquiriesSearch}
                                         onChange={e => setInquiriesSearch(e.target.value)}
                                         onKeyDown={e => { if (e.key === 'Enter') loadInquiries(); }}
-                                        placeholder="닉네임 또는 이메일 검색 후 Enter"
+                                        placeholder="Search by nickname or email, then Enter"
                                         className="bg-transparent text-sm text-white placeholder-gray-500 focus:outline-none w-52"
                                     />
                                     {inquiriesSearch && (
@@ -4071,40 +4102,40 @@ function AdminDashboardPageContent() {
                                     )}
                                 </div>
                                 <select value={inquiriesFilter} onChange={e => { setInquiriesFilter(e.target.value as any); }} className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
-                                    <option value="all">전체 상태</option>
-                                    <option value="pending">접수 대기</option>
-                                    <option value="in_progress">처리 중</option>
-                                    <option value="resolved">답변 완료</option>
+                                    <option value="all">All Status</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="in_progress">In Progress</option>
+                                    <option value="resolved">Resolved</option>
                                 </select>
                                 <select value={inquiriesCategory} onChange={e => { setInquiriesCategory(e.target.value); }} className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
-                                    <option value="all">전체 카테고리</option>
-                                    <option value="ACCOUNT">계정 및 로그인</option>
-                                    <option value="PAYMENT">결제 및 환불</option>
-                                    <option value="MATCHING">견적 및 매칭</option>
-                                    <option value="REPORT">사용자 신고</option>
-                                    <option value="OTHER">서비스 이용(기타)</option>
+                                    <option value="all">All Categories</option>
+                                    <option value="ACCOUNT">Account & Login</option>
+                                    <option value="PAYMENT">Payment & Refund</option>
+                                    <option value="MATCHING">Quotes & Matching</option>
+                                    <option value="REPORT">User Report</option>
+                                    <option value="OTHER">Service Usage (Other)</option>
                                 </select>
                             </div>
 
                             <div className="bg-gray-800 rounded-xl border border-gray-700 overflow-x-auto">
                                 {inquiriesLoading ? (
-                                    <div className="p-12 text-center text-gray-500">불러오는 중...</div>
+                                    <div className="p-12 text-center text-gray-500">Loading...</div>
                                 ) : (
                                     <table className="w-full text-sm">
                                         <thead><tr className="border-b border-gray-700 text-gray-400 text-xs uppercase">
-                                            <th className="p-3 text-left w-20">상태</th>
-                                            <th className="p-3 text-left w-28">유형</th>
-                                            <th className="p-3 text-left flex-1 min-w-[200px]">제목</th>
-                                            <th className="p-3 text-left w-40">작성자</th>
-                                            <th className="p-3 text-left w-36">작성일</th>
-                                            <th className="p-3 text-right w-24">관리</th>
+                                            <th className="p-3 text-left w-20">Status</th>
+                                            <th className="p-3 text-left w-28">Type</th>
+                                            <th className="p-3 text-left flex-1 min-w-[200px]">Title</th>
+                                            <th className="p-3 text-left w-40">Author</th>
+                                            <th className="p-3 text-left w-36">Date</th>
+                                            <th className="p-3 text-right w-24">Actions</th>
                                         </tr></thead>
                                         <tbody>
                                             {inquiries.map(iq => (
                                                 <tr key={iq.id} className="border-b border-gray-700/50 hover:bg-gray-700/20 transition">
                                                     <td className="p-3">
                                                         <span className={`text-xs font-bold px-2 py-1 rounded-full ${iq.status === 'resolved' ? 'bg-green-900/50 text-green-300' : iq.status === 'in_progress' ? 'bg-blue-900/50 text-blue-300' : 'bg-yellow-900/50 text-yellow-300'}`}>
-                                                            {iq.status === 'resolved' ? '답변완료' : iq.status === 'in_progress' ? '처리중' : '접수대기'}
+                                                            {iq.status === 'resolved' ? 'Resolved' : iq.status === 'in_progress' ? 'In Progress' : 'Pending'}
                                                         </span>
                                                     </td>
                                                     <td className="p-3 text-gray-300 text-xs font-mono">{iq.category}</td>
@@ -4115,20 +4146,20 @@ function AdminDashboardPageContent() {
                                                         )}
                                                     </td>
                                                     <td className="p-3 text-gray-400 text-xs">
-                                                        <span className="font-bold text-gray-300">{iq.users?.nickname || iq.users?.name || '알수없음'}</span>
+                                                        <span className="font-bold text-gray-300">{iq.users?.nickname || iq.users?.name || 'Unknown'}</span>
                                                         <span className="text-gray-500 block text-[10px] mt-0.5">{iq.user_type}</span>
                                                     </td>
                                                     <td className="p-3 text-gray-500 text-xs">{fmtDate(iq.created_at)}</td>
                                                     <td className="p-3 text-right">
                                                         {iq.status === 'resolved' ? (
-                                                            <button onClick={() => { setSelectedInquiry(iq); setReplyContent(iq.admin_reply || ''); }} className="text-green-300 bg-green-900/30 border border-green-900/60 hover:bg-green-700 hover:text-white px-3 py-1.5 rounded transition text-xs font-bold">답변보기</button>
+                                                            <button onClick={() => { setSelectedInquiry(iq); setReplyContent(iq.admin_reply || ''); }} className="text-green-300 bg-green-900/30 border border-green-900/60 hover:bg-green-700 hover:text-white px-3 py-1.5 rounded transition text-xs font-bold">View Reply</button>
                                                         ) : (
-                                                            <button onClick={() => { setSelectedInquiry(iq); setReplyContent(iq.admin_reply || ''); }} className="text-blue-300 bg-blue-900/30 border border-blue-900/60 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded transition text-xs font-bold">답변하기</button>
+                                                            <button onClick={() => { setSelectedInquiry(iq); setReplyContent(iq.admin_reply || ''); }} className="text-blue-300 bg-blue-900/30 border border-blue-900/60 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded transition text-xs font-bold">Reply</button>
                                                         )}
                                                     </td>
                                                 </tr>
                                             ))}
-                                            {inquiries.length === 0 && <tr><td colSpan={6} className="p-12 text-center text-gray-500">조회된 문의 내역이 없습니다. 지정한 필터를 확인해주세요.</td></tr>}
+                                            {inquiries.length === 0 && <tr><td colSpan={6} className="p-12 text-center text-gray-500">No inquiries found. Please check the selected filters.</td></tr>}
                                         </tbody>
                                     </table>
                                 )}
@@ -4136,10 +4167,10 @@ function AdminDashboardPageContent() {
                             {inquiriesTotalCount > INQUIRIES_PAGE_SIZE && (
                                 <div className="flex items-center justify-between px-4 py-3 border-t border-gray-700">
                                     <span className="text-xs text-gray-500">
-                                        총 {inquiriesTotalCount}건 · {inquiriesPage}p / {Math.ceil(inquiriesTotalCount / INQUIRIES_PAGE_SIZE)}p
+                                        Total {inquiriesTotalCount} · Page {inquiriesPage} / {Math.ceil(inquiriesTotalCount / INQUIRIES_PAGE_SIZE)}
                                     </span>
                                     <div className="flex gap-1">
-                                        <button onClick={() => loadInquiries(inquiriesPage - 1)} disabled={inquiriesPage <= 1 || inquiriesLoading} className="px-3 py-1.5 text-xs bg-gray-700 hover:bg-gray-600 disabled:opacity-30 text-white rounded transition">← 이전</button>
+                                        <button onClick={() => loadInquiries(inquiriesPage - 1)} disabled={inquiriesPage <= 1 || inquiriesLoading} className="px-3 py-1.5 text-xs bg-gray-700 hover:bg-gray-600 disabled:opacity-30 text-white rounded transition">← Prev</button>
                                         {Array.from({ length: Math.min(5, Math.ceil(inquiriesTotalCount / INQUIRIES_PAGE_SIZE)) }, (_, i) => {
                                             const totalPages = Math.ceil(inquiriesTotalCount / INQUIRIES_PAGE_SIZE);
                                             const startPage = Math.max(1, Math.min(inquiriesPage - 2, totalPages - 4));
@@ -4147,7 +4178,7 @@ function AdminDashboardPageContent() {
                                             if (p > totalPages) return null;
                                             return <button key={p} onClick={() => loadInquiries(p)} className={`px-3 py-1.5 text-xs rounded transition ${p === inquiriesPage ? 'bg-blue-600 text-white font-bold' : 'bg-gray-700 hover:bg-gray-600 text-gray-300'}`}>{p}</button>;
                                         })}
-                                        <button onClick={() => loadInquiries(inquiriesPage + 1)} disabled={inquiriesPage >= Math.ceil(inquiriesTotalCount / INQUIRIES_PAGE_SIZE) || inquiriesLoading} className="px-3 py-1.5 text-xs bg-gray-700 hover:bg-gray-600 disabled:opacity-30 text-white rounded transition">다음 →</button>
+                                        <button onClick={() => loadInquiries(inquiriesPage + 1)} disabled={inquiriesPage >= Math.ceil(inquiriesTotalCount / INQUIRIES_PAGE_SIZE) || inquiriesLoading} className="px-3 py-1.5 text-xs bg-gray-700 hover:bg-gray-600 disabled:opacity-30 text-white rounded transition">Next →</button>
                                     </div>
                                 </div>
                             )}
@@ -4155,7 +4186,7 @@ function AdminDashboardPageContent() {
 
                         {/* ═══ PAYOUT MANAGEMENT ═══ */}
                         {tab === 'payout' && (<>
-                            <h1 className="text-2xl font-black mb-4">💸 출금 관리</h1>
+                            <h1 className="text-2xl font-black mb-4">💸 Payout Management</h1>
 
                             {/* 상단: 필터 탭 + 새로고침 */}
                             <div className="flex items-center justify-between mb-4">
@@ -4166,7 +4197,7 @@ function AdminDashboardPageContent() {
                                             onClick={() => setPayoutFilter(f)}
                                             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${payoutFilter === f ? 'bg-gray-700 text-white' : 'text-gray-500 hover:text-white'}`}
                                         >
-                                            {{ all: '전체', PENDING: '검토중', HELD: '홀드', APPROVED: '승인완료', REJECTED: '거절' }[f]}
+                                            {{ all: 'All', PENDING: 'Pending', HELD: 'Held', APPROVED: 'Approved', REJECTED: 'Rejected' }[f]}
                                             {f === 'PENDING' && payoutRequests.filter(p => p.status === 'PENDING').length > 0 && (
                                                 <span className="ml-1.5 bg-blue-500 text-white text-[10px] px-1.5 py-0.5 rounded-full">
                                                     {payoutRequests.filter(p => p.status === 'PENDING').length}
@@ -4180,26 +4211,26 @@ function AdminDashboardPageContent() {
                                         </button>
                                     ))}
                                 </div>
-                                <button onClick={loadPayoutRequests} className="text-xs text-gray-400 hover:text-white flex items-center gap-1">🔄 새로고침</button>
+                                <button onClick={loadPayoutRequests} className="text-xs text-gray-400 hover:text-white flex items-center gap-1">🔄 Refresh</button>
                             </div>
 
                             <div className="bg-gray-800 rounded-xl border border-gray-700 overflow-x-auto">
                                 <table className="w-full text-sm">
                                     <thead>
                                         <tr className="border-b border-gray-700 text-gray-400 text-xs uppercase">
-                                            <th className="p-2.5 text-left">신청일</th>
-                                            <th className="p-2.5 text-left">고수</th>
-                                            <th className="p-2.5 text-left">계좌 정보</th>
-                                            <th className="p-2.5 text-right">금액</th>
-                                            <th className="p-2.5 text-center">상태</th>
-                                            <th className="p-2.5 text-center">처리</th>
+                                            <th className="p-2.5 text-left">Request Date</th>
+                                            <th className="p-2.5 text-left">Pro</th>
+                                            <th className="p-2.5 text-left">Account Info</th>
+                                            <th className="p-2.5 text-right">Amount</th>
+                                            <th className="p-2.5 text-center">Status</th>
+                                            <th className="p-2.5 text-center">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {payoutLoading ? (
-                                            <tr><td colSpan={6} className="p-6 text-center text-gray-500">로딩 중...</td></tr>
+                                            <tr><td colSpan={6} className="p-6 text-center text-gray-500">Loading...</td></tr>
                                         ) : payoutRequests.filter(p => payoutFilter === 'all' || p.status === payoutFilter).length === 0 ? (
-                                            <tr><td colSpan={6} className="p-6 text-center text-gray-500">출금 신청 없음</td></tr>
+                                            <tr><td colSpan={6} className="p-6 text-center text-gray-500">No payout requests</td></tr>
                                         ) : payoutRequests
                                             .filter(p => payoutFilter === 'all' || p.status === payoutFilter)
                                             .map(p => (
@@ -4221,7 +4252,7 @@ function AdminDashboardPageContent() {
                                                                 p.status === 'HELD' ? 'bg-yellow-900/50 text-yellow-300' :
                                                                     'bg-blue-900/50 text-blue-300'
                                                         }`}>
-                                                        {p.status === 'APPROVED' ? '승인완료' : p.status === 'REJECTED' ? '거절' : p.status === 'HELD' ? '홀드' : '검토중'}
+                                                        {p.status === 'APPROVED' ? 'Approved' : p.status === 'REJECTED' ? 'Rejected' : p.status === 'HELD' ? 'Held' : 'Pending'}
                                                     </span>
                                                     {p.status === 'HELD' && p.hold_reason && (
                                                         <p className="text-xs text-yellow-400 mt-1 max-w-[160px] break-words">{p.hold_reason}</p>
@@ -4234,15 +4265,15 @@ function AdminDashboardPageContent() {
                                                     {/* HELD: 승인/거절 버튼 노출 금지 — 7일 홀드 정책 준수 */}
                                                     {p.status === 'HELD' ? (
                                                         <div className="text-center">
-                                                            <p className="text-xs text-yellow-400 font-semibold">7일 홀드 중</p>
-                                                            <p className="text-[10px] text-gray-500 mt-0.5">고수에게 재신청 안내</p>
+                                                            <p className="text-xs text-yellow-400 font-semibold">7-Day Hold</p>
+                                                            <p className="text-[10px] text-gray-500 mt-0.5">Notify pro to re-apply</p>
                                                         </div>
                                                     ) : p.status === 'PENDING' ? (
                                                         <div className="flex flex-col gap-1 items-center">
                                                             {/* 승인 시 명의 확인 메모 필수 */}
                                                             <input
                                                                 type="text"
-                                                                placeholder="명의 확인 메모 (필수)"
+                                                                placeholder="Identity verification memo (required)"
                                                                 value={payoutNote[p.id] || ''}
                                                                 onChange={e => setPayoutNote(prev => ({ ...prev, [p.id]: e.target.value }))}
                                                                 className="text-xs bg-gray-700 border border-gray-600 rounded px-2 py-1 text-white w-32 focus:outline-none focus:border-blue-500"
@@ -4251,8 +4282,8 @@ function AdminDashboardPageContent() {
                                                                 <button
                                                                     disabled={payoutActionLoading === p.id}
                                                                     onClick={async () => {
-                                                                        if (!payoutNote[p.id]?.trim()) { alert('승인 전 예금주 명의 확인 메모를 입력해주세요.\n예) "명의 확인 완료 - 홍길동"'); return; }
-                                                                        if (!window.confirm(`예금주 [${p.account_holder}] 명의가 가입자 명의와 일치하는지 확인하셨습니까?\n\n확인 후 승인 버튼을 눌러주세요.`)) return;
+                                                                        if (!payoutNote[p.id]?.trim()) { alert('Please enter the account holder identity verification memo before approving.\ne.g., "Identity verified - John Doe"'); return; }
+                                                                        if (!window.confirm(`Have you verified that the account holder [${p.account_holder}] matches the registered name?\n\nClick OK to approve.`)) return;
                                                                         setPayoutActionLoading(p.id);
                                                                         const { data: adminData } = await supabase.auth.getUser();
                                                                         const { error } = await supabase.rpc('admin_process_payout', {
@@ -4261,26 +4292,26 @@ function AdminDashboardPageContent() {
                                                                             p_action: 'APPROVE',
                                                                             p_note: payoutNote[p.id] || ''
                                                                         });
-                                                                        if (error) alert('처리 실패: ' + error.message);
+                                                                        if (error) alert('Action failed: ' + error.message);
                                                                         else {
                                                                             // ── 감사 로그 기록 ──
                                                                             const { error: logErr } = await supabase.from('admin_action_logs').insert({
                                                                                 target_user_id: p.pro_id,
                                                                                 admin_id: adminData.user?.id,
                                                                                 action_type: 'PAYOUT_APPROVE',
-                                                                                reason: `출금 승인 ₱${p.amount.toLocaleString()} — ${payoutNote[p.id] || '메모 없음'}`,
+                                                                                reason: `Payout approved ₱${p.amount.toLocaleString()} — ${payoutNote[p.id] || 'No memo'}`,
                                                                             });
                                                                             if (logErr) console.error('❌ 출금 승인 감사 로그 실패:', logErr);
-                                                                            alert('승인 완료.'); loadPayoutRequests();
+                                                                            alert('Approved.'); loadPayoutRequests();
                                                                         }
                                                                         setPayoutActionLoading(null);
                                                                     }}
                                                                     className="text-xs bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white px-2 py-1 rounded font-bold"
-                                                                >승인</button>
+                                                                >Approve</button>
                                                                 <button
                                                                     disabled={payoutActionLoading === p.id}
                                                                     onClick={async () => {
-                                                                        if (!payoutNote[p.id]?.trim()) { alert('거절 사유를 입력해주세요.'); return; }
+                                                                        if (!payoutNote[p.id]?.trim()) { alert('Please enter a rejection reason.'); return; }
                                                                         setPayoutActionLoading(p.id);
                                                                         const { data: adminData } = await supabase.auth.getUser();
                                                                         const { error } = await supabase.rpc('admin_process_payout', {
@@ -4289,26 +4320,26 @@ function AdminDashboardPageContent() {
                                                                             p_action: 'REJECT',
                                                                             p_note: payoutNote[p.id] || ''
                                                                         });
-                                                                        if (error) alert('처리 실패: ' + error.message);
+                                                                        if (error) alert('Action failed: ' + error.message);
                                                                         else {
                                                                             // ── 감사 로그 기록 ──
                                                                             const { error: logErr } = await supabase.from('admin_action_logs').insert({
                                                                                 target_user_id: p.pro_id,
                                                                                 admin_id: adminData.user?.id,
                                                                                 action_type: 'PAYOUT_REJECT',
-                                                                                reason: `출금 거절 ₱${p.amount.toLocaleString()} — ${payoutNote[p.id] || '사유 없음'}`,
+                                                                                reason: `Payout rejected ₱${p.amount.toLocaleString()} — ${payoutNote[p.id] || 'No reason'}`,
                                                                             });
                                                                             if (logErr) console.error('❌ 출금 거절 감사 로그 실패:', logErr);
-                                                                            alert('거절 처리 완료.'); loadPayoutRequests();
+                                                                            alert('Rejected.'); loadPayoutRequests();
                                                                         }
                                                                         setPayoutActionLoading(null);
                                                                     }}
                                                                     className="text-xs bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white px-2 py-1 rounded font-bold"
-                                                                >거절</button>
+                                                                >Reject</button>
                                                             </div>
                                                         </div>
                                                     ) : (
-                                                        <span className="text-xs text-gray-600">처리완료</span>
+                                                        <span className="text-xs text-gray-600">Processed</span>
                                                     )}
                                                 </td>
                                             </tr>
@@ -4320,24 +4351,24 @@ function AdminDashboardPageContent() {
 
             {/* ═══ AUDIT LOG ═══ */}
             {tab === 'audit_log' && (<>
-                <h1 className="text-2xl font-black mb-4">🔒 감사 로그</h1>
-                <p className="text-gray-500 text-xs mb-4">관리자가 수행한 모든 주요 액션 기록입니다. 누가, 언제, 무슨 처리를 했는지 추적합니다.</p>
+                <h1 className="text-2xl font-black mb-4">🔒 Audit Log</h1>
+                <p className="text-gray-500 text-xs mb-4">A record of all major actions performed by admins. Tracks who did what and when.</p>
 
                 {/* 필터 + 새로고침 */}
                 <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
                     <div className="flex flex-wrap gap-1 bg-gray-800/60 rounded-xl p-1">
                         {([
-                            ['all', '전체'],
-                            ['CASH_CHARGE', '캐시 충전'],
-                            ['CASH_REFUND', '캐시 환불'],
-                            ['PAYOUT_APPROVE', '출금 승인'],
-                            ['PAYOUT_REJECT', '출금 거절'],
-                            ['SUSPEND', '계정 정지'],
-                            ['UNSUSPEND', '정지 해제'],
-                            ['DELETE', '계정 삭제'],
-                            ['REVIEW_BLIND', '리뷰 블라인드'],
-                            ['REVIEW_DELETE', '리뷰 삭제'],
-                            ['ADMIN_ROLE_CHANGE', '관리자 지정/해제'],
+                            ['all', 'All'],
+                            ['CASH_CHARGE', 'Cash Top-up'],
+                            ['CASH_REFUND', 'Cash Refund'],
+                            ['PAYOUT_APPROVE', 'Payout Approved'],
+                            ['PAYOUT_REJECT', 'Payout Rejected'],
+                            ['SUSPEND', 'Suspend'],
+                            ['UNSUSPEND', 'Unsuspend'],
+                            ['DELETE', 'Delete Account'],
+                            ['REVIEW_BLIND', 'Review Hidden'],
+                            ['REVIEW_DELETE', 'Review Deleted'],
+                            ['ADMIN_ROLE_CHANGE', 'Admin Role Change'],
                         ] as const).map(([k, label]) => (
                             <button key={k} onClick={() => { setAuditFilter(k); setAuditPage(1); loadAuditLogs(1, k); }}
                                 className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold transition whitespace-nowrap ${auditFilter === k ? 'bg-gray-700 text-white' : 'text-gray-500 hover:text-white'}`}>
@@ -4345,29 +4376,29 @@ function AdminDashboardPageContent() {
                             </button>
                         ))}
                     </div>
-                    <button onClick={() => loadAuditLogs(auditPage, auditFilter)} className="text-xs text-gray-400 hover:text-white flex items-center gap-1">🔄 새로고침</button>
+                    <button onClick={() => loadAuditLogs(auditPage, auditFilter)} className="text-xs text-gray-400 hover:text-white flex items-center gap-1">🔄 Refresh</button>
                 </div>
 
                 {/* 총 건수 */}
-                <p className="text-xs text-gray-500 mb-3">총 {auditTotal.toLocaleString()}건</p>
+                <p className="text-xs text-gray-500 mb-3">Total {auditTotal.toLocaleString()}</p>
 
                 {/* 테이블 */}
                 <div className="bg-gray-800 rounded-xl border border-gray-700 overflow-x-auto">
                     <table className="w-full text-sm">
                         <thead>
                             <tr className="border-b border-gray-700 text-gray-400 text-xs uppercase">
-                                <th className="p-2.5 text-left">시간</th>
-                                <th className="p-2.5 text-left">처리한 관리자</th>
-                                <th className="p-2.5 text-left">대상 유저</th>
-                                <th className="p-2.5 text-center">액션</th>
-                                <th className="p-2.5 text-left">사유/내용</th>
+                                <th className="p-2.5 text-left">Time</th>
+                                <th className="p-2.5 text-left">Admin</th>
+                                <th className="p-2.5 text-left">Target User</th>
+                                <th className="p-2.5 text-center">Action</th>
+                                <th className="p-2.5 text-left">Reason / Details</th>
                             </tr>
                         </thead>
                         <tbody>
                             {auditLoading ? (
-                                <tr><td colSpan={5} className="p-6 text-center text-gray-500">로딩 중...</td></tr>
+                                <tr><td colSpan={5} className="p-6 text-center text-gray-500">Loading...</td></tr>
                             ) : auditLogs.length === 0 ? (
-                                <tr><td colSpan={5} className="p-6 text-center text-gray-500">기록 없음</td></tr>
+                                <tr><td colSpan={5} className="p-6 text-center text-gray-500">No records</td></tr>
                             ) : auditLogs.map((log, i) => (
                                 <tr key={log.id || i} className="border-b border-gray-700/50 hover:bg-gray-700/20">
                                     <td className="p-2.5 text-gray-400 text-xs whitespace-nowrap">{fmtDate(log.created_at)}</td>
@@ -4399,16 +4430,16 @@ function AdminDashboardPageContent() {
                                             'bg-gray-700/50 text-gray-400'
                                         }`}>
                                             {{
-                                                CASH_CHARGE: '캐시 충전',
-                                                CASH_REFUND: '캐시 환불',
-                                                PAYOUT_APPROVE: '출금 승인',
-                                                PAYOUT_REJECT: '출금 거절',
-                                                SUSPEND: '계정 정지',
-                                                UNSUSPEND: '정지 해제',
-                                                DELETE: '계정 삭제',
-                                                REVIEW_BLIND: '리뷰 블라인드',
-                                                REVIEW_DELETE: '리뷰 삭제',
-                                                REVIEW_FEATURE: '리뷰 메인노출',
+                                                CASH_CHARGE: 'Cash Top-up',
+                                                CASH_REFUND: 'Cash Refund',
+                                                PAYOUT_APPROVE: 'Payout Approved',
+                                                PAYOUT_REJECT: 'Payout Rejected',
+                                                SUSPEND: 'Suspend',
+                                                UNSUSPEND: 'Unsuspend',
+                                                DELETE: 'Delete Account',
+                                                REVIEW_BLIND: 'Review Hidden',
+                                                REVIEW_DELETE: 'Review Deleted',
+                                                REVIEW_FEATURE: 'Review Featured',
                                             }[log.action_type as string] || log.action_type}
                                         </span>
                                     </td>
@@ -4423,10 +4454,10 @@ function AdminDashboardPageContent() {
                 {auditTotal > AUDIT_PAGE_SIZE && (
                     <div className="flex justify-center gap-2 mt-4">
                         <button disabled={auditPage === 1} onClick={() => { const p = auditPage - 1; setAuditPage(p); loadAuditLogs(p, auditFilter); }}
-                            className="px-3 py-1.5 text-xs bg-gray-800 border border-gray-700 rounded-lg text-gray-400 hover:text-white disabled:opacity-40">← 이전</button>
+                            className="px-3 py-1.5 text-xs bg-gray-800 border border-gray-700 rounded-lg text-gray-400 hover:text-white disabled:opacity-40">← Prev</button>
                         <span className="px-3 py-1.5 text-xs text-gray-400">{auditPage} / {Math.ceil(auditTotal / AUDIT_PAGE_SIZE)}</span>
                         <button disabled={auditPage >= Math.ceil(auditTotal / AUDIT_PAGE_SIZE)} onClick={() => { const p = auditPage + 1; setAuditPage(p); loadAuditLogs(p, auditFilter); }}
-                            className="px-3 py-1.5 text-xs bg-gray-800 border border-gray-700 rounded-lg text-gray-400 hover:text-white disabled:opacity-40">다음 →</button>
+                            className="px-3 py-1.5 text-xs bg-gray-800 border border-gray-700 rounded-lg text-gray-400 hover:text-white disabled:opacity-40">Next →</button>
                     </div>
                 )}
             </>)}
@@ -4446,9 +4477,9 @@ function AdminDashboardPageContent() {
                                                 selectedInquiry.status === 'in_progress' ? 'bg-blue-900/50 text-blue-300' :
                                                     'bg-yellow-900/50 text-yellow-300'
                                             }`}>
-                                            {selectedInquiry.status === 'resolved' ? '답변완료' : selectedInquiry.status === 'in_progress' ? '처리중' : '접수대기'}
+                                            {selectedInquiry.status === 'resolved' ? 'Resolved' : selectedInquiry.status === 'in_progress' ? 'In Progress' : 'Pending'}
                                         </span>
-                                        1:1 문의 상세
+                                        1:1 Inquiry Detail
                                     </h3>
                                 </div>
                                 <button onClick={() => { setSelectedInquiry(null); setReplyImages([]); setReplyImagePreviews([]); }} className="text-gray-400 hover:text-white text-xl">✕</button>
@@ -4459,16 +4490,16 @@ function AdminDashboardPageContent() {
                                         <h4 className="text-xl font-bold text-white leading-snug">{selectedInquiry.title}</h4>
                                     </div>
                                     <div className="flex gap-4 text-xs text-gray-400 mb-4 bg-gray-900/50 p-3 rounded-lg border border-gray-700/50">
-                                        <p><strong>작성자:</strong> {selectedInquiry.users?.nickname || selectedInquiry.users?.name || '알수없음'} ({selectedInquiry.user_type})</p>
-                                        <p><strong>유형:</strong> {selectedInquiry.category}</p>
-                                        <p><strong>작성일:</strong> {fmtDate(selectedInquiry.created_at)}</p>
+                                        <p><strong>Author:</strong> {selectedInquiry.users?.nickname || selectedInquiry.users?.name || 'Unknown'} ({selectedInquiry.user_type})</p>
+                                        <p><strong>Type:</strong> {selectedInquiry.category}</p>
+                                        <p><strong>Date:</strong> {fmtDate(selectedInquiry.created_at)}</p>
                                     </div>
                                     <p className="text-gray-300 text-sm whitespace-pre-wrap bg-gray-700/30 p-4 rounded-xl leading-relaxed border border-gray-700/30">{selectedInquiry.content}</p>
                                     {Array.isArray(selectedInquiry.image_urls) && selectedInquiry.image_urls.length > 0 && (
                                         <div className="flex flex-wrap gap-2 mt-3">
                                             {selectedInquiry.image_urls.map((url: string, idx: number) => (
                                                 <a key={idx} href={url} target="_blank" rel="noopener noreferrer">
-                                                    <img src={url} alt={`첨부 ${idx + 1}`} className="w-20 h-20 object-cover rounded-lg border border-gray-600 hover:opacity-80 transition" />
+                                                    <img src={url} alt={`Attachment ${idx + 1}`} className="w-20 h-20 object-cover rounded-lg border border-gray-600 hover:opacity-80 transition" />
                                                 </a>
                                             ))}
                                         </div>
@@ -4478,27 +4509,27 @@ function AdminDashboardPageContent() {
                                 <div className="border-t border-gray-700 pt-6">
                                     <label className="flex items-center gap-2 text-sm font-bold text-blue-400 mb-3">
                                         <span className="text-lg">🧑‍💻</span>
-                                        {selectedInquiry.status === 'resolved' ? '등록된 답변 내용 (읽기 전용)' : '관리자 답변 작성'}
+                                        {selectedInquiry.status === 'resolved' ? 'Registered Reply (Read-only)' : 'Write Admin Reply'}
                                     </label>
                                     <textarea
                                         value={replyContent}
                                         onChange={e => { if (selectedInquiry.status !== 'resolved') setReplyContent(e.target.value); }}
                                         readOnly={selectedInquiry.status === 'resolved'}
-                                        placeholder={selectedInquiry.status === 'resolved' ? '등록된 답변이 없습니다.' : '고객에게 전달될 답변 내용을 작성해주세요. (HTML 태그 사용 가능)'}
+                                        placeholder={selectedInquiry.status === 'resolved' ? 'No reply registered.' : 'Write the reply to be sent to the customer. (HTML tags supported)'}
                                         className={`w-full rounded-xl p-4 text-sm text-white focus:outline-none min-h-[160px] ${selectedInquiry.status === 'resolved'
                                                 ? 'bg-gray-700/40 border border-gray-600/40 cursor-default text-gray-300'
                                                 : 'bg-gray-900 border border-gray-700 focus:ring-2 focus:ring-blue-500'
                                             }`}
                                     />
-                                    <p className="text-xs text-gray-500 mt-2 ml-1">답변 저장 시 상태가 '답변 완료'로 자동 변경되며 사용자에게 즉시 노출됩니다.</p>
+                                    <p className="text-xs text-gray-500 mt-2 ml-1">When saved, the status will automatically change to 'Resolved' and be immediately visible to the user.</p>
                                     {/* 기존 등록된 답변 이미지 표시 */}
                                     {Array.isArray(selectedInquiry.admin_reply_images) && selectedInquiry.admin_reply_images.length > 0 && (
                                         <div className="mt-3">
-                                            <p className="text-xs font-bold text-gray-400 mb-2">📎 등록된 답변 이미지</p>
+                                            <p className="text-xs font-bold text-gray-400 mb-2">📎 Registered Reply Images</p>
                                             <div className="flex flex-wrap gap-2">
                                                 {selectedInquiry.admin_reply_images.map((url: string, idx: number) => (
                                                     <a key={idx} href={url} target="_blank" rel="noopener noreferrer">
-                                                        <img src={url} alt={`답변첨부 ${idx + 1}`} className="w-20 h-20 object-cover rounded-lg border border-gray-600 hover:opacity-80 transition" />
+                                                        <img src={url} alt={`Reply attachment ${idx + 1}`} className="w-20 h-20 object-cover rounded-lg border border-gray-600 hover:opacity-80 transition" />
                                                     </a>
                                                 ))}
                                             </div>
@@ -4507,12 +4538,12 @@ function AdminDashboardPageContent() {
 
                                     {/* 답변 이미지 첨부 */}
                                     <div className="mt-4">
-                                        <p className="text-xs font-bold text-gray-400 mb-2">📎 답변 이미지 첨부 <span className="font-normal text-gray-500">(선택, 최대 5장)</span></p>
+                                        <p className="text-xs font-bold text-gray-400 mb-2">📎 Attach Reply Images <span className="font-normal text-gray-500">(optional, max 5)</span></p>
                                         {replyImagePreviews.length > 0 && (
                                             <div className="flex flex-wrap gap-2 mb-2">
                                                 {replyImagePreviews.map((src, idx) => (
                                                     <div key={idx} className="relative w-16 h-16 rounded-lg overflow-hidden border border-gray-600">
-                                                        <img src={src} alt={`답변첨부${idx + 1}`} className="w-full h-full object-cover" />
+                                                        <img src={src} alt={`Reply attachment ${idx + 1}`} className="w-full h-full object-cover" />
                                                         <button
                                                             type="button"
                                                             onClick={() => handleRemoveReplyImage(idx)}
@@ -4536,7 +4567,7 @@ function AdminDashboardPageContent() {
                                                     htmlFor="reply-image-input"
                                                     className="inline-flex items-center gap-1.5 px-3 py-2 border border-dashed border-gray-600 rounded-lg text-xs text-gray-400 font-medium hover:border-blue-500 hover:text-blue-400 cursor-pointer transition"
                                                 >
-                                                    🖼️ 사진 추가 ({replyImages.length}/5)
+                                                    🖼️ Add Image ({replyImages.length}/5)
                                                 </label>
                                             </>
                                         )}
@@ -4551,33 +4582,33 @@ function AdminDashboardPageContent() {
                                             onClick={() => handleUpdateInquiryStatus(selectedInquiry.id, 'pending')}
                                             disabled={inquiryStatusUpdating}
                                             className="px-3 py-2 text-xs bg-yellow-900/40 border border-yellow-700/50 text-yellow-300 hover:bg-yellow-800/60 disabled:opacity-40 font-bold rounded-lg transition"
-                                        >접수대기로 변경</button>
+                                        >Set to Pending</button>
                                     )}
                                     {selectedInquiry.status !== 'in_progress' && (
                                         <button
                                             onClick={() => handleUpdateInquiryStatus(selectedInquiry.id, 'in_progress')}
                                             disabled={inquiryStatusUpdating}
                                             className="px-3 py-2 text-xs bg-blue-900/40 border border-blue-700/50 text-blue-300 hover:bg-blue-800/60 disabled:opacity-40 font-bold rounded-lg transition"
-                                        >처리중으로 변경</button>
+                                        >Set to In Progress</button>
                                     )}
                                     {selectedInquiry.status !== 'resolved' && (
                                         <button
                                             onClick={() => handleUpdateInquiryStatus(selectedInquiry.id, 'resolved')}
                                             disabled={inquiryStatusUpdating}
                                             className="px-3 py-2 text-xs bg-green-900/40 border border-green-700/50 text-green-300 hover:bg-green-800/60 disabled:opacity-40 font-bold rounded-lg transition"
-                                        >답변완료로 변경</button>
+                                        >Set to Resolved</button>
                                     )}
                                 </div>
                                 {/* 오른쪽: 닫기 + 저장 버튼 */}
                                 <div className="flex gap-2">
-                                    <button onClick={() => { setSelectedInquiry(null); setReplyImages([]); setReplyImagePreviews([]); }} className="px-5 py-2.5 border border-gray-600 text-gray-300 hover:bg-gray-700 font-bold rounded-lg transition text-sm">닫기</button>
+                                    <button onClick={() => { setSelectedInquiry(null); setReplyImages([]); setReplyImagePreviews([]); }} className="px-5 py-2.5 border border-gray-600 text-gray-300 hover:bg-gray-700 font-bold rounded-lg transition text-sm">Close</button>
                                     {selectedInquiry.status !== 'resolved' && (
                                         <button
                                             onClick={handleSaveInquiryReply}
                                             disabled={replySaving || !replyContent.trim()}
                                             className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:text-blue-400 disabled:cursor-not-allowed text-white font-bold rounded-lg transition text-sm flex items-center gap-2"
                                         >
-                                            {replySaving ? '저장 중...' : '저장 및 답변 완료 처리'}
+                                            {replySaving ? 'Saving...' : 'Save & Mark Resolved'}
                                         </button>
                                     )}
                                 </div>
@@ -4593,40 +4624,40 @@ function AdminDashboardPageContent() {
                     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
                         <div className="bg-gray-800 rounded-2xl w-full max-w-md border border-gray-700 shadow-2xl">
                             <div className="p-5 border-b border-gray-700">
-                                <h3 className="text-lg font-bold">{cashModal.type === 'charge' ? '💎 캐시 충전' : '🔥 캐시 환불/차감'}</h3>
-                                <p className="text-sm text-gray-400 mt-1">대상: <span className="text-white font-semibold">{cashModal.pro.nickname || cashModal.pro.name || cashModal.pro.pro_id.slice(0, 12)}</span></p>
-                                <p className="text-sm text-gray-400">현재 잔액: <span className="text-blue-400 font-bold">₱{fmtNum(cashModal.pro.current_cash)}</span></p>
+                                <h3 className="text-lg font-bold">{cashModal.type === 'charge' ? '💎 Cash Top-up' : '🔥 Cash Refund/Deduct'}</h3>
+                                <p className="text-sm text-gray-400 mt-1">Target: <span className="text-white font-semibold">{cashModal.pro.nickname || cashModal.pro.name || cashModal.pro.pro_id.slice(0, 12)}</span></p>
+                                <p className="text-sm text-gray-400">Current Balance: <span className="text-blue-400 font-bold">₱{fmtNum(cashModal.pro.current_cash)}</span></p>
                             </div>
                             <div className="p-5 space-y-3">
                                 {/* [보너스 캐시 확장] 캐시 유형 선택 라디오 */}
                                 <div>
-                                    <label className="text-xs text-gray-400 font-bold mb-2 block">캐시 유형 선택</label>
+                                    <label className="text-xs text-gray-400 font-bold mb-2 block">Cash Type</label>
                                     <div className="flex gap-2">
                                         <button onClick={() => setCashType('REAL')}
                                             className={`flex-1 py-2 rounded-lg text-sm font-bold transition border ${cashType === 'REAL' ? 'bg-blue-600/20 text-blue-400 border-blue-500' : 'bg-gray-700 text-gray-400 border-gray-600 hover:border-gray-500'}`}>
-                                            💎 실제 캐시
+                                            💎 Real Cash
                                         </button>
                                         <button onClick={() => setCashType('BONUS')}
                                             className={`flex-1 py-2 rounded-lg text-sm font-bold transition border ${cashType === 'BONUS' ? 'bg-green-600/20 text-green-400 border-green-500' : 'bg-gray-700 text-gray-400 border-gray-600 hover:border-gray-500'}`}>
-                                            🎁 보너스 캐시
+                                            🎁 Bonus Cash
                                         </button>
                                     </div>
                                 </div>
-                                <div><label className="text-xs text-gray-400 font-bold mb-1 block">{cashModal.type === 'charge' ? '충전' : '환불/차감'} 금액 (₱)</label>
-                                    <input type="number" value={cashAmount} onChange={e => setCashAmount(e.target.value)} placeholder="금액 입력" className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" autoFocus /></div>
-                                <div><label className="text-xs text-gray-400 font-bold mb-1 block">사유 (원장 기록)</label>
-                                    <input type="text" value={cashDesc} onChange={e => setCashDesc(e.target.value)} placeholder={cashType === 'BONUS' ? '예: 이벤트 보너스 지급' : '예: 고객 서비스 보상'} className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" /></div>
+                                <div><label className="text-xs text-gray-400 font-bold mb-1 block">{cashModal.type === 'charge' ? 'Top-up' : 'Refund/Deduct'} Amount (₱)</label>
+                                    <input type="number" value={cashAmount} onChange={e => setCashAmount(e.target.value)} placeholder="Enter amount" className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" autoFocus /></div>
+                                <div><label className="text-xs text-gray-400 font-bold mb-1 block">Reason (ledger record)</label>
+                                    <input type="text" value={cashDesc} onChange={e => setCashDesc(e.target.value)} placeholder={cashType === 'BONUS' ? 'e.g., Event bonus payout' : 'e.g., Customer service compensation'} className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" /></div>
                                 {cashAmount && Number(cashAmount) > 0 && (
                                     <div className="bg-gray-900 rounded-lg p-3 text-sm space-y-1">
-                                        <div className="flex justify-between text-gray-400"><span>{cashType === 'BONUS' ? '보너스 잔액' : '실제 잔액'}</span><span>₱{fmtNum(cashType === 'BONUS' ? (cashModal.pro.bonus_cash || 0) : cashModal.pro.current_cash)}</span></div>
+                                        <div className="flex justify-between text-gray-400"><span>{cashType === 'BONUS' ? 'Bonus Balance' : 'Real Balance'}</span><span>₱{fmtNum(cashType === 'BONUS' ? (cashModal.pro.bonus_cash || 0) : cashModal.pro.current_cash)}</span></div>
                                         <div className={`flex justify-between font-bold ${cashModal.type === 'charge' ? 'text-blue-400' : 'text-red-400'}`}><span>{cashModal.type === 'charge' ? '+' : '-'}</span><span>₱{fmtNum(Number(cashAmount))}</span></div>
-                                        <div className="border-t border-gray-700 pt-1 flex justify-between text-white font-bold"><span>변경 후</span><span>₱{fmtNum((cashType === 'BONUS' ? (cashModal.pro.bonus_cash || 0) : cashModal.pro.current_cash) + (cashModal.type === 'charge' ? Number(cashAmount) : -Number(cashAmount)))}</span></div>
+                                        <div className="border-t border-gray-700 pt-1 flex justify-between text-white font-bold"><span>After</span><span>₱{fmtNum((cashType === 'BONUS' ? (cashModal.pro.bonus_cash || 0) : cashModal.pro.current_cash) + (cashModal.type === 'charge' ? Number(cashAmount) : -Number(cashAmount)))}</span></div>
                                     </div>
                                 )}
                             </div>
                             <div className="p-5 border-t border-gray-700 flex gap-2">
-                                <button onClick={() => setCashModal(null)} className="flex-1 py-2.5 rounded-lg bg-gray-700 hover:bg-gray-600 text-white font-bold text-sm">취소</button>
-                                <button onClick={handleCashAction} disabled={cashProcessing} className={`flex-1 py-2.5 rounded-lg font-bold text-sm disabled:opacity-50 ${cashModal.type === 'charge' ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-red-600 hover:bg-red-700 text-white'}`}>{cashProcessing ? '처리 중...' : (cashModal.type === 'charge' ? '충전 확인' : '환불 확인')}</button>
+                                <button onClick={() => setCashModal(null)} className="flex-1 py-2.5 rounded-lg bg-gray-700 hover:bg-gray-600 text-white font-bold text-sm">Cancel</button>
+                                <button onClick={handleCashAction} disabled={cashProcessing} className={`flex-1 py-2.5 rounded-lg font-bold text-sm disabled:opacity-50 ${cashModal.type === 'charge' ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-red-600 hover:bg-red-700 text-white'}`}>{cashProcessing ? 'Processing...' : (cashModal.type === 'charge' ? 'Confirm Top-up' : 'Confirm Refund')}</button>
                             </div>
                         </div>
                     </div>
@@ -4640,21 +4671,21 @@ function AdminDashboardPageContent() {
                         <div className="bg-gray-800 rounded-2xl w-full max-w-3xl border border-gray-700 shadow-2xl max-h-[85vh] flex flex-col" onClick={e => e.stopPropagation()}>
                             <div className="p-5 border-b border-gray-700 flex justify-between items-start">
                                 <div>
-                                    <h3 className="text-lg font-bold">🔍 {drilldown.proName} 개별 거래 내역</h3>
+                                    <h3 className="text-lg font-bold">🔍 {drilldown.proName} Transaction History</h3>
                                     <p className="text-xs text-gray-400 mt-1">{drilldown.proEmail}{drilldown.proPhone ? ` · ${drilldown.proPhone}` : ''}</p>
                                 </div>
                                 <button onClick={() => setDrilldown(null)} className="text-gray-400 hover:text-white text-xl leading-none">✕</button>
                             </div>
-                            {drilldown.loading ? <div className="p-12 text-center text-gray-500">불러오는 중...</div> : (<>
+                            {drilldown.loading ? <div className="p-12 text-center text-gray-500">Loading...</div> : (<>
                                 {/* Drill-down stats */}
                                 {(() => {
                                     const txs = drilldown.txs;
                                     const sumByType = (types: string[]) => txs.filter(t => types.includes(t.tx_type)).reduce((s, t) => s + Number(t.amount), 0);
                                     const stats = [
-                                        { l: '전체', v: txs.reduce((s, t) => s + Number(t.amount), 0), c: 'text-white' },
-                                        { l: '견적 차감', v: sumByType(['DEDUCT_QUOTE']), c: 'text-red-400' },
-                                        { l: '충전', v: sumByType(['CHARGE', 'ADMIN_CHARGE', 'BONUS']), c: 'text-blue-400' },
-                                        { l: '환불', v: sumByType(['REFUND', 'ADMIN_REFUND']), c: 'text-orange-400' },
+                                        { l: 'Total', v: txs.reduce((s, t) => s + Number(t.amount), 0), c: 'text-white' },
+                                        { l: 'Quote Deduct', v: sumByType(['DEDUCT_QUOTE']), c: 'text-red-400' },
+                                        { l: 'Top-up', v: sumByType(['CHARGE', 'ADMIN_CHARGE', 'BONUS']), c: 'text-blue-400' },
+                                        { l: 'Refund', v: sumByType(['REFUND', 'ADMIN_REFUND']), c: 'text-orange-400' },
                                     ];
                                     return (
                                         <div className="grid grid-cols-4 gap-2 p-4 border-b border-gray-700">
@@ -4669,7 +4700,7 @@ function AdminDashboardPageContent() {
                                 })()}
                                 {/* Drill-down filter tabs */}
                                 <div className="flex gap-1 p-3 border-b border-gray-700/50">
-                                    {([['all', '전체'], ['DEDUCT_QUOTE', '견적 차감'], ['CHARGE', '충전'], ['REFUND', '환불']] as ['all' | 'DEDUCT_QUOTE' | 'CHARGE' | 'REFUND', string][]).map(([k, label]) => (
+                                    {([['all', 'All'], ['DEDUCT_QUOTE', 'Quote Deduct'], ['CHARGE', 'Top-up'], ['REFUND', 'Refund']] as ['all' | 'DEDUCT_QUOTE' | 'CHARGE' | 'REFUND', string][]).map(([k, label]) => (
                                         <button key={k} onClick={() => setDrilldownFilter(k)}
                                             className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition ${drilldownFilter === k ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-700'}`}>
                                             {label}
@@ -4680,7 +4711,7 @@ function AdminDashboardPageContent() {
                                 <div className="overflow-auto flex-1">
                                     <table className="w-full text-sm">
                                         <thead><tr className="border-b border-gray-700 text-gray-400 text-xs uppercase sticky top-0 bg-gray-800">
-                                            <th className="p-2.5 text-left">시간</th><th className="p-2.5 text-left">유형</th><th className="p-2.5 text-right">금액</th><th className="p-2.5 text-right">잔액</th><th className="p-2.5 text-left">설명</th>
+                                            <th className="p-2.5 text-left">Time</th><th className="p-2.5 text-left">Type</th><th className="p-2.5 text-right">Amount</th><th className="p-2.5 text-right">Balance</th><th className="p-2.5 text-left">Description</th>
                                         </tr></thead>
                                         <tbody>
                                             {drilldown.txs.filter(tx => {
@@ -4697,7 +4728,7 @@ function AdminDashboardPageContent() {
                                                     <td className="p-2.5 text-gray-500 text-xs">{txDesc(tx.tx_type, tx.description)}</td>
                                                 </tr>
                                             ))}
-                                            {drilldown.txs.length === 0 && <tr><td colSpan={5} className="p-6 text-center text-gray-500">거래 내역 없음</td></tr>}
+                                            {drilldown.txs.length === 0 && <tr><td colSpan={5} className="p-6 text-center text-gray-500">No transactions</td></tr>}
                                         </tbody>
                                     </table>
                                 </div>
@@ -4711,7 +4742,7 @@ function AdminDashboardPageContent() {
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
                     <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-lg shadow-2xl flex flex-col max-h-[80vh]">
                         <div className="p-4 border-b border-gray-800 flex justify-between items-center">
-                            <h2 className="text-lg font-bold text-white">💬 양방향 채팅 로그 (ReadOnly)</h2>
+                            <h2 className="text-lg font-bold text-white">💬 Chat Log (ReadOnly)</h2>
                             <button onClick={() => setIsChatOpen(false)} className="text-gray-400 hover:text-white">✕</button>
                         </div>
                         <div className="p-4 overflow-y-auto flex-1 flex flex-col-reverse gap-3">
@@ -4719,7 +4750,7 @@ function AdminDashboardPageContent() {
                                 const isCustomer = msg.sender_id === selectedRequest.customer_id;
                                 return (
                                     <div key={msg.message_id} className={`flex flex-col ${isCustomer ? 'items-end' : 'items-start'}`}>
-                                        <span className="text-[10px] text-gray-500 mb-0.5 px-1">{isCustomer ? '고객' : '고수'}</span>
+                                        <span className="text-[10px] text-gray-500 mb-0.5 px-1">{isCustomer ? 'Customer' : 'Pro'}</span>
                                         <div className={`px-3 py-2 rounded-2xl max-w-[80%] text-sm ${isCustomer ? 'bg-blue-600 text-white rounded-br-none' : 'bg-gray-800 text-gray-200 border border-gray-700 rounded-bl-none'}`}>
                                             {msg.content}
                                         </div>
@@ -4727,7 +4758,7 @@ function AdminDashboardPageContent() {
                                     </div>
                                 );
                             })}
-                            {chatLogs.length === 0 && <p className="text-center text-gray-500 my-10">채팅 내역이 없습니다.</p>}
+                            {chatLogs.length === 0 && <p className="text-center text-gray-500 my-10">No chat history.</p>}
                         </div>
                     </div>
                 </div>
@@ -4737,23 +4768,23 @@ function AdminDashboardPageContent() {
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
                     <div className="bg-gray-900 border border-red-900/50 rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden shadow-red-900/20">
                         <div className="bg-red-950/40 p-5 border-b border-red-900/30">
-                            <h2 className="text-red-400 font-bold text-lg mb-1">계정 정지 사유 입력 (Audit Log)</h2>
-                            <p className="text-xs text-red-300/70 leading-relaxed">입력된 사유는 데이터베이스 감사 로그(suspension_reason)에 영구 저장됩니다.</p>
+                            <h2 className="text-red-400 font-bold text-lg mb-1">Enter Account Suspension Reason (Audit Log)</h2>
+                            <p className="text-xs text-red-300/70 leading-relaxed">The reason entered will be permanently stored in the database audit log (suspension_reason).</p>
                         </div>
                         <div className="p-5">
                             <div className="mb-4">
-                                <label className="block text-xs font-bold text-gray-400 mb-2">CS 제재 사유 (최소 5자 이상)</label>
+                                <label className="block text-xs font-bold text-gray-400 mb-2">CS Sanction Reason (min. 5 characters)</label>
                                 <textarea
                                     value={suspendReason}
                                     onChange={e => setSuspendReason(e.target.value)}
                                     className="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition resize-none placeholder-gray-600"
-                                    placeholder="예: 허위 견적 발송 및 고객 폭언으로 인한 영구 정지"
+                                    placeholder="e.g., Permanent suspension due to fraudulent quotes and verbal abuse"
                                     rows={3}
                                 />
                             </div>
                             <div className="flex gap-2 justify-end mt-6">
-                                <button onClick={() => { setSuspendModal(null); setSuspendReason(''); }} className="px-5 py-2.5 rounded-lg text-sm font-bold text-gray-400 hover:text-white transition">취소</button>
-                                <button onClick={handleSuspendUserWithReason} className={`px-5 py-2.5 rounded-lg text-sm font-bold transition ${suspendReason.length >= 5 ? 'bg-red-600 hover:bg-red-500 text-white' : 'bg-red-900/50 text-red-500/50 cursor-not-allowed'}`}>강제 정지 집행</button>
+                                <button onClick={() => { setSuspendModal(null); setSuspendReason(''); }} className="px-5 py-2.5 rounded-lg text-sm font-bold text-gray-400 hover:text-white transition">Cancel</button>
+                                <button onClick={handleSuspendUserWithReason} className={`px-5 py-2.5 rounded-lg text-sm font-bold transition ${suspendReason.length >= 5 ? 'bg-red-600 hover:bg-red-500 text-white' : 'bg-red-900/50 text-red-500/50 cursor-not-allowed'}`}>Execute Suspension</button>
                             </div>
                         </div>
                     </div>
@@ -4767,7 +4798,7 @@ function AdminDashboardPageContent() {
                         {/* 헤더 */}
                         <div className="p-4 border-b border-gray-800 flex justify-between items-center flex-shrink-0">
                             <div>
-                                <h2 className="text-base font-bold text-white">💬 채팅 내역</h2>
+                                <h2 className="text-base font-bold text-white">💬 Chat History</h2>
                                 <p className="text-xs text-gray-400 mt-0.5">
                                     👤 {csChatModal.customerName} &nbsp;↔&nbsp; 🔧 {csChatModal.proName}
                                 </p>
@@ -4781,9 +4812,9 @@ function AdminDashboardPageContent() {
                         {/* 본문 */}
                         <div className="overflow-y-auto flex-1 p-4 space-y-2">
                             {csChatRoomId === undefined && csChatLoading ? (
-                                <div className="text-center text-gray-500 py-10 text-xs">불러오는 중...</div>
+                                <div className="text-center text-gray-500 py-10 text-xs">Loading...</div>
                             ) : csChatRoomId === null ? (
-                                <p className="text-center text-gray-600 py-10 text-xs bg-gray-800/50 border border-gray-800 rounded-xl border-dashed">아직 채팅방이 없습니다.</p>
+                                <p className="text-center text-gray-600 py-10 text-xs bg-gray-800/50 border border-gray-800 rounded-xl border-dashed">No chat room yet.</p>
                             ) : (
                                 <>
                                     {/* 이전 대화 더 보기 (상단) */}
@@ -4794,13 +4825,13 @@ function AdminDashboardPageContent() {
                                                 disabled={csChatLoading}
                                                 className="text-xs text-blue-400 hover:text-blue-300 bg-gray-800/50 border border-gray-700 px-3 py-1.5 rounded-lg transition disabled:opacity-50"
                                             >
-                                                {csChatLoading ? '불러오는 중...' : '이전 대화 더 보기'}
+                                                {csChatLoading ? 'Loading...' : 'Load earlier messages'}
                                             </button>
                                         </div>
                                     )}
                                     {/* 메시지 목록 */}
                                     {csChatMessages.length === 0 && !csChatLoading ? (
-                                        <p className="text-center text-gray-600 py-6 text-xs">채팅 내역이 없습니다.</p>
+                                        <p className="text-center text-gray-600 py-6 text-xs">No chat history.</p>
                                     ) : (
                                         [...csChatMessages].reverse().map((msg: any) => {
                                             const senderName = (msg.sender as any)?.nickname || (msg.sender as any)?.name || (msg.sender_id?.slice(0, 8) + '...');
@@ -4808,7 +4839,7 @@ function AdminDashboardPageContent() {
                                             return (
                                                 <div key={msg.message_id} className={`flex flex-col ${isCustomer ? 'items-start' : 'items-end'}`}>
                                                     <span className="text-[10px] text-gray-500 mb-0.5">
-                                                        {isCustomer ? '👤 고객' : '🔧 고수'} · {senderName} · {fmtDate(msg.created_at)}
+                                                        {isCustomer ? '👤 Customer' : '🔧 Pro'} · {senderName} · {fmtDate(msg.created_at)}
                                                     </span>
                                                     <div className={`max-w-[80%] px-3 py-2 rounded-xl text-xs leading-relaxed break-words ${isCustomer ? 'bg-gray-700 text-gray-200' : 'bg-blue-800/50 text-blue-100'}`}>
                                                         {msg.content}
@@ -4818,7 +4849,7 @@ function AdminDashboardPageContent() {
                                         })
                                     )}
                                     {csChatLoading && csChatMessages.length > 0 && (
-                                        <div className="text-center text-gray-600 text-xs py-2">불러오는 중...</div>
+                                        <div className="text-center text-gray-600 text-xs py-2">Loading...</div>
                                     )}
                                 </>
                             )}
@@ -4835,7 +4866,7 @@ function AdminDashboardPageContent() {
                     <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden">
                         {/* 헤더 */}
                         <div className="p-5 border-b border-gray-800 flex justify-between items-center">
-                            <h2 className="text-lg font-bold text-white">👤 고수 상세 정보</h2>
+                            <h2 className="text-lg font-bold text-white">👤 Pro Details</h2>
                             <button onClick={() => { setProDetailModal(null); setProDetailData(null); }} className="text-gray-400 hover:text-white text-xl">✕</button>
                         </div>
 
@@ -4845,14 +4876,14 @@ function AdminDashboardPageContent() {
                                 {(['info', 'ledger', 'quotes', 'reviews'] as const).map(t => (
                                     <button key={t} onClick={() => handleProDetailTabChange(t, proDetailModal.proId)}
                                         className={`flex-1 py-2.5 text-xs font-semibold border-b-2 transition ${proDetailTab === t ? 'border-blue-400 text-white bg-gray-800/50' : 'border-transparent text-gray-500 hover:text-gray-300'}`}>
-                                        {{ info: '기본정보', ledger: '캐시내역', quotes: '견적', reviews: '리뷰' }[t]}
+                                        {{ info: 'Info', ledger: 'Cash History', quotes: 'Quotes', reviews: 'Reviews' }[t]}
                                     </button>
                                 ))}
                             </div>
                         )}
 
                         {proDetailLoading ? (
-                            <div className="p-10 text-center text-gray-400">불러오는 중...</div>
+                            <div className="p-10 text-center text-gray-400">Loading...</div>
                         ) : proDetailData ? (
                             <div className="overflow-y-auto max-h-[65vh]">
                                 {/* ── 기본정보 탭 ── */}
@@ -4862,7 +4893,7 @@ function AdminDashboardPageContent() {
                                         <div className="flex items-center gap-4 bg-gray-800 p-4 rounded-xl border border-gray-700">
                                             <div className="w-14 h-14 rounded-full bg-gray-700 overflow-hidden flex items-center justify-center flex-shrink-0">
                                                 {proDetailData.avatar_url
-                                                    ? <img src={proDetailData.avatar_url} alt="프로필" className="w-full h-full object-cover" />
+                                                    ? <img src={proDetailData.avatar_url} alt="Profile" className="w-full h-full object-cover" />
                                                     : <span className="text-2xl text-gray-400">👤</span>
                                                 }
                                             </div>
@@ -4871,26 +4902,26 @@ function AdminDashboardPageContent() {
                                                 <p className="text-gray-400 text-xs mt-0.5">PRO · {proDetailData.status || 'ACTIVE'}</p>
                                                 <div className="flex items-center gap-2 mt-1">
                                                     <span className="text-yellow-400 text-xs">⭐ {Number(proDetailData.average_rating || 0).toFixed(1)}</span>
-                                                    <span className="text-gray-500 text-xs">({proDetailData.review_count || 0}개 리뷰)</span>
+                                                    <span className="text-gray-500 text-xs">({proDetailData.review_count || 0} reviews)</span>
                                                 </div>
                                             </div>
                                             <div className="ml-auto text-right">
                                                 <p className="text-blue-400 font-bold">₱{fmtNum(proDetailData.current_cash || 0)}</p>
                                                 {(proDetailData.bonus_cash || 0) > 0 && <p className="text-green-400 text-xs">+🎁₱{fmtNum(proDetailData.bonus_cash)}</p>}
-                                                <p className="text-gray-500 text-[10px] mt-1">캐시 잔액</p>
+                                                <p className="text-gray-500 text-[10px] mt-1">Cash Balance</p>
                                             </div>
                                         </div>
 
                                         {/* 연락처 정보 */}
                                         <div className="bg-gray-800 p-4 rounded-xl border border-gray-700 space-y-2">
-                                            <h3 className="text-xs font-bold text-gray-400 mb-3">📞 연락처</h3>
+                                            <h3 className="text-xs font-bold text-gray-400 mb-3">📞 Contact</h3>
                                             <div className="grid grid-cols-2 gap-3">
                                                 <div>
-                                                    <p className="text-[10px] text-gray-500">이메일</p>
+                                                    <p className="text-[10px] text-gray-500">Email</p>
                                                     <p className="text-sm text-white font-mono">{proDetailData.email || '-'}</p>
                                                 </div>
                                                 <div>
-                                                    <p className="text-[10px] text-gray-500">전화번호</p>
+                                                    <p className="text-[10px] text-gray-500">Phone</p>
                                                     <p className="text-sm text-white font-mono">{proDetailData.phone || '-'}</p>
                                                 </div>
                                             </div>
@@ -4898,28 +4929,28 @@ function AdminDashboardPageContent() {
 
                                         {/* 기본 정보 */}
                                         <div className="bg-gray-800 p-4 rounded-xl border border-gray-700">
-                                            <h3 className="text-xs font-bold text-gray-400 mb-3">📋 기본 정보</h3>
+                                            <h3 className="text-xs font-bold text-gray-400 mb-3">📋 Basic Info</h3>
                                             <div className="grid grid-cols-2 gap-3">
                                                 <div>
-                                                    <p className="text-[10px] text-gray-500">이름</p>
+                                                    <p className="text-[10px] text-gray-500">Name</p>
                                                     <p className="text-sm text-white">{proDetailData.name || '-'}</p>
                                                 </div>
                                                 <div>
-                                                    <p className="text-[10px] text-gray-500">활동명</p>
+                                                    <p className="text-[10px] text-gray-500">Nickname</p>
                                                     <p className="text-sm text-white">{proDetailData.nickname || '-'}</p>
                                                 </div>
                                                 <div>
-                                                    <p className="text-[10px] text-gray-500">가입일</p>
+                                                    <p className="text-[10px] text-gray-500">Joined</p>
                                                     <p className="text-sm text-white">{proDetailData.created_at ? fmtDate(proDetailData.created_at) : '-'}</p>
                                                 </div>
                                                 <div>
-                                                    <p className="text-[10px] text-gray-500">인증 상태</p>
+                                                    <p className="text-[10px] text-gray-500">Verification</p>
                                                     <p className={`text-sm font-bold ${proDetailData.is_phone_verified ? 'text-green-400' : 'text-gray-500'}`}>
-                                                        {proDetailData.is_phone_verified ? '✅ 인증됨' : '미인증'}
+                                                        {proDetailData.is_phone_verified ? '✅ Verified' : 'Unverified'}
                                                     </p>
                                                 </div>
                                                 <div>
-                                                    <p className="text-[10px] text-gray-500">활동 지역</p>
+                                                    <p className="text-[10px] text-gray-500">Region</p>
                                                     <p className="text-sm text-white">{proDetailData.region || '-'}</p>
                                                 </div>
                                                 <div>
@@ -4932,7 +4963,7 @@ function AdminDashboardPageContent() {
                                         {/* 제공 서비스 */}
                                         {proDetailData.services?.length > 0 && (
                                             <div className="bg-gray-800 p-4 rounded-xl border border-gray-700">
-                                                <h3 className="text-xs font-bold text-gray-400 mb-3">🛠 제공 서비스</h3>
+                                                <h3 className="text-xs font-bold text-gray-400 mb-3">🛠 Services Offered</h3>
                                                 <div className="flex flex-wrap gap-2">
                                                     {proDetailData.services.map((s: string, i: number) => (
                                                         <span key={i} className="text-xs bg-blue-900/40 text-blue-300 border border-blue-800/50 px-2 py-1 rounded-lg">{s}</span>
@@ -4947,15 +4978,15 @@ function AdminDashboardPageContent() {
                                 {proDetailTab === 'ledger' && (
                                     <div className="p-5 space-y-3">
                                         <div className="flex items-center justify-between bg-gray-800 p-3 rounded-xl border border-gray-700">
-                                            <span className="text-xs text-gray-400">캐시 잔액</span>
+                                            <span className="text-xs text-gray-400">Cash Balance</span>
                                             <span className="text-blue-400 font-bold">₱{fmtNum(proDetailData.current_cash || 0)}
                                                 {(proDetailData.bonus_cash || 0) > 0 && <span className="text-green-400 text-xs ml-2">+🎁₱{fmtNum(proDetailData.bonus_cash)}</span>}
                                             </span>
                                         </div>
                                         {proDetailTabData.ledger == null ? (
-                                            <div className="py-8 text-center text-gray-500 text-sm">불러오는 중...</div>
+                                            <div className="py-8 text-center text-gray-500 text-sm">Loading...</div>
                                         ) : (proDetailTabData.ledger || []).length === 0 ? (
-                                            <div className="py-8 text-center text-gray-600 text-sm">캐시 내역이 없습니다.</div>
+                                            <div className="py-8 text-center text-gray-600 text-sm">No cash history.</div>
                                         ) : (
                                             <div className="space-y-1.5">
                                                 {(proDetailTabData.ledger || []).map((row: any, i: number) => (
@@ -4970,7 +5001,7 @@ function AdminDashboardPageContent() {
                                                                 {row.amount >= 0 ? '+' : ''}₱{fmtNum(Math.abs(row.amount))}
                                                             </p>
                                                             {row.balance_snapshot != null && (
-                                                                <p className="text-[10px] text-gray-500">잔액 ₱{fmtNum(row.balance_snapshot)}</p>
+                                                                <p className="text-[10px] text-gray-500">Balance ₱{fmtNum(row.balance_snapshot)}</p>
                                                             )}
                                                         </div>
                                                     </div>
@@ -4981,7 +5012,7 @@ function AdminDashboardPageContent() {
                                                         disabled={proDetailTabLoading}
                                                         className="w-full py-2 text-xs text-gray-400 hover:text-white bg-gray-800/40 hover:bg-gray-700/60 border border-gray-700/50 rounded-lg transition disabled:opacity-50"
                                                     >
-                                                        {proDetailTabLoading ? '불러오는 중...' : '더 보기'}
+                                                        {proDetailTabLoading ? 'Loading...' : 'Load more'}
                                                     </button>
                                                 )}
                                             </div>
@@ -4993,9 +5024,9 @@ function AdminDashboardPageContent() {
                                 {proDetailTab === 'quotes' && (
                                     <div className="p-5 space-y-3">
                                         {proDetailTabLoading ? (
-                                            <div className="py-8 text-center text-gray-500 text-sm">불러오는 중...</div>
+                                            <div className="py-8 text-center text-gray-500 text-sm">Loading...</div>
                                         ) : (proDetailTabData.quotes || []).length === 0 ? (
-                                            <div className="py-8 text-center text-gray-600 text-sm">발송한 견적이 없습니다.</div>
+                                            <div className="py-8 text-center text-gray-600 text-sm">No quotes sent.</div>
                                         ) : (
                                             <div className="space-y-1.5">
                                                 {(proDetailTabData.quotes || []).map((q: any, i: number) => (
@@ -5018,12 +5049,12 @@ function AdminDashboardPageContent() {
                                     <div className="p-5 space-y-3">
                                         <div className="flex items-center gap-2 bg-gray-800 p-3 rounded-xl border border-gray-700">
                                             <span className="text-yellow-400 font-bold">⭐ {Number(proDetailData.average_rating || 0).toFixed(1)}</span>
-                                            <span className="text-gray-400 text-xs">({proDetailData.review_count || 0}개 리뷰)</span>
+                                            <span className="text-gray-400 text-xs">({proDetailData.review_count || 0} reviews)</span>
                                         </div>
                                         {proDetailTabLoading ? (
-                                            <div className="py-8 text-center text-gray-500 text-sm">불러오는 중...</div>
+                                            <div className="py-8 text-center text-gray-500 text-sm">Loading...</div>
                                         ) : (proDetailTabData.reviews || []).length === 0 ? (
-                                            <div className="py-8 text-center text-gray-600 text-sm">받은 리뷰가 없습니다.</div>
+                                            <div className="py-8 text-center text-gray-600 text-sm">No reviews received.</div>
                                         ) : (
                                             <div className="space-y-1.5">
                                                 {(proDetailTabData.reviews || []).map((rv: any, i: number) => (
@@ -5041,7 +5072,7 @@ function AdminDashboardPageContent() {
                                 )}
                             </div>
                         ) : (
-                            <div className="p-10 text-center text-gray-500">데이터를 불러올 수 없습니다.</div>
+                            <div className="p-10 text-center text-gray-500">Unable to load data.</div>
                         )}
                     </div>
                 </div>
@@ -5074,13 +5105,13 @@ function AdminDashboardPageContent() {
                                     onClick={() => setModal(null)}
                                     className="flex-1 py-3 rounded-xl bg-gray-700 text-gray-300 font-medium hover:bg-gray-600 transition"
                                 >
-                                    취소
+                                    Cancel
                                 </button>
                                 <button
                                     onClick={() => { modal.onConfirm?.(); setModal(null); }}
                                     className="flex-1 py-3 rounded-xl bg-red-600 text-white font-bold hover:bg-red-500 transition"
                                 >
-                                    확인
+                                    Confirm
                                 </button>
                             </div>
                         ) : (
@@ -5088,7 +5119,7 @@ function AdminDashboardPageContent() {
                                 onClick={() => setModal(null)}
                                 className="w-full py-3 rounded-xl bg-indigo-600 text-white font-bold hover:bg-indigo-500 transition mt-2"
                             >
-                                확인
+                                OK
                             </button>
                         )}
                     </div>
@@ -5103,17 +5134,17 @@ function AdminDashboardPageContent() {
                             <span className="text-3xl">{suspendReasonModal.currentStatus === 'SUSPENDED' ? '✅' : '🚫'}</span>
                         </div>
                         <h3 className="text-white text-xl font-bold text-center">
-                            {suspendReasonModal.currentStatus === 'SUSPENDED' ? '정지 해제' : '계정 정지'}
+                            {suspendReasonModal.currentStatus === 'SUSPENDED' ? 'Unsuspend Account' : 'Suspend Account'}
                         </h3>
                         <p className="text-gray-400 text-sm text-center">
                             {suspendReasonModal.currentStatus === 'SUSPENDED'
-                                ? '해제 사유를 입력하세요 (5자 이상, 감사 로그에 기록됩니다)'
-                                : '정지 사유를 입력하세요 (5자 이상, 감사 로그에 기록됩니다)'}
+                                ? 'Enter the reason for unsuspension (min. 5 characters, recorded in audit log)'
+                                : 'Enter the reason for suspension (min. 5 characters, recorded in audit log)'}
                         </p>
                         <textarea
                             className="w-full bg-[#2a3347] text-white rounded-xl p-3 text-sm resize-none border border-gray-600 focus:border-indigo-500 focus:outline-none"
                             rows={3}
-                            placeholder="예: 반복적인 노쇼, 허위 정보 등록, 사기 의심 등"
+                            placeholder="e.g., Repeated no-shows, false information, suspected fraud"
                             value={suspendReasonModal.reason}
                             onChange={e => setSuspendReasonModal(prev => prev ? { ...prev, reason: e.target.value } : null)}
                         />
@@ -5122,12 +5153,12 @@ function AdminDashboardPageContent() {
                                 onClick={() => setSuspendReasonModal(null)}
                                 className="flex-1 py-3 rounded-xl bg-gray-700 text-gray-300 font-medium hover:bg-gray-600 transition"
                             >
-                                취소
+                                Cancel
                             </button>
                             <button
                                 onClick={() => {
                                     if (!suspendReasonModal.reason.trim() || suspendReasonModal.reason.trim().length < 5) {
-                                        setModal({ type: 'error', title: '입력 오류', message: '정지 사유를 5자 이상 입력해주세요.' });
+                                        setModal({ type: 'error', title: 'Input Error', message: 'Please enter a reason of at least 5 characters.' });
                                         return;
                                     }
                                     setSuspendReasonModal(null);
@@ -5140,7 +5171,7 @@ function AdminDashboardPageContent() {
                                 }}
                                 className="flex-1 py-3 rounded-xl bg-red-600 text-white font-bold hover:bg-red-500 transition"
                             >
-                                {suspendReasonModal.currentStatus === 'SUSPENDED' ? '해제 확인' : '정지 확인'}
+                                {suspendReasonModal.currentStatus === 'SUSPENDED' ? 'Confirm Unsuspend' : 'Confirm Suspend'}
                             </button>
                         </div>
                     </div>
@@ -5154,13 +5185,13 @@ function AdminDashboardPageContent() {
                         <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto bg-yellow-500/20">
                             <span className="text-3xl">⚠️</span>
                         </div>
-                        <h3 className="text-white text-xl font-bold">세션 만료 임박</h3>
-                        <p className="text-gray-400 text-sm">30초 후 비활성으로 인해 자동 로그아웃됩니다.</p>
+                        <h3 className="text-white text-xl font-bold">Session Expiring Soon</h3>
+                        <p className="text-gray-400 text-sm">You will be automatically logged out in 30 seconds due to inactivity.</p>
                         <button
                             onClick={() => setShowTimeoutWarning(false)}
                             className="w-full py-3 rounded-xl bg-indigo-600 text-white font-bold hover:bg-indigo-500 transition"
                         >
-                            계속 사용하기
+                            Stay Logged In
                         </button>
                     </div>
                 </div>
@@ -5172,7 +5203,7 @@ function AdminDashboardPageContent() {
 
 export default function AdminDashboardPage() {
     return (
-        <React.Suspense fallback={<div className="min-h-screen bg-[#0E121E] flex items-center justify-center text-white">로딩 중...</div>}>
+        <React.Suspense fallback={<div className="min-h-screen bg-[#0E121E] flex items-center justify-center text-white">Loading...</div>}>
             <AdminDashboardPageContent />
         </React.Suspense>
     );

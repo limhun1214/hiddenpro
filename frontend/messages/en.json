@@ -747,5 +747,6 @@
     "requests": "Requests",
     "wallet": "Wallet",
     "proProfile": "Profile"
-  }
+  },
+  "admin": {}
 }

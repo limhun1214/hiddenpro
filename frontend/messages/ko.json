@@ -747,5 +747,6 @@
     "requests": "받은요청",
     "wallet": "지갑",
     "proProfile": "고수 프로필"
-  }
+  },
+  "admin": {}
 }

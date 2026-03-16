@@ -1,3 +1,5 @@
+[2026-03-16] admin/page.tsx JSX 한글→영어 직치환 완료 — Reviews/SearchLogs/Settings(BillingCtrl)/CMS(배너+카테고리+Support+Legal)/Inquiries/Payout/AuditLog 탭 + 전체 모달(Inquiry/Cash/Drilldown/ChatLog/Suspend/CSChat/ProDetail/Confirm/SuspendReason/Timeout) + Suspense fallback / frontend/src/app/admin/page.tsx / DB변경 없음
+[2026-03-16] i18n: admin/page.tsx ④-C단계 완료 — 대시보드 개요 + 미답변 문의 + 카드 라벨 10개 + 캐시 원장 제목 + stat 카드 4개 + 카테고리 탭 + 검색 placeholder/버튼 + 기간 옵션 + CSV 헤더/버튼 + 로딩 + 테이블 헤더 8개 + 빈 상태 + 페이지네이션 / frontend/src/app/admin/page.tsx / DB변경 없음
 [2026-03-16] CLAUDE.md PHASE 11 i18n 규칙 추가 완료 — next-intl 기반 신규 컴포넌트/페이지 작성 시 번역 키 의무화 + 기존 네임스페이스 목록 + 인프라 파일 위치 + 신규 언어 추가 3단계 정의 / CLAUDE.md / DB변경 없음
 [2026-03-16] i18n: PCTopNav next-intl 연동 완료 (pcTopNav 네임스페이스 8키) — customerItems/proItems t() 연동 + 배지 조건 7곳 동기화 / frontend/src/components/common/PCTopNav.tsx, frontend/messages/en.json, frontend/messages/ko.json / DB변경 없음
 [2026-03-16] i18n: PCTopNav nav label 영어 직치환 완료 + profile/page.tsx joinDate locale ko-KR→en-US 교체 / frontend/src/components/common/PCTopNav.tsx, frontend/src/app/profile/page.tsx / DB변경 없음
