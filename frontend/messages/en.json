@@ -798,7 +798,15 @@
     "legalTrigger": "Rewards are credited only after the invited user submits their first quote (Pro) or posts their first request (Customer). Simply signing up does not qualify.",
     "legalCouponUsage": "Each Discount Coupon can only be used once per service match. The customer shares the coupon code with the matched pro, and the pro redeems it in the app. The system converts the coupon value into Bonus Credits for the pro — no cash changes hands between customer and pro.",
     "legalAntiFraud": "HiddenPro reserves the right to revoke rewards and permanently suspend accounts if any fraudulent activity, self-referral, or system abuse is detected, without prior notice.",
-    "legalPermit": "Per DTI Fair Trade Permit No. FTEB-XXXXX Series of 2026"
+    "legalPermit": "Per DTI Fair Trade Permit No. FTEB-XXXXX Series of 2026",
+    "couponGuideTitle": "How to Use Your Discount Coupon",
+    "couponStep1": "After you are matched with a pro, share your coupon code with them via chat.",
+    "couponStep2": "The pro enters your coupon code in their app (Invite → Redeem Customer Coupon).",
+    "couponStep3": "The system verifies the coupon and instantly converts the discount amount into Bonus Credits for the pro.",
+    "couponStep4": "The pro applies the discount to your service fee. You pay the reduced amount directly to the pro.",
+    "couponNote1": "Each coupon can only be used once per service match.",
+    "couponNote2": "The coupon must be redeemed before the service is completed.",
+    "couponNote3": "No cash refund is given for unused coupons — they expire based on the platform's policy."
   },
   "admin": {}
 }

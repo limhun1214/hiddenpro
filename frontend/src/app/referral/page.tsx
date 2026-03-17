@@ -315,6 +315,34 @@ export default function ReferralPage() {
                     )}
                 </div>
 
+                {/* Coupon Usage Guide */}
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <h2 className="text-sm font-bold text-gray-700 p-4 border-b border-gray-100">🎟️ {t('referral.couponGuideTitle')}</h2>
+                    <div className="p-4 space-y-3">
+                        <div className="flex gap-3 items-start">
+                            <span className="bg-blue-100 text-blue-600 font-black text-xs w-6 h-6 rounded-full flex items-center justify-center shrink-0">1</span>
+                            <p className="text-sm text-gray-600">{t('referral.couponStep1')}</p>
+                        </div>
+                        <div className="flex gap-3 items-start">
+                            <span className="bg-blue-100 text-blue-600 font-black text-xs w-6 h-6 rounded-full flex items-center justify-center shrink-0">2</span>
+                            <p className="text-sm text-gray-600">{t('referral.couponStep2')}</p>
+                        </div>
+                        <div className="flex gap-3 items-start">
+                            <span className="bg-blue-100 text-blue-600 font-black text-xs w-6 h-6 rounded-full flex items-center justify-center shrink-0">3</span>
+                            <p className="text-sm text-gray-600">{t('referral.couponStep3')}</p>
+                        </div>
+                        <div className="flex gap-3 items-start">
+                            <span className="bg-blue-100 text-blue-600 font-black text-xs w-6 h-6 rounded-full flex items-center justify-center shrink-0">4</span>
+                            <p className="text-sm text-gray-600">{t('referral.couponStep4')}</p>
+                        </div>
+                        <div className="mt-3 pt-3 border-t border-gray-100 space-y-1.5">
+                            <p className="text-xs text-gray-400">• {t('referral.couponNote1')}</p>
+                            <p className="text-xs text-gray-400">• {t('referral.couponNote2')}</p>
+                            <p className="text-xs text-gray-400">• {t('referral.couponNote3')}</p>
+                        </div>
+                    </div>
+                </div>
+
                 {/* Legal Disclaimer */}
                 <div className="bg-gray-50 rounded-xl border border-gray-200 p-5 space-y-3 text-xs text-gray-400 leading-relaxed">
                     <p>📌 <span className="font-bold text-gray-500">Validity:</span> {t('referral.legalExpiry')}</p>
