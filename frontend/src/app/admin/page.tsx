@@ -14,16 +14,16 @@ type UserDetailTab = 'info' | 'ledger' | 'quotes' | 'reviews';
 
 const txLabel = (t: string, locale: string = 'en') => {
     const map: Record<string, Record<string, string>> = {
-        en: { CHARGE: 'Top-up', DEDUCT_QUOTE: 'Quote deduction', REFUND: 'Refund', BONUS: 'Bonus', ADMIN_CHARGE: 'Admin top-up', ADMIN_REFUND: 'Admin refund', ADMIN_DEDUCT: 'Admin deduction', BONUS_REFUND: 'Unread refund', ADMIN_BONUS_CHARGE: 'Admin bonus', ADMIN_BONUS_REFUND: 'Admin bonus deduction' },
+        en: { CHARGE: 'Credits top-up', DEDUCT_QUOTE: 'Credits used', REFUND: 'Credits refund', BONUS: 'Bonus credits', ADMIN_CHARGE: 'Admin top-up', ADMIN_REFUND: 'Admin refund', ADMIN_DEDUCT: 'Admin deduction', BONUS_REFUND: 'Unread refund', ADMIN_BONUS_CHARGE: 'Admin bonus', ADMIN_BONUS_REFUND: 'Admin bonus deduction' },
         ko: { CHARGE: '충전', DEDUCT_QUOTE: '견적 차감', REFUND: '환불', BONUS: '보너스', ADMIN_CHARGE: '관리자 충전', ADMIN_REFUND: '관리자 환불', ADMIN_DEDUCT: '관리자 차감', BONUS_REFUND: '미열람 보상', ADMIN_BONUS_CHARGE: '관리자 보너스 지급', ADMIN_BONUS_REFUND: '관리자 보너스 차감' },
     };
     return (map[locale] || map.en)[t] || t;
 };
 const txDesc = (txType: string, desc: string | null | undefined, locale: string = 'en'): string => {
     if (desc) return desc;
-    if (['CHARGE', 'ADMIN_CHARGE', 'ADMIN_BONUS_CHARGE', 'BONUS'].includes(txType)) return locale === 'ko' ? '캐시 충전' : 'Cash top-up';
+    if (['CHARGE', 'ADMIN_CHARGE', 'ADMIN_BONUS_CHARGE', 'BONUS'].includes(txType)) return locale === 'ko' ? '캐시 충전' : 'Credits top-up';
     if (txType === 'DEDUCT_QUOTE') return locale === 'ko' ? '견적 발송' : 'Quote sent';
-    if (['REFUND', 'ADMIN_REFUND', 'BONUS_REFUND'].includes(txType)) return locale === 'ko' ? '캐시 환불' : 'Cash refund';
+    if (['REFUND', 'ADMIN_REFUND', 'BONUS_REFUND'].includes(txType)) return locale === 'ko' ? '캐시 환불' : 'Credits refund';
     return '-';
 };
 type LedgerCategory = 'all' | 'DEDUCT_QUOTE' | 'ADMIN_CHARGE' | 'CHARGE' | 'REFUND';
@@ -1516,12 +1516,12 @@ function AdminDashboardPageContent() {
             target_user_id: pro.pro_id,
             admin_id: adminId,
             action_type: type === 'charge' ? 'CASH_CHARGE' : 'CASH_REFUND',
-            reason: adminLocale === 'ko' ? `${cashType === 'BONUS' ? '[보너스] ' : '[유상] '}₱${amt.toLocaleString()} ${type === 'charge' ? '충전' : '환불/차감'} — ${cashDesc || '사유 없음'}` : `${cashType === 'BONUS' ? '[Bonus] ' : '[Paid] '}₱${amt.toLocaleString()} ${type === 'charge' ? 'Top-up' : 'Refund/Deduction'} — ${cashDesc || 'No reason'}`,
+            reason: adminLocale === 'ko' ? `${cashType === 'BONUS' ? '[보너스] ' : '[유상] '}₱${amt.toLocaleString()} ${type === 'charge' ? '충전' : '환불/차감'} — ${cashDesc || '사유 없음'}` : `${cashType === 'BONUS' ? '[Bonus] ' : '[Paid] '}${amt.toLocaleString()} credits ${type === 'charge' ? 'Top-up' : 'Refund/Deduction'} — ${cashDesc || 'No reason'}`,
         });
         if (logErr) console.error('❌ 캐시 감사 로그 실패:', logErr);
 
         setCashModal(null); setCashAmount(''); setCashDesc(''); setCashProcessing(false); setCashType('REAL');
-        setModal({ type: 'success', title: adminLocale === 'ko' ? '처리 완료' : 'Complete', message: adminLocale === 'ko' ? `${cashType === 'BONUS' ? '🎁 보너스 ' : ''}₱${fmtNum(amt)} ${type === 'charge' ? '충전' : '환불/차감'} 완료 (원자적 트랜잭션 + 원장 기록 완료)` : `${cashType === 'BONUS' ? '🎁 Bonus ' : ''}₱${fmtNum(amt)} ${type === 'charge' ? 'top-up' : 'refund/deduction'} complete (atomic transaction + ledger recorded)` });
+        setModal({ type: 'success', title: adminLocale === 'ko' ? '처리 완료' : 'Complete', message: adminLocale === 'ko' ? `${cashType === 'BONUS' ? '🎁 보너스 ' : ''}₱${fmtNum(amt)} ${type === 'charge' ? '충전' : '환불/차감'} 완료 (원자적 트랜잭션 + 원장 기록 완료)` : `${cashType === 'BONUS' ? '🎁 Bonus ' : ''}${fmtNum(amt)} credits ${type === 'charge' ? 'top-up' : 'refund/deduction'} complete (atomic transaction + ledger recorded)` });
     };
 
     const toggleReviewFeatured = async (reviewId: number, curFeatured: boolean) => {
@@ -1914,7 +1914,7 @@ function AdminDashboardPageContent() {
     ];
     // 💰 재무 및 자산 관리
     const menuGroup3: { key: AdminTab; icon: string; label: string }[] = [
-        { key: 'ledger', icon: '💰', label: adminLocale === 'ko' ? '캐시 원장' : 'Cash Ledger' },
+        { key: 'ledger', icon: '💰', label: adminLocale === 'ko' ? '캐시 원장' : 'Credit Ledger' },
         { key: 'payout', icon: '💸', label: adminLocale === 'ko' ? '출금 관리' : 'Payouts' },
     ];
     // 📋 서비스 매칭 운영
@@ -2167,9 +2167,9 @@ function AdminDashboardPageContent() {
                                     </div>
                                     {userDetail.role === 'PRO' && detailData.profile && (
                                         <div className="ml-auto text-right">
-                                            <p className="text-2xl font-black text-blue-400">₱{fmtNum(detailData.profile.current_cash || 0)}</p>
+                                            <p className="text-2xl font-black text-blue-400">{fmtNum(detailData.profile.current_cash || 0)}</p>
                                             {(detailData.profile.bonus_cash || 0) > 0 && <p className="text-sm font-bold text-green-400">+🎁{fmtNum(detailData.profile.bonus_cash)} {adminLocale === 'ko' ? '보너스' : 'Bonus'}</p>}
-                                            <p className="text-xs text-gray-500">{adminLocale === 'ko' ? '캐시 잔액' : 'Cash Balance'}</p>
+                                            <p className="text-xs text-gray-500">{adminLocale === 'ko' ? '캐시 잔액' : 'Credit Balance'}</p>
                                         </div>
                                     )}
                                 </div>
@@ -2229,7 +2229,7 @@ function AdminDashboardPageContent() {
                                             </div>
                                         )) : (detailData.quotes || []).map((q: any) => (
                                             <div key={q.quote_id} className="p-3 bg-gray-700/30 rounded-xl flex justify-between items-center">
-                                                <div><p className="font-semibold text-sm">₱{fmtNum(q.price || 0)}</p><p className="text-xs text-gray-400">{fmtDate(q.created_at)}</p></div>
+                                                <div><p className="font-semibold text-sm">{fmtNum(q.price || 0)}</p><p className="text-xs text-gray-400">{fmtDate(q.created_at)}</p></div>
                                                 <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${statusColor(q.status || 'OPEN')}`}>{q.status || 'PENDING'}</span>
                                             </div>
                                         ))}
@@ -2283,7 +2283,7 @@ function AdminDashboardPageContent() {
                                     { l: adminLocale === 'ko' ? '🔧 고수' : '🔧 Pros', v: stats.pros, onClick: () => handleTabClick('pro') },
                                     { l: adminLocale === 'ko' ? '🤝 진행 중 매칭' : '🤝 Active Matches', v: stats.openReq, c: 'text-green-400', onClick: () => { setReqFilter('OPEN'); handleTabClick('quotes'); } },
                                     { l: adminLocale === 'ko' ? '✅ 마감된 매칭' : '✅ Closed Matches', v: stats.closedReq, onClick: () => { setReqFilter('all'); handleTabClick('quotes'); } },
-                                    { l: adminLocale === 'ko' ? '💎 24h 충전' : '💎 24h Charge', v: stats.charge24h, c: 'text-blue-400', p: '+', onClick: () => { setLedgerCategory('CHARGE'); setLedgerPeriod('today'); setLedgerPage(1); handleTabClick('ledger'); } },
+                                    { l: adminLocale === 'ko' ? '💎 24h 충전' : '💎 24h Top-up', v: stats.charge24h, c: 'text-blue-400', p: '+', onClick: () => { setLedgerCategory('CHARGE'); setLedgerPeriod('today'); setLedgerPage(1); handleTabClick('ledger'); } },
                                     { l: adminLocale === 'ko' ? '🔥 24h 차감' : '🔥 24h Deduct', v: stats.deduct24h, c: 'text-red-400', p: '-', onClick: () => { setLedgerCategory('DEDUCT_QUOTE'); setLedgerPeriod('today'); setLedgerPage(1); handleTabClick('ledger'); } },
                                     { l: adminLocale === 'ko' ? '⚠️ 어뷰징' : '⚠️ Abuse', v: stats.abuseCount, c: 'text-orange-400', onClick: () => handleTabClick('abuse') },
                                     { l: adminLocale === 'ko' ? '⏸️ 출금 홀드 (7일)' : '⏸️ Payout Hold (7d)', v: stats.payoutHeld, c: stats.payoutHeld > 0 ? 'text-yellow-400' : 'text-white', onClick: () => { setPayoutFilter('HELD'); handleTabClick('payout'); } },
@@ -2305,20 +2305,20 @@ function AdminDashboardPageContent() {
 
                         {/* ═══ CASH LEDGER ═══ */}
                         {tab === 'ledger' && (<>
-                            <h1 className="text-2xl font-black mb-6">{adminLocale === 'ko' ? '💰 통합 캐시 거래 원장' : '💰 Cash Transaction Ledger'}</h1>
+                            <h1 className="text-2xl font-black mb-6">{adminLocale === 'ko' ? '💰 통합 캐시 거래 원장' : '💰 Credit Ledger'}</h1>
                             {/* ── Stats Summary ── */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
                                 <div className="bg-gradient-to-br from-purple-900/40 to-purple-800/20 rounded-xl p-4 border border-purple-700/40">
                                     <p className="text-purple-300 text-xs font-bold uppercase mb-1">{adminLocale === 'ko' ? '🏦 총 부채 (전체 고수 잔액)' : '🏦 Total Liability (All Pro Balances)'}</p>
-                                    <p className="text-2xl font-black text-purple-400">₱{fmtNum(totalProBalance)}</p>
+                                    <p className="text-2xl font-black text-purple-400">{fmtNum(totalProBalance)}</p>
                                 </div>
                                 <div className="bg-gradient-to-br from-blue-900/40 to-blue-800/20 rounded-xl p-4 border border-blue-700/40">
-                                    <p className="text-blue-300 text-xs font-bold uppercase mb-1">{adminLocale === 'ko' ? '📈 유입 합계 (충전)' : '📈 Total In (Charges)'}</p>
-                                    <p className="text-2xl font-black text-blue-400">+₱{fmtNum(ledgerStats.totalIn)}</p>
+                                    <p className="text-blue-300 text-xs font-bold uppercase mb-1">{adminLocale === 'ko' ? '📈 유입 합계 (충전)' : '📈 Total In (Top-ups)'}</p>
+                                    <p className="text-2xl font-black text-blue-400">+{fmtNum(ledgerStats.totalIn)}</p>
                                 </div>
                                 <div className="bg-gradient-to-br from-red-900/40 to-red-800/20 rounded-xl p-4 border border-red-700/40">
                                     <p className="text-red-300 text-xs font-bold uppercase mb-1">{adminLocale === 'ko' ? '📉 유출 합계 (차감/환불)' : '📉 Total Out (Deduct/Refund)'}</p>
-                                    <p className="text-2xl font-black text-red-400">-₱{fmtNum(ledgerStats.totalOut)}</p>
+                                    <p className="text-2xl font-black text-red-400">-{fmtNum(ledgerStats.totalOut)}</p>
                                 </div>
                                 <div className="bg-gradient-to-br from-gray-800 to-gray-700/30 rounded-xl p-4 border border-gray-600/40">
                                     <p className="text-gray-300 text-xs font-bold uppercase mb-1">{adminLocale === 'ko' ? '🔢 조회 건수' : '🔢 Result Count'}</p>
@@ -2327,7 +2327,7 @@ function AdminDashboardPageContent() {
                             </div>
                             {/* ── Category Tabs ── */}
                             <div className="flex flex-wrap gap-1 mb-4 bg-gray-800/50 rounded-xl p-1">
-                                {((adminLocale === 'ko' ? [['all', '전체'], ['DEDUCT_QUOTE', '견적 차감'], ['ADMIN_CHARGE', '관리자 충전'], ['CHARGE', '고수 직접 충전'], ['REFUND', '환불(운영 취소)']] : [['all', 'All'], ['DEDUCT_QUOTE', 'Quote Deduct'], ['ADMIN_CHARGE', 'Admin Charge'], ['CHARGE', 'Pro Charge'], ['REFUND', 'Refund']]) as [LedgerCategory, string][]).map(([k, label]) => (
+                                {((adminLocale === 'ko' ? [['all', '전체'], ['DEDUCT_QUOTE', '견적 차감'], ['ADMIN_CHARGE', '관리자 충전'], ['CHARGE', '고수 직접 충전'], ['REFUND', '환불(운영 취소)']] : [['all', 'All'], ['DEDUCT_QUOTE', 'Credits Used'], ['ADMIN_CHARGE', 'Admin Top-up'], ['CHARGE', 'Pro Top-up'], ['REFUND', 'Refund']]) as [LedgerCategory, string][]).map(([k, label]) => (
                                     <button key={k} onClick={() => { setLedgerCategory(k); setLedgerPage(1); loadLedger(1, k, ledgerPeriod, ledgerSearch); }}
                                         className={`px-4 py-2 text-sm font-semibold rounded-lg transition whitespace-nowrap ${ledgerCategory === k ? 'bg-blue-600 text-white shadow' : 'text-gray-400 hover:text-white hover:bg-gray-700'}`}>
                                         {label}
@@ -2392,8 +2392,8 @@ function AdminDashboardPageContent() {
                                                     <td className="p-2.5 text-gray-400 text-xs">{tx.proEmail || '-'}</td>
                                                     <td className="p-2.5 text-gray-400 text-xs">{tx.proPhone || '-'}</td>
                                                     <td className="p-2.5"><span className={`text-xs font-bold px-2 py-0.5 rounded-full ${tx.amount > 0 ? 'bg-blue-900/50 text-blue-300' : 'bg-red-900/50 text-red-300'}`}>{txLabel(tx.tx_type)}</span></td>
-                                                    <td className={`p-2.5 text-right font-bold ${tx.amount > 0 ? 'text-blue-400' : 'text-red-400'}`}>{tx.amount > 0 ? '+' : ''}₱{fmtNum(Math.abs(Number(tx.amount)))}</td>
-                                                    <td className="p-2.5 text-right text-gray-400 text-xs">₱{fmtNum(Number(tx.balance_snapshot))}</td>
+                                                    <td className={`p-2.5 text-right font-bold ${tx.amount > 0 ? 'text-blue-400' : 'text-red-400'}`}>{tx.amount > 0 ? '+' : ''}{fmtNum(Math.abs(Number(tx.amount)))}</td>
+                                                    <td className="p-2.5 text-right text-gray-400 text-xs">{fmtNum(Number(tx.balance_snapshot))}</td>
                                                     <td className="p-2.5 text-gray-500 text-xs max-w-[200px] truncate">{txDesc(tx.tx_type, tx.description)}</td>
                                                 </tr>
                                             ))}
@@ -2901,7 +2901,7 @@ function AdminDashboardPageContent() {
                                                     <td className="px-5 py-3 text-sm text-gray-400 font-medium">{cat.depth1 || '-'}</td>
                                                     <td className="px-5 py-3 text-sm text-gray-300 font-medium">{cat.depth2 || '-'}</td>
                                                     <td className="px-5 py-3 font-bold text-white text-base">{cat.name}</td>
-                                                    <td className="px-5 py-3 text-right font-mono font-bold text-blue-400">₱{fmtNum(cat.base_price)}</td>
+                                                    <td className="px-5 py-3 text-right font-mono font-bold text-blue-400">{fmtNum(cat.base_price)}</td>
                                                     <td className="px-5 py-3 text-center">
                                                         <span className={`px-2 py-1 rounded text-xs font-bold ${cat.is_active ? 'bg-green-900/50 text-green-400' : 'bg-red-900/50 text-red-500'}`}>
                                                             {adminLocale === 'ko' ? (cat.is_active ? '운영 중' : '사용 안함') : (cat.is_active ? 'Active' : 'Inactive')}
@@ -2946,12 +2946,11 @@ function AdminDashboardPageContent() {
                                             {!isAddingCategory && <p className="text-xs text-orange-400 mt-2 font-bold py-1 px-2 bg-orange-900/20 rounded inline-block">{adminLocale === 'ko' ? '🔗 기준 카테고리명 및 분류는 시스템 매칭 무결성을 위해 수정 불가합니다.' : '🔗 Category name and classification cannot be edited to preserve system integrity.'}</p>}
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-bold text-gray-300 mb-2">{adminLocale === 'ko' ? '기본 견적단가 (캐시 차감액)' : 'Base Quote Price (Cash Deducted)'}</label>
+                                            <label className="block text-sm font-bold text-gray-300 mb-2">{adminLocale === 'ko' ? '기본 견적단가 (캐시 차감액)' : 'Base Quote Price (Credits Deducted)'}</label>
                                             <div className="relative">
-                                                <span className="absolute left-4 top-3 text-gray-500 font-bold">₱</span>
-                                                <input type="number" min="0" value={editingCategory.base_price} onChange={e => setEditingCategory({ ...editingCategory, base_price: parseInt(e.target.value) || 0 })} className="w-full bg-gray-900 border border-gray-700 rounded-lg pl-10 pr-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-lg font-bold" required />
+                                                <input type="number" min="0" value={editingCategory.base_price} onChange={e => setEditingCategory({ ...editingCategory, base_price: parseInt(e.target.value) || 0 })} className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-lg font-bold" required />
                                             </div>
-                                            <p className="text-xs text-blue-400 mt-2">{adminLocale === 'ko' ? '이 카테고리에서 고수가 견적서를 낼 때마다 차감할 캐시 비용입니다.' : 'The cash amount deducted each time a pro sends a quote in this category.'}</p>
+                                            <p className="text-xs text-blue-400 mt-2">{adminLocale === 'ko' ? '이 카테고리에서 고수가 견적서를 낼 때마다 차감할 캐시 비용입니다.' : 'The credits amount deducted each time a pro sends a quote in this category.'}</p>
                                         </div>
                                         <div>
                                             <label className="flex items-center gap-3 bg-gray-900 p-4 rounded-xl border border-gray-700 cursor-pointer">
@@ -3000,7 +2999,7 @@ function AdminDashboardPageContent() {
                                             <td className="p-2.5 text-gray-400 text-xs font-mono" onClick={() => loadUserDetail(p.pro_id, 'PRO')}>{p.email || p.pro_id.slice(0, 12) + '...'}</td>
                                             <td className="p-2.5 text-gray-300 text-xs">{p.phone || '-'}</td>
                                             <td className="p-2.5 text-right">
-                                                <span className="font-bold text-blue-400">₱{fmtNum(p.current_cash)}</span>
+                                                <span className="font-bold text-blue-400">{fmtNum(p.current_cash)}</span>
                                                 {(p.bonus_cash || 0) > 0 && <span className="text-green-400 text-xs ml-1">(+🎁{fmtNum(p.bonus_cash)})</span>}
                                             </td>
                                             <td className="p-2.5 text-center"><span className={`text-xs font-bold px-2 py-0.5 rounded-full ${p.status === 'DELETED' ? 'bg-gray-900/50 text-gray-500 line-through' : p.status === 'SUSPENDED' ? 'bg-red-900/50 text-red-300' : 'bg-green-900/50 text-green-300'}`}>{p.status === 'DELETED' ? (adminLocale === 'ko' ? '삭제됨' : 'Deleted') : p.status === 'SUSPENDED' ? (adminLocale === 'ko' ? '정지' : 'Suspended') : (adminLocale === 'ko' ? '활성' : 'Active')}</span></td>
@@ -3323,7 +3322,7 @@ function AdminDashboardPageContent() {
                                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${q.status === 'ACCEPTED' ? 'bg-blue-600/30 text-blue-400' : 'bg-gray-700 text-gray-400'}`}>{i + 1}</div>
                                                 <div className="flex-1">
                                                     <div className="flex justify-between items-center">
-                                                        <span className={`font-bold ${q.status === 'ACCEPTED' ? 'text-blue-400' : 'text-white'}`}>₱{fmtNum(q.price || 0)}</span>
+                                                        <span className={`font-bold ${q.status === 'ACCEPTED' ? 'text-blue-400' : 'text-white'}`}>{fmtNum(q.price || 0)}</span>
                                                         <span className="text-xs text-gray-500">{fmtDate(q.created_at)}</span>
                                                     </div>
                                                     <p className="text-xs text-gray-400 mt-1">{q.description || 'No description'}</p>
@@ -3467,7 +3466,7 @@ function AdminDashboardPageContent() {
                                                 </td>
                                                 <td className="p-3 text-gray-300 font-medium">{r.customerName}</td>
                                                 <td className="p-3 text-blue-300 font-medium">{r.matchedProName}</td>
-                                                <td className="p-3 text-right font-semibold text-white">{r.status === 'MATCHED' && r.matchedPrice > 0 ? `₱${fmtNum(r.matchedPrice)}` : '-'}</td>
+                                                <td className="p-3 text-right font-semibold text-white">{r.status === 'MATCHED' && r.matchedPrice > 0 ? `${fmtNum(r.matchedPrice)}` : '-'}</td>
                                                 <td className="p-3 text-center"><span className={`text-xs font-bold px-2 py-0.5 rounded-full ${statusColor(r.status)}`}>{statusLabel(r.status)}</span></td>
                                                 <td className="p-3 text-center text-gray-400 text-xs">{fmtDate(r.created_at)}</td>
                                                 <td className="p-3 text-right">
@@ -3586,9 +3585,9 @@ function AdminDashboardPageContent() {
                             <h1 className="text-2xl font-black mb-6">⚙️ Billing Controller</h1>
                             <div className="bg-gray-800 rounded-xl border border-gray-700 p-6 space-y-6">
                                 {[
-                                    { key: 'quote_cost', t: 'Quote Sending Cost', d: 'Cash deducted from a pro per quote sent' },
+                                    { key: 'quote_cost', t: 'Quote Sending Cost', d: 'Credits deducted from a pro per quote sent' },
                                     { key: 'max_quotes_per_request', t: 'Max Quotes per Request', d: 'Maximum number of quotes receivable per request' },
-                                    { key: 'signup_bonus', t: 'New Member Signup Bonus', d: 'Cash automatically granted to pros on signup' },
+                                    { key: 'signup_bonus', t: 'New Member Signup Bonus', d: 'Credits automatically granted to pros on signup' },
                                 ].map((s, i) => (
                                     <div key={s.key} className={i > 0 ? 'border-t border-gray-700 pt-6' : ''}>
                                         <h3 className="text-base font-bold mb-1">{s.t}</h3>
@@ -4226,7 +4225,7 @@ function AdminDashboardPageContent() {
                                                     <p className="text-gray-400 text-xs font-mono">{p.account_number}</p>
                                                     <p className="text-gray-400 text-xs">{p.account_holder}</p>
                                                 </td>
-                                                <td className="p-2.5 text-right font-bold text-green-400">₱{p.amount.toLocaleString()}</td>
+                                                <td className="p-2.5 text-right font-bold text-green-400">{p.amount.toLocaleString()}</td>
                                                 <td className="p-2.5 text-center">
                                                     <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${p.status === 'APPROVED' ? 'bg-green-900/50 text-green-300' :
                                                             p.status === 'REJECTED' ? 'bg-red-900/50 text-red-300' :
@@ -4280,7 +4279,7 @@ function AdminDashboardPageContent() {
                                                                                 target_user_id: p.pro_id,
                                                                                 admin_id: adminData.user?.id,
                                                                                 action_type: 'PAYOUT_APPROVE',
-                                                                                reason: `Payout approved ₱${p.amount.toLocaleString()} — ${payoutNote[p.id] || 'No memo'}`,
+                                                                                reason: `Payout approved ${p.amount.toLocaleString()} credits — ${payoutNote[p.id] || 'No memo'}`,
                                                                             });
                                                                             if (logErr) console.error('❌ 출금 승인 감사 로그 실패:', logErr);
                                                                             alert('Approved.'); loadPayoutRequests();
@@ -4308,7 +4307,7 @@ function AdminDashboardPageContent() {
                                                                                 target_user_id: p.pro_id,
                                                                                 admin_id: adminData.user?.id,
                                                                                 action_type: 'PAYOUT_REJECT',
-                                                                                reason: `Payout rejected ₱${p.amount.toLocaleString()} — ${payoutNote[p.id] || 'No reason'}`,
+                                                                                reason: `Payout rejected ${p.amount.toLocaleString()} credits — ${payoutNote[p.id] || 'No reason'}`,
                                                                             });
                                                                             if (logErr) console.error('❌ 출금 거절 감사 로그 실패:', logErr);
                                                                             alert('Rejected.'); loadPayoutRequests();
@@ -4340,8 +4339,8 @@ function AdminDashboardPageContent() {
                     <div className="flex flex-wrap gap-1 bg-gray-800/60 rounded-xl p-1">
                         {([
                             ['all', 'All'],
-                            ['CASH_CHARGE', 'Cash Top-up'],
-                            ['CASH_REFUND', 'Cash Refund'],
+                            ['CASH_CHARGE', 'Credits Top-up'],
+                            ['CASH_REFUND', 'Credits Refund'],
                             ['PAYOUT_APPROVE', 'Payout Approved'],
                             ['PAYOUT_REJECT', 'Payout Rejected'],
                             ['SUSPEND', 'Suspend'],
@@ -4411,8 +4410,8 @@ function AdminDashboardPageContent() {
                                             'bg-gray-700/50 text-gray-400'
                                         }`}>
                                             {{
-                                                CASH_CHARGE: 'Cash Top-up',
-                                                CASH_REFUND: 'Cash Refund',
+                                                CASH_CHARGE: 'Credits Top-up',
+                                                CASH_REFUND: 'Credits Refund',
                                                 PAYOUT_APPROVE: 'Payout Approved',
                                                 PAYOUT_REJECT: 'Payout Rejected',
                                                 SUSPEND: 'Suspend',
@@ -4605,34 +4604,34 @@ function AdminDashboardPageContent() {
                     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
                         <div className="bg-gray-800 rounded-2xl w-full max-w-md border border-gray-700 shadow-2xl">
                             <div className="p-5 border-b border-gray-700">
-                                <h3 className="text-lg font-bold">{cashModal.type === 'charge' ? '💎 Cash Top-up' : '🔥 Cash Refund/Deduct'}</h3>
+                                <h3 className="text-lg font-bold">{cashModal.type === 'charge' ? '💎 Credits Top-up' : '🔥 Credits Refund/Deduct'}</h3>
                                 <p className="text-sm text-gray-400 mt-1">Target: <span className="text-white font-semibold">{cashModal.pro.nickname || cashModal.pro.name || cashModal.pro.pro_id.slice(0, 12)}</span></p>
-                                <p className="text-sm text-gray-400">Current Balance: <span className="text-blue-400 font-bold">₱{fmtNum(cashModal.pro.current_cash)}</span></p>
+                                <p className="text-sm text-gray-400">Available Credits: <span className="text-blue-400 font-bold">{fmtNum(cashModal.pro.current_cash)}</span></p>
                             </div>
                             <div className="p-5 space-y-3">
                                 {/* [보너스 캐시 확장] 캐시 유형 선택 라디오 */}
                                 <div>
-                                    <label className="text-xs text-gray-400 font-bold mb-2 block">Cash Type</label>
+                                    <label className="text-xs text-gray-400 font-bold mb-2 block">Credit Type</label>
                                     <div className="flex gap-2">
                                         <button onClick={() => setCashType('REAL')}
                                             className={`flex-1 py-2 rounded-lg text-sm font-bold transition border ${cashType === 'REAL' ? 'bg-blue-600/20 text-blue-400 border-blue-500' : 'bg-gray-700 text-gray-400 border-gray-600 hover:border-gray-500'}`}>
-                                            💎 Real Cash
+                                            💎 Real Credits
                                         </button>
                                         <button onClick={() => setCashType('BONUS')}
                                             className={`flex-1 py-2 rounded-lg text-sm font-bold transition border ${cashType === 'BONUS' ? 'bg-green-600/20 text-green-400 border-green-500' : 'bg-gray-700 text-gray-400 border-gray-600 hover:border-gray-500'}`}>
-                                            🎁 Bonus Cash
+                                            🎁 Bonus Credits
                                         </button>
                                     </div>
                                 </div>
-                                <div><label className="text-xs text-gray-400 font-bold mb-1 block">{cashModal.type === 'charge' ? 'Top-up' : 'Refund/Deduct'} Amount (₱)</label>
+                                <div><label className="text-xs text-gray-400 font-bold mb-1 block">{cashModal.type === 'charge' ? 'Top-up' : 'Refund/Deduct'} Amount</label>
                                     <input type="number" value={cashAmount} onChange={e => setCashAmount(e.target.value)} placeholder="Enter amount" className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" autoFocus /></div>
                                 <div><label className="text-xs text-gray-400 font-bold mb-1 block">Reason (ledger record)</label>
                                     <input type="text" value={cashDesc} onChange={e => setCashDesc(e.target.value)} placeholder={cashType === 'BONUS' ? 'e.g., Event bonus payout' : 'e.g., Customer service compensation'} className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" /></div>
                                 {cashAmount && Number(cashAmount) > 0 && (
                                     <div className="bg-gray-900 rounded-lg p-3 text-sm space-y-1">
-                                        <div className="flex justify-between text-gray-400"><span>{cashType === 'BONUS' ? 'Bonus Balance' : 'Real Balance'}</span><span>₱{fmtNum(cashType === 'BONUS' ? (cashModal.pro.bonus_cash || 0) : cashModal.pro.current_cash)}</span></div>
-                                        <div className={`flex justify-between font-bold ${cashModal.type === 'charge' ? 'text-blue-400' : 'text-red-400'}`}><span>{cashModal.type === 'charge' ? '+' : '-'}</span><span>₱{fmtNum(Number(cashAmount))}</span></div>
-                                        <div className="border-t border-gray-700 pt-1 flex justify-between text-white font-bold"><span>After</span><span>₱{fmtNum((cashType === 'BONUS' ? (cashModal.pro.bonus_cash || 0) : cashModal.pro.current_cash) + (cashModal.type === 'charge' ? Number(cashAmount) : -Number(cashAmount)))}</span></div>
+                                        <div className="flex justify-between text-gray-400"><span>{cashType === 'BONUS' ? 'Bonus Credits' : 'Real Credits'}</span><span>{fmtNum(cashType === 'BONUS' ? (cashModal.pro.bonus_cash || 0) : cashModal.pro.current_cash)}</span></div>
+                                        <div className={`flex justify-between font-bold ${cashModal.type === 'charge' ? 'text-blue-400' : 'text-red-400'}`}><span>{cashModal.type === 'charge' ? '+' : '-'}</span><span>{fmtNum(Number(cashAmount))}</span></div>
+                                        <div className="border-t border-gray-700 pt-1 flex justify-between text-white font-bold"><span>After</span><span>{fmtNum((cashType === 'BONUS' ? (cashModal.pro.bonus_cash || 0) : cashModal.pro.current_cash) + (cashModal.type === 'charge' ? Number(cashAmount) : -Number(cashAmount)))}</span></div>
                                     </div>
                                 )}
                             </div>
@@ -4652,7 +4651,7 @@ function AdminDashboardPageContent() {
                         <div className="bg-gray-800 rounded-2xl w-full max-w-3xl border border-gray-700 shadow-2xl max-h-[85vh] flex flex-col" onClick={e => e.stopPropagation()}>
                             <div className="p-5 border-b border-gray-700 flex justify-between items-start">
                                 <div>
-                                    <h3 className="text-lg font-bold">🔍 {drilldown.proName} Transaction History</h3>
+                                    <h3 className="text-lg font-bold">🔍 {drilldown.proName} Credit History</h3>
                                     <p className="text-xs text-gray-400 mt-1">{drilldown.proEmail}{drilldown.proPhone ? ` · ${drilldown.proPhone}` : ''}</p>
                                 </div>
                                 <button onClick={() => setDrilldown(null)} className="text-gray-400 hover:text-white text-xl leading-none">✕</button>
@@ -4664,7 +4663,7 @@ function AdminDashboardPageContent() {
                                     const sumByType = (types: string[]) => txs.filter(t => types.includes(t.tx_type)).reduce((s, t) => s + Number(t.amount), 0);
                                     const stats = [
                                         { l: 'Total', v: txs.reduce((s, t) => s + Number(t.amount), 0), c: 'text-white' },
-                                        { l: 'Quote Deduct', v: sumByType(['DEDUCT_QUOTE']), c: 'text-red-400' },
+                                        { l: 'Credits Used', v: sumByType(['DEDUCT_QUOTE']), c: 'text-red-400' },
                                         { l: 'Top-up', v: sumByType(['CHARGE', 'ADMIN_CHARGE', 'BONUS']), c: 'text-blue-400' },
                                         { l: 'Refund', v: sumByType(['REFUND', 'ADMIN_REFUND']), c: 'text-orange-400' },
                                     ];
@@ -4673,7 +4672,7 @@ function AdminDashboardPageContent() {
                                             {stats.map((s, i) => (
                                                 <div key={i} className="bg-gray-900/60 rounded-lg p-3 text-center">
                                                     <p className="text-gray-500 text-[10px] font-bold uppercase">{s.l}</p>
-                                                    <p className={`text-lg font-black ${s.c}`}>{s.v >= 0 ? '+' : ''}₱{fmtNum(Math.abs(s.v))}</p>
+                                                    <p className={`text-lg font-black ${s.c}`}>{s.v >= 0 ? '+' : ''}{fmtNum(Math.abs(s.v))}</p>
                                                 </div>
                                             ))}
                                         </div>
@@ -4681,7 +4680,7 @@ function AdminDashboardPageContent() {
                                 })()}
                                 {/* Drill-down filter tabs */}
                                 <div className="flex gap-1 p-3 border-b border-gray-700/50">
-                                    {([['all', 'All'], ['DEDUCT_QUOTE', 'Quote Deduct'], ['CHARGE', 'Top-up'], ['REFUND', 'Refund']] as ['all' | 'DEDUCT_QUOTE' | 'CHARGE' | 'REFUND', string][]).map(([k, label]) => (
+                                    {([['all', 'All'], ['DEDUCT_QUOTE', 'Credits Used'], ['CHARGE', 'Top-up'], ['REFUND', 'Refund']] as ['all' | 'DEDUCT_QUOTE' | 'CHARGE' | 'REFUND', string][]).map(([k, label]) => (
                                         <button key={k} onClick={() => setDrilldownFilter(k)}
                                             className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition ${drilldownFilter === k ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-700'}`}>
                                             {label}
@@ -4704,8 +4703,8 @@ function AdminDashboardPageContent() {
                                                 <tr key={i} className="border-b border-gray-700/50 hover:bg-gray-700/20">
                                                     <td className="p-2.5 text-gray-400 text-xs whitespace-nowrap">{fmtDate(tx.created_at)}</td>
                                                     <td className="p-2.5"><span className={`text-xs font-bold px-2 py-0.5 rounded-full ${tx.amount > 0 ? 'bg-blue-900/50 text-blue-300' : 'bg-red-900/50 text-red-300'}`}>{txLabel(tx.tx_type)}</span></td>
-                                                    <td className={`p-2.5 text-right font-bold ${tx.amount > 0 ? 'text-blue-400' : 'text-red-400'}`}>{tx.amount > 0 ? '+' : ''}₱{fmtNum(Math.abs(Number(tx.amount)))}</td>
-                                                    <td className="p-2.5 text-right text-gray-400 text-xs">₱{fmtNum(Number(tx.balance_snapshot))}</td>
+                                                    <td className={`p-2.5 text-right font-bold ${tx.amount > 0 ? 'text-blue-400' : 'text-red-400'}`}>{tx.amount > 0 ? '+' : ''}{fmtNum(Math.abs(Number(tx.amount)))}</td>
+                                                    <td className="p-2.5 text-right text-gray-400 text-xs">{fmtNum(Number(tx.balance_snapshot))}</td>
                                                     <td className="p-2.5 text-gray-500 text-xs">{txDesc(tx.tx_type, tx.description)}</td>
                                                 </tr>
                                             ))}
@@ -4857,7 +4856,7 @@ function AdminDashboardPageContent() {
                                 {(['info', 'ledger', 'quotes', 'reviews'] as const).map(t => (
                                     <button key={t} onClick={() => handleProDetailTabChange(t, proDetailModal.proId)}
                                         className={`flex-1 py-2.5 text-xs font-semibold border-b-2 transition ${proDetailTab === t ? 'border-blue-400 text-white bg-gray-800/50' : 'border-transparent text-gray-500 hover:text-gray-300'}`}>
-                                        {{ info: 'Info', ledger: 'Cash History', quotes: 'Quotes', reviews: 'Reviews' }[t]}
+                                        {{ info: 'Info', ledger: 'Credit History', quotes: 'Quotes', reviews: 'Reviews' }[t]}
                                     </button>
                                 ))}
                             </div>
@@ -4887,9 +4886,9 @@ function AdminDashboardPageContent() {
                                                 </div>
                                             </div>
                                             <div className="ml-auto text-right">
-                                                <p className="text-blue-400 font-bold">₱{fmtNum(proDetailData.current_cash || 0)}</p>
-                                                {(proDetailData.bonus_cash || 0) > 0 && <p className="text-green-400 text-xs">+🎁₱{fmtNum(proDetailData.bonus_cash)}</p>}
-                                                <p className="text-gray-500 text-[10px] mt-1">Cash Balance</p>
+                                                <p className="text-blue-400 font-bold">{fmtNum(proDetailData.current_cash || 0)}</p>
+                                                {(proDetailData.bonus_cash || 0) > 0 && <p className="text-green-400 text-xs">+🎁{fmtNum(proDetailData.bonus_cash)}</p>}
+                                                <p className="text-gray-500 text-[10px] mt-1">Credit Balance</p>
                                             </div>
                                         </div>
 
@@ -4959,15 +4958,15 @@ function AdminDashboardPageContent() {
                                 {proDetailTab === 'ledger' && (
                                     <div className="p-5 space-y-3">
                                         <div className="flex items-center justify-between bg-gray-800 p-3 rounded-xl border border-gray-700">
-                                            <span className="text-xs text-gray-400">Cash Balance</span>
-                                            <span className="text-blue-400 font-bold">₱{fmtNum(proDetailData.current_cash || 0)}
-                                                {(proDetailData.bonus_cash || 0) > 0 && <span className="text-green-400 text-xs ml-2">+🎁₱{fmtNum(proDetailData.bonus_cash)}</span>}
+                                            <span className="text-xs text-gray-400">Credit Balance</span>
+                                            <span className="text-blue-400 font-bold">{fmtNum(proDetailData.current_cash || 0)}
+                                                {(proDetailData.bonus_cash || 0) > 0 && <span className="text-green-400 text-xs ml-2">+🎁{fmtNum(proDetailData.bonus_cash)}</span>}
                                             </span>
                                         </div>
                                         {proDetailTabData.ledger == null ? (
                                             <div className="py-8 text-center text-gray-500 text-sm">Loading...</div>
                                         ) : (proDetailTabData.ledger || []).length === 0 ? (
-                                            <div className="py-8 text-center text-gray-600 text-sm">No cash history.</div>
+                                            <div className="py-8 text-center text-gray-600 text-sm">No credit history.</div>
                                         ) : (
                                             <div className="space-y-1.5">
                                                 {(proDetailTabData.ledger || []).map((row: any, i: number) => (
@@ -4979,10 +4978,10 @@ function AdminDashboardPageContent() {
                                                         </div>
                                                         <div className="text-right ml-3 flex-shrink-0">
                                                             <p className={`text-sm font-bold ${row.amount >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                                                                {row.amount >= 0 ? '+' : ''}₱{fmtNum(Math.abs(row.amount))}
+                                                                {row.amount >= 0 ? '+' : ''}{fmtNum(Math.abs(row.amount))}
                                                             </p>
                                                             {row.balance_snapshot != null && (
-                                                                <p className="text-[10px] text-gray-500">Balance ₱{fmtNum(row.balance_snapshot)}</p>
+                                                                <p className="text-[10px] text-gray-500">Bal. {fmtNum(row.balance_snapshot)}</p>
                                                             )}
                                                         </div>
                                                     </div>
@@ -5014,7 +5013,7 @@ function AdminDashboardPageContent() {
                                                     <div key={i} className="bg-gray-800/60 px-3 py-2.5 rounded-lg border border-gray-700/50">
                                                         <div className="flex items-center justify-between mb-1">
                                                             <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${statusColor(q.status)}`}>{statusLabel(q.status)}</span>
-                                                            <span className="text-blue-400 font-bold text-sm">₱{fmtNum(q.price || 0)}</span>
+                                                            <span className="text-blue-400 font-bold text-sm">{fmtNum(q.price || 0)}</span>
                                                         </div>
                                                         <p className="text-[10px] text-gray-500 truncate">{q.description || '-'}</p>
                                                         <p className="text-[10px] text-gray-600 mt-0.5">{fmtDate(q.created_at)}</p>

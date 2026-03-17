@@ -201,8 +201,8 @@ export default function ProWalletPage() {
                 {false && (
                 <button
                     onClick={() => setIsPayoutModalOpen(true)}
-                    disabled={!balance || balance <= 0}
-                    className={`w-full font-bold py-4 rounded-xl transition mb-6 ${!balance || balance <= 0 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 text-white shadow-md'}`}
+                    disabled={!balance || (balance ?? 0) <= 0}
+                    className={`w-full font-bold py-4 rounded-xl transition mb-6 ${!balance || (balance ?? 0) <= 0 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 text-white shadow-md'}`}
                 >
                     {t('wallet.payoutBtn')}
                 </button>
