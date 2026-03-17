@@ -644,7 +644,7 @@ export default function ChatRoomPage({ params }: { params: { room_id: string } }
                     <div>
                         <span className="text-[10px] text-gray-400 block leading-none mb-0.5">{t('chatRoom.proposedQuote')}</span>
                         <span className="text-sm font-bold text-blue-600">
-                            {quotePrice !== null ? `₱ ${quotePrice.toLocaleString()}` : t('chatRoom.noPrice')}
+                            {quotePrice !== null ? `${quotePrice.toLocaleString()}` : t('chatRoom.noPrice')}
                         </span>
                     </div>
                     {(roomStatus === 'MATCHED' || requestData?.status === 'MATCHED') ? (

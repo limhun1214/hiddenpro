@@ -183,7 +183,7 @@ export default function ChatRoom({ roomId }: { roomId: string }) {
                     <div>
                         <span className="text-xs text-gray-400 block leading-none mb-0.5">{t('chatRoom.proposedQuote')}</span>
                         <span className="text-sm font-bold text-blue-600">
-                            ₱ {quoteData ? quoteData.price?.toLocaleString() : mockRoomData.quoteAmount.toLocaleString()}
+                            {quoteData ? quoteData.price?.toLocaleString() : mockRoomData.quoteAmount.toLocaleString()}
                         </span>
                     </div>
 

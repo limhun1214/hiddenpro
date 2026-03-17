@@ -166,8 +166,13 @@ export default function ProWalletPage() {
     return (
         <div className="flex flex-col items-center justify-start min-h-screen bg-gray-50 p-4 pt-4 sm:pt-8">
             <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-sm text-center border">
-                <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-3xl">💰</span>
+                <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+                        <circle cx="18" cy="18" r="13" fill="#3B82F6" opacity="0.12"/>
+                        <circle cx="18" cy="18" r="13" stroke="#3B82F6" strokeWidth="1.5" fill="none"/>
+                        <circle cx="18" cy="18" r="9" stroke="#3B82F6" strokeWidth="1" fill="none" opacity="0.4"/>
+                        <path d="M13.5 14v8M22.5 14v8M13.5 18h9" stroke="#1D4ED8" strokeWidth="2.5" strokeLinecap="round"/>
+                    </svg>
                 </div>
                 <h1 className="text-2xl font-bold text-gray-800 mb-2">{t('wallet.title')}</h1>
                 <p className="text-gray-500 mb-6">{t('wallet.subtitle')}</p>
@@ -193,6 +198,7 @@ export default function ProWalletPage() {
                 >
                     {t('wallet.chargeBtn')}
                 </button>
+                {false && (
                 <button
                     onClick={() => setIsPayoutModalOpen(true)}
                     disabled={!balance || balance <= 0}
@@ -200,6 +206,7 @@ export default function ProWalletPage() {
                 >
                     {t('wallet.payoutBtn')}
                 </button>
+                )}
 
                 {/* 출금 신청 내역 */}
                 {payoutHistory.length > 0 && (
@@ -361,19 +368,19 @@ export default function ProWalletPage() {
                                 onClick={() => handleChargeMock(100)}
                                 className="w-full bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold py-4 rounded-xl border border-blue-200 transition text-lg"
                             >
-                                ₱100 충전
+                                100 Credits
                             </button>
                             <button
                                 onClick={() => handleChargeMock(300)}
                                 className="w-full bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold py-4 rounded-xl border border-blue-300 transition text-lg"
                             >
-                                ₱300 충전
+                                300 Credits
                             </button>
                             <button
                                 onClick={() => handleChargeMock(500)}
                                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-md transition text-lg"
                             >
-                                ₱500 충전 <span className="text-sm bg-yellow-400 text-yellow-900 px-2 py-0.5 rounded-full ml-1">BEST</span>
+                                500 Credits <span className="text-sm bg-yellow-400 text-yellow-900 px-2 py-0.5 rounded-full ml-1">BEST</span>
                             </button>
                         </div>
                         <button

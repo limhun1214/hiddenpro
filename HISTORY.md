@@ -1,3 +1,4 @@
+[2026-03-17] Credits Phase 3 완료 — ₱ 제거 및 캐시→Credits 한글 하드코딩 수정 (4개 파일: pro/wallet/page.tsx L364/370/376, ProBiddingDetail.tsx L443/844/848/854, ChatRoom.tsx L186, QuoteDetailModal.tsx L101) / DB변경 없음
 [2026-03-16] admin/page.tsx JSX 한글→영어 직치환 완료 — Reviews/SearchLogs/Settings(BillingCtrl)/CMS(배너+카테고리+Support+Legal)/Inquiries/Payout/AuditLog 탭 + 전체 모달(Inquiry/Cash/Drilldown/ChatLog/Suspend/CSChat/ProDetail/Confirm/SuspendReason/Timeout) + Suspense fallback / frontend/src/app/admin/page.tsx / DB변경 없음
 [2026-03-16] i18n: admin/page.tsx ④-C단계 완료 — 대시보드 개요 + 미답변 문의 + 카드 라벨 10개 + 캐시 원장 제목 + stat 카드 4개 + 카테고리 탭 + 검색 placeholder/버튼 + 기간 옵션 + CSV 헤더/버튼 + 로딩 + 테이블 헤더 8개 + 빈 상태 + 페이지네이션 / frontend/src/app/admin/page.tsx / DB변경 없음
 [2026-03-16] CLAUDE.md PHASE 11 i18n 규칙 추가 완료 — next-intl 기반 신규 컴포넌트/페이지 작성 시 번역 키 의무화 + 기존 네임스페이스 목록 + 인프라 파일 위치 + 신규 언어 추가 3단계 정의 / CLAUDE.md / DB변경 없음

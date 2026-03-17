@@ -24,6 +24,7 @@ function InquiryContent() {
     const [category, setCategory] = useState('');
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
+    const [transactionId, setTransactionId] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     // 이미지 첨부 states
@@ -175,7 +176,7 @@ function InquiryContent() {
             user_type: userType,
             category,
             title,
-            content,
+            content: transactionId.trim() ? `[Transaction ID: ${transactionId.trim()}]\n\n${content}` : content,
             status: 'pending',
             image_urls: imageUrls,
         });
@@ -190,6 +191,7 @@ function InquiryContent() {
             setCategory('');
             setTitle('');
             setContent('');
+            setTransactionId('');
             setImageFiles([]);
             setImagePreviews([]);
             setActiveTab('HISTORY');
@@ -257,6 +259,20 @@ function InquiryContent() {
                                     <option value="OTHER">{t('inquiry.categoryOther')}</option>
                                 </select>
                             </div>
+                            {category === 'PAYMENT' && (
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-1">{t('inquiry.transactionIdLabel')}</label>
+                                    <input
+                                        type="text"
+                                        value={transactionId}
+                                        onChange={(e) => setTransactionId(e.target.value)}
+                                        placeholder={t('inquiry.transactionIdPlaceholder')}
+                                        className="w-full border border-gray-300 rounded-xl p-3 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                        maxLength={100}
+                                    />
+                                    <p className="text-xs text-gray-400 mt-1">{t('inquiry.transactionIdHint')}</p>
+                                </div>
+                            )}
                             <div>
                                 <label className="block text-sm font-bold text-gray-700 mb-1">{t('inquiry.titleLabel')} <span className="text-red-500">*</span></label>
                                 <input

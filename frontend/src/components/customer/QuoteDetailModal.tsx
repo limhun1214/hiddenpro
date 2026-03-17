@@ -98,7 +98,7 @@ export default function QuoteDetailModal({ quote, onClose, onStartChat, requestI
                             <span className="text-xs font-bold text-blue-500 uppercase tracking-wider block mb-1">{t('quoteModal.proposedPrice')}</span>
                             {quote.price ? (
                                 <span className="text-3xl font-black text-gray-900">
-                                    ₱{Number(quote.price).toLocaleString()}
+                                    {Number(quote.price).toLocaleString()}
                                 </span>
                             ) : (
                                 <span className="text-lg font-bold text-gray-400">{t('quoteModal.noPrice')}</span>

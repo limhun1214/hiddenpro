@@ -440,7 +440,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                             <div>
                                 <span className="text-xs text-blue-500 font-bold block mb-1">{t('proBidding.proposedAmount')}</span>
                                 <div className="text-sm font-bold text-gray-900 bg-white p-2.5 rounded-lg border border-blue-100">
-                                    ₱ {Number(submittedQuote.price).toLocaleString()}
+                                    {Number(submittedQuote.price).toLocaleString()}
                                 </div>
                             </div>
                             {submittedQuote.description && (
@@ -841,17 +841,17 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                                     </div>
                                     <div className="flex justify-between items-center mb-2">
                                         <span className="text-sm text-gray-500 font-medium">{t('proBidding.quotePriceLabel')}</span>
-                                        <span className="text-lg font-bold text-blue-600">₱ {Number(quotePrice).toLocaleString()}</span>
+                                        <span className="text-lg font-bold text-blue-600">{Number(quotePrice).toLocaleString()}</span>
                                     </div>
                                     <div className="flex justify-between items-center mb-2">
                                         <span className="text-sm text-gray-500 font-medium">{t('proBidding.deductLabel')}</span>
-                                        <span className="text-sm font-bold text-red-500">{costToQuote} 캐시</span>
+                                        <span className="text-sm font-bold text-red-500">{costToQuote} Credits</span>
                                     </div>
                                     {/* ── [확장 2단계] 보유 코인 명시 ── */}
                                     <div className="flex justify-between items-center pt-2 mt-2 border-t border-blue-100">
                                         <span className="text-sm text-gray-500 font-medium">{t('proBidding.balanceLabel')}</span>
                                         <span className={`text-sm font-bold ${(myBalance !== null && myBalance < costToQuote) ? 'text-red-500' : 'text-green-600'}`}>
-                                            {myBalance !== null ? `${myBalance.toLocaleString()} 캐시` : t('proBidding.checking')}
+                                            {myBalance !== null ? `${myBalance.toLocaleString()} Credits` : t('proBidding.checking')}
                                             {myBalance !== null && myBalance < costToQuote && (
                                                 <span className="ml-1 text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold">{t('proBidding.insufficient')}</span>
                                             )}
