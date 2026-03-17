@@ -349,7 +349,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                         p_referred_user_id: sessionUser.id
                     }).then(res => {
                         if (res.data?.success) console.log('[Referral] Reward processed:', res.data);
-                    }).catch(() => {});
+                    }, () => {});
                 }
             } catch {}
 

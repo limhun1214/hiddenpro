@@ -1653,7 +1653,7 @@ export default function DynamicRequestForm() {
                         p_referred_user_id: customerId
                     }).then(res => {
                         if (res.data?.success) console.log('[Referral] Reward processed:', res.data);
-                    }).catch(() => {});
+                    }, () => {});
                 }
             } catch {}
 
