@@ -39,6 +39,7 @@ export default function AuthCompletePage() {
                 // 2. localStorage에서 선택된 역할 및 모드 복원 (removeItem은 라우팅 직전으로 이동)
                 const pendingRole = localStorage.getItem('pending_auth_role') || 'CUSTOMER';
                 const pendingAuthMode = localStorage.getItem('pending_auth_mode') || '';
+                const pendingReferralCode = localStorage.getItem('pending_referral_code') || '';
 
                 // 3. 서버 권한 우선주의: 기존 유저 여부 확인
                 const { data: existingUser } = await supabase
@@ -57,9 +58,22 @@ export default function AuthCompletePage() {
                     if (isTriggerFreshRecord && pendingRole.toUpperCase() !== 'CUSTOMER') {
                         // 트리거가 CUSTOMER로 생성한 레코드를 pendingRole로 UPDATE
                         finalRole = pendingRole.toUpperCase();
+                        // 추천인 코드로 추천인 ID 조회
+                        let referredByUserId: string | null = null;
+                        if (pendingReferralCode) {
+                            const { data: referrerData } = await supabase
+                                .from('users')
+                                .select('user_id')
+                                .eq('referral_code', pendingReferralCode)
+                                .single();
+                            if (referrerData && referrerData.user_id !== sessionUser.id) {
+                                referredByUserId = referrerData.user_id;
+                            }
+                        }
+
                         const { error: updateErr } = await supabase
                             .from('users')
-                            .update({ role: finalRole })
+                            .update({ role: finalRole, referred_by: referredByUserId })
                             .eq('user_id', sessionUser.id);
                         if (updateErr) console.error('Role UPDATE Error (trigger fresh record):', updateErr);
 
@@ -104,13 +118,27 @@ export default function AuthCompletePage() {
                     finalRole = pendingRole.toUpperCase();
                     const userName = sessionUser.email?.split('@')[0] || 'user';
 
+                    // 추천인 코드로 추천인 ID 조회
+                    let referredByUserId: string | null = null;
+                    if (pendingReferralCode) {
+                        const { data: referrerData } = await supabase
+                            .from('users')
+                            .select('user_id')
+                            .eq('referral_code', pendingReferralCode)
+                            .single();
+                        if (referrerData && referrerData.user_id !== sessionUser.id) {
+                            referredByUserId = referrerData.user_id;
+                        }
+                    }
+
                     const { error: userErr } = await supabase
                         .from('users')
                         .insert({
                             user_id: sessionUser.id,
                             role: finalRole,
                             name: userName,
-                            status: 'ACTIVE'
+                            status: 'ACTIVE',
+                            referred_by: referredByUserId
                         });
                     if (userErr) console.error('Users DB Insert Error:', userErr);
 
@@ -139,6 +167,7 @@ export default function AuthCompletePage() {
                 // 4. 서버 역할(finalRole) 기준 라우팅
                 localStorage.removeItem('pending_auth_role');
                 localStorage.removeItem('pending_auth_mode');
+                localStorage.removeItem('pending_referral_code');
                 setStatus(t('authComplete.loginSuccess'));
 
                 // [pending 견적 처리] 로그인 후 미완료 견적 처리
