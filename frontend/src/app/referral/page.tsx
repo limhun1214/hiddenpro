@@ -28,6 +28,9 @@ export default function ReferralPage() {
     const [redeemCode, setRedeemCode] = useState('');
     const [redeeming, setRedeeming] = useState(false);
 
+    // 배너
+    const [banners, setBanners] = useState<any[]>([]);
+
     // 안내 접기/펼치기
     const [showHowItWorks, setShowHowItWorks] = useState(false);
 
@@ -81,6 +84,14 @@ export default function ReferralPage() {
                 if (couponData) setCoupons(couponData);
             }
 
+            // 배너 로드
+            const { data: bannerData } = await supabase
+                .from('referral_banners')
+                .select('*')
+                .eq('is_active', true)
+                .order('sort_order', { ascending: true });
+            if (bannerData) setBanners(bannerData);
+
             setLoading(false);
         };
         init();
@@ -124,6 +135,20 @@ export default function ReferralPage() {
         showToast(t('referral.redeemSuccess'), 'success');
         setRedeemCode('');
         window.dispatchEvent(new CustomEvent('wallet-updated'));
+    };
+
+    const handleShareBanner = (bannerId: number) => {
+        const link = `${window.location.origin}/?ref=${referralCode}&banner=${bannerId}`;
+        if (navigator.share) {
+            navigator.share({ title: 'HiddenPro', text: 'Get a FREE Discount Coupon!', url: link }).catch(() => {});
+        } else {
+            navigator.clipboard.writeText(link).then(() => showToast(t('referral.copied'), 'success'));
+        }
+    };
+
+    const handleCopyBannerLink = (bannerId: number) => {
+        const link = `${window.location.origin}/?ref=${referralCode}&banner=${bannerId}`;
+        navigator.clipboard.writeText(link).then(() => showToast(t('referral.copied'), 'success'));
     };
 
     const maskEmail = (email: string) => {
@@ -279,6 +304,37 @@ export default function ReferralPage() {
                             >
                                 {redeeming ? '...' : t('referral.redeemBtn')}
                             </button>
+                        </div>
+                    </div>
+                )}
+
+                {/* Banner Share */}
+                {banners.length > 0 && (
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                        <h2 className="text-sm font-bold text-gray-700 p-4 border-b border-gray-100">📥 {t('referral.bannerTitle')}</h2>
+                        <div className="p-4 space-y-4">
+                            {banners.map(b => (
+                                <div key={b.id} className="border border-gray-100 rounded-xl overflow-hidden">
+                                    <div className="bg-gray-50 p-3 flex items-center justify-center">
+                                        <img src={b.image_url} alt={b.title} className="w-full max-h-[200px] object-contain rounded-lg" />
+                                    </div>
+                                    <div className="p-3 flex items-center justify-between">
+                                        <div>
+                                            <p className="text-sm font-bold text-gray-800">{b.title}</p>
+                                            <p className="text-xs text-gray-400">📐 {b.width}×{b.height} · 📱 {b.platform_hint}</p>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <button onClick={() => handleCopyBannerLink(b.id)} className="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-lg text-xs transition">
+                                                Copy Link
+                                            </button>
+                                            <button onClick={() => handleShareBanner(b.id)} className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-xs transition">
+                                                Share
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                            <p className="text-xs text-gray-400 text-center">✅ {t('referral.bannerIncluded')}</p>
                         </div>
                     </div>
                 )}

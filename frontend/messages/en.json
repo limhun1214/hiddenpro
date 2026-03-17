@@ -806,7 +806,16 @@
     "couponStep4": "The pro applies the discount to your service fee. You pay the reduced amount directly to the pro.",
     "couponNote1": "Each coupon can only be used once per service match.",
     "couponNote2": "The coupon must be redeemed before the service is completed.",
-    "couponNote3": "No cash refund is given for unused coupons — they expire based on the platform's policy."
+    "couponNote3": "No cash refund is given for unused coupons — they expire based on the platform's policy.",
+    "bannerTitle": "Download Referral Banner",
+    "bannerIncluded": "Your referral code is already included in all banners.",
+    "bannerDownload": "Download",
+    "bannerHorizontal": "Horizontal",
+    "bannerHorizontalUse": "Facebook, Viber, Blog",
+    "bannerVertical": "Vertical",
+    "bannerVerticalUse": "Instagram Story, Facebook Story",
+    "bannerSquare": "Square",
+    "bannerSquareUse": "Instagram Feed, Facebook Post"
   },
   "admin": {}
 }

@@ -193,8 +193,10 @@ SELECT policyname, cmd FROM pg_policies WHERE tablename = '대상_테이블명';
 - `Cloudflare D1` — DB 대신 **Supabase Postgres** 사용
 - `Cloudflare R2` — 파일 저장 대신 **Supabase Storage** 사용
 - `Cloudflare KV` — 캐시 대신 **Upstash Redis 또는 Supabase** 사용
-- `Cloudflare Workers` 전용 API — 표준 Web API(`fetch`, `Request`, `Response`)만 사용
-- `@cloudflare/*` 패키지 import 금지
+
+#### ⚠️ 조건부 사용 가능 (Vercel 이전 시 교체 필요)
+- `Cloudflare Workers` — 현재 호스팅(Cloudflare Pages) 환경에서 사용 가능. 단, Workers 사용 시 코드 주석에 반드시 대체 방안을 명시할 것: `// Vercel 이전 시 → Vercel Edge Functions 또는 API Routes로 대체`
+- `@cloudflare/*` 패키지 — 필요 시 사용 가능. 단, 사용한 패키지명을 아래 "Vercel 이전 시 작업 범위"에 기록할 것
 
 #### ✅ 필수 준수 사항
 1. **환경 변수 100% 관리**: 연결 정보(URL, Key 등)를 코드에 하드코딩 금지. 반드시 `.env.local` 및 플랫폼 환경 변수로만 관리.
@@ -204,7 +206,9 @@ SELECT policyname, cmd FROM pg_policies WHERE tablename = '대상_테이블명';
 #### Vercel 이전 시 작업 범위 (미리 명시)
 - `.env.local` 변수값 → Vercel 환경 변수에 복사·붙여넣기
 - GitHub 저장소 → Vercel에 연결
-- 코드 수정 불필요 (이 규칙을 준수한 경우)
+- Cloudflare Workers 사용 부분 → Vercel Edge Functions 또는 API Routes로 전환
+- Workers에서 사용한 KV/R2 → 대체 서비스로 매핑 (해당 시: KV → Upstash Redis, R2 → Supabase Storage)
+- 사용 중인 `@cloudflare/*` 패키지 → Vercel 호환 패키지로 교체 (해당 시)
 
 ---
 

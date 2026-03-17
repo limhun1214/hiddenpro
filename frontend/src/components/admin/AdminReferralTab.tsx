@@ -31,8 +31,17 @@ export default function AdminReferralTab() {
     const [couponsLoading, setCouponsLoading] = useState(false);
     const [couponFilter, setCouponFilter] = useState<'all' | 'ACTIVE' | 'USED' | 'EXPIRED'>('all');
 
+    // Banner management
+    const [banners, setBanners] = useState<any[]>([]);
+    const [bannersLoading, setBannersLoading] = useState(false);
+    const [bannerUploading, setBannerUploading] = useState(false);
+    const [newBannerTitle, setNewBannerTitle] = useState('');
+    const [newBannerType, setNewBannerType] = useState<'horizontal' | 'vertical' | 'square' | 'custom'>('horizontal');
+    const [newBannerPlatform, setNewBannerPlatform] = useState('Facebook, Viber, Blog');
+    const bannerFileRef = React.useRef<HTMLInputElement>(null);
+
     // Sub-tab
-    const [subTab, setSubTab] = useState<'overview' | 'referrals' | 'coupons'>('overview');
+    const [subTab, setSubTab] = useState<'overview' | 'referrals' | 'coupons' | 'banners'>('overview');
 
     const loadSettings = useCallback(async () => {
         const { data } = await supabase.from('platform_settings').select('key, value');
@@ -78,6 +87,16 @@ export default function AdminReferralTab() {
         setRewardsLoading(false);
     }, [rewardFilter]);
 
+    const loadBanners = useCallback(async () => {
+        setBannersLoading(true);
+        const { data } = await supabase
+            .from('referral_banners')
+            .select('*')
+            .order('sort_order', { ascending: true });
+        if (data) setBanners(data);
+        setBannersLoading(false);
+    }, []);
+
     const loadCoupons = useCallback(async () => {
         setCouponsLoading(true);
         let q = supabase.from('coupons')
@@ -90,9 +109,10 @@ export default function AdminReferralTab() {
         setCouponsLoading(false);
     }, [couponFilter]);
 
-    useEffect(() => { loadSettings(); loadStats(); }, []);
+    useEffect(() => { loadSettings(); loadStats(); loadBanners(); }, []);
     useEffect(() => { if (subTab === 'referrals') loadReferrals(); }, [subTab, rewardFilter]);
     useEffect(() => { if (subTab === 'coupons') loadCoupons(); }, [subTab, couponFilter]);
+    useEffect(() => { if (subTab === 'banners') loadBanners(); }, [subTab]);
 
     const handleSaveSetting = async (key: string, label: string) => {
         const val = Number(settingsInputs[key]);
@@ -106,6 +126,62 @@ export default function AdminReferralTab() {
             alert(`${label} saved as ${fmtNum(val)}.`);
         }
         setSavingKey(null);
+    };
+
+    const handleBannerUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file || !newBannerTitle.trim()) { alert('Please enter a title and select an image.'); return; }
+        setBannerUploading(true);
+        try {
+            const fileExt = file.name.split('.').pop();
+            const filePath = `referral_banners/${Date.now()}_${Math.random().toString(36).slice(2)}.${fileExt}`;
+            const { error: upErr } = await supabase.storage.from('quote_images').upload(filePath, file, { upsert: true });
+            if (upErr) throw upErr;
+            const { data: urlData } = supabase.storage.from('quote_images').getPublicUrl(filePath);
+
+            const img = new Image();
+            img.onload = async () => {
+                const { error: insertErr } = await supabase.from('referral_banners').insert({
+                    title: newBannerTitle.trim(),
+                    image_url: urlData.publicUrl,
+                    banner_type: newBannerType,
+                    width: img.naturalWidth,
+                    height: img.naturalHeight,
+                    platform_hint: newBannerPlatform,
+                    is_active: true,
+                    sort_order: banners.length,
+                });
+                if (insertErr) { alert('Save failed: ' + insertErr.message); }
+                else {
+                    setNewBannerTitle('');
+                    loadBanners();
+                }
+                setBannerUploading(false);
+            };
+            img.onerror = () => { alert('Image load failed'); setBannerUploading(false); };
+            img.src = urlData.publicUrl;
+        } catch (err: any) {
+            alert('Upload failed: ' + err.message);
+            setBannerUploading(false);
+        }
+        if (bannerFileRef.current) bannerFileRef.current.value = '';
+    };
+
+    const toggleBannerActive = async (id: number, currentActive: boolean) => {
+        await supabase.from('referral_banners').update({ is_active: !currentActive }).eq('id', id);
+        loadBanners();
+    };
+
+    const toggleBannerDefault = async (id: number) => {
+        await supabase.from('referral_banners').update({ is_default: false }).neq('id', 0);
+        await supabase.from('referral_banners').update({ is_default: true }).eq('id', id);
+        loadBanners();
+    };
+
+    const deleteBanner = async (id: number) => {
+        if (!confirm('Delete this banner?')) return;
+        await supabase.from('referral_banners').delete().eq('id', id);
+        loadBanners();
     };
 
     const settingsConfig = [
@@ -131,10 +207,10 @@ export default function AdminReferralTab() {
 
             {/* Sub-tabs */}
             <div className="flex gap-2 mb-6">
-                {(['overview', 'referrals', 'coupons'] as const).map(t => (
+                {(['overview', 'referrals', 'coupons', 'banners'] as const).map(t => (
                     <button key={t} onClick={() => setSubTab(t)}
                         className={`px-4 py-2 rounded-lg text-sm font-bold transition ${subTab === t ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}>
-                        {t === 'overview' ? '📊 Overview & Settings' : t === 'referrals' ? '👥 Referral History' : '🎟️ Coupon Management'}
+                        {t === 'overview' ? '📊 Overview & Settings' : t === 'referrals' ? '👥 Referral History' : t === 'coupons' ? '🎟️ Coupon Management' : '🖼️ Banner Management'}
                     </button>
                 ))}
             </div>
@@ -294,6 +370,76 @@ export default function AdminReferralTab() {
                                 ))}
                             </tbody>
                         </table>
+                    </div>
+                </>
+            )}
+            {/* ═══ BANNER MANAGEMENT ═══ */}
+            {subTab === 'banners' && (
+                <>
+                    {/* Upload form */}
+                    <div className="bg-gray-800 rounded-xl border border-gray-700 p-5 mb-6 space-y-4">
+                        <h3 className="text-sm font-bold text-white">Upload New Banner (Max 4)</h3>
+                        {banners.length >= 4 ? (
+                            <p className="text-yellow-400 text-sm">Maximum 4 banners reached. Delete one to upload a new banner.</p>
+                        ) : (
+                            <>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label className="text-xs text-gray-400 font-bold block mb-1">Title</label>
+                                        <input type="text" value={newBannerTitle} onChange={e => setNewBannerTitle(e.target.value)} placeholder="e.g. Facebook Banner" className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs text-gray-400 font-bold block mb-1">Type</label>
+                                        <select value={newBannerType} onChange={e => setNewBannerType(e.target.value as any)} className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                            <option value="horizontal">Horizontal (1200×628)</option>
+                                            <option value="vertical">Vertical (1080×1920)</option>
+                                            <option value="square">Square (1080×1080)</option>
+                                            <option value="custom">Custom</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="text-xs text-gray-400 font-bold block mb-1">Platform Hint</label>
+                                    <input type="text" value={newBannerPlatform} onChange={e => setNewBannerPlatform(e.target.value)} placeholder="e.g. Facebook, Viber, Blog" className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <input ref={bannerFileRef} type="file" accept="image/*" onChange={handleBannerUpload} className="hidden" id="banner-upload" />
+                                    <label htmlFor="banner-upload" className={`px-5 py-2.5 rounded-lg font-bold text-sm cursor-pointer transition ${bannerUploading || !newBannerTitle.trim() ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}>
+                                        {bannerUploading ? 'Uploading...' : '📤 Select Image & Upload'}
+                                    </label>
+                                </div>
+                            </>
+                        )}
+                    </div>
+
+                    {/* Banner list */}
+                    <div className="space-y-4">
+                        {bannersLoading ? (
+                            <p className="text-center text-gray-500 py-8">Loading...</p>
+                        ) : banners.length === 0 ? (
+                            <p className="text-center text-gray-500 py-8">No banners uploaded yet.</p>
+                        ) : banners.map(b => (
+                            <div key={b.id} className={`bg-gray-800 rounded-xl border ${b.is_default ? 'border-yellow-500' : 'border-gray-700'} overflow-hidden`}>
+                                <div className="p-3 bg-gray-900/50">
+                                    <img src={b.image_url} alt={b.title} className="w-full max-h-[200px] object-contain rounded-lg" />
+                                </div>
+                                <div className="p-4 flex items-center justify-between">
+                                    <div>
+                                        <p className="text-sm font-bold text-white">{b.title} {b.is_default && <span className="text-yellow-400 text-xs ml-1">⭐ DEFAULT OG</span>}</p>
+                                        <p className="text-xs text-gray-400">📐 {b.width}×{b.height} · 📱 {b.platform_hint} · {b.banner_type}</p>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <button onClick={() => toggleBannerDefault(b.id)} className={`text-xs px-2 py-1 rounded font-bold ${b.is_default ? 'bg-yellow-600 text-white' : 'bg-gray-700 text-gray-400 hover:bg-gray-600'}`}>
+                                            {b.is_default ? '⭐ Default' : 'Set Default'}
+                                        </button>
+                                        <button onClick={() => toggleBannerActive(b.id, b.is_active)} className={`text-xs px-2 py-1 rounded font-bold ${b.is_active ? 'bg-green-600 text-white' : 'bg-gray-700 text-gray-400'}`}>
+                                            {b.is_active ? 'Active' : 'Hidden'}
+                                        </button>
+                                        <button onClick={() => deleteBanner(b.id)} className="text-xs px-2 py-1 rounded font-bold bg-red-600 text-white hover:bg-red-500">Delete</button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </>
             )}
