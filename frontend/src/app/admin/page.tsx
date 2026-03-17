@@ -168,6 +168,11 @@ function AdminDashboardPageContent() {
         quote_cost: 500,
         max_quotes_per_request: 5,
         signup_bonus: 0,
+        referral_enabled: 1,
+        referral_bonus_credits: 150,
+        referral_coupon_amount: 200,
+        coupon_expiry_days: 1095,
+        bonus_credit_expiry_days: 1095,
     });
     const [settingsInputs, setSettingsInputs] = useState<Record<string, string>>({});
     const [savingKey, setSavingKey] = useState<string | null>(null);
@@ -3588,6 +3593,11 @@ function AdminDashboardPageContent() {
                                     { key: 'quote_cost', t: 'Quote Sending Cost', d: 'Credits deducted from a pro per quote sent' },
                                     { key: 'max_quotes_per_request', t: 'Max Quotes per Request', d: 'Maximum number of quotes receivable per request' },
                                     { key: 'signup_bonus', t: 'New Member Signup Bonus', d: 'Credits automatically granted to pros on signup' },
+                                    { key: 'referral_enabled', t: '🎁 Referral System ON/OFF', d: 'Set to 1 to enable, 0 to disable the referral program' },
+                                    { key: 'referral_bonus_credits', t: '🎁 Referral Bonus Credits', d: 'Bonus credits given to each party for a successful pro referral' },
+                                    { key: 'referral_coupon_amount', t: '🎁 Referral Coupon Amount', d: 'Discount amount for referral coupons given to customers' },
+                                    { key: 'coupon_expiry_days', t: '🎁 Coupon Expiry (Days)', d: 'Number of days before a referral coupon expires (applies to newly issued coupons only)' },
+                                    { key: 'bonus_credit_expiry_days', t: '🎁 Bonus Credit Expiry (Days)', d: 'Number of days before bonus credits expire (applies to newly issued credits only)' },
                                 ].map((s, i) => (
                                     <div key={s.key} className={i > 0 ? 'border-t border-gray-700 pt-6' : ''}>
                                         <h3 className="text-base font-bold mb-1">{s.t}</h3>
