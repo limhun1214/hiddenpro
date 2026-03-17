@@ -16,6 +16,7 @@ export default function PCTopNav({ isFixed = false }: { isFixed?: boolean }) {
         { label: t('pcTopNav.requestQuote'), href: '/request', icon: '📝' },
         { label: t('pcTopNav.receivedQuotes'), href: '/quotes/received', icon: '📩' },
         { label: t('pcTopNav.chat'), href: '/chat', icon: '💬' },
+        { label: t('referral.gnbInvite'), href: '/referral', icon: '🎁' },
         { label: t('pcTopNav.notifications'), href: '/notifications', icon: '🔔' },
         { label: t('pcTopNav.customerProfile'), href: '/profile', icon: '👤' },
     ];
@@ -24,6 +25,7 @@ export default function PCTopNav({ isFixed = false }: { isFixed?: boolean }) {
         { label: t('pcTopNav.requests'), href: '/pro/requests', icon: '📋' },
         { label: t('pcTopNav.chat'), href: '/chat', icon: '💬' },
         { label: t('pcTopNav.wallet'), href: '/pro/wallet', icon: '💰' },
+        { label: t('referral.gnbInvite'), href: '/referral', icon: '🎁' },
         { label: t('pcTopNav.notifications'), href: '/notifications', icon: '🔔' },
         { label: t('pcTopNav.proProfile'), href: '/profile', icon: '👤' },
     ];

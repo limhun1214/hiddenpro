@@ -3,11 +3,13 @@ export const runtime = 'edge';
 
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
+import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/ui/Toast';
 import { useTranslations } from 'next-intl';
 
 export default function ProWalletPage() {
     const t = useTranslations();
+    const router = useRouter();
     const [balance, setBalance] = useState<number | null>(null);
     const [bonusBalance, setBonusBalance] = useState<number>(0);
     const [ledger, setLedger] = useState<any[]>([]);
@@ -192,6 +194,14 @@ export default function ProWalletPage() {
                         <span className="bg-green-50 text-green-600 px-3 py-1 rounded-full font-bold border border-green-100">{t('wallet.bonusBalance')} {bonusBalance.toLocaleString()}</span>
                     </div>
                 )}
+                {/* 추천인 초대 배너 */}
+                <div
+                    onClick={() => router.push('/referral')}
+                    className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-xl p-4 mb-4 cursor-pointer hover:from-blue-600 hover:to-indigo-600 transition-all shadow-md"
+                >
+                    <p className="font-bold text-sm">🎁 {t('referral.inviteBanner')}</p>
+                    <p className="text-xs text-blue-100 mt-0.5">Tap to invite friends →</p>
+                </div>
                 <button
                     onClick={() => setIsChargeModalOpen(true)}
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-md transition mb-3"

@@ -394,6 +394,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
         { label: t('pcTopNav.requestQuote'), href: '/request', icon: '📝', key: 'request' },
         { label: t('pcTopNav.receivedQuotes'), href: '/quotes/received', icon: '📩', key: 'quotes' },
         { label: t('pcTopNav.chat'), href: '/chat', icon: '💬', key: 'chat' },
+        { label: t('referral.gnbInvite'), href: '/referral', icon: '🎁', key: 'referral' },
         { label: t('pcTopNav.notifications'), href: '/notifications', icon: '🔔', key: 'notifications' },
         { label: t('pcTopNav.customerProfile'), href: '/profile', icon: '👤', key: 'profile' },
     ];
@@ -402,6 +403,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
         { label: t('pcTopNav.requests'), href: '/pro/requests', icon: '📋', key: 'requests' },
         { label: t('pcTopNav.chat'), href: '/chat', icon: '💬', key: 'chat' },
         { label: t('pcTopNav.wallet'), href: '/pro/wallet', icon: '💰', key: 'wallet' },
+        { label: t('referral.gnbInvite'), href: '/referral', icon: '🎁', key: 'referral' },
         { label: t('pcTopNav.notifications'), href: '/notifications', icon: '🔔', key: 'notifications' },
         { label: t('pcTopNav.proProfile'), href: '/profile', icon: '👤', key: 'profile' },
     ];
