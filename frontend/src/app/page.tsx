@@ -31,7 +31,6 @@ export default function HomePage() {
     // ── [확장] 정지 계정 경고 배너 ──
     const [showSuspendedBanner, setShowSuspendedBanner] = useState(false);
     const [showWithdrawnBanner, setShowWithdrawnBanner] = useState(false);
-    const [showRefBanner, setShowRefBanner] = useState(false);
 
     const [searchQuery, setSearchQuery] = useState('');
     const [showDropdown, setShowDropdown] = useState(false);
@@ -175,11 +174,21 @@ export default function HomePage() {
     React.useEffect(() => {
         if (typeof window !== 'undefined') {
             const params = new URLSearchParams(window.location.search);
-            // ── 추천인 코드 저장 ──
+            // ── 추천인 코드 저장 (referral_enabled 체크) ──
             const refCode = params.get('ref');
             if (refCode && refCode.trim().length > 0) {
-                localStorage.setItem('pending_referral_code', refCode.trim().toUpperCase());
-                setShowRefBanner(true);
+                (async () => {
+                    try {
+                        const { data: refSetting } = await supabase
+                            .from('platform_settings')
+                            .select('value')
+                            .eq('key', 'referral_enabled')
+                            .single();
+                        if (refSetting && Number(refSetting.value) === 1) {
+                            localStorage.setItem('pending_referral_code', refCode.trim().toUpperCase());
+                        }
+                    } catch {}
+                })();
             }
             if (params.get('login') === 'true') {
                 setShowLoginModal(true);
@@ -347,11 +356,6 @@ export default function HomePage() {
 
     return (
         <div className="w-full bg-white font-sans text-gray-900">
-            {showRefBanner && (
-                <div className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-center py-3 px-4 text-sm font-bold">
-                    🎁 You've been invited! Sign up now to get your reward!
-                </div>
-            )}
             {/* ── [확장] 정지 계정 경고 배너 ── */}
             {showSuspendedBanner && (
                 <div className="fixed top-0 left-0 w-full z-[200] bg-red-600 text-white py-4 px-6 shadow-lg animate-slide-down">
