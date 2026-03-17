@@ -790,7 +790,12 @@
     "inviteBannerCust": "Invite friends & get a discount coupon!",
     "loginRequired": "Please log in to use the referral program.",
     "systemOff": "Referral program is currently paused.",
-    "gnbInvite": "Invite"
+    "gnbInvite": "Invite",
+    "legalExpiry": "Bonus Credits and Discount Coupons expire based on the platform's current policy (default: 3 years from issuance). The expiry period is set by the administrator and applies to rewards issued after each policy change.",
+    "legalNoCash": "Rewards have no cash value and cannot be exchanged for cash, refunded, or transferred to another account under any circumstances.",
+    "legalTrigger": "Rewards are credited only after the invited user submits their first quote (Pro) or posts their first request (Customer). Simply signing up does not qualify.",
+    "legalAntiFraud": "HiddenPro reserves the right to revoke rewards and permanently suspend accounts if any fraudulent activity, self-referral, or system abuse is detected, without prior notice.",
+    "legalPermit": "Per DTI Fair Trade Permit No. FTEB-XXXXX Series of 2026"
   },
   "admin": {}
 }

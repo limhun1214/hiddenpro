@@ -314,6 +314,15 @@ export default function ReferralPage() {
                         </div>
                     )}
                 </div>
+
+                {/* Legal Disclaimer */}
+                <div className="bg-gray-50 rounded-xl border border-gray-200 p-5 space-y-3 text-xs text-gray-400 leading-relaxed">
+                    <p>📌 <span className="font-bold text-gray-500">Validity:</span> {t('referral.legalExpiry')}</p>
+                    <p>🚫 <span className="font-bold text-gray-500">No Cash Value:</span> {t('referral.legalNoCash')}</p>
+                    <p>✅ <span className="font-bold text-gray-500">Reward Issuance:</span> {t('referral.legalTrigger')}</p>
+                    <p>⚠️ <span className="font-bold text-gray-500">Anti-Fraud:</span> {t('referral.legalAntiFraud')}</p>
+                    <p className="text-[10px] text-gray-300 pt-2 border-t border-gray-200">{t('referral.legalPermit')}</p>
+                </div>
             </div>
         </div>
     );
