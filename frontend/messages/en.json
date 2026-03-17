@@ -794,6 +794,7 @@
     "legalExpiry": "Bonus Credits and Discount Coupons expire based on the platform's current policy (default: 3 years from issuance). The expiry period is set by the administrator and applies to rewards issued after each policy change.",
     "legalNoCash": "Rewards have no cash value and cannot be exchanged for cash, refunded, or transferred to another account under any circumstances.",
     "legalTrigger": "Rewards are credited only after the invited user submits their first quote (Pro) or posts their first request (Customer). Simply signing up does not qualify.",
+    "legalCouponUsage": "To use a Discount Coupon, the customer presents the coupon code to the matched pro. The pro enters the code in the app, and the system instantly converts the coupon value into Bonus Credits for the pro. No cash is exchanged between parties.",
     "legalAntiFraud": "HiddenPro reserves the right to revoke rewards and permanently suspend accounts if any fraudulent activity, self-referral, or system abuse is detected, without prior notice.",
     "legalPermit": "Per DTI Fair Trade Permit No. FTEB-XXXXX Series of 2026"
   },
