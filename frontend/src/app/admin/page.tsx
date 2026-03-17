@@ -8,8 +8,9 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { optimizeImage } from '@/utils/imageOptimizer';
 import { useToast } from '@/components/ui/Toast';
 import { useTranslations } from 'next-intl';
+import AdminReferralTab from '@/components/admin/AdminReferralTab';
 // ─── 타입 ───
-type AdminTab = 'dashboard' | 'ledger' | 'pro' | 'customer' | 'admin_mgmt' | 'quotes' | 'reviews' | 'search_logs' | 'settings' | 'cms' | 'inquiries' | 'categories' | 'abuse' | 'reports' | 'payout' | 'audit_log';
+type AdminTab = 'dashboard' | 'ledger' | 'pro' | 'customer' | 'admin_mgmt' | 'quotes' | 'reviews' | 'search_logs' | 'settings' | 'cms' | 'inquiries' | 'categories' | 'abuse' | 'reports' | 'payout' | 'audit_log' | 'referral';
 type UserDetailTab = 'info' | 'ledger' | 'quotes' | 'reviews';
 
 const txLabel = (t: string, locale: string = 'en') => {
@@ -48,7 +49,7 @@ function AdminDashboardPageContent() {
     const [authorized, setAuthorized] = useState(false);
     const [loading, setLoading] = useState(true);
     const [adminRole, setAdminRole] = useState<AdminRole | null>(null);
-    const validTabs: AdminTab[] = ['dashboard', 'ledger', 'pro', 'customer', 'admin_mgmt', 'quotes', 'reviews', 'search_logs', 'settings', 'cms', 'inquiries', 'categories', 'abuse', 'reports', 'payout', 'audit_log'];
+    const validTabs: AdminTab[] = ['dashboard', 'ledger', 'pro', 'customer', 'admin_mgmt', 'quotes', 'reviews', 'search_logs', 'settings', 'cms', 'inquiries', 'categories', 'abuse', 'reports', 'payout', 'audit_log', 'referral'];
     const initialTab = (searchParams.get('tab') as AdminTab) || 'dashboard';
     const [tab, setTab] = useState<AdminTab>(validTabs.includes(initialTab) ? initialTab : 'dashboard');
     const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -168,11 +169,6 @@ function AdminDashboardPageContent() {
         quote_cost: 500,
         max_quotes_per_request: 5,
         signup_bonus: 0,
-        referral_enabled: 1,
-        referral_bonus_credits: 150,
-        referral_coupon_amount: 200,
-        coupon_expiry_days: 1095,
-        bonus_credit_expiry_days: 1095,
     });
     const [settingsInputs, setSettingsInputs] = useState<Record<string, string>>({});
     const [savingKey, setSavingKey] = useState<string | null>(null);
@@ -1926,6 +1922,7 @@ function AdminDashboardPageContent() {
     const menuGroup4: { key: AdminTab; icon: string; label: string }[] = [
         { key: 'quotes', icon: '📋', label: adminLocale === 'ko' ? '견적/매칭 내역' : 'Quotes & Matches' },
         { key: 'reviews', icon: '⭐', label: adminLocale === 'ko' ? '리뷰 관리' : 'Reviews' },
+        { key: 'referral', icon: '🎁', label: adminLocale === 'ko' ? '추천인 관리' : 'Referral Mgmt' },
     ];
     // 🚨 CS 및 리스크 관리 (신고 관리는 nav JSX에서 별도 렌더링 유지)
     const menuGroup5: { key: AdminTab; icon: string; label: string }[] = [
@@ -3585,6 +3582,9 @@ function AdminDashboardPageContent() {
                             </div>
                         </>)}
 
+                        {/* ═══ REFERRAL ═══ */}
+                        {tab === 'referral' && <AdminReferralTab />}
+
                         {/* ═══ SETTINGS ═══ */}
                         {tab === 'settings' && (<>
                             <h1 className="text-2xl font-black mb-6">⚙️ Billing Controller</h1>
@@ -3593,11 +3593,6 @@ function AdminDashboardPageContent() {
                                     { key: 'quote_cost', t: 'Quote Sending Cost', d: 'Credits deducted from a pro per quote sent' },
                                     { key: 'max_quotes_per_request', t: 'Max Quotes per Request', d: 'Maximum number of quotes receivable per request' },
                                     { key: 'signup_bonus', t: 'New Member Signup Bonus', d: 'Credits automatically granted to pros on signup' },
-                                    { key: 'referral_enabled', t: '🎁 Referral System ON/OFF', d: 'Set to 1 to enable, 0 to disable the referral program' },
-                                    { key: 'referral_bonus_credits', t: '🎁 Referral Bonus Credits', d: 'Bonus credits given to each party for a successful pro referral' },
-                                    { key: 'referral_coupon_amount', t: '🎁 Referral Coupon Amount', d: 'Discount amount for referral coupons given to customers' },
-                                    { key: 'coupon_expiry_days', t: '🎁 Coupon Expiry (Days)', d: 'Number of days before a referral coupon expires (applies to newly issued coupons only)' },
-                                    { key: 'bonus_credit_expiry_days', t: '🎁 Bonus Credit Expiry (Days)', d: 'Number of days before bonus credits expire (applies to newly issued credits only)' },
                                 ].map((s, i) => (
                                     <div key={s.key} className={i > 0 ? 'border-t border-gray-700 pt-6' : ''}>
                                         <h3 className="text-base font-bold mb-1">{s.t}</h3>
