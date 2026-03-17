@@ -1640,6 +1640,23 @@ export default function DynamicRequestForm() {
             }
 
             showToast('성공적으로 견적을 요청했습니다! 고수들의 견적을 기다려주세요.', 'success');
+
+            // ── [추천인 보상] 첫 견적 요청 판별 → 보상 트리거 (fire-and-forget) ──
+            try {
+                const { count } = await supabase
+                    .from('match_requests')
+                    .select('request_id', { count: 'exact', head: true })
+                    .eq('customer_id', customerId);
+                if (count === 1) {
+                    // 첫 견적 요청 확인 — 추천인 보상 처리 (실패해도 무시)
+                    supabase.rpc('process_referral_reward', {
+                        p_referred_user_id: customerId
+                    }).then(res => {
+                        if (res.data?.success) console.log('[Referral] Reward processed:', res.data);
+                    }).catch(() => {});
+                }
+            } catch {}
+
             router.push('/quotes/received');
         } catch (e: any) { alert("오류 발생: " + e.message); }
     };

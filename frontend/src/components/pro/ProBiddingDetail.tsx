@@ -336,6 +336,23 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
             setIsSent(true);
             showToast(t('proBidding.sendSuccess'), 'success');
             window.dispatchEvent(new CustomEvent('wallet-updated'));
+
+            // ── [추천인 보상] 첫 견적 발송 판별 → 보상 트리거 (fire-and-forget) ──
+            try {
+                const { count } = await supabase
+                    .from('match_quotes')
+                    .select('quote_id', { count: 'exact', head: true })
+                    .eq('pro_id', sessionUser.id);
+                if (count === 1) {
+                    // 첫 견적 발송 확인 — 추천인 보상 처리 (실패해도 무시)
+                    supabase.rpc('process_referral_reward', {
+                        p_referred_user_id: sessionUser.id
+                    }).then(res => {
+                        if (res.data?.success) console.log('[Referral] Reward processed:', res.data);
+                    }).catch(() => {});
+                }
+            } catch {}
+
             router.push('/pro/requests');
         } catch (e: any) {
             showToast(t('proBidding.sendError') + e.message, 'error');

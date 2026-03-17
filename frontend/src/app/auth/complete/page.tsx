@@ -243,6 +243,21 @@ export default function AuthCompletePage() {
                             return;
                         }
 
+                        // ── [추천인 보상] 첫 견적 요청 판별 → 보상 트리거 (fire-and-forget) ──
+                        try {
+                            const { count } = await supabase
+                                .from('match_requests')
+                                .select('request_id', { count: 'exact', head: true })
+                                .eq('customer_id', sessionUser.id);
+                            if (count === 1) {
+                                supabase.rpc('process_referral_reward', {
+                                    p_referred_user_id: sessionUser.id
+                                }).then(res => {
+                                    if (res.data?.success) console.log('[Referral] Reward processed:', res.data);
+                                }).catch(() => {});
+                            }
+                        } catch {}
+
                         setStatus(t('authComplete.quoteSuccess'));
                         window.location.href = '/quotes/received';
                         return;
