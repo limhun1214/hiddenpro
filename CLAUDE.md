@@ -263,6 +263,7 @@ src
 │   │   ├── reviews/page.tsx
 │   │   └── wallet/page.tsx
 │   ├── profile/page.tsx                   ← 고객/고수 공용 프로필
+│   ├── referral/page.tsx                  ← 추천인 페이지 (Invite & Earn)
 │   ├── quotes
 │   │   ├── received/CustomerQuotesClient.tsx
 │   │   ├── received/page.tsx
@@ -282,6 +283,8 @@ src
 │   │   ├── DynamicRequestForm.tsx
 │   │   ├── ProProfileDetailModal.tsx
 │   │   └── QuoteDetailModal.tsx
+│   ├── admin
+│   │   └── AdminReferralTab.tsx           ← 관리자 추천인 탭 (별도 컴포넌트)
 │   ├── pro
 │   │   └── ProBiddingDetail.tsx
 │   └── ui/Toast.tsx

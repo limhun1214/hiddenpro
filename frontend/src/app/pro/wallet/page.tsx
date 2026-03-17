@@ -338,7 +338,7 @@ export default function ProWalletPage() {
                                     if (item.tx_type === 'CHARGE') txLabel = t('wallet.txCharge');
                                     else if (item.tx_type === 'DEDUCT_QUOTE') txLabel = t('wallet.txDeductQuote');
                                     else if (item.tx_type === 'REFUND') txLabel = t('wallet.txRefund');
-                                    else if (item.tx_type === 'BONUS') txLabel = item.description?.includes('Referral') ? t('wallet.txReferralBonus') : t('wallet.txBonus');
+                                    else if (item.tx_type === 'BONUS') txLabel = item.description?.includes('Coupon') ? t('wallet.txCouponRedeemed') : item.description?.includes('Referral') ? t('wallet.txReferralBonus') : t('wallet.txBonus');
                                     else if (item.tx_type === 'BONUS_REFUND') txLabel = t('wallet.txBonusRefund');
                                     else if (item.tx_type === 'ADMIN_CHARGE') txLabel = t('wallet.txAdminCharge');
                                     else if (item.tx_type === 'ADMIN_REFUND') txLabel = t('wallet.txAdminRefund');

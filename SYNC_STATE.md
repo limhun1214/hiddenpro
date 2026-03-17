@@ -8,6 +8,7 @@
 ## 1. [Business & Architecture Core]
 * **비즈니스**: 필리핀 기반 전문가-고객 매칭 서비스 (HiddenPro).
 * **과금 모델**: 견적 발송 시 포인트 즉시 차감 (에스크로/후정산 금지).
+* **재화 명칭**: Credits (플랫폼 내부 가상 토큰). 법정 화폐(₱) 표기 금지. UI 용어: Top-up Credits / Credit History / Available Credits.
 * **아키텍처**: 10만 CCU 방어 (PgBouncer/Supavisor 커넥션 풀링). 엣지 캐싱 및 페이로드 최소화.
 * **데이터베이스**: Supabase 기반, N+1 방지를 위한 백엔드 JOIN 및 RLS 적용.
 
@@ -24,6 +25,10 @@
 1. Sentry 에러 트래킹 전면 연결 및 Key 주입
 2. Supabase Rate Limit 전면 활성화 (DDoS 방어)
 3. 이메일 가입 2FA (Confirm Email) 기능 ON
+4. PG 결제 연동 시 1:1 문의 폼에 "Transaction ID" 입력 필드 연동 확인
+5. PG 결제 연동 시 "Request Withdrawal" 버튼 복원 (pro/wallet/page.tsx — {false && (...)} 해제)
+6. 쿠폰 만료 자동 처리 배치 구축 (pg_cron 또는 Supabase Edge Function — UPDATE coupons SET status='EXPIRED' WHERE status='ACTIVE' AND expires_at < NOW())
+7. 이용약관(Terms of Service)에 추천 프로그램 참여 조항 추가 + DTI 허가번호(FTEB-XXXXX) 실제 번호로 교체
 
 ## 5. [State Transition Spec — 견적/매칭 상태 전환 규칙]
 
@@ -60,3 +65,20 @@
 - 전환 컴포넌트: `frontend/src/components/common/LanguageSwitcher.tsx`
 - 완료된 파일: 23개 (i18n 완료 보고서 참조)
 - 미완료: `admin/page.tsx`, 모바일 GNB LanguageSwitcher
+
+## 7. [Referral System — 추천인 시스템]
+- **4-Way 보상 구조**: Pro→Pro (양쪽 Bonus Credits), Customer→Pro (쿠폰+Credits), Customer→Customer (양쪽 쿠폰), Pro→Customer (Credits+쿠폰)
+- **보상 조건**: 피추천인의 첫 견적 발송(고수) 또는 첫 견적 요청(고객) 시점. 가입만으로는 지급 불가.
+- **쿠폰 Closed-loop**: 고객이 고수에게 쿠폰 코드 제시 → 고수가 앱에서 등록 → 시스템이 Bonus Credits로 전환. 외부 현금 유출 0.
+- **어뷰징 방어**: 전화번호 인증 필수, 자기 추천 불가, 중복 보상 불가.
+- **관리자 조정 가능 설정** (platform_settings):
+  - `referral_enabled` (ON/OFF)
+  - `referral_bonus_credits` (기본 150)
+  - `referral_coupon_amount` (기본 200)
+  - `coupon_expiry_days` (기본 1095일 = 3년)
+  - `bonus_credit_expiry_days` (기본 1095일 = 3년)
+- **DB 테이블**: `referral_rewards` (추천 보상 이력), `coupons` (할인 쿠폰)
+- **DB 컬럼 확장**: `users.referral_code` (VARCHAR(8) UNIQUE), `users.referred_by` (UUID FK)
+- **RPC 함수**: `process_referral_reward(p_referred_user_id)`, `redeem_coupon(p_pro_id, p_coupon_code)`
+- **프론트엔드**: `/referral` 페이지, GNB 🎁 Invite 탭, Credits 페이지 배너, 견적 발송/요청 완료 후 토스트
+- **관리자**: AdminReferralTab 컴포넌트 (Overview & Settings / Referral History / Coupon Management)
