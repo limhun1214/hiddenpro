@@ -352,6 +352,7 @@ export default function ProWalletPage() {
                                             <div>
                                                 <p className="text-xs text-gray-400 mb-1">{new Date(item.created_at).toLocaleDateString()} {new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
                                                 <p className="text-sm font-bold text-gray-800">{txLabel}</p>
+                                                {item.description && <p className="text-xs text-gray-400 mt-0.5">{item.description}</p>}
                                             </div>
                                             <div className="text-right">
                                                 <p className={`text-base font-bold ${colorClass}`}>
