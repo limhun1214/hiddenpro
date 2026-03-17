@@ -335,6 +335,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
 
             setIsSent(true);
             showToast(t('proBidding.sendSuccess'), 'success');
+            showToast('💰 Invite a pro friend & earn 150 Credits → /referral', 'info', true);
             window.dispatchEvent(new CustomEvent('wallet-updated'));
 
             // ── [추천인 보상] 첫 견적 발송 판별 → 보상 트리거 (fire-and-forget) ──

@@ -1640,6 +1640,7 @@ export default function DynamicRequestForm() {
             }
 
             showToast('성공적으로 견적을 요청했습니다! 고수들의 견적을 기다려주세요.', 'success');
+            showToast('🎁 Invite friends & get a discount coupon! → /referral', 'info');
 
             // ── [추천인 보상] 첫 견적 요청 판별 → 보상 트리거 (fire-and-forget) ──
             try {
