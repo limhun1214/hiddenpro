@@ -263,35 +263,35 @@ export default function ProfilePage() {
           <div className="px-4 pt-2 pb-2 flex flex-wrap justify-center gap-x-3 gap-y-1">
             <Link
               href="/legal/TERMS"
-              className="text-xs text-white/40 hover:text-white/60 transition"
+              className="text-xs text-gray-400 hover:text-gray-600 transition"
             >
               {t("footer.terms")}
             </Link>
-            <span className="text-xs text-white/20">|</span>
+            <span className="text-xs text-gray-300">|</span>
             <Link
               href="/legal/PRIVACY"
-              className="text-xs text-white/40 hover:text-white/60 transition"
+              className="text-xs text-gray-400 hover:text-gray-600 transition"
             >
               {t("footer.privacy")}
             </Link>
-            <span className="text-xs text-white/20">|</span>
+            <span className="text-xs text-gray-300">|</span>
             <Link
               href="/legal/REFUND"
-              className="text-xs text-white/40 hover:text-white/60 transition"
+              className="text-xs text-gray-400 hover:text-gray-600 transition"
             >
               {t("footer.refund")}
             </Link>
-            <span className="text-xs text-white/20">|</span>
+            <span className="text-xs text-gray-300">|</span>
             <Link
               href="/support/inquiry"
-              className="text-xs text-white/40 hover:text-white/60 transition"
+              className="text-xs text-gray-400 hover:text-gray-600 transition"
             >
               {t("footer.contactUs")}
             </Link>
-            <span className="text-xs text-white/20">|</span>
+            <span className="text-xs text-gray-300">|</span>
             <Link
               href="/support/business-info"
-              className="text-xs text-white/40 hover:text-white/60 transition"
+              className="text-xs text-gray-400 hover:text-gray-600 transition"
             >
               {t("footer.businessInfo")}
             </Link>
@@ -458,35 +458,35 @@ export default function ProfilePage() {
         <div className="px-4 pt-2 pb-2 flex flex-wrap justify-center gap-x-3 gap-y-1">
           <Link
             href="/legal/TERMS"
-            className="text-xs text-white/40 hover:text-white/60 transition"
+            className="text-xs text-gray-400 hover:text-gray-600 transition"
           >
             {t("footer.terms")}
           </Link>
-          <span className="text-xs text-white/20">|</span>
+          <span className="text-xs text-gray-300">|</span>
           <Link
             href="/legal/PRIVACY"
-            className="text-xs text-white/40 hover:text-white/60 transition"
+            className="text-xs text-gray-400 hover:text-gray-600 transition"
           >
             {t("footer.privacy")}
           </Link>
-          <span className="text-xs text-white/20">|</span>
+          <span className="text-xs text-gray-300">|</span>
           <Link
             href="/legal/REFUND"
-            className="text-xs text-white/40 hover:text-white/60 transition"
+            className="text-xs text-gray-400 hover:text-gray-600 transition"
           >
             {t("footer.refund")}
           </Link>
-          <span className="text-xs text-white/20">|</span>
+          <span className="text-xs text-gray-300">|</span>
           <Link
             href="/support/inquiry"
-            className="text-xs text-white/40 hover:text-white/60 transition"
+            className="text-xs text-gray-400 hover:text-gray-600 transition"
           >
             {t("footer.contactUs")}
           </Link>
-          <span className="text-xs text-white/20">|</span>
+          <span className="text-xs text-gray-300">|</span>
           <Link
             href="/support/business-info"
-            className="text-xs text-white/40 hover:text-white/60 transition"
+            className="text-xs text-gray-400 hover:text-gray-600 transition"
           >
             {t("footer.businessInfo")}
           </Link>
