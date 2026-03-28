@@ -980,7 +980,13 @@ export default function HomePage() {
                 home repairs to business expansion.
               </p>
               <button
-                onClick={() => router.push("/request")}
+                onClick={() => {
+                  if (isProUser) {
+                    showToast("This page is for customers only.", "warning");
+                    return;
+                  }
+                  router.push("/request");
+                }}
                 className="text-[#ff88b5] font-semibold flex items-center gap-1 cursor-pointer mx-auto"
               >
                 View All Services →
@@ -1003,6 +1009,15 @@ export default function HomePage() {
                       cat.link_url ||
                       `/request?categoryId=${encodeURIComponent((cat as any).title_ko || cat.title)}`
                     }
+                    onClick={(e) => {
+                      if (isProUser) {
+                        e.preventDefault();
+                        showToast(
+                          "This page is for customers only.",
+                          "warning",
+                        );
+                      }
+                    }}
                     className="group bg-surface-container rounded-2xl p-6 hover:bg-surface-container-high transition-all duration-300 border border-transparent hover:border-outline-variant flex flex-col gap-4"
                   >
                     <div
