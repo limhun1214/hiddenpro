@@ -210,98 +210,71 @@ export default function ProfilePage() {
 
   if (loading)
     return (
-      <div className="p-10 text-center text-gray-500">
+      <div className="min-h-screen bg-[#0f0d13] p-10 text-center text-[#aea9b2]">
         {t("profile.loading")}
       </div>
     );
   if (!userRole)
     return (
-      <div className="p-10 text-center text-red-500">{t("profile.error")}</div>
+      <div className="min-h-screen bg-[#0f0d13] p-10 text-center text-[#ff6e84]">
+        {t("profile.error")}
+      </div>
     );
 
   // [기획 핵심] 강제 Early Return (고객일 경우 고수 DB 조회 원천 차단)
   if (userRole === "CUSTOMER") {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col w-full lg:px-8 lg:py-8 lg:items-stretch">
-        <header className="w-full bg-white p-4 border-b border-gray-100 flex justify-center lg:justify-start items-center shadow-sm lg:text-left lg:mb-8 lg:bg-transparent lg:border-none lg:p-0 lg:mt-8">
-          <h1 className="text-xl lg:text-2xl lg:font-bold">
+      <div className="min-h-screen bg-[#0f0d13] flex flex-col w-full lg:px-8 lg:py-8 lg:items-stretch">
+        <header className="w-full bg-[#151219] p-4 border-b border-[#2a2730] flex justify-center lg:justify-start items-center lg:text-left lg:mb-8 lg:bg-transparent lg:border-none lg:p-0 lg:mt-8">
+          <h1 className="text-xl lg:text-2xl lg:font-bold text-[#f8f1fb]">
             {t("profile.title")}
           </h1>
         </header>
-        <main className="flex-1 w-full space-y-6 mt-4">
-          <ProfileHeader
-            user={sessionUser}
-            role="CUSTOMER"
-            tableName="users"
-            idColumn="user_id"
-            onLogout={handleLogout}
-          />
-          <CustomerProfile user={sessionUser} />
-          <CustomerSupportSection />
+        <main className="flex-1 w-full space-y-6 mt-4 bg-[#0f0d13]">
+          <div className="px-4">
+            <ProfileHeader
+              user={sessionUser}
+              role="CUSTOMER"
+              tableName="users"
+              idColumn="user_id"
+              onLogout={handleLogout}
+            />
+          </div>
+          <div className="px-4">
+            <CustomerProfile user={sessionUser} />
+          </div>
+          <div className="px-4">
+            <CustomerSupportSection />
+          </div>
 
           {/* Invite & Earn */}
           <div className="px-4">
-            <Link
-              href="/referral"
-              className="flex items-center justify-between w-full px-4 py-3 rounded-xl bg-white border border-gray-100 shadow-sm hover:bg-gray-50 transition"
-            >
-              <div className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-[20px] text-pink-400">
-                  card_giftcard
-                </span>
-                <span className="text-sm font-medium text-gray-700">
+            <div className="relative overflow-hidden flex items-center justify-between w-full px-6 py-5 rounded-xl bg-gradient-to-br from-[#591adc] to-[#211e26]">
+              <div className="flex flex-col gap-1">
+                <span className="text-base font-extrabold text-[#e4daff]">
                   Invite &amp; Earn
                 </span>
+                <span className="text-xs text-[#e4daff]/70">
+                  Get $20 for every friend you invite to the curated platform.
+                </span>
+                <button
+                  onClick={() => router.push("/referral")}
+                  className="mt-2 self-start bg-[#ff88b5] text-black rounded-full px-4 py-1.5 text-xs font-bold hover:bg-[#ff6ea3] transition"
+                >
+                  Send Invite
+                </button>
               </div>
-              <span className="material-symbols-outlined text-[18px] text-gray-300">
-                chevron_right
+              <span className="material-symbols-outlined text-[22px] text-[#a68cff]">
+                card_giftcard
               </span>
-            </Link>
+            </div>
           </div>
 
-          {/* Legal Links */}
-          <div className="px-4 pt-2 pb-2 flex flex-wrap justify-center gap-x-3 gap-y-1">
-            <Link
-              href="/legal/TERMS"
-              className="text-xs text-gray-400 hover:text-gray-600 transition"
-            >
-              {t("footer.terms")}
-            </Link>
-            <span className="text-xs text-gray-300">|</span>
-            <Link
-              href="/legal/PRIVACY"
-              className="text-xs text-gray-400 hover:text-gray-600 transition"
-            >
-              {t("footer.privacy")}
-            </Link>
-            <span className="text-xs text-gray-300">|</span>
-            <Link
-              href="/legal/REFUND"
-              className="text-xs text-gray-400 hover:text-gray-600 transition"
-            >
-              {t("footer.refund")}
-            </Link>
-            <span className="text-xs text-gray-300">|</span>
-            <Link
-              href="/support/inquiry"
-              className="text-xs text-gray-400 hover:text-gray-600 transition"
-            >
-              {t("footer.contactUs")}
-            </Link>
-            <span className="text-xs text-gray-300">|</span>
-            <Link
-              href="/support/business-info"
-              className="text-xs text-gray-400 hover:text-gray-600 transition"
-            >
-              {t("footer.businessInfo")}
-            </Link>
-          </div>
-
-          {/* 최하단 로그아웃 + 탈퇴 버튼 */}
-          <div className="pt-8 pb-12 flex flex-col items-center gap-3">
+          {/* 로그아웃 + 탈퇴 버튼 (가로) */}
+          <div className="pt-6 pb-2 flex justify-center gap-6">
             <button
               onClick={handleLogout}
-              className="text-sm text-gray-400 hover:text-gray-500 underline underline-offset-4 transition"
+              className="text-sm text-white/70 hover:text-[#ff88b5] transition"
             >
               {t("profile.logout")}
             </button>
@@ -311,10 +284,48 @@ export default function ProfilePage() {
                 setWithdrawReason("");
                 setWithdrawConfirmText("");
               }}
-              className="text-xs text-gray-300 hover:text-red-400 transition"
+              className="text-sm text-[#ff6e84]/60 hover:text-[#ff6e84] transition"
             >
               {t("profile.withdraw")}
             </button>
+          </div>
+
+          {/* Legal Links */}
+          <div className="px-4 pt-2 pb-12 flex flex-wrap justify-center gap-x-3 gap-y-1">
+            <Link
+              href="/legal/TERMS"
+              className="text-xs text-[#aea9b2]/60 hover:text-[#aea9b2] transition"
+            >
+              {t("footer.terms")}
+            </Link>
+            <span className="text-xs text-[#aea9b2]/30">|</span>
+            <Link
+              href="/legal/PRIVACY"
+              className="text-xs text-[#aea9b2]/60 hover:text-[#aea9b2] transition"
+            >
+              {t("footer.privacy")}
+            </Link>
+            <span className="text-xs text-[#aea9b2]/30">|</span>
+            <Link
+              href="/legal/REFUND"
+              className="text-xs text-[#aea9b2]/60 hover:text-[#aea9b2] transition"
+            >
+              {t("footer.refund")}
+            </Link>
+            <span className="text-xs text-[#aea9b2]/30">|</span>
+            <Link
+              href="/support/inquiry"
+              className="text-xs text-[#aea9b2]/60 hover:text-[#aea9b2] transition"
+            >
+              {t("footer.contactUs")}
+            </Link>
+            <span className="text-xs text-[#aea9b2]/30">|</span>
+            <Link
+              href="/support/business-info"
+              className="text-xs text-[#aea9b2]/60 hover:text-[#aea9b2] transition"
+            >
+              {t("footer.businessInfo")}
+            </Link>
           </div>
         </main>
 
@@ -415,88 +426,59 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col w-full lg:px-8 lg:py-8 lg:items-stretch">
-      <header className="w-full bg-white p-4 border-b border-gray-100 flex justify-center lg:justify-start items-center shadow-sm lg:text-left lg:mb-8 lg:bg-transparent lg:border-none lg:p-0 lg:mt-8">
-        <h1 className="text-xl lg:text-2xl lg:font-bold">
+    <div className="min-h-screen bg-[#0f0d13] flex flex-col w-full lg:px-8 lg:py-8 lg:items-stretch">
+      <header className="w-full bg-[#151219] p-4 border-b border-[#2a2730] flex justify-center lg:justify-start items-center lg:text-left lg:mb-8 lg:bg-transparent lg:border-none lg:p-0 lg:mt-8">
+        <h1 className="text-xl lg:text-2xl lg:font-bold text-[#f8f1fb]">
           {t("profile.title")}
         </h1>
       </header>
 
-      <main className="flex-1 w-full space-y-6 mt-4">
-        <ProfileHeader
-          user={sessionUser}
-          role="PRO"
-          tableName="pro_profiles"
-          idColumn="pro_id"
-          onLogout={handleLogout}
-          reviewHref="/pro/reviews"
-        />
-        <ProProfile user={sessionUser} />
-        <CustomerSupportSection />
+      <main className="flex-1 w-full space-y-6 mt-4 bg-[#0f0d13]">
+        <div className="px-4">
+          <ProfileHeader
+            user={sessionUser}
+            role="PRO"
+            tableName="pro_profiles"
+            idColumn="pro_id"
+            onLogout={handleLogout}
+            reviewHref="/pro/reviews"
+          />
+        </div>
+        <div className="px-4">
+          <ProProfile user={sessionUser} />
+        </div>
+        <div className="px-4">
+          <CustomerSupportSection />
+        </div>
 
         {/* Invite & Earn */}
         <div className="px-4">
-          <Link
-            href="/referral"
-            className="flex items-center justify-between w-full px-4 py-3 rounded-xl bg-white border border-gray-100 shadow-sm hover:bg-gray-50 transition"
-          >
-            <div className="flex items-center gap-3">
-              <span className="material-symbols-outlined text-[20px] text-pink-400">
-                card_giftcard
-              </span>
-              <span className="text-sm font-medium text-gray-700">
+          <div className="relative overflow-hidden flex items-center justify-between w-full px-6 py-5 rounded-xl bg-gradient-to-br from-[#591adc] to-[#211e26]">
+            <div className="flex flex-col gap-1">
+              <span className="text-base font-extrabold text-[#e4daff]">
                 Invite &amp; Earn
               </span>
+              <span className="text-xs text-[#e4daff]/70">
+                Get $20 for every friend you invite to the curated platform.
+              </span>
+              <button
+                onClick={() => router.push("/referral")}
+                className="mt-2 self-start bg-[#ff88b5] text-black rounded-full px-4 py-1.5 text-xs font-bold hover:bg-[#ff6ea3] transition"
+              >
+                Send Invite
+              </button>
             </div>
-            <span className="material-symbols-outlined text-[18px] text-gray-300">
-              chevron_right
+            <span className="material-symbols-outlined text-[22px] text-[#a68cff]">
+              card_giftcard
             </span>
-          </Link>
+          </div>
         </div>
 
-        {/* Legal Links */}
-        <div className="px-4 pt-2 pb-2 flex flex-wrap justify-center gap-x-3 gap-y-1">
-          <Link
-            href="/legal/TERMS"
-            className="text-xs text-gray-400 hover:text-gray-600 transition"
-          >
-            {t("footer.terms")}
-          </Link>
-          <span className="text-xs text-gray-300">|</span>
-          <Link
-            href="/legal/PRIVACY"
-            className="text-xs text-gray-400 hover:text-gray-600 transition"
-          >
-            {t("footer.privacy")}
-          </Link>
-          <span className="text-xs text-gray-300">|</span>
-          <Link
-            href="/legal/REFUND"
-            className="text-xs text-gray-400 hover:text-gray-600 transition"
-          >
-            {t("footer.refund")}
-          </Link>
-          <span className="text-xs text-gray-300">|</span>
-          <Link
-            href="/support/inquiry"
-            className="text-xs text-gray-400 hover:text-gray-600 transition"
-          >
-            {t("footer.contactUs")}
-          </Link>
-          <span className="text-xs text-gray-300">|</span>
-          <Link
-            href="/support/business-info"
-            className="text-xs text-gray-400 hover:text-gray-600 transition"
-          >
-            {t("footer.businessInfo")}
-          </Link>
-        </div>
-
-        {/* 최하단 로그아웃 + 탈퇴 버튼 */}
-        <div className="pt-8 pb-12 flex flex-col items-center gap-3">
+        {/* 로그아웃 + 탈퇴 버튼 (가로) */}
+        <div className="pt-6 pb-2 flex justify-center gap-6">
           <button
             onClick={handleLogout}
-            className="text-sm text-gray-400 hover:text-gray-500 underline underline-offset-4 transition"
+            className="text-sm text-white/70 hover:text-[#ff88b5] transition"
           >
             {t("profile.logout")}
           </button>
@@ -506,10 +488,48 @@ export default function ProfilePage() {
               setWithdrawReason("");
               setWithdrawConfirmText("");
             }}
-            className="text-xs text-gray-300 hover:text-red-400 transition"
+            className="text-sm text-[#ff6e84]/60 hover:text-[#ff6e84] transition"
           >
             {t("profile.withdraw")}
           </button>
+        </div>
+
+        {/* Legal Links */}
+        <div className="px-4 pt-2 pb-12 flex flex-wrap justify-center gap-x-3 gap-y-1">
+          <Link
+            href="/legal/TERMS"
+            className="text-xs text-[#aea9b2]/60 hover:text-[#aea9b2] transition"
+          >
+            {t("footer.terms")}
+          </Link>
+          <span className="text-xs text-[#aea9b2]/30">|</span>
+          <Link
+            href="/legal/PRIVACY"
+            className="text-xs text-[#aea9b2]/60 hover:text-[#aea9b2] transition"
+          >
+            {t("footer.privacy")}
+          </Link>
+          <span className="text-xs text-[#aea9b2]/30">|</span>
+          <Link
+            href="/legal/REFUND"
+            className="text-xs text-[#aea9b2]/60 hover:text-[#aea9b2] transition"
+          >
+            {t("footer.refund")}
+          </Link>
+          <span className="text-xs text-[#aea9b2]/30">|</span>
+          <Link
+            href="/support/inquiry"
+            className="text-xs text-[#aea9b2]/60 hover:text-[#aea9b2] transition"
+          >
+            {t("footer.contactUs")}
+          </Link>
+          <span className="text-xs text-[#aea9b2]/30">|</span>
+          <Link
+            href="/support/business-info"
+            className="text-xs text-[#aea9b2]/60 hover:text-[#aea9b2] transition"
+          >
+            {t("footer.businessInfo")}
+          </Link>
         </div>
       </main>
 
@@ -913,12 +933,13 @@ function ProfileHeader({
     nickname || user.email?.split("@")[0] || t("profile.proDefaultName");
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+    <div className="bg-[#211e26] rounded-2xl border border-[#2a2730] overflow-hidden">
       {/* 프로필 헤더 영역 */}
       <div className="p-6 flex items-center gap-4">
         {/* 원형 프로필 사진 */}
         <div className="relative flex-shrink-0">
-          <div className="w-16 h-16 rounded-full overflow-hidden bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center border-2 border-white shadow-md">
+          <div className="absolute -inset-1 bg-gradient-to-tr from-[#ff88b5] to-[#a68cff] rounded-full blur opacity-25"></div>
+          <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gradient-to-br from-[#2a2730] to-[#211e26] flex items-center justify-center border-2 border-[#211e26] shadow-md">
             {avatarUrl ? (
               <img
                 src={avatarUrl}
@@ -927,7 +948,7 @@ function ProfileHeader({
               />
             ) : (
               <svg
-                className="w-8 h-8 text-gray-400"
+                className="w-8 h-8 text-[#aea9b2]"
                 fill="currentColor"
                 viewBox="0 0 24 24"
               >
@@ -945,16 +966,16 @@ function ProfileHeader({
         {/* 이름 + 이메일 */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <h2 className="text-lg font-bold text-gray-900 truncate">
+            <h2 className="text-lg font-bold text-[#f8f1fb] truncate">
               {displayName}
             </h2>
-            <span className="text-sm text-gray-500 flex-shrink-0">
+            <span className="text-sm text-[#aea9b2] flex-shrink-0">
               {roleLabel}
             </span>
           </div>
           <div className="flex items-center gap-1.5 mt-1">
-            <span className="text-xs text-gray-400">✉️</span>
-            <span className="text-sm text-gray-500 truncate">
+            <span className="text-xs text-[#aea9b2]">✉️</span>
+            <span className="text-sm text-[#aea9b2] truncate">
               {user.email || t("profile.noEmail")}
             </span>
           </div>
@@ -965,8 +986,8 @@ function ProfileHeader({
           onClick={() => setShowSettings(!showSettings)}
           className={`flex-shrink-0 text-sm font-medium px-4 py-2 rounded-lg transition-all duration-200 ${
             showSettings
-              ? "bg-blue-600 text-white shadow-md"
-              : "bg-blue-50 text-blue-600 hover:bg-blue-100"
+              ? "bg-[#a68cff] text-[#0f0d13] shadow-md"
+              : "bg-[#2a2730] text-[#a68cff] hover:bg-[#33303a]"
           }`}
         >
           {t("profile.accountSettings")}
@@ -978,11 +999,11 @@ function ProfileHeader({
         <div className="px-6 pb-4 flex items-center gap-2">
           <button
             onClick={() => (window.location.href = reviewHref)}
-            className="flex-1 flex items-center justify-center gap-1.5 bg-yellow-50 hover:bg-yellow-100 text-yellow-700 font-semibold py-2.5 rounded-xl border border-yellow-200 transition text-sm"
+            className="flex-1 flex items-center justify-center gap-1.5 bg-[#2a2730] hover:bg-[#33303a] text-[#b5ffc2] font-semibold py-2.5 rounded-xl border border-[#33303a] transition text-sm"
           >
             <span>⭐</span>
             <span>{reviewStats.avg.toFixed(1)}</span>
-            <span className="text-yellow-500/70 text-xs">
+            <span className="text-[#b5ffc2]/70 text-xs">
               ({reviewStats.count}
               {t("profile.proReviewCount")})
             </span>
@@ -994,14 +1015,14 @@ function ProfileHeader({
       <div
         className={`transition-all duration-300 ease-in-out overflow-hidden ${showSettings ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"}`}
       >
-        <div className="px-6 pb-6 space-y-5 border-t border-gray-100 pt-5">
+        <div className="px-6 pb-6 space-y-5 border-t border-[#2a2730] pt-5">
           {/* 프로필 사진 변경 */}
           <div className="space-y-3">
-            <label className="text-sm font-bold text-gray-700 flex items-center gap-2">
+            <label className="text-sm font-bold text-[#f8f1fb] flex items-center gap-2">
               {t("profile.photoLabel")}
             </label>
             <div className="flex items-center gap-4">
-              <div className="w-20 h-20 rounded-full overflow-hidden bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center border-2 border-gray-100 shadow-inner">
+              <div className="w-20 h-20 rounded-full overflow-hidden bg-gradient-to-br from-[#2a2730] to-[#211e26] flex items-center justify-center border-2 border-[#2a2730] shadow-inner">
                 {avatarUrl ? (
                   <img
                     src={avatarUrl}
@@ -1010,7 +1031,7 @@ function ProfileHeader({
                   />
                 ) : (
                   <svg
-                    className="w-10 h-10 text-gray-400"
+                    className="w-10 h-10 text-[#aea9b2]"
                     fill="currentColor"
                     viewBox="0 0 24 24"
                   >
@@ -1022,7 +1043,7 @@ function ProfileHeader({
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploading || cooldownRemaining > 0}
-                  className="bg-white hover:bg-gray-50 text-gray-700 font-medium text-sm px-4 py-2.5 rounded-xl border border-gray-200 transition disabled:opacity-50 shadow-sm"
+                  className="bg-[#2a2730] hover:bg-[#33303a] text-[#f8f1fb] font-medium text-sm px-4 py-2.5 rounded-xl border border-[#33303a] transition disabled:opacity-50"
                 >
                   {uploading
                     ? t("profile.photoUploading")
@@ -1030,7 +1051,7 @@ function ProfileHeader({
                       ? `${cooldownRemaining} ${t("profile.photoCooldown")}`
                       : t("profile.photoUploadBtn")}
                 </button>
-                <span className="text-[11px] text-gray-400">
+                <span className="text-[11px] text-[#aea9b2]">
                   {t("profile.proPhotoSpec")}
                 </span>
               </div>
@@ -1046,9 +1067,9 @@ function ProfileHeader({
 
           {/* 활동명 수정 */}
           <div className="space-y-3">
-            <label className="text-sm font-bold text-gray-700 flex items-center gap-2">
+            <label className="text-sm font-bold text-[#f8f1fb] flex items-center gap-2">
               ✏️ {t("profile.nicknameLabel")}
-              <span className="text-xs text-gray-400 font-normal">
+              <span className="text-xs text-[#aea9b2] font-normal">
                 {t("profile.proNicknameRule")}
               </span>
             </label>
@@ -1063,17 +1084,17 @@ function ProfileHeader({
                   }}
                   placeholder={t("profile.nicknamePlaceholder")}
                   maxLength={20}
-                  className={`w-full p-3 border rounded-xl focus:outline-none focus:ring-2 transition text-sm ${
+                  className={`w-full p-3 border rounded-xl focus:outline-none focus:ring-2 transition text-sm bg-[#151219] text-[#f8f1fb] placeholder:text-[#aea9b2]/50 ${
                     nicknameStatus === "taken" || nicknameStatus === "error"
-                      ? "border-red-300 focus:ring-red-500 bg-red-50/50"
+                      ? "border-[#ff6e84] focus:ring-[#ff6e84]"
                       : nicknameStatus === "available"
-                        ? "border-green-300 focus:ring-green-500 bg-green-50/50"
-                        : "border-gray-200 focus:ring-blue-500"
+                        ? "border-[#b5ffc2] focus:ring-[#b5ffc2]"
+                        : "border-[#2a2730] focus:ring-[#a68cff]"
                   }`}
                 />
                 {nicknameStatus === "checking" && (
                   <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                    <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+                    <div className="w-4 h-4 border-2 border-[#a68cff] border-t-transparent rounded-full animate-spin"></div>
                   </div>
                 )}
               </div>
@@ -1084,7 +1105,7 @@ function ProfileHeader({
                   nicknameStatus !== "available" ||
                   nicknameCooldown > 0
                 }
-                className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-3 rounded-xl transition text-sm whitespace-nowrap disabled:bg-gray-300 disabled:cursor-not-allowed shadow-sm"
+                className="bg-[#a68cff] hover:bg-[#9070ff] text-[#0f0d13] font-bold px-5 py-3 rounded-xl transition text-sm whitespace-nowrap disabled:bg-[#2a2730] disabled:text-[#aea9b2] disabled:cursor-not-allowed"
               >
                 {saving
                   ? t("profile.nicknameSaving")
@@ -1101,10 +1122,10 @@ function ProfileHeader({
               <p
                 className={`text-xs font-medium pl-1 ${
                   nicknameStatus === "taken" || nicknameStatus === "error"
-                    ? "text-red-500"
+                    ? "text-[#ff6e84]"
                     : nicknameStatus === "available"
-                      ? "text-green-600"
-                      : "text-gray-400"
+                      ? "text-[#b5ffc2]"
+                      : "text-[#aea9b2]"
                 }`}
               >
                 {nicknameMsg}
@@ -1192,32 +1213,32 @@ function CustomerProfile({ user }: { user: any }) {
   };
 
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-4">
-      <h2 className="text-lg font-bold text-gray-800 border-b pb-2">
+    <div className="bg-[#211e26] p-6 rounded-2xl border border-[#2a2730] space-y-4">
+      <h2 className="text-sm font-bold text-[#ff88b5] tracking-widest uppercase border-b border-[#2a2730] pb-2">
         {t("profile.basicInfo")}
       </h2>
       <div className="space-y-3">
         <div className="flex flex-col">
-          <span className="text-xs text-gray-500 font-medium mb-1">
+          <span className="text-xs text-[#aea9b2] font-medium mb-1">
             {t("profile.emailLabel")}
           </span>
-          <span className="text-gray-900 font-medium bg-gray-50 p-3 rounded-lg border border-gray-100">
+          <span className="text-[#f8f1fb] font-medium bg-[#151219] p-3 rounded-lg border border-[#2a2730]">
             {user.email || t("profile.noEmailInfo")}
           </span>
         </div>
         {phoneData?.is_phone_verified && phoneData?.phone ? (
           <div className="flex flex-col">
-            <span className="text-xs text-gray-500 font-medium mb-1">
+            <span className="text-xs text-[#aea9b2] font-medium mb-1">
               {t("profile.verifiedPhone")}
             </span>
-            <span className="text-gray-900 font-medium bg-green-50 p-3 rounded-lg border border-green-200 flex items-center gap-2">
-              <span className="text-green-600 text-sm">✅</span>
+            <span className="text-[#b5ffc2] font-medium bg-[#b5ffc2]/10 p-3 rounded-lg border border-[#b5ffc2]/30 flex items-center gap-2">
+              <span className="text-sm">✅</span>
               {phoneData.phone}
             </span>
           </div>
         ) : (
           <div className="flex flex-col">
-            <span className="text-xs text-gray-500 font-medium mb-1">
+            <span className="text-xs text-[#aea9b2] font-medium mb-1">
               {t("profile.phoneVerification")}
             </span>
             <div className="flex gap-2">
@@ -1226,31 +1247,31 @@ function CustomerProfile({ user }: { user: any }) {
                 value={phoneInput}
                 onChange={(e) => setPhoneInput(e.target.value)}
                 placeholder={t("profile.phonePlaceholder")}
-                className="flex-1 p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="flex-1 p-3 bg-[#151219] border border-[#2a2730] text-[#f8f1fb] placeholder:text-[#aea9b2]/50 rounded-lg text-sm focus:ring-2 focus:ring-[#a68cff] focus:outline-none"
                 disabled={verifyingPhone}
               />
               <button
                 onClick={handlePhoneVerify}
                 disabled={verifyingPhone || !phoneInput.trim()}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-lg text-sm transition disabled:opacity-50 whitespace-nowrap"
+                className="bg-[#a68cff] hover:bg-[#9070ff] text-[#0f0d13] font-bold px-4 py-2 rounded-lg text-sm transition disabled:opacity-50 whitespace-nowrap"
               >
                 {verifyingPhone
                   ? t("profile.phoneVerifying")
                   : t("profile.phoneVerifyBtn")}
               </button>
             </div>
-            <span className="text-xs text-gray-400 mt-1">
+            <span className="text-xs text-[#aea9b2] mt-1">
               {t("profile.phoneNote")}
             </span>
           </div>
         )}
         {joinDate && (
           <div className="flex flex-col">
-            <span className="text-xs text-gray-500 font-medium mb-1">
+            <span className="text-xs text-[#aea9b2] font-medium mb-1">
               {t("profile.joinDate")}
             </span>
-            <span className="text-gray-900 font-medium bg-gray-50 p-3 rounded-lg border border-gray-100 flex items-center gap-2">
-              <span className="text-gray-400 text-sm">📅</span>
+            <span className="text-[#f8f1fb] font-medium bg-[#151219] p-3 rounded-lg border border-[#2a2730] flex items-center gap-2">
+              <span className="text-[#aea9b2] text-sm">📅</span>
               {joinDate}
             </span>
           </div>
@@ -1259,13 +1280,13 @@ function CustomerProfile({ user }: { user: any }) {
           className="flex flex-col cursor-pointer group"
           onClick={() => (window.location.href = "/customer/my-reviews")}
         >
-          <span className="text-xs text-gray-500 font-medium mb-1">
+          <span className="text-xs text-[#aea9b2] font-medium mb-1">
             {t("profile.myReviewsLabel")}
           </span>
-          <span className="text-gray-900 font-medium bg-yellow-50 p-3 rounded-lg border border-yellow-200 flex items-center gap-2 group-hover:bg-yellow-100 group-hover:border-yellow-300 transition">
-            <span className="text-yellow-500 text-sm">⭐</span>
+          <span className="text-[#f8f1fb] font-medium bg-[#151219] p-3 rounded-lg border border-[#2a2730] flex items-center gap-2 group-hover:border-[#b5ffc2]/30 transition">
+            <span className="text-sm">⭐</span>
             {reviewCount} {t("profile.reviewsCount")}
-            <span className="ml-auto text-gray-400 text-xs group-hover:text-yellow-600 transition">
+            <span className="ml-auto text-[#aea9b2] text-xs group-hover:text-[#b5ffc2] transition">
               {t("profile.viewBtn")}
             </span>
           </span>
@@ -1521,20 +1542,20 @@ function ProProfile({ user }: { user: any }) {
   };
 
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-      <h2 className="text-lg font-bold text-gray-800 border-b pb-4 mb-4">
+    <div className="bg-[#211e26] p-6 rounded-2xl border border-[#2a2730]">
+      <h2 className="text-sm font-bold text-[#ff88b5] tracking-widest uppercase border-b border-[#2a2730] pb-4 mb-4">
         {t("profile.proProfileTitle")}
       </h2>
 
       {/* 매칭 일시 정지 토글 섹션 */}
-      <div className="bg-blue-50 p-5 rounded-xl border border-blue-100 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-[#151219] p-5 rounded-xl border border-[#2a2730] mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h3 className="font-bold text-gray-800 flex items-center gap-2">
+          <h3 className="font-bold text-[#f8f1fb] flex items-center gap-2">
             {isAcceptingRequests
               ? t("profile.proAcceptingOn")
               : t("profile.proAcceptingOff")}
           </h3>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-[#aea9b2] mt-1">
             {t("profile.proAcceptingDesc")}
           </p>
         </div>
@@ -1545,41 +1566,41 @@ function ProProfile({ user }: { user: any }) {
             checked={isAcceptingRequests}
             onChange={handleToggleAccepting}
           />
-          <div className="w-14 h-7 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-blue-600"></div>
+          <div className="w-14 h-7 bg-[#2a2730] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-[#33303a] after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-[#a68cff]"></div>
         </label>
       </div>
 
       {/* 인증 배지 영역 */}
       <div className="flex flex-wrap gap-2 mb-4">
         {isPhoneVerified && (
-          <span className="inline-flex items-center bg-green-50 text-green-700 text-xs font-bold px-3 py-1.5 rounded-full border border-green-200">
+          <span className="inline-flex items-center bg-[#b5ffc2]/10 text-[#b5ffc2] text-xs font-bold px-3 py-1.5 rounded-full border border-[#b5ffc2]/30">
             ✅ Phone Verified
           </span>
         )}
         {facebookUrl && (
-          <span className="inline-flex items-center bg-blue-50 text-blue-700 text-xs font-bold px-3 py-1.5 rounded-full border border-blue-200">
+          <span className="inline-flex items-center bg-[#a68cff]/10 text-[#a68cff] text-xs font-bold px-3 py-1.5 rounded-full border border-[#a68cff]/30">
             🔵 Facebook Linked
           </span>
         )}
         {!isPhoneVerified && !facebookUrl && (
-          <span className="text-xs text-gray-400">
+          <span className="text-xs text-[#aea9b2]">
             {t("profile.proNoBadges")}
           </span>
         )}
       </div>
 
       {/* 전화번호 인증 섹션 */}
-      <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 mb-4 space-y-3">
-        <label className="text-sm font-bold text-gray-700 flex items-center gap-2">
+      <div className="bg-[#151219] p-4 rounded-xl border border-[#2a2730] mb-4 space-y-3">
+        <label className="text-sm font-bold text-[#f8f1fb] flex items-center gap-2">
           {t("profile.proPhoneVerifyLabel")}
           {isPhoneVerified && (
-            <span className="text-green-600 text-xs">
+            <span className="text-[#b5ffc2] text-xs">
               {t("profile.proPhoneVerified")}
             </span>
           )}
         </label>
         {isPhoneVerified ? (
-          <div className="bg-green-50 text-green-700 p-3 rounded-lg text-sm font-medium border border-green-200">
+          <div className="bg-[#b5ffc2]/10 text-[#b5ffc2] p-3 rounded-lg text-sm font-medium border border-[#b5ffc2]/30">
             {t("profile.proPhoneVerifiedText")} {proPhone}
           </div>
         ) : (
@@ -1589,13 +1610,13 @@ function ProProfile({ user }: { user: any }) {
               value={phoneInput}
               onChange={(e) => setPhoneInput(e.target.value)}
               placeholder={t("profile.proPhonePlaceholder")}
-              className="flex-1 p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:outline-none transition text-sm"
+              className="flex-1 p-3 bg-[#0f0d13] border border-[#2a2730] text-[#f8f1fb] placeholder:text-[#aea9b2]/50 rounded-xl focus:ring-2 focus:ring-[#b5ffc2] focus:outline-none transition text-sm"
             />
             <button
               type="button"
               onClick={handlePhoneVerify}
               disabled={verifyingPhone}
-              className="bg-green-600 hover:bg-green-700 text-white font-bold px-4 py-3 rounded-xl transition text-sm whitespace-nowrap disabled:bg-green-300"
+              className="bg-[#b5ffc2] hover:bg-[#9ff0af] text-[#0f0d13] font-bold px-4 py-3 rounded-xl transition text-sm whitespace-nowrap disabled:opacity-50"
             >
               {verifyingPhone
                 ? t("profile.proPhoneProcessing")
@@ -1606,24 +1627,24 @@ function ProProfile({ user }: { user: any }) {
       </div>
 
       {/* Facebook 연동 섹션 */}
-      <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 mb-4 space-y-3">
-        <label className="text-sm font-bold text-gray-700 flex items-center gap-2">
+      <div className="bg-[#151219] p-4 rounded-xl border border-[#2a2730] mb-4 space-y-3">
+        <label className="text-sm font-bold text-[#f8f1fb] flex items-center gap-2">
           {t("profile.proFbLinkLabel")}
           {facebookUrl && (
-            <span className="text-blue-600 text-xs">
+            <span className="text-[#a68cff] text-xs">
               {t("profile.proFbLinked")}
             </span>
           )}
         </label>
         {facebookUrl && !editingFb ? (
           <div className="flex items-center gap-2">
-            <div className="flex-1 bg-blue-50 text-blue-700 p-3 rounded-lg text-sm font-medium border border-blue-200 break-all truncate">
+            <div className="flex-1 bg-[#a68cff]/10 text-[#a68cff] p-3 rounded-lg text-sm font-medium border border-[#a68cff]/30 break-all truncate">
               🔵 {facebookUrl}
             </div>
             <button
               type="button"
               onClick={() => setEditingFb(true)}
-              className="flex-shrink-0 text-xs font-bold text-blue-600 hover:text-blue-800 bg-white px-3 py-2 rounded-lg border border-blue-200 hover:bg-blue-50 transition"
+              className="flex-shrink-0 text-xs font-bold text-[#a68cff] hover:text-[#c0a8ff] bg-[#a68cff]/10 px-3 py-2 rounded-lg border border-[#a68cff]/30 hover:bg-[#a68cff]/20 transition"
             >
               {t("profile.proFbEditBtn")}
             </button>
@@ -1635,7 +1656,7 @@ function ProProfile({ user }: { user: any }) {
               value={facebookInput}
               onChange={(e) => setFacebookInput(e.target.value)}
               placeholder="https://facebook.com/yourname"
-              className="flex-1 p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition text-sm"
+              className="flex-1 p-3 bg-[#0f0d13] border border-[#2a2730] text-[#f8f1fb] placeholder:text-[#aea9b2]/50 rounded-xl focus:ring-2 focus:ring-[#a68cff] focus:outline-none transition text-sm"
             />
             <button
               type="button"
@@ -1644,7 +1665,7 @@ function ProProfile({ user }: { user: any }) {
                 setEditingFb(false);
               }}
               disabled={linkingFb}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-3 rounded-xl transition text-sm whitespace-nowrap disabled:bg-blue-300"
+              className="bg-[#a68cff] hover:bg-[#9070ff] text-[#0f0d13] font-bold px-4 py-3 rounded-xl transition text-sm whitespace-nowrap disabled:opacity-50"
             >
               {linkingFb
                 ? t("profile.proFbProcessing")
@@ -1657,7 +1678,7 @@ function ProProfile({ user }: { user: any }) {
                   setFacebookInput(facebookUrl);
                   setEditingFb(false);
                 }}
-                className="text-gray-400 hover:text-gray-600 font-bold px-2 transition text-sm"
+                className="text-[#aea9b2] hover:text-[#f8f1fb] font-bold px-2 transition text-sm"
               >
                 {t("profile.proFbCancelBtn")}
               </button>
@@ -1668,9 +1689,9 @@ function ProProfile({ user }: { user: any }) {
 
       <form onSubmit={handleSave} className="space-y-6">
         <div className="flex flex-col space-y-2">
-          <label className="text-sm font-bold text-gray-700">
+          <label className="text-sm font-bold text-[#f8f1fb]">
             {t("profile.proIntroLabel")}{" "}
-            <span className="text-xs text-gray-400 font-normal ml-1">
+            <span className="text-xs text-[#aea9b2] font-normal ml-1">
               {t("profile.proIntroLimit")}
             </span>
           </label>
@@ -1682,18 +1703,18 @@ function ProProfile({ user }: { user: any }) {
             }
             maxLength={50}
             placeholder={t("profile.proIntroPlaceholder")}
-            className="p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
+            className="p-3 bg-[#151219] border border-[#2a2730] text-[#f8f1fb] placeholder:text-[#aea9b2]/50 rounded-xl focus:ring-2 focus:ring-[#a68cff] focus:outline-none transition"
             required
           />
-          <span className="text-xs text-gray-400 text-right">
+          <span className="text-xs text-[#aea9b2] text-right">
             {formData.intro.length}/50
           </span>
         </div>
 
         <div className="flex flex-col space-y-2">
-          <label className="text-sm font-bold text-gray-700">
+          <label className="text-sm font-bold text-[#f8f1fb]">
             {t("profile.proDetailedLabel")}{" "}
-            <span className="text-xs text-gray-400 font-normal ml-1">
+            <span className="text-xs text-[#aea9b2] font-normal ml-1">
               {t("profile.proDetailedLimit")}
             </span>
           </label>
@@ -1704,12 +1725,12 @@ function ProProfile({ user }: { user: any }) {
             }
             rows={5}
             placeholder={t("profile.proDetailedPlaceholder")}
-            className="p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition resize-none text-sm"
+            className="p-3 bg-[#151219] border border-[#2a2730] text-[#f8f1fb] placeholder:text-[#aea9b2]/50 rounded-xl focus:ring-2 focus:ring-[#a68cff] focus:outline-none transition resize-none text-sm"
           />
         </div>
 
         <div className="flex flex-col space-y-3">
-          <label className="text-sm font-bold text-gray-700">
+          <label className="text-sm font-bold text-[#f8f1fb]">
             {t("profile.proRegionLabel")}
           </label>
           <div className="grid grid-cols-2 gap-3">
@@ -1719,7 +1740,7 @@ function ProProfile({ user }: { user: any }) {
                 setSelectedReg(e.target.value);
                 setSelectedCity("");
               }}
-              className="p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition bg-white"
+              className="p-3 bg-[#151219] border border-[#2a2730] text-[#f8f1fb] rounded-xl focus:ring-2 focus:ring-[#a68cff] focus:outline-none transition"
               required
             >
               <option value="" disabled>
@@ -1734,7 +1755,7 @@ function ProProfile({ user }: { user: any }) {
             <select
               value={selectedCity}
               onChange={(e) => setSelectedCity(e.target.value)}
-              className="p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition bg-white disabled:bg-gray-100 disabled:text-gray-400"
+              className="p-3 bg-[#151219] border border-[#2a2730] text-[#f8f1fb] rounded-xl focus:ring-2 focus:ring-[#a68cff] focus:outline-none transition disabled:opacity-40 disabled:text-[#aea9b2]"
               required
               disabled={!selectedReg}
             >
@@ -1750,12 +1771,12 @@ function ProProfile({ user }: { user: any }) {
           </div>
         </div>
 
-        <div className="flex flex-col space-y-3 border-t pt-4 border-gray-100">
+        <div className="flex flex-col space-y-3 border-t pt-4 border-[#2a2730]">
           <div className="flex justify-between items-end">
-            <label className="text-sm font-bold text-gray-700">
+            <label className="text-sm font-bold text-[#f8f1fb]">
               {t("profile.proServicesLabel")}
             </label>
-            <span className="text-xs font-bold text-blue-600">
+            <span className="text-xs font-bold text-[#a68cff]">
               {formData.services.length} / 5
             </span>
           </div>
@@ -1768,7 +1789,7 @@ function ProProfile({ user }: { user: any }) {
                 setSelectedDepth1(e.target.value);
                 setSelectedDepth2("");
               }}
-              className="p-2 border border-gray-200 rounded-lg text-sm bg-gray-50"
+              className="p-2 bg-[#151219] border border-[#2a2730] text-[#f8f1fb] rounded-lg text-sm"
             >
               <option value="">{t("profile.depth1Placeholder")}</option>
               {depth1Keys.map((k) => (
@@ -1780,7 +1801,7 @@ function ProProfile({ user }: { user: any }) {
             <select
               value={selectedDepth2}
               onChange={(e) => setSelectedDepth2(e.target.value)}
-              className="p-2 border border-gray-200 rounded-lg text-sm bg-gray-50 disabled:opacity-50"
+              className="p-2 bg-[#151219] border border-[#2a2730] text-[#f8f1fb] rounded-lg text-sm disabled:opacity-40"
               disabled={!selectedDepth1}
             >
               <option value="">{t("profile.depth2Placeholder")}</option>
@@ -1794,7 +1815,7 @@ function ProProfile({ user }: { user: any }) {
 
           {/* 3뎁스 선택 영역 */}
           {depth3Items.length > 0 ? (
-            <div className="bg-gray-50 p-3 rounded-xl border border-gray-200 max-h-48 overflow-y-auto flex flex-col space-y-2">
+            <div className="bg-[#0f0d13] p-3 rounded-xl border border-[#2a2730] max-h-48 overflow-y-auto flex flex-col space-y-2">
               {depth3Items.map((service) => {
                 const isSelected = formData.services.includes(service);
                 const displayName =
@@ -1804,16 +1825,16 @@ function ProProfile({ user }: { user: any }) {
                 return (
                   <label
                     key={service}
-                    className="flex items-center space-x-3 p-2 hover:bg-white rounded-lg cursor-pointer transition"
+                    className="flex items-center space-x-3 p-2 hover:bg-[#211e26] rounded-lg cursor-pointer transition"
                   >
                     <input
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => handleServiceToggle(service)}
-                      className="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                      className="w-5 h-5 text-[#a68cff] rounded border-[#2a2730] focus:ring-[#a68cff] bg-[#151219]"
                     />
                     <span
-                      className={`text-sm ${isSelected ? "font-bold text-blue-700" : "text-gray-700"}`}
+                      className={`text-sm ${isSelected ? "font-bold text-[#a68cff]" : "text-[#aea9b2]"}`}
                     >
                       {displayName}
                     </span>
@@ -1822,24 +1843,24 @@ function ProProfile({ user }: { user: any }) {
               })}
             </div>
           ) : (
-            <div className="text-center p-4 bg-gray-50 rounded-xl border border-gray-200 text-xs text-gray-400">
+            <div className="text-center p-4 bg-[#0f0d13] rounded-xl border border-[#2a2730] text-xs text-[#aea9b2]">
               {t("profile.selectParentFirst")}
             </div>
           )}
 
           {/* 선택된 서비스 태그 표시 */}
           {formData.services.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-3 p-3 border border-blue-100 bg-blue-50/50 rounded-xl">
+            <div className="flex flex-wrap gap-2 mt-3 p-3 border border-[#a68cff]/30 bg-[#a68cff]/5 rounded-xl">
               {formData.services.map((s) => (
                 <span
                   key={s}
-                  className="inline-flex items-center bg-white border border-blue-200 text-blue-700 text-xs px-2 py-1.5 rounded-md shadow-sm"
+                  className="inline-flex items-center bg-[#211e26] border border-[#a68cff]/40 text-[#a68cff] text-xs px-2 py-1.5 rounded-md"
                 >
                   {locale === "en" && koToEnService[s] ? koToEnService[s] : s}
                   <button
                     type="button"
                     onClick={() => handleServiceToggle(s)}
-                    className="ml-1.5 text-blue-400 hover:text-red-500 font-bold px-1"
+                    className="ml-1.5 text-[#aea9b2] hover:text-[#ff6e84] font-bold px-1"
                   >
                     &times;
                   </button>
@@ -1852,10 +1873,10 @@ function ProProfile({ user }: { user: any }) {
         <button
           type="submit"
           disabled={saving}
-          className={`w-full font-bold py-4 rounded-xl shadow-[0_4px_14px_0_rgba(37,99,235,0.39)] transition mt-4 text-white ${
+          className={`w-full font-bold py-4 rounded-xl transition mt-4 ${
             isSaved
-              ? "bg-green-600 hover:bg-green-700"
-              : "bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300"
+              ? "bg-[#b5ffc2] text-[#0f0d13] hover:bg-[#9ff0af]"
+              : "bg-[#a68cff] text-[#0f0d13] hover:bg-[#9070ff] disabled:bg-[#2a2730] disabled:text-[#aea9b2]"
           }`}
         >
           {saving
@@ -1900,22 +1921,38 @@ function CustomerSupportSection() {
     setExpandedCatId((prev) => (prev === id ? null : id));
   };
 
+  const getCatIcon = (title: string) => {
+    const lower = title.toLowerCase();
+    if (lower.includes("platform")) return "menu_book";
+    if (lower.includes("customer")) return "description";
+    if (lower.includes("pro")) return "verified";
+    if (lower.includes("faq")) return "help";
+    return "article";
+  };
+
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-      <h2 className="text-lg font-bold text-gray-800 p-6 pb-2 border-b border-gray-100">
+    <div className="bg-[#211e26] rounded-2xl border border-[#2a2730] overflow-hidden">
+      <h2 className="text-sm font-bold text-[#ff88b5] tracking-widest uppercase p-6 pb-2 border-b border-[#2a2730]">
         {t("profile.customerSupport")}
       </h2>
       <ul className="flex flex-col">
-        <li className="border-b border-gray-50 last:border-0 hover:bg-gray-50 transition cursor-pointer">
+        <li className="border-b border-[#2a2730] last:border-0 hover:bg-[#2a2730] transition cursor-pointer">
           <Link
             href="/support/inquiry"
             className="w-full flex justify-between items-center p-4"
           >
-            <span className="text-sm font-bold text-blue-600 flex items-center gap-2">
-              <span className="text-lg">💬</span> {t("profile.inquiryLink")}
-            </span>
-            <span className="text-blue-400 text-xs text-right">
-              {t("profile.inquiryHistory")}
+            <div className="flex items-center gap-3">
+              <span className="bg-[#2a2730] rounded-full p-2 flex items-center justify-center">
+                <span className="material-symbols-outlined text-[#ff88b5] text-[20px] leading-none">
+                  headset_mic
+                </span>
+              </span>
+              <span className="text-sm font-medium text-white">
+                {t("profile.inquiryLink")}
+              </span>
+            </div>
+            <span className="material-symbols-outlined text-white/40 text-[20px]">
+              chevron_right
             </span>
           </Link>
         </li>
@@ -1925,27 +1962,34 @@ function CustomerSupportSection() {
           return (
             <li
               key={cat.id}
-              className="border-b border-gray-50 last:border-0 hover:bg-gray-50 transition"
+              className="border-b border-[#2a2730] last:border-0 hover:bg-[#2a2730] transition"
             >
               <button
                 type="button"
                 onClick={() => toggleCat(cat.id)}
                 className="w-full flex justify-between items-center p-4 transition text-left cursor-pointer"
               >
-                <span className="text-sm font-medium text-gray-700">
-                  {cat.title}
-                </span>
+                <div className="flex items-center gap-3">
+                  <span className="bg-[#2a2730] rounded-full p-2 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-[#aea9b2] text-[20px] leading-none">
+                      {getCatIcon(cat.title)}
+                    </span>
+                  </span>
+                  <span className="text-sm font-medium text-white">
+                    {cat.title}
+                  </span>
+                </div>
                 <span
-                  className="text-gray-400 text-xs transition-transform duration-200"
-                  style={{ transform: isExpanded ? "rotate(180deg)" : "none" }}
+                  className="material-symbols-outlined text-white/40 text-[20px] transition-transform duration-200"
+                  style={{ transform: isExpanded ? "rotate(90deg)" : "none" }}
                 >
-                  ▼
+                  chevron_right
                 </span>
               </button>
               {isExpanded && (
-                <ul className="bg-gray-50 flex flex-col pt-1 pb-3 px-4 shadow-inner">
+                <ul className="bg-[#151219] flex flex-col pt-1 pb-3 px-4">
                   {catPages.length === 0 ? (
-                    <li className="text-xs text-gray-400 py-2 pl-2">
+                    <li className="text-xs text-[#aea9b2] py-2 pl-2">
                       {t("profile.noPages")}
                     </li>
                   ) : (
@@ -1953,7 +1997,7 @@ function CustomerSupportSection() {
                       <li key={page.id} className="py-1">
                         <Link
                           href={`/support/${cat.slug}/${page.slug}`}
-                          className="flex items-center text-sm text-gray-600 hover:text-blue-600 hover:font-bold transition pl-2 py-2 border-l-2 border-transparent hover:border-blue-600"
+                          className="flex items-center text-sm text-[#aea9b2] hover:text-[#ff88b5] hover:font-bold transition pl-2 py-2 border-l-2 border-transparent hover:border-[#ff88b5]"
                         >
                           📄 {page.title}
                         </Link>

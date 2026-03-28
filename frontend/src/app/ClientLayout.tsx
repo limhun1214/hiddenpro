@@ -516,17 +516,17 @@ export default function ClientLayout({
   // 메인 홈 화면 및 관리자 페이지: 모바일 제약 해제, 풀스크린 반응형 레이아웃 제공
   // 서브 페이지 (견적요청, 프로필 등): 모바일은 max-w-md, PC는 넓게 50:50 분할
   const isSpecialPage = isLandingPage || isAdminPage;
+  const isInternalPage = !!userId && !isAdminPage && !isLandingPage;
 
   // 최상위 컨테이너 클래스 (조건부 라우팅)
   const rootContainerClasses = isLandingPage
     ? "flex flex-col min-h-screen relative w-full bg-[#0f0d13]"
     : isAdminPage
       ? "flex flex-col min-h-screen relative overflow-hidden w-full"
-      : "flex flex-col lg:flex-row w-full min-h-screen lg:h-[100dvh] bg-white relative shadow-xl lg:overflow-hidden";
+      : `flex flex-col lg:flex-row w-full min-h-screen lg:h-[100dvh] ${isInternalPage ? "bg-[#0f0d13]" : "bg-white"} relative shadow-xl lg:overflow-hidden`;
 
   // 우측 영역(본문) 컨테이너 클래스 (서브 페이지용)
-  const rightPanelClasses =
-    "flex flex-col w-full flex-1 min-h-screen lg:min-h-0 lg:h-full bg-white relative";
+  const rightPanelClasses = `flex flex-col w-full flex-1 min-h-screen lg:min-h-0 lg:h-full ${isInternalPage ? "bg-[#0f0d13]" : "bg-white"} relative`;
 
   return (
     <ToastProvider>
