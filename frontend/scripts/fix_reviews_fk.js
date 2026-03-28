@@ -1,14 +1,16 @@
-require('dotenv').config({ path: '.env.local' });
-const { Client } = require('pg');
+require("dotenv").config({ path: ".env.local" });
+const { Client } = require("pg");
 const client = new Client(process.env.DATABASE_URL);
 
 async function addForeignKeys() {
-    try {
-        await client.connect();
+  try {
+    await client.connect();
 
-        console.log('Adding missing foreign keys to reviews and chat_rooms tables...');
+    console.log(
+      "Adding missing foreign keys to reviews and chat_rooms tables...",
+    );
 
-        await client.query(`
+    await client.query(`
       do $$
       begin
         IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name = 'reviews_room_id_fkey') THEN
@@ -30,12 +32,12 @@ async function addForeignKeys() {
       $$;
     `);
 
-        console.log('Successfully added foreign keys.');
-    } catch (err) {
-        console.error('Migration error:', err);
-    } finally {
-        await client.end();
-    }
+    console.log("Successfully added foreign keys.");
+  } catch (err) {
+    console.error("Migration error:", err);
+  } finally {
+    await client.end();
+  }
 }
 
 addForeignKeys();

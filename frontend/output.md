@@ -1,7 +1,8 @@
 요청하신 CustomerQuotesClient.tsx와 ProBiddingDetail.tsx 원본 코드입니다.
 
 ### 1. CustomerQuotesClient.tsx
-`	sx
+
+` sx
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -12,16 +13,16 @@ import ProProfileDetailModal from '@/components/customer/ProProfileDetailModal';
 import QuoteDetailModal from '@/components/customer/QuoteDetailModal';
 
 export default function CustomerQuotesClient() {
-    const router = useRouter();
-    const searchParams = useSearchParams();
-    const [requests, setRequests] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [errorMsg, setErrorMsg] = useState<string | null>(null);
-    const [activeTab, setActiveTab] = useState<'IN_PROGRESS' | 'CLOSED'>(searchParams?.get('tab') === 'CLOSED' ? 'CLOSED' : 'IN_PROGRESS');
-    const [currentTime, setCurrentTime] = useState(Date.now());
-    const [refreshTrigger, setRefreshTrigger] = useState(0);
-    const [reviewedRoomIds, setReviewedRoomIds] = useState<Set<string>>(new Set());
-    const [quoteRoomMap, setQuoteRoomMap] = useState<Record<string, string>>({});
+const router = useRouter();
+const searchParams = useSearchParams();
+const [requests, setRequests] = useState<any[]>([]);
+const [loading, setLoading] = useState(true);
+const [errorMsg, setErrorMsg] = useState<string | null>(null);
+const [activeTab, setActiveTab] = useState<'IN_PROGRESS' | 'CLOSED'>(searchParams?.get('tab') === 'CLOSED' ? 'CLOSED' : 'IN_PROGRESS');
+const [currentTime, setCurrentTime] = useState(Date.now());
+const [refreshTrigger, setRefreshTrigger] = useState(0);
+const [reviewedRoomIds, setReviewedRoomIds] = useState<Set<string>>(new Set());
+const [quoteRoomMap, setQuoteRoomMap] = useState<Record<string, string>>({});
 
     // 고수 프로필 상세 모달 상태
     const [profileModal, setProfileModal] = useState<{ proId: string; requestId: string } | null>(null);
@@ -500,12 +501,14 @@ export default function CustomerQuotesClient() {
             )}
         </div>
     );
+
 }
 
 `
 
 ### 2. ProBiddingDetail.tsx
-`	sx
+
+` sx
 'use client';
 
 import React, { useEffect, useState, useRef } from 'react';
@@ -513,13 +516,13 @@ import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 
 export default function ProBiddingDetail({ requestId }: { requestId: string }) {
-    const router = useRouter();
-    const [request, setRequest] = useState<any>(null);
-    const [loading, setLoading] = useState(true);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [isSent, setIsSent] = useState(false);
-    const [submittedQuote, setSubmittedQuote] = useState<any>(null);
-    const [chatRoomId, setChatRoomId] = useState<string | null>(null);
+const router = useRouter();
+const [request, setRequest] = useState<any>(null);
+const [loading, setLoading] = useState(true);
+const [isSubmitting, setIsSubmitting] = useState(false);
+const [isSent, setIsSent] = useState(false);
+const [submittedQuote, setSubmittedQuote] = useState<any>(null);
+const [chatRoomId, setChatRoomId] = useState<string | null>(null);
 
     // 견적 폼 상태
     const [quotePrice, setQuotePrice] = useState('');
@@ -1027,6 +1030,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
             </div>
         </div>
     );
+
 }
 
 `

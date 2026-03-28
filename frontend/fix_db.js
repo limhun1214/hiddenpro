@@ -1,7 +1,8 @@
-const { Client } = require('pg');
+const { Client } = require("pg");
 
 const client = new Client({
-  connectionString: 'postgresql://postgres.sjhemxejhyztbsctkqvb:Wkaqls191214@aws-1-ap-northeast-2.pooler.supabase.com:6543/postgres?pgbouncer=true',
+  connectionString:
+    "postgresql://postgres.sjhemxejhyztbsctkqvb:Wkaqls191214@aws-1-ap-northeast-2.pooler.supabase.com:6543/postgres?pgbouncer=true",
 });
 
 async function run() {
@@ -27,7 +28,6 @@ async function run() {
     console.log("Reloading schema cache...");
     await client.query(`NOTIFY pgrst, 'reload schema';`);
     console.log("✅ Schema cache reloaded.");
-
   } catch (e) {
     console.error("Error during DB operations:", e);
   } finally {

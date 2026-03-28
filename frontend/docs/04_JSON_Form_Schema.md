@@ -1,6 +1,7 @@
 # HiddenPro MVP 동적 폼 JSON 표준 스키마 (04_JSON_Form_Schema)
 
 ## 📌 설계 목적 및 규칙
+
 - **프론트엔드 UI 자동화:** 이 JSON 규격만 앱(Front-end)으로 내려주면, 앱은 카테고리가 10개든 100개든 하드코딩 없이 이 JSON을 읽고 자동으로 챗봇형 질문 화면(UI)을 렌더링해야 합니다.
 - **백엔드 파싱 최적화:** 모든 카테고리의 요청서 응답(Answers)은 예외 없이 아래의 `question_type` 규격을 준수하여 `Match_Requests` 테이블의 `dynamic_answers` 컬럼에 저장되어야 합니다.
 
@@ -37,3 +38,4 @@
     "answer": "2026-03-15"
   }
 ]
+```

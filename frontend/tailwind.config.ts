@@ -1,14 +1,65 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
-    content: [
-        "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-        "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-        "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
-    ],
-    theme: {
-        extend: {},
+  content: [
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        // Stitch Design System — HiddenPro Dark Theme
+        primary: "#ff88b5",
+        "primary-dim": "#ff69a7",
+        "primary-fixed": "#ff6ea9",
+        "primary-fixed-dim": "#fd519e",
+        "on-primary": "#610034",
+        "on-primary-container": "#4b0027",
+        "on-primary-fixed-variant": "#5c0031",
+        secondary: "#a68cff",
+        "secondary-fixed": "#d8caff",
+        "on-secondary": "#280086",
+        "on-secondary-fixed": "#3b00a0",
+        "on-secondary-fixed-variant": "#591bdc",
+        "on-secondary-container": "#e4daff",
+        tertiary: "#b5ffc2",
+        "tertiary-fixed": "#3fff8b",
+        "tertiary-fixed-dim": "#24f07e",
+        "tertiary-container": "#3fff8b",
+        "on-tertiary": "#006731",
+        "on-tertiary-container": "#005d2c",
+        background: "#0f0d13",
+        "on-background": "#f8f1fb",
+        surface: "#0f0d13",
+        "surface-variant": "#27242d",
+        "surface-tint": "#ff88b5",
+        "surface-container": "#1b1820",
+        "surface-container-low": "#151219",
+        "surface-container-high": "#211e26",
+        "surface-container-highest": "#27242d",
+        "surface-container-lowest": "#000000",
+        "on-surface": "#f8f1fb",
+        "on-surface-variant": "#aea9b2",
+        "inverse-surface": "#fef7ff",
+        "inverse-on-surface": "#57545b",
+        "inverse-primary": "#b70e68",
+        outline: "#78747c",
+        "outline-variant": "#4a464f",
+        error: "#ff6e84",
+        "error-container": "#a70138",
+        "error-dim": "#d73357",
+        "on-error": "#490013",
+        "on-error-container": "#ffb2b9",
+        "secondary-container": "#4600c4",
+      },
+      fontFamily: {
+        headline: ['"Plus Jakarta Sans"', "sans-serif"],
+        body: ["Manrope", "sans-serif"],
+        label: ["Manrope", "sans-serif"],
+      },
     },
-    plugins: [],
+  },
+  plugins: [],
 };
 export default config;

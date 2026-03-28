@@ -1,14 +1,15 @@
-const { Client } = require('pg');
+const { Client } = require("pg");
 
 async function migrate() {
-    const client = new Client({
-        connectionString: 'postgresql://postgres.sjhemxejhyztbsctkqvb:Wkaqls191214@aws-1-ap-northeast-2.pooler.supabase.com:6543/postgres?pgbouncer=true',
-        ssl: { rejectUnauthorized: false }
-    });
+  const client = new Client({
+    connectionString:
+      "postgresql://postgres.sjhemxejhyztbsctkqvb:Wkaqls191214@aws-1-ap-northeast-2.pooler.supabase.com:6543/postgres?pgbouncer=true",
+    ssl: { rejectUnauthorized: false },
+  });
 
-    try {
-        await client.connect();
-        await client.query(`
+  try {
+    await client.connect();
+    await client.query(`
             CREATE TABLE IF NOT EXISTS cms_features (
                 id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                 media_url TEXT NOT NULL,
@@ -54,12 +55,12 @@ async function migrate() {
             WHERE NOT (SELECT COUNT(*) FROM cms_features) > 2;
 
         `);
-        console.log('cms_features table created and seeded');
-    } catch (err) {
-        console.error('Error:', err);
-    } finally {
-        await client.end();
-    }
+    console.log("cms_features table created and seeded");
+  } catch (err) {
+    console.error("Error:", err);
+  } finally {
+    await client.end();
+  }
 }
 
 migrate();

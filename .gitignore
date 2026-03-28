@@ -1,3 +1,9 @@
+# 개인 메모 폴더 (Git 및 에이전트 접근 차단)
+_개인메모/
+
+# 백업 저장소 (Git 및 에이전트 접근 차단)
+_backups/
+
 # 수동 백업 폴더 전체 제외
 backup*/
 backup_extracted/
@@ -16,3 +22,4 @@ frontend/page_backup.txt
 
 # 환경 변수 (루트 레벨)
 .env*
+.claude.json

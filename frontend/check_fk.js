@@ -1,31 +1,32 @@
-const { Client } = require('pg');
+const { Client } = require("pg");
 
 const client = new Client({
-    connectionString: 'postgresql://postgres.sjhemxejhyztbsctkqvb:Wkaqls191214@aws-1-ap-northeast-2.pooler.supabase.com:6543/postgres?pgbouncer=true',
+  connectionString:
+    "postgresql://postgres.sjhemxejhyztbsctkqvb:Wkaqls191214@aws-1-ap-northeast-2.pooler.supabase.com:6543/postgres?pgbouncer=true",
 });
 
 async function run() {
-    await client.connect();
+  await client.connect();
 
-    console.log("Checking columns of match_requests:");
-    const resColumns = await client.query(`
+  console.log("Checking columns of match_requests:");
+  const resColumns = await client.query(`
     SELECT column_name, data_type 
     FROM information_schema.columns 
     WHERE table_name = 'match_requests';
   `);
-    console.log(resColumns.rows);
+  console.log(resColumns.rows);
 
-    console.log("\nChecking columns of categories:");
-    const resCat = await client.query(`
+  console.log("\nChecking columns of categories:");
+  const resCat = await client.query(`
     SELECT column_name, data_type 
     FROM information_schema.columns 
     WHERE table_name = 'categories';
   `);
-    console.log(resCat.rows);
+  console.log(resCat.rows);
 
-    // Check foreign keys for match_requests
-    console.log("\nChecking FKs on match_requests:");
-    const resFk = await client.query(`
+  // Check foreign keys for match_requests
+  console.log("\nChecking FKs on match_requests:");
+  const resFk = await client.query(`
     SELECT
         tc.table_schema, 
         tc.constraint_name, 
@@ -44,9 +45,9 @@ async function run() {
           AND ccu.table_schema = tc.table_schema
     WHERE tc.constraint_type = 'FOREIGN KEY' AND tc.table_name='match_requests';
   `);
-    console.log(resFk.rows);
+  console.log(resFk.rows);
 
-    await client.end();
+  await client.end();
 }
 
 run().catch(console.error);

@@ -1,16 +1,16 @@
-const { Client } = require('pg');
-require('dotenv').config({ path: '.env.local' });
+const { Client } = require("pg");
+require("dotenv").config({ path: ".env.local" });
 
 const client = new Client({ connectionString: process.env.DIRECT_URL });
 
 async function main() {
-    await client.connect();
-    console.log("Connected to Supabase.");
+  await client.connect();
+  console.log("Connected to Supabase.");
 
-    try {
-        await client.query('BEGIN');
+  try {
+    await client.query("BEGIN");
 
-        const sql = `
+    const sql = `
       -- [비파괴적 보존] 기존 정책 원본:
       -- CREATE POLICY users_select_safe ON public.users FOR SELECT TO authenticated USING (
       --   ((get_user_role(auth.uid()) = 'ADMIN'::text) OR (user_id = auth.uid()))
@@ -30,17 +30,16 @@ async function main() {
       );
     `;
 
-        await client.query(sql);
+    await client.query(sql);
 
-        await client.query('COMMIT');
-        console.log("Successfully updated RLS policies in transaction.");
-
-    } catch (err) {
-        await client.query('ROLLBACK');
-        console.error("Migration failed:", err);
-    } finally {
-        await client.end();
-    }
+    await client.query("COMMIT");
+    console.log("Successfully updated RLS policies in transaction.");
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.error("Migration failed:", err);
+  } finally {
+    await client.end();
+  }
 }
 
 main().catch(console.error);

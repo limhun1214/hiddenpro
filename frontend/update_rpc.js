@@ -1,11 +1,15 @@
-const { Client } = require('pg');
-require('dotenv').config({ path: '.env.local' });
+const { Client } = require("pg");
+require("dotenv").config({ path: ".env.local" });
 
 async function run() {
-    const client = new Client({ connectionString: process.env.DATABASE_URL || "postgresql://postgres:postgres@127.0.0.1:54322/postgres" });
-    await client.connect();
-    try {
-        await client.query(`
+  const client = new Client({
+    connectionString:
+      process.env.DATABASE_URL ||
+      "postgresql://postgres:postgres@127.0.0.1:54322/postgres",
+  });
+  await client.connect();
+  try {
+    await client.query(`
       CREATE OR REPLACE FUNCTION public.send_quote_and_deduct_cash(
         p_pro_id uuid,
         p_request_id uuid,
@@ -67,11 +71,11 @@ async function run() {
       END;
       $function$;
     `);
-        console.log("RPC update complete.");
-    } catch (err) {
-        console.error(err);
-    } finally {
-        await client.end();
-    }
+    console.log("RPC update complete.");
+  } catch (err) {
+    console.error(err);
+  } finally {
+    await client.end();
+  }
 }
 run();

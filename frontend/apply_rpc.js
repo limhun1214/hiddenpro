@@ -1,8 +1,13 @@
-const fs = require('fs');
-const { Client } = require('pg');
+const fs = require("fs");
+const { Client } = require("pg");
 
-const env = fs.readFileSync('.env.local', 'utf-8');
-const connectionString = env.split('\n').find(l => l.startsWith('DIRECT_URL')).split('=')[1].trim().replace(/^"|"$/g, '');
+const env = fs.readFileSync(".env.local", "utf-8");
+const connectionString = env
+  .split("\n")
+  .find((l) => l.startsWith("DIRECT_URL"))
+  .split("=")[1]
+  .trim()
+  .replace(/^"|"$/g, "");
 
 const sql = `
 DROP FUNCTION IF EXISTS send_quote_and_deduct_cash(uuid, uuid, numeric);
@@ -54,17 +59,17 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 `;
 
 async function migrate() {
-    const client = new Client({ connectionString });
-    try {
-        await client.connect();
-        console.log('Connected to DB');
-        await client.query(sql);
-        console.log('RPC update completed successfully');
-    } catch (err) {
-        console.error('RPC update failed:', err);
-    } finally {
-        await client.end();
-    }
+  const client = new Client({ connectionString });
+  try {
+    await client.connect();
+    console.log("Connected to DB");
+    await client.query(sql);
+    console.log("RPC update completed successfully");
+  } catch (err) {
+    console.error("RPC update failed:", err);
+  } finally {
+    await client.end();
+  }
 }
 
 migrate();

@@ -1,0 +1,9 @@
+{
+  "name": "hiddenpro",
+  "version": "1.0.0",
+  "private": true,
+  "description": "HiddenPro 프로젝트 루트 관리 스크립트",
+  "scripts": {
+    "archive:history": "node scripts/archive_history.js"
+  }
+}

@@ -1,13 +1,19 @@
-require('dotenv').config({ path: '.env.local' });
-const { Client } = require('pg');
+require("dotenv").config({ path: ".env.local" });
+const { Client } = require("pg");
 const client = new Client(process.env.DATABASE_URL);
 (async () => {
-    await client.connect();
-    let res = await client.query('SELECT constraint_name, table_name FROM information_schema.key_column_usage WHERE table_name = $1;', ['reviews']);
-    console.log('Constraints:', res.rows);
-    const cols = await client.query('SELECT column_name, data_type FROM information_schema.columns WHERE table_name = $1;', ['reviews']);
-    console.log('Columns:', cols.rows);
-    const fks = await client.query(`
+  await client.connect();
+  let res = await client.query(
+    "SELECT constraint_name, table_name FROM information_schema.key_column_usage WHERE table_name = $1;",
+    ["reviews"],
+  );
+  console.log("Constraints:", res.rows);
+  const cols = await client.query(
+    "SELECT column_name, data_type FROM information_schema.columns WHERE table_name = $1;",
+    ["reviews"],
+  );
+  console.log("Columns:", cols.rows);
+  const fks = await client.query(`
     SELECT
         tc.table_schema, 
         tc.constraint_name, 
@@ -26,10 +32,13 @@ const client = new Client(process.env.DATABASE_URL);
           AND ccu.table_schema = tc.table_schema
     WHERE tc.constraint_type = 'FOREIGN KEY' AND tc.table_name='reviews';
   `);
-    console.log('Foreign Keys:', fks.rows);
+  console.log("Foreign Keys:", fks.rows);
 
-    // also check chat_rooms
-    const crooms = await client.query('SELECT column_name FROM information_schema.columns WHERE table_name = $1;', ['chat_rooms']);
-    console.log('ChatRooms cols:', crooms.rows);
-    client.end();
+  // also check chat_rooms
+  const crooms = await client.query(
+    "SELECT column_name FROM information_schema.columns WHERE table_name = $1;",
+    ["chat_rooms"],
+  );
+  console.log("ChatRooms cols:", crooms.rows);
+  client.end();
 })();

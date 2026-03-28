@@ -1,0 +1,100 @@
+[2026-03-28] 서비스 카드 구조 변경 — 카드 내부 순서 [아이콘→제목→설명→태그]로 재배치, 하단 화살표 링크 삭제, 설명 text-sm text-gray-400 전문 표시 / frontend/src/app/page.tsx / DB변경 없음
+[2026-03-28] 서비스 섹션 텍스트·링크 수정 — 섹션 타이틀/서브타이틀 하드코딩, "View All Services →" 링크 추가, categoryStitchUI에 title+desc 필드 추가하여 카드 6개 영문 하드코딩 / frontend/src/app/page.tsx / DB변경 없음
+[2026-03-28] 히어로 섹션 텍스트·레이아웃 수정 — 타이틀 하드코딩("HiddenPro: Your Trusted Home Service"), 서브텍스트 교체, searchBtn 삭제, 전폭 CTA 버튼 추가("Get a Free Quote in 1 Minute"), 아바타 통계 "12k+ professionals active this week" 변경 / frontend/src/app/page.tsx / DB변경 없음
+[2026-03-28] 메인 홈 화면 Stitch 디자인 교체 완료 — JSX return 블록 전체 교체 (비즈니스 로직 100% 보존), 섹션: Header/Hero/Explore Services/Live Reviews/HiddenPro Difference/Join as a Pro/Footer, Stitch 다크테마 색상+폰트+Material Symbols 적용 / frontend/src/app/page.tsx, tailwind.config.ts, layout.tsx, public/images/ / DB변경 없음
+[2026-03-27] CLAUDE.md 모듈형 라우터 리팩토링 — MCP 섹션 docs/system/mcp_guidelines.md 분리, PHASE 1~6 불릿포인트 압축, archive:history 명령어 추가, 92줄→63줄(32% 감소) / CLAUDE.md, docs/system/mcp_guidelines.md / DB변경 없음
+[2026-03-27] 루트 디렉토리 제로 노이즈 정리 — MD 5개(docs/system/, history_archive/), JS 3개(scripts/) 이동, temp_pg_script/ → \_backups/ 격리, CLAUDE.md 경로 반영, archive_history.js HISTORY_PATH 수정 / CLAUDE.md, scripts/archive_history.js / DB변경 없음
+[2026-03-27] 백업 자산 격리 — \_backups/ 생성 후 backup 관련 4개 항목 이동, .gitignore + .claudeignore + CLAUDE.md 3중 차단 계층 확장 / .gitignore, .claudeignore, CLAUDE.md / DB변경 없음
+[2026-03-27] 개인 전용 폴더 구축 및 에이전트 접근 차단 — \_개인메모/ 생성, 개인 파일 2개 이동, .gitignore + .claudeignore 업데이트, CLAUDE.md 접근 금지 규칙 추가 / .gitignore, .claudeignore, CLAUDE.md / DB변경 없음
+[2026-03-27] HISTORY.md 롤링 아카이브 스크립트 구현 — scripts/archive_history.js 신규 생성, 루트 package.json 신규 생성 (archive:history), 108줄 아카이빙 → docs/history_archive/2026-03_history.md / DB변경 없음
+[2026-03-27] 아키텍처 방향성 전환 — Vercel 이전 계획 폐기 + Cloudflare Native 확정 + SMS OTP 도입 공식화 / docs/system_architecture.md, docs/nextjs_frontend.md / DB변경 없음
+[2026-03-27] CLAUDE.md MCP 도구 활용 원칙 섹션 추가 — 5대 MCP 서버(supabase-postgres/cloudflare/git/memory/stitch) 활용 원칙 명문화 / CLAUDE.md / DB변경 없음
+[2026-03-27] supabase-postgres MCP 서버 크래시 복구 — command/args 구조 오류(전체 명령줄이 command 단일 문자열로 잘못 저장됨) 진단 및 자동 교정, .claude.json.bak 백업 후 command="npx"+args 배열 분리 구조로 업데이트 / DB변경 없음
+[2026-03-27] Cloudflare MCP 서버 크래시 복구 — .claude.json args에 "run" + account_id 추가로 stdio 대기 정상화 + CLAUDE.md 인프라 정책 업데이트(Cloudflare 금지→엣지 리소스 활용 승인) / DB변경 없음
+[System Core Prerequisite: 비파괴적 확장 및 회귀 방지]
+
+# HiddenPro - CLAUDE Task History
+
+이 문서는 AI 세션의 토큰 절약을 위해 완료된 작업 내역을 분리 보관하는 로그 저장소입니다. 전체 작업 히스토리 파악이 필수적인 경우에만 열람합니다. 가장 최근 작업이 상단에 오도록 1줄씩 누적 기록합니다.
+
+2026-03-09 / backup_db.js 개선: SERVICE_ROLE_KEY 교체(RLS 우회), 타임스탬프 폴더 자동생성, restore.sql 생성(즉시 롤백 가능), env_backup + source_code_backup.zip(node_modules 제외) 포함 / scripts/backup_db.js, scripts/backup_db_legacy.js 신규 생성 / DB변경 없음
+
+2026-03-09 / reset_test_transaction_data RPC SECURITY DEFINER + OWNER TO postgres 재정의, WHERE 1=1 추가(Supabase DELETE 정책 대응) / supabase/migrations/20260309000003_fix_reset_test_transaction_data_security_invoker.sql 업데이트 / DB변경: reset_test_transaction_data 함수 재정의
+
+| 2026-03-09 | backup_db.js 개선 — SERVICE_ROLE_KEY 사용, 타임스탬프 폴더 자동생성, restore.sql(BEGIN/COMMIT 트랜잭션 포함) + env_backup + source_code_backup.zip 동시 생성 | scripts/backup_db.js (신규), scripts/backup_db_legacy.js (기존 db_backup.js 보존) | DB변경없음 |
+
+2026-03-09 / 에러 토스트 표시 시간 연장: type=error 시 10초, 그 외 3초 유지 (duration 조건 분기) / src/components/ui/Toast.tsx / DB변경 없음
+
+2026-03-09 / reset_test_transaction_data SECURITY INVOKER 재정의: SECURITY DEFINER 시 auth.uid() NULL 반환 버그 수정 / supabase/migrations/20260309000003_fix_reset_test_transaction_data_security_invoker.sql / DB변경: RPC 재정의
+
+2026-03-09 / chat/[room_id]/page.tsx handleMatchConfirm → confirm_match RPC 교체: match_requests/match_quotes 직접 UPDATE 제거, RLS 우회 RPC 1호출로 대체 / src/app/chat/[room_id]/page.tsx / DB변경 없음
+
+2026-03-09 / ChatRoom.tsx 매칭 확정 DB 연동: confirm_match RPC 호출 추가, currentUserId state, request.status→setStatus 반영 / src/components/common/ChatRoom.tsx / DB변경 없음
+
+2026-03-09 / 확정 후 미확정 고수 카드 축소 표시: MATCHED+미선택 고수는 이름+"미선택" 태그만 렌더, 클릭/프로필/버튼 전부 차단 (early return 패턴) / src/app/quotes/received/CustomerQuotesClient.tsx / DB변경 없음
+
+2026-03-09 / 중복 확정 버그 실근본 수정: Realtime 구독에 match_requests UPDATE 이벤트 추가하여 데이터 실시간 동기화 (CustomerQuotesClient 리패치 트리거 + 채팅 requestData 즉각 갱신) / src/app/quotes/received/CustomerQuotesClient.tsx, src/app/chat/[room_id]/page.tsx / DB변경 없음
+
+2026-03-09 / 중복 서비스 확정 버그 수정: MATCHED 요청건의 미확정 고수 카드 버튼 비활성화(CustomerQuotesClient.tsx), 채팅방 확정 버튼 requestData.status 체크 추가(chat/[room_id]/page.tsx) / src/app/quotes/received/CustomerQuotesClient.tsx, src/app/chat/[room_id]/page.tsx / DB변경 없음
+
+2026-03-09 / profile/page.tsx getUser 실패 시 세션 복구 재시도 로직 추가: refreshSession 후 1회 재시도, 최종 실패 시 메인으로 이동 / src/app/profile/page.tsx / DB변경 없음
+
+2026-03-09 / 로그인 후 쿠키 동기화 타이밍 버그 수정: refreshSession() 후 500ms 대기 추가로 createBrowserClient 쿠키 갱신 완료 보장 (기존유저/최종 라우팅 전 2곳) / src/app/page.tsx / DB변경 없음
+
+2026-03-09 / profile/page.tsx 세션 처리 코드 레벨 검증: createBrowserClient + getUser() 이미 정상 사용 중 확인, 수정 불필요 판정 / 수정 파일 없음 / DB변경 없음
+
+2026-03-09 / 이메일 회원가입 시 역할 메타데이터 누락 수정: signUp options.data.role 주입으로 on_auth_user_sync 트리거 정상 동작 보장 / src/app/page.tsx / DB변경 없음
+
+2026-03-09 / PRO 가입 시 pro_profiles INSERT 실패 수정: 3회 재시도 + refreshSession 로직 추가 / src/app/auth/complete/page.tsx / DB변경 없음
+
+2026-03-09 / DEDUCT_BONUS_QUOTE ENUM 마이그레이션 파일 영속화 (20260309000002) / supabase/migrations/20260309000002_add_deduct_bonus_quote_enum.sql 생성 / DB변경 없음
+2026-03-09 / CLAUDE.md PHASE 6 추가: 고난이도 작업 시 Opus 모델 에스컬레이션 규칙 / CLAUDE.md / DB변경 없음
+
+2026-03-09 / send_quote_and_deduct_cash RPC 보너스 캐시 우선 차감 로직 구현 + 검증 스크립트 생성 / supabase/migrations/20260309000001_fix_send_quote_bonus_priority.sql, scripts/test_bonus_priority.ts / DB변경: send_quote_and_deduct_cash 함수 재정의 (bonus_cash 우선 차감, DEDUCT_BONUS_QUOTE tx_type 신규 추가)
+
+2026-03-09 / CS 관제탑 견적 첨부 이미지 엑박 수정: image_url JSON 배열 파싱 처리 (ProBiddingDetail과 동일 방식 적용) / frontend/src/app/admin/page.tsx / DB변경 없음
+
+2026-03-09 / CS 관제탑 견적 카드에 첨부 이미지 썸네일 추가 (image_url 존재 시 80x80 표시, 클릭 시 새 탭) / frontend/src/app/admin/page.tsx / DB변경 없음
+
+2026-03-09 / 캐시내역 탭 ref UUID 노출 제거 (모달 렌더링 JSX 3줄 삭제) / frontend/src/app/admin/page.tsx / DB변경 없음
+
+2026-03-09 / 캐시내역 탭 버그 2건 수정: 모달 select 'id' 컬럼 오류→'\*' 교체(내역 미표시 수정), txDesc 헬퍼 추가 및 3곳 description 폴백 적용 / frontend/src/app/admin/page.tsx / DB변경 없음
+
+2026-03-09 / 고수 상세보기 모달 캐시내역 탭 reference_id 표시 + 20건 페이지네이션 "더 보기" 추가 / frontend/src/app/admin/page.tsx / DB변경 없음
+
+2026-03-09 / send_quote_and_deduct_cash RPC v_max_quotes 하드코딩 버그 수정 → platform_settings 동적 조회로 변경 / supabase/migrations/20260309000000_fix_send_quote_dynamic_max.sql, database/rpc_send_quote.sql, frontend/database/rpc_send_quote.sql / DB변경: send_quote_and_deduct_cash 함수 재정의
+2026-03-09 / 최대 견적 수신 수 동적 설정 검증 테스트 스크립트 생성 / scripts/test_max_quotes.ts / DB변경 없음
+
+2026-03-09 / CLAUDE.md에 PHASE 5 테스트 자동화 규칙 추가 / CLAUDE.md / DB변경 없음
+
+2026-03-09 / 선착순 5명 동시성 방어 자동 테스트 스크립트 신규 생성 (RPC 10개 동시 호출 → DB COUNT 검증 → 자동 정리) / scripts/test_concurrency.ts / DB변경 없음
+
+2026-03-09 / CS 관제탑 견적 카드 "💬 채팅보기" 버튼 추가 + 채팅 팝업 모달 구현, 인라인 채팅 섹션 JSX 제거 / admin/page.tsx / DB변경 없음
+
+2026-03-09 / CS 관제탑 상세 페이지 "💬 채팅 내역" 섹션 추가 — lazy fetch(30건)+더보기, users JOIN(N+1방지) / admin/page.tsx / DB변경 없음
+
+2026-03-09 / 채팅방 헤더 room UUID 노출 제거 — `room: {params.room_id.slice(0,8)}...` 렌더링 라인 삭제 / chat/[room_id]/page.tsx / DB변경 없음
+
+2026-03-09 / 고수 전화번호 미표시 버그 수정 — loadUserDetail·handleOpenProDetail 양쪽에 pro_profiles.phone fallback 추가 / admin/page.tsx / DB변경 없음
+2026-03-09 / 견적·매칭 페이지 고수 상세보기 모달 4탭(기본정보/캐시내역/견적/리뷰) 업그레이드, lazy fetch + 탭 캐시 적용 / admin/page.tsx / DB변경 없음
+
+- [2026-03-08 / 고객 받은견적 리스트 3단계 동적 정렬 로직 (미읽음>견적있음>최신순) 적용 / CustomerQuotesClient.tsx / DB 변경없음]
+- [2026-03-08 / [핫픽스] 견적/매칭 탭 500 에러 해결 (answers 컬럼명 오타 수정) / admin/page.tsx / DB 변경없음]
+- [2026-03-08 / 관리자 견적 상세 관리 페이지 UI 개선 및 상세답변 렌더링 추가 / admin/page.tsx / DB 변경없음]
+- [2026-03-08 / 견적 요청 버튼 중복 제출 방지 로직 적용 / DynamicRequestForm.tsx / DB 변경없음]
+- [2026-03-08 / DB 전체 자동 백업 스크립트 작성 및 실행 완료 / scripts/backup_db.ts 생성 / Service Role Key 누락으로 일부 테이블(users, pro_profiles) RLS 차단 발생]
+- [2026-03-08 / 최신화된 전체 프로젝트 및 환경변수(env) 파일 로컬 백업 완료 / 압축(source_code_backup.zip) / Supabase SQL DB Export 진행 필요]
+  2026-03-10 / DB 레벨 가격 방어 제약 조건 추가 / DB변경: match_quotes.price CHECK(>0, <=10000000, 정수), cash_ledger.amount CHECK(정수)
+  [2026-03-10] 어뷰징/패널티 탭 DB 연동 + 전체 보기 필터 수정 (is_abuse_target = true) / 수정파일: frontend/src/app/admin/page.tsx / DB변경점: user_penalty_stats 뷰 생성, auto_detect_noshow() 함수, pg_cron 등록, admin_unflag_abuser() RPC
+  [2026-03-10] 신고 관리 탭 제재 모달 state 분리 — reportSuspendModal/reportSuspendReason 신규 분리, suspendModal 충돌 해소 / 수정파일: frontend/src/app/admin/page.tsx / DB변경점: 없음
+  [2026-03-10] 어뷰징/신고 관리 기능 검증 완료 — auto_detect_noshow() 'pending'→'OPEN' ENUM 버그 수정, 전체 보기 필터 is_abuse_target=true 적용, 신고 탭 제재 모달 state 분리 / 수정파일: frontend/src/app/admin/page.tsx, DB auto_detect_noshow() 함수 재정의 / DB변경점: auto_detect_noshow 함수 request_status ENUM 수정
+  [2026-03-10] 어뷰징 해제 버튼 RPC 파라미터 버그 수정 — admin_unflag_abuser 호출 파라미터 p_admin_id/p_customer_id → target_user_id 교체 / 수정파일: frontend/src/app/admin/page.tsx / DB변경점: 없음
+
+[2026-03-10] 고객 받은견적 탭 분류 스펙 동기화 — MATCHED→IN_PROGRESS 유지(리뷰완료/30일경과 시 CLOSED), isFull 조건 제거, updated_at SELECT 추가 / 수정파일: frontend/src/app/quotes/received/CustomerQuotesClient.tsx / DB변경점: 없음
+
+[2026-03-10] 고수 보낸견적 탭 분류 스펙 동기화 — 48시간 만료/리뷰완료/ACCEPTED 후 30일 경과 건 보관함 이동 추가, 7일 숨김 기준 updated_at 우선 적용 / 수정파일: frontend/src/app/pro/requests/ProRequestListClient.tsx / DB변경점: 없음
+
+[2026-03-10] 고객/고수화면 탭 분류 스펙 자동화 테스트 스크립트 생성 및 전 시나리오 8개 검증 완료 / 생성파일: scripts/test_tab_classification.ts / DB변경점: 없음
+
+[2026-03-11] confirm_match_and_close_others RPC 6단계 확장 — 패배 고수 방 SYSTEM_CLOSE 메시지 INSERT 추가, 실시간 종료 감지 보완 / 수정파일: DB RPC only / DB변경점: confirm_match_and_close_others 함수 교체
+[2026-03-11] confirm_match → confirm_match_and_close_others 프론트 RPC 교체 — 고아 방 CLOSED 처리 누락 해소, 비원자적 트랜잭션 3건 제거 / 수정파일: frontend/src/app/chat/[room_id]/page.tsx / DB변경점: 없음
