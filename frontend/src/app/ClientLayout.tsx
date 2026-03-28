@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import GlobalFooter from "@/components/common/GlobalFooter";
 import PCTopNav from "@/components/common/PCTopNav";
+import LanguageSwitcher from "@/components/common/LanguageSwitcher";
 
 import { NavStateContext } from "@/context/NavStateContext";
 import { ToastProvider } from "@/components/ui/Toast";
@@ -135,10 +136,17 @@ export default function ClientLayout({
         }
 
         const isPro = role === "PRO";
-        const isAdmin = role === "ADMIN";
+        const isAdmin = ["ADMIN", "ADMIN_OPERATION", "ADMIN_VIEWER"].includes(
+          role,
+        );
         if (isMounted) {
           setIsProUser(isPro);
           setIsAdminUser(isAdmin);
+          // 비관리자 기존 세션: locale을 en으로 강제
+          if (!isAdmin) {
+            document.cookie =
+              "locale=en; path=/; max-age=31536000; SameSite=Lax";
+          }
         }
 
         if (isPro) {
@@ -449,12 +457,7 @@ export default function ClientLayout({
   }, [userId]);
 
   const customerNav = [
-    {
-      label: t("pcTopNav.requestQuote"),
-      href: "/request",
-      icon: "📝",
-      key: "request",
-    },
+    { label: t("pcTopNav.home"), href: "/", icon: "🏠", key: "home" },
     {
       label: t("pcTopNav.receivedQuotes"),
       href: "/quotes/received",
@@ -462,18 +465,6 @@ export default function ClientLayout({
       key: "quotes",
     },
     { label: t("pcTopNav.chat"), href: "/chat", icon: "💬", key: "chat" },
-    {
-      label: t("referral.gnbInvite"),
-      href: "/referral",
-      icon: "🎁",
-      key: "referral",
-    },
-    {
-      label: t("pcTopNav.notifications"),
-      href: "/notifications",
-      icon: "🔔",
-      key: "notifications",
-    },
     {
       label: t("pcTopNav.customerProfile"),
       href: "/profile",
@@ -483,6 +474,7 @@ export default function ClientLayout({
   ];
 
   const proNav = [
+    { label: t("pcTopNav.home"), href: "/", icon: "🏠", key: "home" },
     {
       label: t("pcTopNav.requests"),
       href: "/pro/requests",
@@ -491,24 +483,6 @@ export default function ClientLayout({
     },
     { label: t("pcTopNav.chat"), href: "/chat", icon: "💬", key: "chat" },
     {
-      label: t("pcTopNav.wallet"),
-      href: "/pro/wallet",
-      icon: "💰",
-      key: "wallet",
-    },
-    {
-      label: t("referral.gnbInvite"),
-      href: "/referral",
-      icon: "🎁",
-      key: "referral",
-    },
-    {
-      label: t("pcTopNav.notifications"),
-      href: "/notifications",
-      icon: "🔔",
-      key: "notifications",
-    },
-    {
       label: t("pcTopNav.proProfile"),
       href: "/profile",
       icon: "👤",
@@ -516,24 +490,16 @@ export default function ClientLayout({
     },
   ];
 
-  const proProfileRequiredPaths = [
-    "/pro/requests",
-    "/chat",
-    "/pro/wallet",
-    "/notifications",
-  ];
+  const proProfileRequiredPaths = ["/pro/requests", "/chat"];
 
   const currentNav = isProUser ? proNav : customerNav;
 
   const NAV_ICONS: Record<string, string> = {
-    request: "edit_note",
-    quotes: "inbox",
-    chat: "forum",
-    referral: "card_giftcard",
-    notifications: "notifications",
-    profile: "account_circle",
+    home: "home",
+    quotes: "request_quote",
+    chat: "chat",
+    profile: "person",
     requests: "assignment",
-    wallet: "account_balance_wallet",
   };
 
   const isChatRoom =
@@ -545,7 +511,7 @@ export default function ClientLayout({
   const isAdminPage = currentPath.startsWith("/admin");
 
   const hideFooter = isChatRoom || isRequestForm || isAdminPage;
-  const hideNavBar = isChatRoom || isLandingPage || isAdminPage;
+  const hideNavBar = isChatRoom || (isLandingPage && !userId) || isAdminPage;
 
   // 메인 홈 화면 및 관리자 페이지: 모바일 제약 해제, 풀스크린 반응형 레이아웃 제공
   // 서브 페이지 (견적요청, 프로필 등): 모바일은 max-w-md, PC는 넓게 50:50 분할
@@ -553,7 +519,7 @@ export default function ClientLayout({
 
   // 최상위 컨테이너 클래스 (조건부 라우팅)
   const rootContainerClasses = isLandingPage
-    ? "flex flex-col min-h-screen relative w-full"
+    ? "flex flex-col min-h-screen relative w-full bg-[#0f0d13]"
     : isAdminPage
       ? "flex flex-col min-h-screen relative overflow-hidden w-full"
       : "flex flex-col lg:flex-row w-full min-h-screen lg:h-[100dvh] bg-white relative shadow-xl lg:overflow-hidden";
@@ -571,8 +537,10 @@ export default function ClientLayout({
           hasNewQuotes,
           hasNewRequests,
           isProUser,
+          isLoggedIn: !!userId,
           walletBalance,
           isProProfileComplete,
+          isAdminUser,
           setShowProfileIncompleteModal,
         }}
       >
@@ -586,7 +554,36 @@ export default function ClientLayout({
                 : rightPanelClasses
             }
           >
-            {!isSpecialPage && <PCTopNav />}
+            {(!isSpecialPage || (isLandingPage && !!userId)) && <PCTopNav />}
+
+            {/* 모바일 전용 상단 헤더: 알림 벨 + 언어 전환 */}
+            {(!isSpecialPage || (isLandingPage && !!userId)) && !isChatRoom && (
+              <div className="lg:hidden sticky top-0 z-[60] w-full bg-[#0f0d13] border-b border-white/10 shrink-0">
+                <div className="flex justify-end items-center px-4 py-3 gap-3">
+                  <button
+                    onClick={() => router.push("/notifications")}
+                    className="relative text-white/70 hover:text-white transition-colors"
+                  >
+                    <span
+                      className="material-symbols-outlined text-[22px]"
+                      style={{
+                        fontVariationSettings:
+                          unreadNotifsCount > 0 ? "'FILL' 1" : "'FILL' 0",
+                      }}
+                    >
+                      notifications
+                    </span>
+                    {unreadNotifsCount > 0 && (
+                      <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-[#0f0d13]"></span>
+                      </span>
+                    )}
+                  </button>
+                  {isAdminUser && <LanguageSwitcher />}
+                </div>
+              </div>
+            )}
 
             {isCheckingAuth &&
             (currentPath === "/pro" || currentPath.startsWith("/pro/")) ? (
@@ -627,6 +624,7 @@ export default function ClientLayout({
                                 if (
                                   !isCheckingAuth &&
                                   !userId &&
+                                  item.href !== "/" &&
                                   item.href !== "/request"
                                 ) {
                                   e.preventDefault();

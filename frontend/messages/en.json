@@ -744,6 +744,7 @@
     "hiddenProServiceFallback": "HiddenPro Service"
   },
   "pcTopNav": {
+    "home": "Home",
     "requestQuote": "Request",
     "receivedQuotes": "Quotes",
     "chat": "Chat",

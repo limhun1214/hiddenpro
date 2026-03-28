@@ -316,15 +316,12 @@ export default function AuthCompletePage() {
           }
         }
 
-        if (finalRole === "PRO") {
-          window.location.href = "/profile";
-        } else if (
-          ["ADMIN", "ADMIN_OPERATION", "ADMIN_VIEWER"].includes(finalRole)
-        ) {
-          window.location.href = "/admin";
-        } else {
-          window.location.href = "/profile";
+        // 비관리자 계정은 locale을 en으로 강제
+        if (!["ADMIN", "ADMIN_OPERATION", "ADMIN_VIEWER"].includes(finalRole)) {
+          document.cookie = "locale=en; path=/; max-age=31536000; SameSite=Lax";
         }
+
+        window.location.href = "/";
       } catch (err) {
         console.error("Auth Complete Error:", err);
         setStatus(t("authComplete.error"));

@@ -239,6 +239,26 @@ export default function ProfilePage() {
           <CustomerProfile user={sessionUser} />
           <CustomerSupportSection />
 
+          {/* Invite & Earn */}
+          <div className="px-4">
+            <Link
+              href="/referral"
+              className="flex items-center justify-between w-full px-4 py-3 rounded-xl bg-white border border-gray-100 shadow-sm hover:bg-gray-50 transition"
+            >
+              <div className="flex items-center gap-3">
+                <span className="material-symbols-outlined text-[20px] text-pink-400">
+                  card_giftcard
+                </span>
+                <span className="text-sm font-medium text-gray-700">
+                  Invite &amp; Earn
+                </span>
+              </div>
+              <span className="material-symbols-outlined text-[18px] text-gray-300">
+                chevron_right
+              </span>
+            </Link>
+          </div>
+
           {/* 최하단 로그아웃 + 탈퇴 버튼 */}
           <div className="pt-8 pb-12 flex flex-col items-center gap-3">
             <button
@@ -375,6 +395,26 @@ export default function ProfilePage() {
         />
         <ProProfile user={sessionUser} />
         <CustomerSupportSection />
+
+        {/* Invite & Earn */}
+        <div className="px-4">
+          <Link
+            href="/referral"
+            className="flex items-center justify-between w-full px-4 py-3 rounded-xl bg-white border border-gray-100 shadow-sm hover:bg-gray-50 transition"
+          >
+            <div className="flex items-center gap-3">
+              <span className="material-symbols-outlined text-[20px] text-pink-400">
+                card_giftcard
+              </span>
+              <span className="text-sm font-medium text-gray-700">
+                Invite &amp; Earn
+              </span>
+            </div>
+            <span className="material-symbols-outlined text-[18px] text-gray-300">
+              chevron_right
+            </span>
+          </Link>
+        </div>
 
         {/* 최하단 로그아웃 + 탈퇴 버튼 */}
         <div className="pt-8 pb-12 flex flex-col items-center gap-3">

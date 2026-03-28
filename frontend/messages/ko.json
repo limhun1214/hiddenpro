@@ -739,6 +739,7 @@
     "hiddenProServiceFallback": "HiddenPro 서비스"
   },
   "pcTopNav": {
+    "home": "홈",
     "requestQuote": "견적요청",
     "receivedQuotes": "받은견적",
     "chat": "채팅",

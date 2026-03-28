@@ -1,11 +1,11 @@
 export const runtime = "edge";
 import dynamic from "next/dynamic";
 
-const DynamicRequestForm = dynamic(
-  () => import("@/components/customer/DynamicRequestForm"),
+const RequestPageGuard = dynamic(
+  () => import("@/components/customer/RequestPageGuard"),
   { ssr: false },
 );
 
 export default function RequestPage() {
-  return <DynamicRequestForm />;
+  return <RequestPageGuard />;
 }

@@ -8,8 +8,10 @@ export const NavStateContext = createContext<{
   hasNewQuotes: boolean;
   hasNewRequests: boolean;
   isProUser: boolean;
+  isLoggedIn: boolean;
   walletBalance: number | null;
   isProProfileComplete: boolean;
+  isAdminUser: boolean;
   setShowProfileIncompleteModal: (show: boolean) => void;
 }>({
   unreadNotifsCount: 0,
@@ -17,7 +19,9 @@ export const NavStateContext = createContext<{
   hasNewQuotes: false,
   hasNewRequests: false,
   isProUser: false,
+  isLoggedIn: false,
   walletBalance: null,
   isProProfileComplete: true,
+  isAdminUser: false,
   setShowProfileIncompleteModal: () => {},
 });
