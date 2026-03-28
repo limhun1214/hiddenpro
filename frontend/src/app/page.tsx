@@ -1,17 +1,21 @@
 "use client";
 export const runtime = "edge";
 
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import LanguageSwitcher from "@/components/common/LanguageSwitcher";
 import { useTranslations } from "next-intl";
+import { NavStateContext } from "@/context/NavStateContext";
+import { useToast } from "@/components/ui/Toast";
 
 export default function HomePage() {
   const t = useTranslations();
   const router = useRouter();
+  const { isLoggedIn, isAdminUser, isProUser } = useContext(NavStateContext);
+  const { showToast } = useToast();
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   React.useEffect(() => {
@@ -660,9 +664,9 @@ export default function HomePage() {
           </div>
         </div>
       )}
-      {/* [헤더] Stitch TopAppBar */}
+      {/* [헤더] Stitch TopAppBar — 비로그인 시에만 표시 */}
       <header
-        className={`fixed top-0 z-50 w-full backdrop-blur-xl transition-all duration-300 ${isScrolled ? "bg-surface/95 border-b border-surface-container-high" : "bg-surface/80"}`}
+        className={`fixed top-0 z-50 w-full backdrop-blur-xl transition-all duration-300 ${isScrolled ? "bg-surface/95 border-b border-surface-container-high" : "bg-surface/80"} ${isLoggedIn ? "hidden" : ""}`}
       >
         <div className="flex justify-between items-center w-full px-6 py-4 max-w-7xl mx-auto">
           {/* 로고 */}
@@ -685,7 +689,7 @@ export default function HomePage() {
           </div>
           {/* 언어 + 액션 */}
           <div className="flex items-center gap-2">
-            <LanguageSwitcher />
+            {isAdminUser && <LanguageSwitcher />}
             <button
               onClick={() => {
                 setAuthMode("login");
@@ -709,7 +713,7 @@ export default function HomePage() {
         </div>
       </header>
 
-      <main className="pt-20">
+      <main className={isLoggedIn ? "" : "pt-20"}>
         {/* [히어로] Stitch Hero */}
         <section className="relative min-h-[751px] flex items-center px-6 overflow-hidden">
           {/* 배경 이미지 */}
@@ -924,6 +928,10 @@ export default function HomePage() {
                 <button
                   onClick={() => {
                     setShowDropdown(false);
+                    if (isProUser) {
+                      showToast("This page is for customers only.", "warning");
+                      return;
+                    }
                     router.push("/request");
                   }}
                   className="bg-[#ff88b5] text-black font-bold rounded-full py-3 px-6 w-full text-center"

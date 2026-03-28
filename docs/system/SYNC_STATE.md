@@ -5,7 +5,7 @@
 
 ## [Current Workflow]
 
-(비어 있음)
+(없음)
 
 ## [Next To-Do]
 

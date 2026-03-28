@@ -91,6 +91,23 @@ const fmtDate = (d: string, locale: string = "en") =>
     minute: "2-digit",
   });
 const fmtNum = (n: number) => n.toLocaleString();
+const formatRelativeTime = (dateStr: string | null | undefined): string => {
+  if (!dateStr) return "Never";
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "Just now";
+  if (mins < 60) return `${mins} min ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs} hour${hrs > 1 ? "s" : ""} ago`;
+  const days = Math.floor(hrs / 24);
+  if (days < 30) return `${days} day${days > 1 ? "s" : ""} ago`;
+  const months = Math.floor(days / 30);
+  return `${months} month${months > 1 ? "s" : ""} ago`;
+};
+const isOnline = (dateStr: string | null | undefined): boolean => {
+  if (!dateStr) return false;
+  return Date.now() - new Date(dateStr).getTime() < 5 * 60 * 1000;
+};
 const statusLabel = (s: string, locale: string = "en") => {
   const map: Record<string, Record<string, string>> = {
     en: {
@@ -1047,13 +1064,20 @@ function AdminDashboardPageContent() {
       .order("created_at", { ascending: false });
     const userIds = (data || []).map((a) => a.user_id);
     let emailMap: Record<string, string> = {};
+    let lastSignInMap: Record<string, string | null> = {};
     if (userIds.length > 0) {
-      const { data: emails } = await supabase.rpc("get_user_emails", {
-        p_user_ids: userIds,
-      });
-      if (emails) {
-        (emails as any[]).forEach((e) => {
+      const [emailsResult, lastSignInResult] = await Promise.all([
+        supabase.rpc("get_user_emails", { p_user_ids: userIds }),
+        supabase.rpc("get_user_last_sign_in", { p_user_ids: userIds }),
+      ]);
+      if (emailsResult.data) {
+        (emailsResult.data as any[]).forEach((e) => {
           emailMap[e.user_id] = e.email;
+        });
+      }
+      if (lastSignInResult.data) {
+        (lastSignInResult.data as any[]).forEach((e) => {
+          lastSignInMap[e.user_id] = e.last_sign_in_at;
         });
       }
     }
@@ -1061,6 +1085,7 @@ function AdminDashboardPageContent() {
       (data || []).map((a) => ({
         ...a,
         email: emailMap[a.user_id] || a.name || "",
+        last_sign_in_at: lastSignInMap[a.user_id] ?? null,
       })),
     );
   }, []);
@@ -5997,6 +6022,9 @@ function AdminDashboardPageContent() {
                             {adminLocale === "ko" ? "캐시" : "Cash"}
                           </th>
                           <th className="p-2.5 text-center">
+                            {adminLocale === "ko" ? "가입일" : "Joined"}
+                          </th>
+                          <th className="p-2.5 text-center">
                             {adminLocale === "ko" ? "상태" : "Status"}
                           </th>
                           <th className="p-2.5 text-center">
@@ -6040,6 +6068,13 @@ function AdminDashboardPageContent() {
                                   (+🎁{fmtNum(p.bonus_cash)})
                                 </span>
                               )}
+                            </td>
+                            <td className="p-2.5 text-center text-xs text-gray-400">
+                              {p.created_at
+                                ? new Date(p.created_at)
+                                    .toISOString()
+                                    .slice(0, 10)
+                                : "-"}
                             </td>
                             <td className="p-2.5 text-center">
                               <span
@@ -6124,7 +6159,7 @@ function AdminDashboardPageContent() {
                         {filteredPros.length === 0 && (
                           <tr>
                             <td
-                              colSpan={6}
+                              colSpan={7}
                               className="p-6 text-center text-gray-500"
                             >
                               {adminLocale === "ko"
@@ -6373,6 +6408,11 @@ function AdminDashboardPageContent() {
                             {adminLocale === "ko" ? "가입일" : "Joined"}
                           </th>
                           <th className="p-2.5 text-center">
+                            {adminLocale === "ko"
+                              ? "마지막 접속"
+                              : "Last Active"}
+                          </th>
+                          <th className="p-2.5 text-center">
                             {adminLocale === "ko" ? "상태" : "Status"}
                           </th>
                           <th className="p-2.5 text-center">
@@ -6428,6 +6468,18 @@ function AdminDashboardPageContent() {
                               {a.created_at ? fmtDate(a.created_at) : "-"}
                             </td>
                             <td className="p-2.5 text-center">
+                              {isOnline(a.last_sign_in_at) ? (
+                                <span className="flex items-center justify-center gap-1 text-xs font-bold text-green-400">
+                                  <span className="inline-block w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                                  Online
+                                </span>
+                              ) : (
+                                <span className="text-xs text-gray-400">
+                                  {formatRelativeTime(a.last_sign_in_at)}
+                                </span>
+                              )}
+                            </td>
+                            <td className="p-2.5 text-center">
                               <span
                                 className={`text-xs font-bold px-2 py-0.5 rounded-full ${a.status === "SUSPENDED" ? "bg-red-900/50 text-red-300" : "bg-green-900/50 text-green-300"}`}
                               >
@@ -6477,7 +6529,7 @@ function AdminDashboardPageContent() {
                         {admins.length === 0 && (
                           <tr>
                             <td
-                              colSpan={6}
+                              colSpan={7}
                               className="p-6 text-center text-gray-500"
                             >
                               {adminLocale === "ko"
