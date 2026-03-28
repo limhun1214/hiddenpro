@@ -510,7 +510,7 @@ export default function ClientLayout({
   const isLandingPage = currentPath === "/";
   const isAdminPage = currentPath.startsWith("/admin");
 
-  const hideFooter = isChatRoom || isRequestForm || isAdminPage;
+  const hideFooter = isChatRoom || isRequestForm || isAdminPage || !!userId;
   const hideNavBar = isChatRoom || (isLandingPage && !userId) || isAdminPage;
 
   // 메인 홈 화면 및 관리자 페이지: 모바일 제약 해제, 풀스크린 반응형 레이아웃 제공

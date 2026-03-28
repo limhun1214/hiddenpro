@@ -426,7 +426,10 @@
   "footer": {
     "terms": "Terms of Service",
     "privacy": "Privacy Policy",
-    "businessInfo": "Business Information"
+    "refund": "Refund Policy",
+    "contactUs": "Contact Us",
+    "businessInfo": "Business Information",
+    "businessRegNo": "Business Reg. No.:"
   },
   "brandPanel": {
     "headline1": "Meet the Perfect",

@@ -5,7 +5,11 @@
 
 ## [Current Workflow]
 
-(없음)
+**푸터 링크 추가 + 로그인 상태별 분기 + Profile 법적 링크 메뉴**
+- GlobalFooter.tsx: Refund Policy, Contact Us, 사업자등록번호 추가
+- ClientLayout.tsx: 로그인 시 푸터 숨김 (hideFooter에 !!userId 추가)
+- profile/page.tsx: Invite & Earn 아래 legal links 섹션 추가
+- messages/en.json + ko.json: footer i18n 키 추가
 
 ## [Next To-Do]
 

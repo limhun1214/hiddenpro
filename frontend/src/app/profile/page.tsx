@@ -259,6 +259,44 @@ export default function ProfilePage() {
             </Link>
           </div>
 
+          {/* Legal Links */}
+          <div className="px-4 pt-2 pb-2 flex flex-wrap justify-center gap-x-3 gap-y-1">
+            <Link
+              href="/legal/TERMS"
+              className="text-xs text-white/40 hover:text-white/60 transition"
+            >
+              {t("footer.terms")}
+            </Link>
+            <span className="text-xs text-white/20">|</span>
+            <Link
+              href="/legal/PRIVACY"
+              className="text-xs text-white/40 hover:text-white/60 transition"
+            >
+              {t("footer.privacy")}
+            </Link>
+            <span className="text-xs text-white/20">|</span>
+            <Link
+              href="/legal/REFUND"
+              className="text-xs text-white/40 hover:text-white/60 transition"
+            >
+              {t("footer.refund")}
+            </Link>
+            <span className="text-xs text-white/20">|</span>
+            <Link
+              href="/support/inquiry"
+              className="text-xs text-white/40 hover:text-white/60 transition"
+            >
+              {t("footer.contactUs")}
+            </Link>
+            <span className="text-xs text-white/20">|</span>
+            <Link
+              href="/support/business-info"
+              className="text-xs text-white/40 hover:text-white/60 transition"
+            >
+              {t("footer.businessInfo")}
+            </Link>
+          </div>
+
           {/* 최하단 로그아웃 + 탈퇴 버튼 */}
           <div className="pt-8 pb-12 flex flex-col items-center gap-3">
             <button
@@ -413,6 +451,44 @@ export default function ProfilePage() {
             <span className="material-symbols-outlined text-[18px] text-gray-300">
               chevron_right
             </span>
+          </Link>
+        </div>
+
+        {/* Legal Links */}
+        <div className="px-4 pt-2 pb-2 flex flex-wrap justify-center gap-x-3 gap-y-1">
+          <Link
+            href="/legal/TERMS"
+            className="text-xs text-white/40 hover:text-white/60 transition"
+          >
+            {t("footer.terms")}
+          </Link>
+          <span className="text-xs text-white/20">|</span>
+          <Link
+            href="/legal/PRIVACY"
+            className="text-xs text-white/40 hover:text-white/60 transition"
+          >
+            {t("footer.privacy")}
+          </Link>
+          <span className="text-xs text-white/20">|</span>
+          <Link
+            href="/legal/REFUND"
+            className="text-xs text-white/40 hover:text-white/60 transition"
+          >
+            {t("footer.refund")}
+          </Link>
+          <span className="text-xs text-white/20">|</span>
+          <Link
+            href="/support/inquiry"
+            className="text-xs text-white/40 hover:text-white/60 transition"
+          >
+            {t("footer.contactUs")}
+          </Link>
+          <span className="text-xs text-white/20">|</span>
+          <Link
+            href="/support/business-info"
+            className="text-xs text-white/40 hover:text-white/60 transition"
+          >
+            {t("footer.businessInfo")}
           </Link>
         </div>
 
