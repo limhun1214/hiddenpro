@@ -1,3 +1,12 @@
+[2026-03-28] /request 헤더 요소 삭제 + 카테고리 카드 독립 카드화 — ← 뒤로가기 버튼·HiddenPro 배지·Hidden AI 라벨(history+active 모두) 삭제, depth1 외부 컨테이너 제거, 각 카드 bg-[#211e26] rounded-xl border-white/10 독립 카드로 전환, gap-3 / DynamicRequestForm.tsx / DB변경 없음
+[2026-03-28] /request 히어로 타이틀 스타일 + 카드 desc 업데이트 — depth1 질문 텍스트를 text-2xl/3xl bold 중앙정렬로 교체, 서브텍스트 추가, Moving & Cleaning / 이사/청소 desc → "Residential, commercial, and specialty cleaning" / DynamicRequestForm.tsx / DB변경 없음
+[2026-03-28] PC 상단 네비게이션 이모지 → Material Symbols Outlined 교체 — customerItems/proItems icon 필드를 symbol 필드로 전환, 아이콘 렌더링을 material-symbols-outlined span으로 교체, active FILL 1/inactive FILL 0 적용 / PCTopNav.tsx / DB변경 없음
+[2026-03-28] PC 상단 네비게이션 Stitch 다크 테마 통일 — bg-[#0f0d13] border-white/10, active text-[#ff88b5], inactive text-white/50, 뱃지 border 다크화 / PCTopNav.tsx / DB변경 없음
+[2026-03-28] /request 카테고리 카드 영어 모드 아이콘+설명 미반영 수정 — DEPTH1_STITCH에 영어 키 6개 추가(Moving & Cleaning 등), 한국어 동작 보존 / DynamicRequestForm.tsx / DB변경 없음
+[2026-03-28] /request 카테고리 카드 desc 수정 + 하단 nav Stitch 다크 스타일 적용 — 이사/청소 desc 교체, NAV_ICONS 맵 추가(Material Symbols), nav bg-[#1a1721] border-white/10, active text-[#ff88b5], inactive text-white/50, 뱃지 border 다크화 / DynamicRequestForm.tsx, ClientLayout.tsx / DB변경 없음
+[2026-03-28] 전체 내부 페이지 BrandSidePanel 및 max-w-4xl 너비 제약 포괄 제거 — BrandSidePanel 완전 미렌더(import 제거), main 태그 max-w-4xl mx-auto 삭제, lg:overflow-y-auto custom-scrollbar는 유지 / frontend/src/app/ClientLayout.tsx / DB변경 없음
+[2026-03-28] /request 페이지 좌측 사이드바 제거 및 폼 전체 너비 확장 — ClientLayout.tsx에서 isRequestForm 조건 추가: BrandSidePanel 비렌더, max-w-4xl 제약 제거 / frontend/src/app/ClientLayout.tsx / DB변경 없음
+[2026-03-28] /request 페이지 Stitch 다크 디자인 적용 — DynamicRequestForm.tsx UI 레이어 전면 교체(비즈니스 로직 보존), depth1 카테고리 카드 UI, bg-[#0f0d13] 다크테마, #a68cff primary, #ff88b5 submit, 전화번호 모달 다크화 / frontend/src/components/customer/DynamicRequestForm.tsx / DB변경 없음
 [2026-03-28] 서비스 카드 구조 변경 — 카드 내부 순서 [아이콘→제목→설명→태그]로 재배치, 하단 화살표 링크 삭제, 설명 text-sm text-gray-400 전문 표시 / frontend/src/app/page.tsx / DB변경 없음
 [2026-03-28] 서비스 섹션 텍스트·링크 수정 — 섹션 타이틀/서브타이틀 하드코딩, "View All Services →" 링크 추가, categoryStitchUI에 title+desc 필드 추가하여 카드 6개 영문 하드코딩 / frontend/src/app/page.tsx / DB변경 없음
 [2026-03-28] 히어로 섹션 텍스트·레이아웃 수정 — 타이틀 하드코딩("HiddenPro: Your Trusted Home Service"), 서브텍스트 교체, searchBtn 삭제, 전폭 CTA 버튼 추가("Get a Free Quote in 1 Minute"), 아바타 통계 "12k+ professionals active this week" 변경 / frontend/src/app/page.tsx / DB변경 없음

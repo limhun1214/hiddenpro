@@ -13,25 +13,57 @@ export default function PCTopNav({ isFixed = false }: { isFixed?: boolean }) {
   const navState = useContext(NavStateContext);
 
   const customerItems = [
-    { label: t("pcTopNav.requestQuote"), href: "/request", icon: "📝" },
+    {
+      label: t("pcTopNav.requestQuote"),
+      href: "/request",
+      symbol: "edit_note",
+    },
     {
       label: t("pcTopNav.receivedQuotes"),
       href: "/quotes/received",
-      icon: "📩",
+      symbol: "request_quote",
     },
-    { label: t("pcTopNav.chat"), href: "/chat", icon: "💬" },
-    { label: t("referral.gnbInvite"), href: "/referral", icon: "🎁" },
-    { label: t("pcTopNav.notifications"), href: "/notifications", icon: "🔔" },
-    { label: t("pcTopNav.customerProfile"), href: "/profile", icon: "👤" },
+    { label: t("pcTopNav.chat"), href: "/chat", symbol: "chat" },
+    {
+      label: t("referral.gnbInvite"),
+      href: "/referral",
+      symbol: "card_giftcard",
+    },
+    {
+      label: t("pcTopNav.notifications"),
+      href: "/notifications",
+      symbol: "notifications",
+    },
+    {
+      label: t("pcTopNav.customerProfile"),
+      href: "/profile",
+      symbol: "person",
+    },
   ];
 
   const proItems = [
-    { label: t("pcTopNav.requests"), href: "/pro/requests", icon: "📋" },
-    { label: t("pcTopNav.chat"), href: "/chat", icon: "💬" },
-    { label: t("pcTopNav.wallet"), href: "/pro/wallet", icon: "💰" },
-    { label: t("referral.gnbInvite"), href: "/referral", icon: "🎁" },
-    { label: t("pcTopNav.notifications"), href: "/notifications", icon: "🔔" },
-    { label: t("pcTopNav.proProfile"), href: "/profile", icon: "👤" },
+    {
+      label: t("pcTopNav.requests"),
+      href: "/pro/requests",
+      symbol: "assignment",
+    },
+    { label: t("pcTopNav.chat"), href: "/chat", symbol: "chat" },
+    {
+      label: t("pcTopNav.wallet"),
+      href: "/pro/wallet",
+      symbol: "account_balance_wallet",
+    },
+    {
+      label: t("referral.gnbInvite"),
+      href: "/referral",
+      symbol: "card_giftcard",
+    },
+    {
+      label: t("pcTopNav.notifications"),
+      href: "/notifications",
+      symbol: "notifications",
+    },
+    { label: t("pcTopNav.proProfile"), href: "/profile", symbol: "person" },
   ];
 
   const items = navState.isProUser ? proItems : customerItems;
@@ -44,7 +76,7 @@ export default function PCTopNav({ isFixed = false }: { isFixed?: boolean }) {
 
   return (
     <div
-      className={`hidden lg:block w-full bg-white/95 backdrop-blur-sm border-b border-gray-100 z-[60] shadow-sm shrink-0 ${isFixed ? "fixed top-0 left-0" : "sticky top-0"}`}
+      className={`hidden lg:block w-full bg-[#0f0d13] border-b border-white/10 z-[60] shrink-0 ${isFixed ? "fixed top-0 left-0" : "sticky top-0"}`}
     >
       <div className="flex flex-row justify-end items-center space-x-8 px-8 py-5 w-full max-w-4xl mx-auto">
         {items.map((item) => {
@@ -66,40 +98,47 @@ export default function PCTopNav({ isFixed = false }: { isFixed?: boolean }) {
                 }
                 router.push(item.href);
               }}
-              className={`flex items-center space-x-2 transition-colors relative ${isActive ? "text-blue-600 font-bold" : "text-gray-500 hover:text-blue-500 font-medium"}`}
+              className={`flex items-center space-x-2 transition-colors relative ${isActive ? "text-[#ff88b5]" : "text-white/50 hover:text-white/80"}`}
             >
               <div className="relative text-xl">
-                {item.icon}
+                <span
+                  className="material-symbols-outlined text-[22px]"
+                  style={{
+                    fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0",
+                  }}
+                >
+                  {item.symbol}
+                </span>
                 {item.label === t("pcTopNav.notifications") &&
                   navState.unreadNotifsCount > 0 && (
                     <span className="absolute -top-1 -right-2 flex h-3 w-3">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-white"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-[#0f0d13]"></span>
                     </span>
                   )}
                 {item.label === t("pcTopNav.chat") &&
                   navState.unreadChatsCount > 0 && (
                     <span className="absolute -top-1 -right-2 flex h-3 w-3">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-white"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-[#0f0d13]"></span>
                     </span>
                   )}
                 {item.label === t("pcTopNav.receivedQuotes") &&
                   navState.hasNewQuotes && (
                     <span className="absolute -top-1 -right-2 flex h-3 w-3">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-white"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-[#0f0d13]"></span>
                     </span>
                   )}
                 {item.label === t("pcTopNav.requests") &&
                   navState.hasNewRequests && (
                     <span className="absolute -top-1 -right-2 flex h-3 w-3">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-white"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-[#0f0d13]"></span>
                     </span>
                   )}
                 {navState.isProUser && item.label === t("pcTopNav.wallet") && (
-                  <span className="absolute -bottom-1 -right-8 flex h-4 px-1 rounded-full bg-yellow-400 items-center justify-center text-[10px] font-black text-white border-2 border-white shadow-sm whitespace-nowrap">
+                  <span className="absolute -bottom-1 -right-8 flex h-4 px-1 rounded-full bg-yellow-400 items-center justify-center text-[10px] font-black text-white border-2 border-[#0f0d13] shadow-sm whitespace-nowrap">
                     {navState.walletBalance !== null
                       ? navState.walletBalance.toLocaleString()
                       : "C"}

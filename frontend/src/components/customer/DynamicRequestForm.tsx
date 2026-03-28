@@ -49,6 +49,58 @@ const DEPTH2_EN: Record<string, string> = {
   "취업/직무 준비": "Career & Job Preparation",
 };
 
+const DEPTH1_STITCH: Record<string, { icon: string; desc: string }> = {
+  "이사/청소": {
+    icon: "local_shipping",
+    desc: "Residential, commercial, and specialty cleaning",
+  },
+  "설치/수리": {
+    icon: "home_repair_service",
+    desc: "Electrical, plumbing, and general handiwork",
+  },
+  "인테리어/시공": {
+    icon: "architecture",
+    desc: "Design, renovation, and large scale builds",
+  },
+  "비즈니스/외주": {
+    icon: "business_center",
+    desc: "Marketing, accounting, and legal consulting",
+  },
+  "이벤트/파티": {
+    icon: "celebration",
+    desc: "Photography, catering, and event planning",
+  },
+  "레슨/튜터링": {
+    icon: "school",
+    desc: "Academic help, music, and fitness coaching",
+  },
+  // English locale keys
+  "Moving & Cleaning": {
+    icon: "local_shipping",
+    desc: "Residential, commercial, and specialty cleaning",
+  },
+  "Installation & Repair": {
+    icon: "home_repair_service",
+    desc: "Electrical, plumbing, and general handiwork",
+  },
+  "Interior & Construction": {
+    icon: "architecture",
+    desc: "Design, renovation, and large scale builds",
+  },
+  "Business & Outsourcing": {
+    icon: "business_center",
+    desc: "Marketing, accounting, and legal consulting",
+  },
+  "Events & Parties": {
+    icon: "celebration",
+    desc: "Photography, catering, and event planning",
+  },
+  "Lessons & Tutoring": {
+    icon: "school",
+    desc: "Academic help, music, and fitness coaching",
+  },
+};
+
 // --- Schema Definitions ---
 const BASE_STEPS = [
   {
@@ -7694,36 +7746,12 @@ export default function DynamicRequestForm() {
   const options = getOptionsForCurrentStep();
 
   return (
-    <div className="flex flex-col w-full min-h-screen bg-[#F4F5F7] lg:overflow-y-auto relative">
+    <div className="flex flex-col w-full min-h-screen bg-[#0f0d13] lg:overflow-y-auto relative">
       {/* Header */}
-      <div className="flex-none flex items-center justify-between px-4 py-3 bg-white shadow-sm z-50">
-        <button
-          onClick={() => router.push("/")}
-          className="text-gray-500 hover:text-gray-800 p-1"
-        >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-        </button>
-        <div className="flex flex-col items-center">
-          <h1 className="text-[16px] font-bold text-gray-800">
-            {t("requestForm.headerTitle")}
-          </h1>
-          <span className="text-[10px] text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full mt-0.5">
-            HiddenPro
-          </span>
-        </div>
-        <div className="w-8"></div>
+      <div className="flex-none flex items-center justify-center px-4 py-3 bg-[#0f0d13]/80 backdrop-blur-xl border-b border-white/10 z-50">
+        <h1 className="text-[16px] font-bold text-white">
+          {t("requestForm.headerTitle")}
+        </h1>
       </div>
 
       {/* Chat History Flow */}
@@ -7732,26 +7760,18 @@ export default function DynamicRequestForm() {
           <div key={i} className="space-y-4">
             <div className="flex justify-start">
               <div className="flex flex-col gap-1 max-w-[85%]">
-                <div className="flex items-center gap-2 mb-1">
-                  <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center">
-                    <span className="text-blue-600 text-xs font-bold">Q</span>
-                  </div>
-                  <span className="text-xs font-bold text-gray-500">
-                    Hidden AI
-                  </span>
-                </div>
-                <div className="bg-white border border-gray-100 text-gray-800 p-3 rounded-2xl rounded-tl-none shadow-sm text-sm">
+                <div className="bg-[#211e26] border border-white/10 text-white/90 p-3 rounded-2xl rounded-tl-none shadow-sm text-sm">
                   {h.stepText}
                 </div>
               </div>
             </div>
             <div className="flex justify-end flex-col items-end w-full">
-              <div className="bg-blue-600 text-white p-3 rounded-2xl rounded-tr-none shadow-sm max-w-[80%] text-sm break-keep break-words">
+              <div className="bg-[#a68cff] text-white p-3 rounded-2xl rounded-tr-none shadow-sm max-w-[80%] text-sm break-keep break-words">
                 {h.userAnswer}
               </div>
               <button
                 onClick={() => handleEdit(i)}
-                className="text-[10px] text-gray-400 mt-1 hover:text-blue-500 underline text-right"
+                className="text-[10px] text-white/30 mt-1 hover:text-[#a68cff] underline text-right"
               >
                 수정하기
               </button>
@@ -7763,67 +7783,116 @@ export default function DynamicRequestForm() {
         {!isFinished && currentQuestion && (
           <div className="flex justify-start animate-fade-in-up">
             <div className="flex flex-col gap-1 w-full">
-              <div className="flex items-center gap-2 mb-1">
-                <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center">
-                  <span className="text-blue-600 text-xs font-bold">Q</span>
-                </div>
-                <span className="text-xs font-bold text-gray-500">
-                  Hidden AI
-                </span>
-              </div>
-              <div className="bg-white border border-gray-100 text-gray-800 p-4 rounded-2xl rounded-tl-none shadow-sm text-sm w-full">
-                <p className="mb-4 font-medium text-[15px]">
-                  {currentQuestion.text}
-                </p>
+              <div
+                className={
+                  currentQuestion.id === "depth1"
+                    ? "w-full"
+                    : "bg-[#211e26] border border-white/10 text-white/90 p-4 rounded-2xl rounded-tl-none shadow-sm text-sm w-full"
+                }
+              >
+                {currentQuestion.id === "depth1" ? (
+                  <div className="mb-4 text-center px-2 pt-2">
+                    <p className="text-2xl md:text-3xl font-bold text-white">
+                      {currentQuestion.text}
+                    </p>
+                    <p className="text-sm text-white/60 mt-2">
+                      Tell us what you need and we&apos;ll match you with the
+                      best pros in your area.
+                    </p>
+                  </div>
+                ) : (
+                  <p className="mb-4 font-medium text-[15px] text-white">
+                    {currentQuestion.text}
+                  </p>
+                )}
 
                 {/* 1. SINGLE_CHOICE */}
                 {currentQuestion.type === "SINGLE_CHOICE" && (
-                  <div className="flex flex-col gap-2">
-                    {options.map((opt: string) => (
-                      <div key={opt} className="w-full">
-                        <button
-                          onClick={() => {
-                            if (opt === "기타") {
-                              setSelectedSingle("기타");
-                            } else {
-                              commitAnswer(opt, opt);
-                            }
-                          }}
-                          className={`w-full py-3 px-4 rounded-xl border font-medium transition whitespace-normal text-left ${selectedSingle === opt ? "bg-blue-600 text-white border-blue-600" : "bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100"}`}
-                        >
-                          {opt}
-                        </button>
-
-                        {opt === "기타" && selectedSingle === "기타" && (
-                          <div className="mt-2 animate-fade-in-up flex flex-col gap-2 bg-gray-50 p-3 rounded-xl border border-gray-100">
-                            <textarea
-                              value={otherText}
-                              onChange={(e) => setOtherText(e.target.value)}
-                              placeholder="원하시는 이사/운송 형태를 상세히 적어주세요."
-                              className="w-full border border-gray-300 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 text-sm min-h-[80px]"
-                              maxLength={255}
-                            />
-                            <div className="text-right text-[10px] text-gray-400">
-                              {otherText.length} / 255자
-                            </div>
+                  <div
+                    className={
+                      currentQuestion.id === "depth1"
+                        ? "flex flex-col gap-3"
+                        : "flex flex-col gap-2"
+                    }
+                  >
+                    {currentQuestion.id === "depth1"
+                      ? // Stitch hero category cards for depth1
+                        options.map((opt: string) => {
+                          const stitch = DEPTH1_STITCH[opt];
+                          return (
+                            <button
+                              key={opt}
+                              onClick={() => commitAnswer(opt, opt)}
+                              className="w-full flex items-center gap-4 p-4 rounded-xl border border-white/10 bg-[#211e26] hover:bg-[#27242d] hover:border-[#a68cff]/20 transition text-left"
+                            >
+                              <div className="w-10 h-10 rounded-xl bg-[#a68cff]/10 flex items-center justify-center flex-shrink-0">
+                                <span
+                                  className="material-symbols-outlined text-[#a68cff] text-xl"
+                                  style={{ fontVariationSettings: "'FILL' 1" }}
+                                >
+                                  {stitch?.icon || "category"}
+                                </span>
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="font-semibold text-white text-sm">
+                                  {opt}
+                                </p>
+                                <p className="text-xs text-white/50 mt-0.5 truncate">
+                                  {stitch?.desc || ""}
+                                </p>
+                              </div>
+                              <span className="material-symbols-outlined text-white/30 text-lg flex-shrink-0">
+                                chevron_right
+                              </span>
+                            </button>
+                          );
+                        })
+                      : // Regular SINGLE_CHOICE
+                        options.map((opt: string) => (
+                          <div key={opt} className="w-full">
                             <button
                               onClick={() => {
-                                if (otherText.trim()) {
-                                  commitAnswer(
-                                    `기타(${otherText})`,
-                                    `기타(${otherText})`,
-                                  );
+                                if (opt === "기타") {
+                                  setSelectedSingle("기타");
+                                } else {
+                                  commitAnswer(opt, opt);
                                 }
                               }}
-                              disabled={!otherText.trim()}
-                              className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold disabled:opacity-50"
+                              className={`w-full py-3 px-4 rounded-xl border font-medium transition whitespace-normal text-left ${selectedSingle === opt ? "bg-[#a68cff] text-white border-[#a68cff]" : "bg-[#211e26] text-white/80 border-white/10 hover:bg-[#27242d]"}`}
                             >
-                              {t("requestForm.select")}
+                              {opt}
                             </button>
+
+                            {opt === "기타" && selectedSingle === "기타" && (
+                              <div className="mt-2 animate-fade-in-up flex flex-col gap-2 bg-[#1b1820] p-3 rounded-xl border border-white/10">
+                                <textarea
+                                  value={otherText}
+                                  onChange={(e) => setOtherText(e.target.value)}
+                                  placeholder="원하시는 이사/운송 형태를 상세히 적어주세요."
+                                  className="w-full border border-white/10 bg-[#211e26] text-white/90 p-3 rounded-xl focus:ring-2 focus:ring-[#a68cff] text-sm min-h-[80px] placeholder:text-white/30"
+                                  maxLength={255}
+                                />
+                                <div className="text-right text-[10px] text-white/30">
+                                  {otherText.length} / 255자
+                                </div>
+                                <button
+                                  onClick={() => {
+                                    if (otherText.trim()) {
+                                      commitAnswer(
+                                        `기타(${otherText})`,
+                                        `기타(${otherText})`,
+                                      );
+                                    }
+                                  }}
+                                  disabled={!otherText.trim()}
+                                  className="w-full bg-[#a68cff] text-white py-3 rounded-xl font-bold disabled:opacity-50"
+                                >
+                                  {t("requestForm.select")}
+                                </button>
+                              </div>
+                            )}
                           </div>
-                        )}
-                      </div>
-                    ))}
+                        ))}
                   </div>
                 )}
 
@@ -7842,14 +7911,14 @@ export default function DynamicRequestForm() {
                           value={tempDate}
                           onChange={(e) => setTempDate(e.target.value)}
                           min={todayPHT}
-                          className="border border-gray-300 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 w-full"
+                          className="border border-white/10 bg-[#211e26] text-white/90 p-3 rounded-xl focus:ring-2 focus:ring-[#a68cff] w-full"
                         />
                         <button
                           onClick={() =>
                             tempDate && commitAnswer(tempDate, tempDate)
                           }
                           disabled={!tempDate}
-                          className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold disabled:opacity-50"
+                          className="w-full bg-[#a68cff] text-white py-3 rounded-xl font-bold disabled:opacity-50"
                         >
                           {t("requestForm.next")}
                         </button>
@@ -7871,14 +7940,14 @@ export default function DynamicRequestForm() {
                           tempText &&
                           commitAnswer(tempText, tempText)
                         }
-                        className="border border-gray-300 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 w-full"
+                        className="border border-white/10 bg-[#211e26] text-white/90 p-3 rounded-xl focus:ring-2 focus:ring-[#a68cff] w-full placeholder:text-white/30"
                         placeholder="입력해주세요"
                       />
                     ) : (
                       <textarea
                         value={tempText}
                         onChange={(e) => setTempText(e.target.value)}
-                        className="border border-gray-300 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 w-full min-h-[100px]"
+                        className="border border-white/10 bg-[#211e26] text-white/90 p-3 rounded-xl focus:ring-2 focus:ring-[#a68cff] w-full min-h-[100px] placeholder:text-white/30"
                         placeholder={t("requestForm.notesPlaceholder")}
                       />
                     )}
@@ -7886,7 +7955,7 @@ export default function DynamicRequestForm() {
                       {currentQuestion.skippable && (
                         <button
                           onClick={handleSkip}
-                          className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl font-bold"
+                          className="flex-1 bg-[#27242d] text-white/60 py-3 rounded-xl font-bold"
                         >
                           {t("requestForm.skip")}
                         </button>
@@ -7896,7 +7965,7 @@ export default function DynamicRequestForm() {
                           tempText && commitAnswer(tempText, tempText)
                         }
                         disabled={!tempText}
-                        className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold disabled:opacity-50"
+                        className="flex-1 bg-[#a68cff] text-white py-3 rounded-xl font-bold disabled:opacity-50"
                       >
                         {t("requestForm.next")}
                       </button>
@@ -7913,7 +7982,7 @@ export default function DynamicRequestForm() {
                         setRegionReg(e.target.value);
                         setRegionCity("");
                       }}
-                      className="border border-gray-300 p-3 rounded-xl"
+                      className="border border-white/10 bg-[#211e26] text-white/90 p-3 rounded-xl"
                     >
                       <option value="">Region 선택</option>
                       {Object.keys(PHILIPPINES_REGIONS).map((r) => (
@@ -7926,7 +7995,7 @@ export default function DynamicRequestForm() {
                       value={regionCity}
                       onChange={(e) => setRegionCity(e.target.value)}
                       disabled={!regionReg}
-                      className="border border-gray-300 p-3 rounded-xl disabled:opacity-50"
+                      className="border border-white/10 bg-[#211e26] text-white/90 p-3 rounded-xl disabled:opacity-50"
                     >
                       <option value="">City 선택</option>
                       {regionReg &&
@@ -7948,7 +8017,7 @@ export default function DynamicRequestForm() {
                         )
                       }
                       disabled={!regionReg || !regionCity}
-                      className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold disabled:opacity-50"
+                      className="w-full bg-[#a68cff] text-white py-3 rounded-xl font-bold disabled:opacity-50"
                     >
                       {t("requestForm.next")}
                     </button>
@@ -7978,7 +8047,7 @@ export default function DynamicRequestForm() {
                                 });
                               }
                             }}
-                            className={`py-2 px-4 rounded-full border text-sm font-medium transition ${isSel ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"}`}
+                            className={`py-2 px-4 rounded-full border text-sm font-medium transition ${isSel ? "bg-[#a68cff] text-white border-[#a68cff]" : "bg-[#211e26] text-white/80 border-white/10 hover:bg-[#27242d]"}`}
                           >
                             {opt}
                           </button>
@@ -7991,10 +8060,10 @@ export default function DynamicRequestForm() {
                           value={otherText}
                           onChange={(e) => setOtherText(e.target.value)}
                           placeholder="어떤 짐인지 상세히 적어주세요. (예: 안마의자 1개)"
-                          className="w-full border border-gray-300 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 text-sm min-h-[80px]"
+                          className="w-full border border-white/10 bg-[#211e26] text-white/90 p-3 rounded-xl focus:ring-2 focus:ring-[#a68cff] text-sm min-h-[80px] placeholder:text-white/30"
                           maxLength={255}
                         />
-                        <div className="text-right text-[10px] text-gray-400 mt-1">
+                        <div className="text-right text-[10px] text-white/30 mt-1">
                           {otherText.length} / 255자
                         </div>
                       </div>
@@ -8003,7 +8072,7 @@ export default function DynamicRequestForm() {
                       {currentQuestion.skippable && (
                         <button
                           onClick={handleSkip}
-                          className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl font-bold"
+                          className="flex-1 bg-[#27242d] text-white/60 py-3 rounded-xl font-bold"
                         >
                           {t("requestForm.skip")}
                         </button>
@@ -8024,7 +8093,7 @@ export default function DynamicRequestForm() {
                           }
                         }}
                         disabled={multiSelection.length === 0}
-                        className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold disabled:opacity-50"
+                        className="flex-1 bg-[#a68cff] text-white py-3 rounded-xl font-bold disabled:opacity-50"
                       >
                         {t("requestForm.select")}
                       </button>
@@ -8038,12 +8107,12 @@ export default function DynamicRequestForm() {
                     {imagesState.map((img, idx) => (
                       <div
                         key={idx}
-                        className="bg-gray-50 border border-gray-200 rounded-xl p-3 flex flex-col gap-3 relative"
+                        className="bg-[#1b1820] border border-white/10 rounded-xl p-3 flex flex-col gap-3 relative"
                       >
                         <div className="flex gap-3 items-center">
                           <img
                             src={img.url}
-                            className="w-16 h-16 object-cover rounded-lg border border-gray-200"
+                            className="w-16 h-16 object-cover rounded-lg border border-white/10"
                           />
                           <div className="flex-1">
                             <input
@@ -8053,9 +8122,9 @@ export default function DynamicRequestForm() {
                               onChange={(e) =>
                                 updateImageDesc(idx, e.target.value)
                               }
-                              className="w-full bg-white border border-gray-200 rounded-lg p-2 text-sm focus:outline-none focus:border-blue-500"
+                              className="w-full bg-[#211e26] border border-white/10 text-white/90 rounded-lg p-2 text-sm focus:outline-none focus:border-[#a68cff] placeholder:text-white/30"
                             />
-                            <span className="text-[10px] text-gray-400 mt-1 block px-1">
+                            <span className="text-[10px] text-white/30 mt-1 block px-1">
                               {img.description.length}/100
                             </span>
                           </div>
@@ -8082,7 +8151,7 @@ export default function DynamicRequestForm() {
                     ))}
 
                     {imagesState.length < 5 && (
-                      <div className="relative border-2 border-dashed border-blue-200 rounded-xl bg-blue-50 hover:bg-blue-100 transition flex flex-col items-center justify-center p-6 cursor-pointer">
+                      <div className="relative border-2 border-dashed border-[#a68cff]/30 rounded-xl bg-[#1b1820] hover:bg-[#211e26] transition flex flex-col items-center justify-center p-6 cursor-pointer">
                         <input
                           type="file"
                           multiple
@@ -8092,7 +8161,7 @@ export default function DynamicRequestForm() {
                           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-wait"
                         />
                         {uploadingImages ? (
-                          <div className="flex items-center gap-2 text-blue-600 font-bold">
+                          <div className="flex items-center gap-2 text-[#a68cff] font-bold">
                             <svg
                               className="animate-spin h-5 w-5"
                               viewBox="0 0 24 24"
@@ -8115,9 +8184,9 @@ export default function DynamicRequestForm() {
                             {t("requestForm.imageUploading")}
                           </div>
                         ) : (
-                          <div className="text-center text-blue-700">
+                          <div className="text-center text-[#a68cff]">
                             <svg
-                              className="w-8 h-8 mx-auto mb-2 text-blue-500"
+                              className="w-8 h-8 mx-auto mb-2 text-[#a68cff]"
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"
@@ -8142,7 +8211,7 @@ export default function DynamicRequestForm() {
                       {currentQuestion.skippable && (
                         <button
                           onClick={handleSkip}
-                          className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl font-bold"
+                          className="flex-1 bg-[#27242d] text-white/60 py-3 rounded-xl font-bold"
                         >
                           {t("requestForm.skip")}
                         </button>
@@ -8156,7 +8225,7 @@ export default function DynamicRequestForm() {
                               : t("requestForm.imageSkipped"),
                           )
                         }
-                        className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold"
+                        className="flex-1 bg-[#a68cff] text-white py-3 rounded-xl font-bold"
                       >
                         {t("requestForm.next")}
                       </button>
@@ -8171,7 +8240,7 @@ export default function DynamicRequestForm() {
                       onClick={() =>
                         commitAnswer("지금 작성할게요", "💬 지금 작성할게요")
                       }
-                      className="bg-blue-50 text-blue-700 py-3 px-4 rounded-xl border border-blue-200 font-medium text-left"
+                      className="bg-[#211e26] text-white/90 py-3 px-4 rounded-xl border border-[#a68cff]/30 font-medium text-left hover:bg-[#27242d]"
                     >
                       {t("requestForm.detailsNow")}
                     </button>
@@ -8182,7 +8251,7 @@ export default function DynamicRequestForm() {
                           "🤝 Will discuss with the pro",
                         )
                       }
-                      className="bg-gray-50 text-gray-700 py-3 px-4 rounded-xl border border-gray-200 font-medium text-left"
+                      className="bg-[#1b1820] text-white/60 py-3 px-4 rounded-xl border border-white/10 font-medium text-left hover:bg-[#211e26]"
                     >
                       {t("requestForm.detailsLater")}
                     </button>
@@ -8194,8 +8263,8 @@ export default function DynamicRequestForm() {
         )}
 
         {isFinished && (
-          <div className="flex flex-col items-center gap-4 bg-white p-6 rounded-2xl shadow-sm border border-green-100 animate-fade-in-up">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-green-600">
+          <div className="flex flex-col items-center gap-4 bg-[#211e26] p-6 rounded-2xl shadow-sm border border-white/10 animate-fade-in-up">
+            <div className="w-16 h-16 bg-[#b5ffc2]/10 rounded-full flex items-center justify-center text-[#b5ffc2]">
               <svg
                 className="w-8 h-8"
                 fill="none"
@@ -8211,17 +8280,17 @@ export default function DynamicRequestForm() {
               </svg>
             </div>
             <div className="text-center">
-              <h2 className="text-xl font-bold text-gray-800">
+              <h2 className="text-xl font-bold text-white">
                 {t("requestForm.allDone")}
               </h2>
-              <p className="text-sm text-gray-500 mt-2">
+              <p className="text-sm text-white/50 mt-2">
                 {t("requestForm.allDoneSub")}
               </p>
             </div>
             <button
               onClick={submitAction}
               disabled={isSubmitting}
-              className={`w-full bg-blue-600 text-white font-bold py-4 rounded-xl shadow-lg mt-2 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
+              className={`w-full bg-[#ff88b5] text-black font-bold py-4 rounded-xl shadow-lg mt-2 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               {isSubmitting
                 ? t("requestForm.submitting")
@@ -8236,14 +8305,14 @@ export default function DynamicRequestForm() {
       {/* Phone Overlay */}
       {showPhoneModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
-          <div className="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl flex flex-col gap-4">
-            <div className="mx-auto w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mb-2">
+          <div className="bg-[#1b1820] rounded-3xl w-full max-w-sm p-6 shadow-2xl flex flex-col gap-4 border border-white/10">
+            <div className="mx-auto w-12 h-12 bg-[#a68cff]/10 rounded-full flex items-center justify-center mb-2">
               <span className="text-2xl">📱</span>
             </div>
-            <h2 className="text-xl font-bold text-center text-gray-800">
+            <h2 className="text-xl font-bold text-center text-white">
               {t("requestForm.phoneTitle")}
             </h2>
-            <p className="text-sm text-gray-500 text-center leading-relaxed">
+            <p className="text-sm text-white/50 text-center leading-relaxed">
               {t("requestForm.phoneDesc")}
             </p>
             <input
@@ -8251,19 +8320,19 @@ export default function DynamicRequestForm() {
               value={phoneInput}
               onChange={(e) => setPhoneInput(e.target.value)}
               placeholder={t("requestForm.phonePlaceholder")}
-              className="p-4 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:bg-white focus:outline-none transition text-center text-lg font-medium tracking-wider mt-2"
+              className="p-4 bg-[#211e26] border border-white/10 text-white rounded-2xl focus:ring-2 focus:ring-[#a68cff] focus:outline-none transition text-center text-lg font-medium tracking-wider mt-2 placeholder:text-white/30"
             />
             <div className="flex gap-3 mt-4">
               <button
                 onClick={() => setShowPhoneModal(false)}
-                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold py-4 rounded-2xl transition text-sm"
+                className="flex-1 bg-[#27242d] hover:bg-[#2e2a36] text-white/60 font-bold py-4 rounded-2xl transition text-sm"
               >
                 {t("requestForm.phoneLater")}
               </button>
               <button
                 onClick={handlePhoneVerifyAndSubmit}
                 disabled={verifyingPhone}
-                className="flex-[2] bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl shadow-lg transition text-sm disabled:opacity-50"
+                className="flex-[2] bg-[#a68cff] hover:bg-[#9b7ef5] text-white font-bold py-4 rounded-2xl shadow-lg transition text-sm disabled:opacity-50"
               >
                 {verifyingPhone ? (
                   <span className="flex items-center justify-center gap-2">

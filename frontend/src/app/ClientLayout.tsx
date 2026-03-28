@@ -6,7 +6,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import GlobalFooter from "@/components/common/GlobalFooter";
 import PCTopNav from "@/components/common/PCTopNav";
-import BrandSidePanel from "@/components/common/BrandSidePanel";
 
 import { NavStateContext } from "@/context/NavStateContext";
 import { ToastProvider } from "@/components/ui/Toast";
@@ -525,6 +524,18 @@ export default function ClientLayout({
   ];
 
   const currentNav = isProUser ? proNav : customerNav;
+
+  const NAV_ICONS: Record<string, string> = {
+    request: "edit_note",
+    quotes: "inbox",
+    chat: "forum",
+    referral: "card_giftcard",
+    notifications: "notifications",
+    profile: "account_circle",
+    requests: "assignment",
+    wallet: "account_balance_wallet",
+  };
+
   const isChatRoom =
     currentPath.startsWith("/chat") &&
     currentPath !== "/chat" &&
@@ -566,7 +577,7 @@ export default function ClientLayout({
         }}
       >
         <div className={rootContainerClasses}>
-          {!isSpecialPage && <BrandSidePanel />}
+          {/* BrandSidePanel: 전체 내부 페이지에서 제거 */}
 
           <div
             className={
@@ -585,14 +596,14 @@ export default function ClientLayout({
             ) : (
               <>
                 <main
-                  className={`flex-1 flex flex-col w-full ${!isSpecialPage ? "max-w-4xl mx-auto lg:overflow-y-auto custom-scrollbar" : ""} ${!hideNavBar ? "pb-16" : ""}`}
+                  className={`flex-1 flex flex-col w-full ${!isSpecialPage ? "lg:overflow-y-auto custom-scrollbar" : ""} ${!hideNavBar ? "pb-16" : ""}`}
                 >
                   {children}
                 </main>
 
                 {!hideNavBar && (
                   <nav
-                    className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 z-[999] px-2 py-2 md:hidden"
+                    className="fixed bottom-0 left-0 w-full bg-[#1a1721] border-t border-white/10 z-[999] px-2 py-2 md:hidden"
                     style={{
                       position: "fixed",
                       bottom: 0,
@@ -639,19 +650,26 @@ export default function ClientLayout({
                                   );
                               }}
                               className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${
-                                isActive
-                                  ? "text-blue-600 font-bold"
-                                  : "text-gray-400 hover:text-blue-400 font-medium"
+                                isActive ? "text-[#ff88b5]" : "text-white/50"
                               }`}
                             >
-                              <div className="relative text-xl">
-                                {item.icon}
+                              <div className="relative">
+                                <span
+                                  className="material-symbols-outlined text-[22px]"
+                                  style={{
+                                    fontVariationSettings: isActive
+                                      ? "'FILL' 1"
+                                      : "'FILL' 0",
+                                  }}
+                                >
+                                  {NAV_ICONS[item.key] || "circle"}
+                                </span>
 
                                 {item.key === "notifications" &&
                                   unreadNotifsCount > 0 && (
                                     <span className="absolute -top-1 -right-2 flex h-3 w-3">
                                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                      <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-white"></span>
+                                      <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-[#1a1721]"></span>
                                     </span>
                                   )}
 
@@ -659,26 +677,26 @@ export default function ClientLayout({
                                   unreadChatsCount > 0 && (
                                     <span className="absolute -top-1 -right-2 flex h-3 w-3">
                                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                      <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-white"></span>
+                                      <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-[#1a1721]"></span>
                                     </span>
                                   )}
 
                                 {item.key === "quotes" && hasNewQuotes && (
                                   <span className="absolute -top-1 -right-2 flex h-3 w-3">
                                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                    <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-white"></span>
+                                    <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-[#1a1721]"></span>
                                   </span>
                                 )}
 
                                 {item.key === "requests" && hasNewRequests && (
                                   <span className="absolute -top-1 -right-2 flex h-3 w-3">
                                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                    <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-white"></span>
+                                    <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-[#1a1721]"></span>
                                   </span>
                                 )}
 
                                 {isProUser && item.key === "wallet" && (
-                                  <span className="absolute -bottom-1 -right-8 flex h-4 px-1 rounded-full bg-yellow-400 items-center justify-center text-[10px] font-black text-white border-2 border-white shadow-sm whitespace-nowrap">
+                                  <span className="absolute -bottom-1 -right-8 flex h-4 px-1 rounded-full bg-yellow-400 items-center justify-center text-[10px] font-black text-white border-2 border-[#1a1721] shadow-sm whitespace-nowrap">
                                     {walletBalance !== null
                                       ? walletBalance.toLocaleString()
                                       : "C"}

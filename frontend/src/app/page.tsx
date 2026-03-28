@@ -1320,11 +1320,11 @@ export default function HomePage() {
 
       {/* 프로덕션 레디 로그인/가입 모달 */}
       {showLoginModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm">
-          <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-[#1a1721] rounded-3xl w-full max-w-md overflow-hidden shadow-2xl">
             {/* 헤더 */}
-            <div className="flex justify-between items-center p-6 border-b border-gray-100">
-              <h3 className="text-xl font-bold text-gray-900">
+            <div className="flex justify-between items-center p-6 border-b border-gray-700">
+              <h3 className="text-xl font-bold text-white">
                 {authMode === "login"
                   ? t("landing.loginTitle")
                   : authMode === "pro_signup"
@@ -1337,7 +1337,7 @@ export default function HomePage() {
                   setAuthError("");
                   setAuthMode("login");
                 }}
-                className="text-gray-400 hover:text-gray-600 font-bold w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition"
+                className="text-gray-400 hover:text-white font-bold w-8 h-8 flex items-center justify-center rounded-full transition"
               >
                 &times;
               </button>
@@ -1346,11 +1346,11 @@ export default function HomePage() {
             <div className="p-6 space-y-5">
               {/* 고수 가입 모드일 때 안내 문구 */}
               {authMode === "pro_signup" && (
-                <div className="bg-gray-900 text-yellow-400 p-4 rounded-xl text-center">
-                  <p className="text-sm font-bold">
+                <div className="bg-[#2a2535] p-4 rounded-xl text-center">
+                  <p className="text-sm font-bold text-white">
                     {t("landing.proSignupDesc")}
                   </p>
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className="text-xs text-gray-300 mt-1">
                     {t("landing.proSignupDescSub")}
                   </p>
                 </div>
@@ -1360,7 +1360,7 @@ export default function HomePage() {
               <div className="space-y-3">
                 <button
                   onClick={() => handleSocialLogin("google")}
-                  className="w-full flex items-center justify-center gap-3 py-3.5 border border-gray-200 rounded-xl bg-white hover:bg-gray-50 transition text-sm font-bold text-gray-700"
+                  className="w-full flex items-center justify-center gap-3 py-3.5 border border-gray-600 rounded-xl bg-[#2a2535] hover:bg-[#342e42] transition text-sm font-bold text-white"
                 >
                   <svg className="w-5 h-5" viewBox="0 0 24 24">
                     <path
@@ -1384,7 +1384,7 @@ export default function HomePage() {
                 </button>
                 <button
                   onClick={() => handleSocialLogin("facebook")}
-                  className="w-full flex items-center justify-center gap-3 py-3.5 border border-gray-200 rounded-xl bg-[#1877F2] hover:bg-[#166FE5] transition text-sm font-bold text-white"
+                  className="w-full flex items-center justify-center gap-3 py-3.5 rounded-xl bg-[#a68cff] hover:bg-[#9478e8] transition text-sm font-bold text-white"
                 >
                   <svg
                     className="w-5 h-5"
@@ -1399,11 +1399,11 @@ export default function HomePage() {
 
               <p className="text-[11px] text-gray-400 text-center leading-relaxed">
                 {t("landing.termsAgreement")}{" "}
-                <span className="underline cursor-pointer">
+                <span className="underline cursor-pointer text-[#ff88b5]">
                   {t("landing.termsLink")}
                 </span>{" "}
                 {t("landing.termsAnd")}{" "}
-                <span className="underline cursor-pointer">
+                <span className="underline cursor-pointer text-[#ff88b5]">
                   {t("landing.privacyLink")}
                 </span>
                 .
