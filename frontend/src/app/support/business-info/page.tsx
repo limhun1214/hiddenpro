@@ -31,94 +31,131 @@ export default function BusinessInfoPage() {
 
   if (loading) {
     return (
-      <div className="w-full flex flex-col pt-4">
-        <div className="flex justify-between items-center p-4 bg-white border-b border-gray-100">
+      <div className="min-h-screen bg-[#0f0d13] flex flex-col">
+        <div className="flex justify-between items-center px-4 h-14 bg-[#0f0d13] border-b border-[#4a474e]/15 sticky top-0 z-10">
           <button
             onClick={() => router.back()}
-            className="text-gray-500 hover:text-gray-800 font-bold"
+            className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-[#1b1820] transition-colors active:scale-90"
           >
-            &larr; {t("common.back")}
+            <span className="material-symbols-outlined text-[#ff88b5]">
+              arrow_back
+            </span>
           </button>
-          <h1 className="font-bold text-gray-800">{t("businessInfo.title")}</h1>
+          <h1 className="font-bold text-[#f8f1fb]">
+            {t("businessInfo.title")}
+          </h1>
           <div className="w-10"></div>
         </div>
         <div className="flex-1 flex items-center justify-center">
-          <div className="w-8 h-8 rounded-full border-4 border-gray-200 border-t-blue-600 animate-spin"></div>
+          <div className="w-8 h-8 rounded-full border-4 border-[#27242d] border-t-[#ff88b5] animate-spin"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full flex flex-col pt-4">
-      <div className="flex justify-between items-center p-4 bg-white border-b border-gray-100">
+    <div className="min-h-screen bg-[#0f0d13] text-[#f8f1fb] flex flex-col pb-32">
+      <header className="flex justify-between items-center px-4 h-14 bg-[#0f0d13] border-b border-[#4a474e]/15 sticky top-0 z-10">
         <button
           onClick={() => router.back()}
-          className="text-gray-500 hover:text-gray-800 font-bold"
+          className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-[#1b1820] transition-colors active:scale-90"
         >
-          &larr; {t("common.back")}
+          <span className="material-symbols-outlined text-[#ff88b5]">
+            arrow_back
+          </span>
         </button>
-        <h1 className="font-bold text-gray-800">{t("businessInfo.title")}</h1>
+        <h1 className="font-bold text-[#f8f1fb]">{t("businessInfo.title")}</h1>
         <div className="w-10"></div>
-      </div>
-      <main className="flex-1 w-full max-w-3xl mx-auto p-5 md:p-8">
-        <div className="mb-6 md:mb-10 pb-6 border-b border-gray-100 flex flex-col gap-2">
-          <h1 className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight leading-tight">
+      </header>
+      <main className="flex-1 w-full max-w-3xl mx-auto px-5 pt-8 md:px-8">
+        {/* 에디토리얼 헤더 */}
+        <div className="mb-10">
+          <span className="text-[#ff88b5] font-bold tracking-widest text-xs uppercase mb-3 block">
+            Business
+          </span>
+          <h2 className="text-3xl md:text-4xl font-extrabold text-[#f8f1fb] tracking-tight leading-tight">
             {t("businessInfo.title")}
-          </h1>
+          </h2>
         </div>
 
         <div
-          className="prose prose-sm md:prose-base max-w-none text-gray-700
-                        whitespace-pre-wrap break-keep leading-relaxed
-                        prose-headings:font-bold prose-headings:text-gray-900
-                        prose-a:text-blue-600 prose-a:underline
-                        prose-li:my-1
-                    "
+          className="
+            prose max-w-none
+            prose-headings:font-bold prose-headings:text-[#f8f1fb]
+            prose-p:text-[#aea9b2] prose-p:leading-relaxed
+            prose-li:text-[#aea9b2] prose-li:my-1
+            prose-a:text-[#ff88b5] prose-a:underline prose-a:underline-offset-2
+            prose-strong:text-[#f8f1fb]
+            prose-hr:border-[#4a474e]/30
+            prose-blockquote:border-l-[#ff88b5] prose-blockquote:text-[#aea9b2]
+            prose-code:text-[#ff88b5] prose-code:bg-[#1b1820]
+            whitespace-pre-wrap break-keep leading-relaxed
+          "
         >
           {bizInfoHtml ? (
             <div dangerouslySetInnerHTML={{ __html: bizInfoHtml }} />
           ) : (
-            <>
-              <strong>{t("businessInfo.companyName")}</strong> HiddenPro
-              Philippines Inc.
-              <br />
-              <br />
-              <strong>{t("businessInfo.representative")}</strong> [대표자 성함]
-              <br />
-              <br />
-              <strong>{t("businessInfo.businessReg")}</strong> [000-000-000]
-              <br />
-              <br />
-              <strong>{t("businessInfo.tin")}</strong> [000-000-000-000]
-              <br />
-              <br />
-              <strong>{t("businessInfo.ecommerce")}</strong> [현지 허가 번호
-              또는 DTI Permit No.]
-              <br />
-              <br />
-              <strong>{t("businessInfo.headquarters")}</strong> [12F, XYZ
-              Building, Bonifacio Global City, Taguig, Metro Manila,
-              Philippines]
-              <br />
-              <br />
-              <strong>
-                {t("businessInfo.support")}
-              </strong> [+63-2-XXXX-XXXX] {t("businessInfo.supportHours")}
-              <br />
-              <br />
-              <strong>{t("businessInfo.email")}</strong> [help@hiddenpro.ph]
-              <br />
-              <br />
-              <strong>{t("businessInfo.hosting")}</strong> Amazon Web Services
-              (AWS)
-              <br />
-              <br />
-              <hr className="my-6 border-gray-200" />
-              <p className="text-gray-500 text-sm">
+            <div className="space-y-4 text-[#aea9b2]">
+              <p>
+                <strong className="text-[#f8f1fb]">
+                  {t("businessInfo.companyName")}
+                </strong>{" "}
+                HiddenPro Philippines Inc.
+              </p>
+              <p>
+                <strong className="text-[#f8f1fb]">
+                  {t("businessInfo.representative")}
+                </strong>{" "}
+                [대표자 성함]
+              </p>
+              <p>
+                <strong className="text-[#f8f1fb]">
+                  {t("businessInfo.businessReg")}
+                </strong>{" "}
+                [000-000-000]
+              </p>
+              <p>
+                <strong className="text-[#f8f1fb]">
+                  {t("businessInfo.tin")}
+                </strong>{" "}
+                [000-000-000-000]
+              </p>
+              <p>
+                <strong className="text-[#f8f1fb]">
+                  {t("businessInfo.ecommerce")}
+                </strong>{" "}
+                [현지 허가 번호 또는 DTI Permit No.]
+              </p>
+              <p>
+                <strong className="text-[#f8f1fb]">
+                  {t("businessInfo.headquarters")}
+                </strong>{" "}
+                [12F, XYZ Building, Bonifacio Global City, Taguig, Metro Manila,
+                Philippines]
+              </p>
+              <p>
+                <strong className="text-[#f8f1fb]">
+                  {t("businessInfo.support")}
+                </strong>{" "}
+                [+63-2-XXXX-XXXX] {t("businessInfo.supportHours")}
+              </p>
+              <p>
+                <strong className="text-[#f8f1fb]">
+                  {t("businessInfo.email")}
+                </strong>{" "}
+                [help@hiddenpro.ph]
+              </p>
+              <p>
+                <strong className="text-[#f8f1fb]">
+                  {t("businessInfo.hosting")}
+                </strong>{" "}
+                Amazon Web Services (AWS)
+              </p>
+              <hr className="my-6 border-[#4a474e]/30" />
+              <p className="text-[#78747c] text-sm">
                 {t("businessInfo.disclaimer")}
               </p>
-            </>
+            </div>
           )}
         </div>
       </main>
