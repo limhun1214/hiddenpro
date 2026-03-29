@@ -270,6 +270,26 @@ export default function ClientLayout({
   useEffect(() => {
     if (!userId) return;
 
+    // ── 미읽음 MATCH 알림 중 유효(OPEN) 요청 존재 여부 공통 쿼리 ──
+    const queryUnreadMatchRequests = async (): Promise<boolean> => {
+      const { data: matchNotifs } = await supabase
+        .from("notifications")
+        .select("reference_id")
+        .eq("user_id", userId)
+        .eq("type", "MATCH")
+        .eq("is_read", false);
+      if (!matchNotifs || matchNotifs.length === 0) return false;
+      const refIds = matchNotifs
+        .map((n: any) => n.reference_id)
+        .filter(Boolean);
+      const { count: openCount } = await supabase
+        .from("match_requests")
+        .select("*", { count: "exact", head: true })
+        .in("request_id", refIds)
+        .eq("status", "OPEN");
+      return (openCount || 0) > 0;
+    };
+
     const notifChannel = supabase
       .channel("gnb-notif-" + userId)
       .on(
@@ -326,6 +346,11 @@ export default function ClientLayout({
         },
       )
       .subscribe();
+
+    // ── 초기 로드 시 미읽음 MATCH 요청 배지 상태 체크 ──
+    queryUnreadMatchRequests().then((hasUnread) =>
+      setHasNewRequests(hasUnread),
+    );
 
     const chatChannel = supabase
       .channel("gnb-chat-" + userId)
@@ -402,24 +427,8 @@ export default function ClientLayout({
       setHasNewQuotes(!error && count !== null && count > 0);
     };
     const handleRequestsRead = async () => {
-      // ── [핫픽스] DB에서 미읽음 MATCH 알림 중 유효(OPEN) 요청만 재카운트 ──
-      const { data: matchNotifs } = await supabase
-        .from("notifications")
-        .select("reference_id")
-        .eq("user_id", userId)
-        .eq("type", "MATCH")
-        .eq("is_read", false);
-      if (matchNotifs && matchNotifs.length > 0) {
-        const refIds = matchNotifs.map((n) => n.reference_id).filter(Boolean);
-        const { count: openCount } = await supabase
-          .from("match_requests")
-          .select("*", { count: "exact", head: true })
-          .in("request_id", refIds)
-          .eq("status", "OPEN");
-        setHasNewRequests((openCount || 0) > 0);
-      } else {
-        setHasNewRequests(false);
-      }
+      const hasUnread = await queryUnreadMatchRequests();
+      setHasNewRequests(hasUnread);
     };
 
     const handleForceRequestsBadge = () => setHasNewRequests(true);

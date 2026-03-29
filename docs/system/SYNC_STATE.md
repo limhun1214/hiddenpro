@@ -5,6 +5,12 @@
 
 ## [Current Workflow]
 
+ClientLayout.tsx Pro Requests 배지 초기 상태 체크 수정 완료:
+
+- queryUnreadMatchRequests() 헬퍼 추출 (useEffect 상단)
+- handleRequestsRead 리팩터링 (헬퍼 재사용)
+- notifChannel.subscribe() 직후 초기 배지 상태 쿼리 추가
+
 ## [Next To-Do]
 
 - 디렉터님의 다음 개발 마일스톤 지시 대기 중
