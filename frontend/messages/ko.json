@@ -760,5 +760,8 @@
     "wallet": "지갑",
     "proProfile": "고수 프로필"
   },
+  "referral": {
+    "copiedEmbed": "배너 코드가 복사되었습니다! 블로그나 웹사이트에 붙여넣기 하세요."
+  },
   "admin": {}
 }

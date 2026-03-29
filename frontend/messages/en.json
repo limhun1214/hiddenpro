@@ -827,7 +827,8 @@
     "bannerVertical": "Vertical",
     "bannerVerticalUse": "Instagram Story, Facebook Story",
     "bannerSquare": "Square",
-    "bannerSquareUse": "Instagram Feed, Facebook Post"
+    "bannerSquareUse": "Instagram Feed, Facebook Post",
+    "copiedEmbed": "Banner embed code copied! Paste it into your blog or website."
   },
   "admin": {}
 }

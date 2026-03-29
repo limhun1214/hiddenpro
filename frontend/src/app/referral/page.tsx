@@ -163,10 +163,13 @@ export default function ReferralPage() {
   };
 
   const handleCopyBannerLink = (bannerId: number) => {
+    const banner = banners.find((b: any) => b.id === bannerId);
     const link = `${window.location.origin}/?ref=${referralCode}&banner=${bannerId}`;
+    const imageUrl = banner?.image_url || "";
+    const embedCode = `<a href="${link}" target="_blank" rel="noopener noreferrer"><img src="${imageUrl}" alt="HiddenPro Referral Banner" style="max-width:100%;height:auto;border:none;" /></a>`;
     navigator.clipboard
-      .writeText(link)
-      .then(() => showToast(t("referral.copied"), "success"));
+      .writeText(embedCode)
+      .then(() => showToast(t("referral.copiedEmbed"), "success"));
   };
 
   const maskEmail = (email: string) => {
@@ -445,7 +448,7 @@ export default function ReferralPage() {
                           onClick={() => handleCopyBannerLink(b.id)}
                           className="flex-1 bg-[#27242d]/80 backdrop-blur-md text-[#f8f1fb] py-1.5 rounded-lg text-[10px] font-bold border border-white/10 active:scale-95 transition-all"
                         >
-                          Copy
+                          Copy Code
                         </button>
                         <button
                           onClick={() => handleShareBanner(b.id)}
