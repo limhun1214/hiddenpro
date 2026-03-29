@@ -647,7 +647,7 @@ export default function ClientLayout({
                                   item.href !== "/request"
                                 ) {
                                   e.preventDefault();
-                                  setShowLoginModal(true);
+                                  router.push("/");
                                   return;
                                 }
                                 if (
