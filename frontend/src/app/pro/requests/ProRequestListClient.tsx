@@ -470,7 +470,6 @@ export default function ProRequestListClient() {
           <h1 className="text-xl font-black text-[#f8f1fb] tracking-tight">
             {t("proRequestList.pageTitle")}
           </h1>
-          <div className="w-2.5 h-2.5 bg-[#ff88b5] rounded-full animate-pulse shadow-[0_0_8px_rgba(255,136,181,0.8)]" />
         </div>
 
         {/* 메인 탭 토글 — pill */}
