@@ -1,19 +1,65 @@
-## 작업: Profile 페이지 좌우 흰색 배경 완전 제거
+# 지시: 모바일 상단 헤더에 지갑 아이콘 추가 (알림 벨 왼쪽, PRO 전용)
 
-### 문제:
+## 수정 대상: frontend/src/app/ClientLayout.tsx — 모바일 상단 헤더 영역만
 
-Profile 페이지의 카드 영역 좌우 바깥에 여전히 밝은(흰색/회색) 배경이 보임. 페이지 최상위 래퍼보다 상위 레벨(body 또는 ClientLayout)에서 배경색이 적용되고 있는 것으로 추정.
+## 수정 내용
 
-### 수정 파일: frontend/src/app/ClientLayout.tsx (또는 profile 페이지 관련 래퍼)
+모바일 상단 헤더의 `<div className="flex justify-end items-center px-4 py-3 gap-3">` 내부에서, 알림 벨 버튼 바로 위(앞)에 아래 지갑 버튼 코드를 추가한다.
 
-### 확인 및 수정:
+추가할 코드:
 
-1. ClientLayout.tsx에서 Profile 페이지일 때 main/body 래퍼의 배경색 확인
-2. 최상위 컨테이너(html, body, main, div 등)에 bg-white 또는 bg-gray-50이 있다면 Profile 경로에서는 bg-[#0f0d13]으로 오버라이드
-3. 페이지 전체 너비(w-full)에 걸쳐 bg-[#0f0d13]이 적용되도록 수정
-4. max-w 제약이 있는 래퍼 바깥 영역도 동일 배경색 적용
+```tsx
+{
+  isProUser && (
+    <button
+      onClick={() => router.push("/pro/wallet")}
+      aria-label={t("pcTopNav.wallet")}
+      className={`relative transition-colors ${
+        currentPath === "/pro/wallet"
+          ? "text-[#ff88b5]"
+          : "text-white/70 hover:text-white"
+      }`}
+    >
+      <span
+        className="material-symbols-outlined text-[22px]"
+        style={{
+          fontVariationSettings:
+            currentPath === "/pro/wallet" ? "'FILL' 1" : "'FILL' 0",
+        }}
+      >
+        account_balance_wallet
+      </span>
+    </button>
+  );
+}
+```
 
-### 주의사항:
+### 주의 사항
 
-- 랜딩 페이지 등 다른 페이지에 영향 주지 않도록 Profile 경로 조건부 적용
-- 비즈니스 로직 변경 금지
+- 조건 변수는 `navState.isProUser`가 아닌 `isProUser` (직접 state 변수) 사용
+- 경로 비교는 `pathname`이 아닌 `currentPath` 사용
+- 라벨 텍스트 없음 (모바일 상단은 아이콘만)
+- 알림 벨 버튼 코드는 일절 수정하지 않는다
+- 삽입 위치: 알림 벨 `<button onClick={() => router.push("/notifications")}` 바로 위
+
+## 금지 사항
+
+- PCTopNav.tsx 수정 금지 (이미 완료됨)
+- 모바일 하단 내비바 코드 수정 금지
+- 알림 벨 기존 코드 삭제/변경 금지
+- en.json, ko.json 수정 금지 (키 이미 존재)
+
+## 5대 충돌 검수
+
+- DB 스키마: 변경 없음 ✅
+- 금융 RPC 사이드이펙트: 없음 ✅
+- 인증 우회: 없음 ✅
+- 상태 전환: 없음 ✅
+- N+1/CCU 성능: 추가 쿼리 없음 ✅
+
+## 완료 후
+
+1. docs/history_archive/HISTORY.md 상단에 기록 추가
+2. 변경된 파일 목록과 삽입된 코드 위치(라인 번호) 보고
+
+❓ 위 계획대로 진행할까요? "OK"를 입력하시면 코딩을 시작합니다.

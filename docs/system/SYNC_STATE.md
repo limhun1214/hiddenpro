@@ -5,7 +5,7 @@
 
 ## [Current Workflow]
 
-_완료 — 대기 중_
+(없음)
 
 ## [Next To-Do]
 

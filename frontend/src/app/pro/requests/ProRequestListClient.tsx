@@ -19,6 +19,7 @@ export default function ProRequestListClient() {
     "IN_PROGRESS",
   );
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [customerVerifiedMap, setCustomerVerifiedMap] = useState<
     Record<string, boolean>
   >({});
@@ -279,7 +280,8 @@ export default function ProRequestListClient() {
         }
       }
     };
-    fetchRequests();
+    setIsRefreshing(true);
+    fetchRequests().finally(() => setIsRefreshing(false));
   }, [refreshTrigger]);
 
   // [뱃지 동기화] localStorage 기반 읽음 상태와 GNB 뱃지를 동기화
@@ -461,25 +463,35 @@ export default function ProRequestListClient() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 pb-24 space-y-4">
-      <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col sticky top-0 z-10">
-        <div className="flex items-center justify-between mb-3">
-          <h1 className="text-xl font-bold flex items-center gap-2">
+    <div className="min-h-screen bg-[#0f0d13] pb-24">
+      {/* 헤더 */}
+      <header className="bg-[#0f0d13]/80 backdrop-blur-xl border-b border-white/5 shadow-[0_8px_32px_rgba(255,136,181,0.06)] sticky top-0 z-10 px-6 pt-4 pb-3 flex flex-col gap-3">
+        <div className="flex items-center gap-2">
+          <h1 className="text-xl font-black text-[#f8f1fb] tracking-tight">
             {t("proRequestList.pageTitle")}
-            <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.8)]"></div>
           </h1>
+          <div className="w-2.5 h-2.5 bg-[#ff88b5] rounded-full animate-pulse shadow-[0_0_8px_rgba(255,136,181,0.8)]" />
         </div>
 
-        <div className="flex space-x-2 bg-gray-100 p-1 rounded-xl">
+        {/* 메인 탭 토글 — pill */}
+        <div className="flex items-center gap-2 bg-[#211e26] p-1.5 rounded-full">
           <button
             onClick={() => setFilterType("NEW")}
-            className={`flex-1 py-2 text-sm font-bold rounded-lg transition ${filterType === "NEW" ? "bg-white text-blue-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+            className={`flex-1 py-2.5 px-6 rounded-full text-sm font-black transition-all duration-300 ${
+              filterType === "NEW"
+                ? "bg-[#ff88b5] text-[#610034] shadow-lg shadow-[#ff88b5]/20"
+                : "text-white/50 hover:text-white/80"
+            }`}
           >
             {t("proRequestList.tabNew")}
           </button>
           <button
             onClick={() => setFilterType("QUOTED")}
-            className={`flex-1 py-2 text-sm font-bold rounded-lg transition ${filterType === "QUOTED" ? "bg-white text-blue-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+            className={`flex-1 py-2.5 px-6 rounded-full text-sm font-black transition-all duration-300 ${
+              filterType === "QUOTED"
+                ? "bg-[#ff88b5] text-[#610034] shadow-lg shadow-[#ff88b5]/20"
+                : "text-white/50 hover:text-white/80"
+            }`}
           >
             {t("proRequestList.tabQuoted")}
           </button>
@@ -487,330 +499,495 @@ export default function ProRequestListClient() {
 
         {/* 2뎁스 서브 탭 (보낸 견적 선택 시에만 노출) */}
         {filterType === "QUOTED" && (
-          <div className="flex space-x-2 mt-2">
+          <div className="flex space-x-2">
             <button
               onClick={() => setQuotedSubTab("IN_PROGRESS")}
-              className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition ${quotedSubTab === "IN_PROGRESS" ? "bg-blue-100 text-blue-700 border border-blue-300" : "text-gray-400 hover:text-gray-600 border border-transparent"}`}
+              className={`flex-1 py-1.5 text-xs font-bold rounded-full transition ${
+                quotedSubTab === "IN_PROGRESS"
+                  ? "bg-[#ff88b5]/15 text-[#ff88b5] border border-[#ff88b5]/30"
+                  : "text-white/40 hover:text-white/60 border border-white/10"
+              }`}
             >
               {t("proRequestList.subTabInProgress")}
             </button>
             <button
               onClick={() => setQuotedSubTab("ARCHIVED")}
-              className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition ${quotedSubTab === "ARCHIVED" ? "bg-gray-200 text-gray-700 border border-gray-300" : "text-gray-400 hover:text-gray-600 border border-transparent"}`}
+              className={`flex-1 py-1.5 text-xs font-bold rounded-full transition ${
+                quotedSubTab === "ARCHIVED"
+                  ? "bg-white/10 text-white/80 border border-white/20"
+                  : "text-white/40 hover:text-white/60 border border-white/10"
+              }`}
             >
               {t("proRequestList.subTabArchived")}
             </button>
           </div>
         )}
-      </div>
+      </header>
 
-      {!isAcceptingRequests ? (
-        <div className="flex flex-col items-center justify-center p-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-300 mt-4 text-center">
-          <span className="text-4xl mb-4 opacity-80">🔒</span>
-          <h2 className="text-lg font-bold text-gray-800 mb-2">
-            {t("proRequestList.vacationTitle")}
-          </h2>
-          <p className="text-sm text-gray-500 max-w-xs leading-relaxed mb-4">
-            {t("proRequestList.vacationDesc")}
-          </p>
-          <button
-            onClick={() => router.push("/profile")}
-            className="bg-gray-800 hover:bg-black text-white font-bold py-2 px-6 rounded-lg text-sm transition"
-          >
-            {t("proRequestList.vacationBtn")}
-          </button>
-        </div>
-      ) : (
-        <>
-          {/* 보관함 CS 방어 배너 */}
-          {filterType === "QUOTED" && quotedSubTab === "ARCHIVED" && (
-            <div className="bg-gray-50 border border-gray-200 text-gray-600 text-sm font-medium p-4 rounded-xl shadow-sm leading-relaxed sticky top-[140px] z-[5]">
-              {t("proRequestList.archiveBanner")}
-            </div>
-          )}
-          {requests.filter((req) => {
-            const isQuoted = quotedRequestIds.includes(req.request_id);
-            if (filterType === "NEW")
-              return !isQuoted && req.status !== "CANCELED"; // ── [핫픽스] 취소된 요청 제외 ──
-            if (filterType === "QUOTED") {
-              if (!isQuoted) return false;
-              const myQuote = proQuotes.find(
-                (q) => q.request_id === req.request_id,
-              );
-              const isAccepted = myQuote?.status === "ACCEPTED";
-              const isMatchedButNotMe = req.status === "MATCHED" && !isAccepted;
-              const isCanceled = req.status === "CANCELED";
-
-              // 48시간 만료 여부
-              const isExpired = req.created_at
-                ? new Date(req.created_at).getTime() + 48 * 60 * 60 * 1000 <=
-                  now
-                : false;
-
-              // 리뷰 작성 완료 여부
-              const isReviewed = reviewedRequestIds.has(req.request_id);
-
-              // ACCEPTED 후 30일 경과 여부 (updated_at 우선, 없을 시 created_at 폴백)
-              const matchedAt = req.updated_at
-                ? new Date(req.updated_at).getTime()
-                : new Date(req.created_at).getTime();
-              const is30DaysOver =
-                isAccepted && now - matchedAt > 30 * 24 * 60 * 60 * 1000;
-
-              const isArchived =
-                isMatchedButNotMe ||
-                isCanceled ||
-                isExpired ||
-                isReviewed ||
-                is30DaysOver;
-
-              if (quotedSubTab === "IN_PROGRESS") return !isArchived;
-              if (quotedSubTab === "ARCHIVED") {
-                if (!isArchived) return false;
-                // 7일 숨김: updated_at 우선, 없을 시 created_at 폴백
-                const baseTime = req.updated_at
-                  ? new Date(req.updated_at).getTime()
-                  : new Date(req.created_at).getTime();
-                if (now - baseTime > 7 * 24 * 60 * 60 * 1000) return false;
-                return true;
-              }
-            }
-            return true;
-          }).length === 0 ? (
-            <div className="text-center p-10 text-gray-500 bg-white rounded-xl shadow-sm border border-gray-100">
-              <p>
-                {filterType === "QUOTED" && quotedSubTab === "ARCHIVED"
-                  ? t("proRequestList.noArchived")
-                  : t("proRequestList.noRequests")}
-              </p>
-            </div>
-          ) : (
-            requests
-              .filter((req) => {
-                const isQuoted = quotedRequestIds.includes(req.request_id);
-                if (filterType === "NEW")
-                  return !isQuoted && req.status !== "CANCELED"; // ── [핫픽스] 취소된 요청 제외 ──
-                if (filterType === "QUOTED") {
-                  if (!isQuoted) return false;
-                  const myQuote = proQuotes.find(
-                    (q) => q.request_id === req.request_id,
-                  );
-                  const isAccepted = myQuote?.status === "ACCEPTED";
-                  const isMatchedButNotMe =
-                    req.status === "MATCHED" && !isAccepted;
-                  const isCanceled = req.status === "CANCELED";
-
-                  // 48시간 만료 여부
-                  const isExpired = req.created_at
-                    ? new Date(req.created_at).getTime() +
-                        48 * 60 * 60 * 1000 <=
-                      now
-                    : false;
-
-                  // 리뷰 작성 완료 여부
-                  const isReviewed = reviewedRequestIds.has(req.request_id);
-
-                  // ACCEPTED 후 30일 경과 여부 (updated_at 우선, 없을 시 created_at 폴백)
-                  const matchedAt = req.updated_at
-                    ? new Date(req.updated_at).getTime()
-                    : new Date(req.created_at).getTime();
-                  const is30DaysOver =
-                    isAccepted && now - matchedAt > 30 * 24 * 60 * 60 * 1000;
-
-                  const isArchived =
-                    isMatchedButNotMe ||
-                    isCanceled ||
-                    isExpired ||
-                    isReviewed ||
-                    is30DaysOver;
-
-                  if (quotedSubTab === "IN_PROGRESS") return !isArchived;
-                  if (quotedSubTab === "ARCHIVED") {
-                    if (!isArchived) return false;
-                    // 7일 숨김: updated_at 우선, 없을 시 created_at 폴백
-                    const baseTime = req.updated_at
-                      ? new Date(req.updated_at).getTime()
-                      : new Date(req.created_at).getTime();
-                    if (now - baseTime > 7 * 24 * 60 * 60 * 1000) return false;
-                    return true;
-                  }
-                }
-                return true;
-              })
-              .map((req) => {
-                const customerName =
-                  customerNameMap[req.customer_id] ||
-                  t("proRequestList.unknownCustomer");
-                const customerAvatar = customerAvatarMap[req.customer_id];
-                const expiresAt =
-                  new Date(req.created_at).getTime() + 48 * 60 * 60 * 1000;
-                const diffMs = expiresAt - now;
-                const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-                const diffMinutes = Math.floor(
-                  (diffMs % (1000 * 60 * 60)) / (1000 * 60),
-                );
-
-                const isExpired = diffMs <= 0;
-                const isHurrying = diffHours < 24 && !isExpired;
-
+      <div className="px-6 pt-4 space-y-3">
+        {!isAcceptingRequests ? (
+          <div className="flex flex-col items-center justify-center p-12 bg-[#211e26]/60 backdrop-blur-xl rounded-2xl border border-white/10 mt-4 text-center">
+            <span className="text-4xl mb-4 opacity-80">🔒</span>
+            <h2 className="text-lg font-black text-white/90 mb-2">
+              {t("proRequestList.vacationTitle")}
+            </h2>
+            <p className="text-sm text-white/50 max-w-xs leading-relaxed mb-4">
+              {t("proRequestList.vacationDesc")}
+            </p>
+            <button
+              onClick={() => router.push("/profile")}
+              className="bg-[#ff88b5] hover:bg-[#ff69a7] text-[#610034] font-black py-2 px-6 rounded-full text-sm transition shadow-lg shadow-[#ff88b5]/20"
+            >
+              {t("proRequestList.vacationBtn")}
+            </button>
+          </div>
+        ) : (
+          <>
+            {/* 보관함 CS 방어 배너 */}
+            {filterType === "QUOTED" && quotedSubTab === "ARCHIVED" && (
+              <div
+                className="flex gap-3 items-start text-sm leading-relaxed p-4 rounded-2xl"
+                style={{
+                  background: "rgba(39,36,45,0.85)",
+                  borderLeft: "3px solid #ff6ea9",
+                  borderTop: "1px solid rgba(255,255,255,0.06)",
+                  borderRight: "1px solid rgba(255,255,255,0.06)",
+                  borderBottom: "1px solid rgba(255,255,255,0.06)",
+                }}
+              >
+                <span
+                  className="material-symbols-outlined text-[#ff6ea9] shrink-0"
+                  style={{ fontSize: "1.1rem", marginTop: "1px" }}
+                >
+                  lightbulb
+                </span>
+                <p className="text-white/70">
+                  {t("proRequestList.archiveBanner")}
+                </p>
+              </div>
+            )}
+            {requests.filter((req) => {
+              const isQuoted = quotedRequestIds.includes(req.request_id);
+              if (filterType === "NEW")
+                return !isQuoted && req.status !== "CANCELED"; // ── [핫픽스] 취소된 요청 제외 ──
+              if (filterType === "QUOTED") {
+                if (!isQuoted) return false;
                 const myQuote = proQuotes.find(
                   (q) => q.request_id === req.request_id,
                 );
                 const isAccepted = myQuote?.status === "ACCEPTED";
                 const isMatchedButNotMe =
                   req.status === "MATCHED" && !isAccepted;
-                // [소급 방어] 보너스 정책 도입일 이후 생성된 미열람 견적만 환급 UI 표시
-                const BONUS_POLICY_DATE = new Date("2026-03-02T00:00:00Z");
-                const isUnreadRefund =
-                  isMatchedButNotMe &&
-                  myQuote &&
-                  myQuote.is_read === false &&
-                  new Date(myQuote.created_at) >= BONUS_POLICY_DATE;
+                const isCanceled = req.status === "CANCELED";
+
+                // 48시간 만료 여부
+                const isExpired = req.created_at
+                  ? new Date(req.created_at).getTime() + 48 * 60 * 60 * 1000 <=
+                    now
+                  : false;
+
+                // 리뷰 작성 완료 여부
                 const isReviewed = reviewedRequestIds.has(req.request_id);
 
-                const isClosed =
+                // ACCEPTED 후 30일 경과 여부 (updated_at 우선, 없을 시 created_at 폴백)
+                const matchedAt = req.updated_at
+                  ? new Date(req.updated_at).getTime()
+                  : new Date(req.created_at).getTime();
+                const is30DaysOver =
+                  isAccepted && now - matchedAt > 30 * 24 * 60 * 60 * 1000;
+
+                const isArchived =
+                  isMatchedButNotMe ||
+                  isCanceled ||
                   isExpired ||
-                  req.status === "MATCHED" ||
-                  req.quote_count >= (req.max_quotes || 5);
-                const isReadLocally = readRequestIds.has(req.request_id);
+                  isReviewed ||
+                  is30DaysOver;
 
-                return (
-                  <div
-                    key={req.request_id}
-                    className={`bg-white p-4 rounded-xl shadow-sm border transition transform hover:-translate-y-1 ${isExpired || isMatchedButNotMe ? "border-gray-200 opacity-70" : isReadLocally && !myQuote ? "bg-gray-50 border-gray-200 opacity-80" : "border-blue-100"}`}
-                  >
-                    <div className="flex justify-between items-start mb-2">
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden border border-gray-200">
-                          {customerAvatar ? (
-                            <img
-                              src={customerAvatar}
-                              alt="Customer Profile"
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <svg
-                              className="w-5 h-5 text-gray-400"
-                              fill="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-                            </svg>
-                          )}
-                        </div>
-                        <div>
-                          <h2 className="text-lg font-bold">
-                            {customerName}
-                            {t("proRequestList.requestTitle")}
-                          </h2>
-                          <p className="text-sm text-gray-500">
-                            {req.categories?.name || req.service_type
-                              ? `${req.categories?.name || req.service_type} | `
-                              : ""}
-                            {req.region
-                              ? req.region
-                              : `카테고리: ${req.categories?.name || req.category_id} | 지역: ${req.region_id}`}
-                          </p>
-                          {customerVerifiedMap[req.customer_id] && (
-                            <span className="inline-flex items-center gap-1 bg-green-50 text-green-700 text-xs font-bold px-2 py-0.5 rounded-full border border-green-200 mt-1">
-                              {t("proRequestList.verifiedCustomer")}
-                            </span>
-                          )}
-                          {/* ── [확장] 3-15-0 어뷰징 경고 배지 (고수에게만 노출) ── */}
-                          {flaggedCustomerIds.has(req.customer_id) && (
-                            <span className="inline-flex items-center gap-1 bg-red-50 text-red-600 text-xs font-bold px-2 py-0.5 rounded-full border border-red-200 mt-1 animate-pulse">
-                              {t("proRequestList.abuseWarning")}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <span
-                          className={`inline-block font-bold px-3 py-1 rounded-full text-sm shadow-sm ${isClosed ? "bg-gray-100 text-gray-500 border-gray-200" : "bg-red-50 text-red-600 border-red-200 animate-pulse"}`}
-                        >
-                          💡 {req.quote_count} / {req.max_quotes || 5}명{" "}
-                          {isClosed
-                            ? t("proRequestList.bidClosed")
-                            : t("proRequestList.bidding")}
-                        </span>
-                        <div
-                          className={`text-xs mt-1 font-bold ${isExpired || isMatchedButNotMe ? "text-gray-500" : isHurrying ? "text-red-500 animate-pulse" : "text-blue-500"}`}
-                        >
-                          {req.status === "MATCHED"
-                            ? t("proRequestList.matched")
-                            : isExpired
-                              ? t("proRequestList.expired")
-                              : `${diffHours}${t("proRequestList.hours")} ${diffMinutes}${t("proRequestList.minutes")} ${t("proRequestList.timeLeft")}`}
-                        </div>
-                      </div>
-                    </div>
-                    {isReviewed ? (
-                      <div className="mt-3 bg-gray-200 text-gray-700 px-3 py-2 rounded-lg text-sm font-bold flex items-center gap-2 border border-gray-300">
-                        <span>✅</span> {t("proRequestList.dealDone")}
-                      </div>
-                    ) : isAccepted ? (
-                      <div className="mt-3 bg-green-100 text-green-700 px-3 py-2 rounded-lg text-sm font-bold flex items-center gap-2 border border-green-200">
-                        <span>🎉</span> {t("proRequestList.matchSuccess")}
-                      </div>
-                    ) : isMatchedButNotMe ? (
-                      <div
-                        className={`mt-3 px-3 py-2 rounded-lg text-sm font-bold flex items-center gap-2 border ${isUnreadRefund ? "bg-green-50 text-green-700 border-green-200" : "bg-gray-100 text-gray-500 border-gray-200"}`}
-                      >
-                        <span>{isUnreadRefund ? "🎁" : "🔒"}</span>
-                        {isUnreadRefund
-                          ? t("proRequestList.unreadRefund")
-                          : t("proRequestList.closedOther")}
-                      </div>
-                    ) : myQuote ? (
-                      <div className="mt-3 bg-blue-50 text-blue-700 px-3 py-2 rounded-lg text-sm font-bold flex items-center gap-2 border border-blue-200">
-                        <span>✅</span> {t("proRequestList.alreadySent")}
-                      </div>
-                    ) : null}
-
-                    <button
-                      onClick={() => handleRequestClick(req.request_id)}
-                      disabled={
-                        (isExpired && !isAccepted) ||
-                        isMatchedButNotMe ||
-                        req.status === "CANCELED"
-                      }
-                      className={`w-full min-h-[48px] mt-4 font-bold py-3 rounded-xl transition text-sm break-keep ${
-                        (isExpired && !isAccepted) ||
-                        isMatchedButNotMe ||
-                        req.status === "CANCELED"
-                          ? isUnreadRefund
-                            ? "bg-green-100 text-green-600 cursor-not-allowed shadow-none border border-green-200"
-                            : "bg-gray-300 text-gray-500 cursor-not-allowed shadow-none"
-                          : !myQuote && !isAccepted
-                            ? "bg-blue-600 hover:bg-blue-700 text-white shadow-md"
-                            : "bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
-                      }`}
+                if (quotedSubTab === "IN_PROGRESS") return !isArchived;
+                if (quotedSubTab === "ARCHIVED") {
+                  if (!isArchived) return false;
+                  // 7일 숨김: updated_at 우선, 없을 시 created_at 폴백
+                  const baseTime = req.updated_at
+                    ? new Date(req.updated_at).getTime()
+                    : new Date(req.created_at).getTime();
+                  if (now - baseTime > 7 * 24 * 60 * 60 * 1000) return false;
+                  return true;
+                }
+              }
+              return true;
+            }).length === 0 ? (
+              filterType === "QUOTED" && quotedSubTab === "ARCHIVED" ? (
+                <div className="flex flex-col items-center justify-center py-12 w-full mt-2">
+                  {/* glow 장식 */}
+                  <div className="relative flex flex-col items-center">
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-[#ff6ea9]/8 rounded-full blur-[60px] pointer-events-none" />
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-[#a68cff]/8 rounded-full blur-[40px] pointer-events-none" />
+                    {/* 아이콘 카드 */}
+                    <div
+                      className="relative z-10 w-20 h-20 mb-6 rounded-2xl flex items-center justify-center border border-white/10"
+                      style={{
+                        background: "rgba(39,36,45,0.7)",
+                        backdropFilter: "blur(20px)",
+                        WebkitBackdropFilter: "blur(20px)",
+                        boxShadow: "0 0 32px rgba(255,110,169,0.12)",
+                      }}
                     >
-                      {isAccepted
-                        ? t("proRequestList.btnDetail")
-                        : req.status === "CANCELED"
-                          ? t("proRequestList.btnCanceled")
-                          : isMatchedButNotMe
-                            ? isUnreadRefund
-                              ? t("proRequestList.btnUnreadRefund")
-                              : t("proRequestList.btnClosedOther")
-                            : req.quote_count >= (req.max_quotes || 5) &&
-                                !myQuote
-                              ? t("proRequestList.btnFull")
-                              : isExpired
-                                ? t("proRequestList.btnExpired")
-                                : myQuote
-                                  ? t("proRequestList.btnDetail")
-                                  : isReadLocally
-                                    ? t("proRequestList.btnSend")
-                                    : t("proRequestList.btnViewNew")}
+                      <span
+                        className="material-symbols-outlined text-[#ff6ea9]/70"
+                        style={{ fontSize: "2rem" }}
+                      >
+                        inventory_2
+                      </span>
+                    </div>
+                    {/* 텍스트 */}
+                    <h3 className="relative z-10 text-lg font-bold text-white/80 mb-2 tracking-tight">
+                      {t("proRequestList.noArchived")}
+                    </h3>
+                    <p className="relative z-10 text-sm text-white/40 text-center max-w-[240px] leading-relaxed">
+                      {t("proRequestList.noArchivedSubtext")}
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                /* 빈 상태: Stitch Dark Pulse 디자인 */
+                <div className="flex flex-col items-center justify-center py-8 w-full">
+                  <div className="relative w-full aspect-square max-w-sm flex items-center justify-center">
+                    {/* 장식 glow */}
+                    <div className="absolute inset-0 bg-[#ff88b5]/5 rounded-full blur-[100px]" />
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[#a68cff]/5 rounded-full blur-[80px]" />
+                    {/* 중앙 카드 */}
+                    <div className="relative z-10 flex flex-col items-center text-center">
+                      <div
+                        className="w-32 h-32 mb-8 rounded-xl flex items-center justify-center border border-white/10 -rotate-6"
+                        style={{
+                          background: "rgba(39,36,45,0.6)",
+                          backdropFilter: "blur(20px)",
+                          WebkitBackdropFilter: "blur(20px)",
+                          boxShadow: "0 0 40px rgba(255,136,181,0.15)",
+                        }}
+                      >
+                        <span
+                          className="material-symbols-outlined text-[#ff88b5]"
+                          style={{
+                            fontSize: "60px",
+                            fontVariationSettings: "'FILL' 1, 'wght' 400",
+                          }}
+                        >
+                          assignment_late
+                        </span>
+                      </div>
+                      <h2 className="text-2xl font-black text-white/90 mb-3 tracking-tight">
+                        {t("proRequestList.emptyTitle")}
+                      </h2>
+                      <p className="text-white/50 max-w-[280px] leading-relaxed text-sm">
+                        {t("proRequestList.emptySubtext")}
+                      </p>
+                    </div>
+                    {/* 부동 장식 카드 */}
+                    <div
+                      className="absolute top-10 right-4 w-12 h-12 rounded-full flex items-center justify-center opacity-40 border border-[#ff88b5]/20"
+                      style={{
+                        background: "rgba(39,36,45,0.6)",
+                        backdropFilter: "blur(20px)",
+                        WebkitBackdropFilter: "blur(20px)",
+                      }}
+                    >
+                      <span
+                        className="material-symbols-outlined text-[#ff88b5]"
+                        style={{ fontSize: "20px" }}
+                      >
+                        bolt
+                      </span>
+                    </div>
+                    <div
+                      className="absolute bottom-20 left-4 w-16 h-16 rounded-2xl flex items-center justify-center opacity-30 rotate-12 border border-[#a68cff]/20"
+                      style={{
+                        background: "rgba(39,36,45,0.6)",
+                        backdropFilter: "blur(20px)",
+                        WebkitBackdropFilter: "blur(20px)",
+                      }}
+                    >
+                      <span
+                        className="material-symbols-outlined text-[#a68cff]"
+                        style={{ fontSize: "24px" }}
+                      >
+                        history
+                      </span>
+                    </div>
+                  </div>
+                  {/* Refresh Feed 버튼 */}
+                  <div className="mt-2 w-full max-w-xs">
+                    <button
+                      onClick={() => setRefreshTrigger((prev) => prev + 1)}
+                      disabled={isRefreshing}
+                      className="w-full py-4 rounded-full font-black text-base text-[#610034] transition-all active:scale-95 shadow-xl shadow-[#ff88b5]/10 flex items-center justify-center gap-2 disabled:opacity-70"
+                      style={{
+                        background:
+                          "linear-gradient(to right, #ff88b5, #ff6ea9)",
+                      }}
+                    >
+                      {isRefreshing ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-[#610034] border-t-transparent rounded-full animate-spin" />
+                          <span>{t("proRequestList.refreshFeed")}</span>
+                        </>
+                      ) : (
+                        t("proRequestList.refreshFeed")
+                      )}
                     </button>
                   </div>
-                );
-              })
-          )}
-        </>
-      )}
+                </div>
+              )
+            ) : (
+              requests
+                .filter((req) => {
+                  const isQuoted = quotedRequestIds.includes(req.request_id);
+                  if (filterType === "NEW")
+                    return !isQuoted && req.status !== "CANCELED"; // ── [핫픽스] 취소된 요청 제외 ──
+                  if (filterType === "QUOTED") {
+                    if (!isQuoted) return false;
+                    const myQuote = proQuotes.find(
+                      (q) => q.request_id === req.request_id,
+                    );
+                    const isAccepted = myQuote?.status === "ACCEPTED";
+                    const isMatchedButNotMe =
+                      req.status === "MATCHED" && !isAccepted;
+                    const isCanceled = req.status === "CANCELED";
+
+                    // 48시간 만료 여부
+                    const isExpired = req.created_at
+                      ? new Date(req.created_at).getTime() +
+                          48 * 60 * 60 * 1000 <=
+                        now
+                      : false;
+
+                    // 리뷰 작성 완료 여부
+                    const isReviewed = reviewedRequestIds.has(req.request_id);
+
+                    // ACCEPTED 후 30일 경과 여부 (updated_at 우선, 없을 시 created_at 폴백)
+                    const matchedAt = req.updated_at
+                      ? new Date(req.updated_at).getTime()
+                      : new Date(req.created_at).getTime();
+                    const is30DaysOver =
+                      isAccepted && now - matchedAt > 30 * 24 * 60 * 60 * 1000;
+
+                    const isArchived =
+                      isMatchedButNotMe ||
+                      isCanceled ||
+                      isExpired ||
+                      isReviewed ||
+                      is30DaysOver;
+
+                    if (quotedSubTab === "IN_PROGRESS") return !isArchived;
+                    if (quotedSubTab === "ARCHIVED") {
+                      if (!isArchived) return false;
+                      // 7일 숨김: updated_at 우선, 없을 시 created_at 폴백
+                      const baseTime = req.updated_at
+                        ? new Date(req.updated_at).getTime()
+                        : new Date(req.created_at).getTime();
+                      if (now - baseTime > 7 * 24 * 60 * 60 * 1000)
+                        return false;
+                      return true;
+                    }
+                  }
+                  return true;
+                })
+                .map((req) => {
+                  const customerName =
+                    customerNameMap[req.customer_id] ||
+                    t("proRequestList.unknownCustomer");
+                  const customerAvatar = customerAvatarMap[req.customer_id];
+                  const expiresAt =
+                    new Date(req.created_at).getTime() + 48 * 60 * 60 * 1000;
+                  const diffMs = expiresAt - now;
+                  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+                  const diffMinutes = Math.floor(
+                    (diffMs % (1000 * 60 * 60)) / (1000 * 60),
+                  );
+
+                  const isExpired = diffMs <= 0;
+                  const isHurrying = diffHours < 24 && !isExpired;
+
+                  const myQuote = proQuotes.find(
+                    (q) => q.request_id === req.request_id,
+                  );
+                  const isAccepted = myQuote?.status === "ACCEPTED";
+                  const isMatchedButNotMe =
+                    req.status === "MATCHED" && !isAccepted;
+                  // [소급 방어] 보너스 정책 도입일 이후 생성된 미열람 견적만 환급 UI 표시
+                  const BONUS_POLICY_DATE = new Date("2026-03-02T00:00:00Z");
+                  const isUnreadRefund =
+                    isMatchedButNotMe &&
+                    myQuote &&
+                    myQuote.is_read === false &&
+                    new Date(myQuote.created_at) >= BONUS_POLICY_DATE;
+                  const isReviewed = reviewedRequestIds.has(req.request_id);
+
+                  const isClosed =
+                    isExpired ||
+                    req.status === "MATCHED" ||
+                    req.quote_count >= (req.max_quotes || 5);
+                  const isReadLocally = readRequestIds.has(req.request_id);
+
+                  return (
+                    <div
+                      key={req.request_id}
+                      className={`p-4 rounded-2xl border transition-all duration-200 hover:-translate-y-0.5 ${
+                        isExpired || isMatchedButNotMe
+                          ? "bg-white/[0.02] border-white/5 opacity-60"
+                          : isReadLocally && !myQuote
+                            ? "bg-white/[0.03] border-white/5 opacity-70"
+                            : "bg-[#211e26]/60 border-[#ff88b5]/15 backdrop-blur-xl"
+                      }`}
+                      style={{ backdropFilter: "blur(20px)" }}
+                    >
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="flex items-center gap-3 mb-2">
+                          <div className="w-10 h-10 bg-[#27242d] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden border border-white/10">
+                            {customerAvatar ? (
+                              <img
+                                src={customerAvatar}
+                                alt="Customer Profile"
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <svg
+                                className="w-5 h-5 text-white/30"
+                                fill="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                              </svg>
+                            )}
+                          </div>
+                          <div>
+                            <h2 className="text-base font-black text-white/90">
+                              {customerName}
+                              {t("proRequestList.requestTitle")}
+                            </h2>
+                            <p className="text-sm text-white/40">
+                              {req.categories?.name || req.service_type
+                                ? `${req.categories?.name || req.service_type} | `
+                                : ""}
+                              {req.region
+                                ? req.region
+                                : `카테고리: ${req.categories?.name || req.category_id} | 지역: ${req.region_id}`}
+                            </p>
+                            {customerVerifiedMap[req.customer_id] && (
+                              <span className="inline-flex items-center gap-1 bg-[#b5ffc2]/10 text-[#b5ffc2] text-xs font-bold px-2 py-0.5 rounded-full border border-[#b5ffc2]/20 mt-1">
+                                {t("proRequestList.verifiedCustomer")}
+                              </span>
+                            )}
+                            {/* ── [확장] 3-15-0 어뷰징 경고 배지 (고수에게만 노출) ── */}
+                            {flaggedCustomerIds.has(req.customer_id) && (
+                              <span className="inline-flex items-center gap-1 bg-red-500/10 text-red-400 text-xs font-bold px-2 py-0.5 rounded-full border border-red-500/20 mt-1 animate-pulse">
+                                {t("proRequestList.abuseWarning")}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <span
+                            className={`inline-block font-bold px-3 py-1 rounded-full text-xs ${
+                              isClosed
+                                ? "bg-white/5 text-white/40 border border-white/10"
+                                : "bg-[#ff88b5]/10 text-[#ff88b5] border border-[#ff88b5]/20 animate-pulse"
+                            }`}
+                          >
+                            💡 {req.quote_count} / {req.max_quotes || 5}명{" "}
+                            {isClosed
+                              ? t("proRequestList.bidClosed")
+                              : t("proRequestList.bidding")}
+                          </span>
+                          <div
+                            className={`text-xs mt-1 font-bold ${
+                              isExpired || isMatchedButNotMe
+                                ? "text-white/30"
+                                : isHurrying
+                                  ? "text-[#ff88b5] animate-pulse"
+                                  : "text-[#a68cff]"
+                            }`}
+                          >
+                            {req.status === "MATCHED"
+                              ? t("proRequestList.matched")
+                              : isExpired
+                                ? t("proRequestList.expired")
+                                : `${diffHours}${t("proRequestList.hours")} ${diffMinutes}${t("proRequestList.minutes")} ${t("proRequestList.timeLeft")}`}
+                          </div>
+                        </div>
+                      </div>
+                      {isReviewed ? (
+                        <div className="mt-3 bg-white/5 text-white/50 px-3 py-2 rounded-xl text-sm font-bold flex items-center gap-2 border border-white/10">
+                          <span>✅</span> {t("proRequestList.dealDone")}
+                        </div>
+                      ) : isAccepted ? (
+                        <div className="mt-3 bg-[#b5ffc2]/10 text-[#b5ffc2] px-3 py-2 rounded-xl text-sm font-bold flex items-center gap-2 border border-[#b5ffc2]/20">
+                          <span>🎉</span> {t("proRequestList.matchSuccess")}
+                        </div>
+                      ) : isMatchedButNotMe ? (
+                        <div
+                          className={`mt-3 px-3 py-2 rounded-xl text-sm font-bold flex items-center gap-2 border ${
+                            isUnreadRefund
+                              ? "bg-[#b5ffc2]/10 text-[#b5ffc2] border-[#b5ffc2]/20"
+                              : "bg-white/5 text-white/40 border-white/10"
+                          }`}
+                        >
+                          <span>{isUnreadRefund ? "🎁" : "🔒"}</span>
+                          {isUnreadRefund
+                            ? t("proRequestList.unreadRefund")
+                            : t("proRequestList.closedOther")}
+                        </div>
+                      ) : myQuote ? (
+                        <div className="mt-3 bg-[#a68cff]/10 text-[#a68cff] px-3 py-2 rounded-xl text-sm font-bold flex items-center gap-2 border border-[#a68cff]/20">
+                          <span>✅</span> {t("proRequestList.alreadySent")}
+                        </div>
+                      ) : null}
+
+                      <button
+                        onClick={() => handleRequestClick(req.request_id)}
+                        disabled={
+                          (isExpired && !isAccepted) ||
+                          isMatchedButNotMe ||
+                          req.status === "CANCELED"
+                        }
+                        className={`w-full min-h-[48px] mt-4 font-black py-3 rounded-xl transition text-sm break-keep ${
+                          (isExpired && !isAccepted) ||
+                          isMatchedButNotMe ||
+                          req.status === "CANCELED"
+                            ? isUnreadRefund
+                              ? "bg-[#b5ffc2]/10 text-[#b5ffc2] cursor-not-allowed border border-[#b5ffc2]/20"
+                              : "bg-white/5 text-white/30 cursor-not-allowed border border-white/10"
+                            : !myQuote && !isAccepted
+                              ? "bg-[#ff88b5] hover:bg-[#ff69a7] text-[#610034] shadow-lg shadow-[#ff88b5]/20"
+                              : "bg-[#ff88b5]/80 hover:bg-[#ff88b5] text-[#610034] shadow-md shadow-[#ff88b5]/10"
+                        }`}
+                      >
+                        {isAccepted
+                          ? t("proRequestList.btnDetail")
+                          : req.status === "CANCELED"
+                            ? t("proRequestList.btnCanceled")
+                            : isMatchedButNotMe
+                              ? isUnreadRefund
+                                ? t("proRequestList.btnUnreadRefund")
+                                : t("proRequestList.btnClosedOther")
+                              : req.quote_count >= (req.max_quotes || 5) &&
+                                  !myQuote
+                                ? t("proRequestList.btnFull")
+                                : isExpired
+                                  ? t("proRequestList.btnExpired")
+                                  : myQuote
+                                    ? t("proRequestList.btnDetail")
+                                    : isReadLocally
+                                      ? t("proRequestList.btnSend")
+                                      : t("proRequestList.btnViewNew")}
+                      </button>
+                    </div>
+                  );
+                })
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }

@@ -560,6 +560,25 @@ export default function ClientLayout({
             {(!isSpecialPage || (isLandingPage && !!userId)) && !isChatRoom && (
               <div className="lg:hidden sticky top-0 z-[60] w-full bg-[#0f0d13] border-b border-white/10 shrink-0">
                 <div className="flex justify-end items-center px-4 py-3 gap-3">
+                  {isProUser && (
+                    <button
+                      onClick={() => router.push("/pro/wallet")}
+                      aria-label={t("pcTopNav.wallet")}
+                      className="relative transition-colors text-white/70 hover:text-white"
+                    >
+                      <span
+                        className="material-symbols-outlined text-[22px]"
+                        style={{
+                          fontVariationSettings:
+                            currentPath === "/pro/wallet"
+                              ? "'FILL' 1"
+                              : "'FILL' 0",
+                        }}
+                      >
+                        account_balance_wallet
+                      </span>
+                    </button>
+                  )}
                   <button
                     onClick={() => router.push("/notifications")}
                     className="relative text-white/70 hover:text-white transition-colors"

@@ -100,26 +100,61 @@ export default function PCTopNav({ isFixed = false }: { isFixed?: boolean }) {
           );
         })}
 
+        {/* 지갑 아이콘 (PRO 전용) */}
+        {navState.isProUser && (
+          <button
+            onClick={() => router.push("/pro/wallet")}
+            className="flex items-center space-x-2 transition-colors relative text-white/50 hover:text-white/80"
+          >
+            <div className="relative text-xl">
+              <span
+                className="material-symbols-outlined text-[22px]"
+                style={{
+                  fontVariationSettings:
+                    pathname === "/pro/wallet" ? "'FILL' 1" : "'FILL' 0",
+                }}
+              >
+                account_balance_wallet
+              </span>
+            </div>
+            <span className="text-sm tracking-tight">
+              {t("pcTopNav.wallet")}
+            </span>
+          </button>
+        )}
+
         {/* 알림 아이콘 */}
         <button
           onClick={() => router.push("/notifications")}
-          className="relative text-white/70 hover:text-white transition-colors"
+          className={`flex items-center space-x-2 transition-colors relative ${
+            pathname === "/notifications"
+              ? "text-[#ff88b5]"
+              : "text-white/50 hover:text-white/80"
+          }`}
         >
-          <span
-            className="material-symbols-outlined text-[22px]"
-            style={{
-              fontVariationSettings:
-                navState.unreadNotifsCount > 0 ? "'FILL' 1" : "'FILL' 0",
-            }}
-          >
-            notifications
-          </span>
-          {navState.unreadNotifsCount > 0 && (
-            <span className="absolute -top-1 -right-1 flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-[#0f0d13]"></span>
+          <div className="relative text-xl">
+            <span
+              className="material-symbols-outlined text-[22px]"
+              style={{
+                fontVariationSettings:
+                  pathname === "/notifications" ||
+                  navState.unreadNotifsCount > 0
+                    ? "'FILL' 1"
+                    : "'FILL' 0",
+              }}
+            >
+              notifications
             </span>
-          )}
+            {navState.unreadNotifsCount > 0 && (
+              <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-[#0f0d13]"></span>
+              </span>
+            )}
+          </div>
+          <span className="text-sm tracking-tight">
+            {t("pcTopNav.notifications")}
+          </span>
         </button>
 
         {navState.isAdminUser && (

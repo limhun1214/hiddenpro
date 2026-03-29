@@ -49,7 +49,6 @@ export default function ProWalletPage() {
       }
       setCurrentUser({ id: sessionUser.id });
 
-      // 잔액 조회
       const { data: profileData, error: profileError } = await supabase
         .from("pro_profiles")
         .select("current_cash, bonus_cash")
@@ -64,7 +63,6 @@ export default function ProWalletPage() {
         setBonusBalance(profileData.bonus_cash || 0);
       }
 
-      // 원장 내역 조회
       const { data: ledgerData, error: ledgerError } = await supabase
         .from("cash_ledger")
         .select("*")
@@ -77,7 +75,6 @@ export default function ProWalletPage() {
         setLedger(ledgerData);
       }
 
-      // 출금 신청 내역 조회
       const { data: payoutData } = await supabase
         .from("payout_requests")
         .select("*")
@@ -98,8 +95,6 @@ export default function ProWalletPage() {
 
   const handleChargeMock = async (amount: number) => {
     if (!currentUser?.id || balance === null) return;
-
-    // 1단계: 결제 안내 모달 표시 후 실제 충전은 확인 콜백에서 처리
     setChargeAmountPending(amount);
     setInfoModal({
       icon: "💳",
@@ -195,7 +190,6 @@ export default function ProWalletPage() {
       setPayoutAccountNumber("");
       setPayoutAccountHolder("");
 
-      // 출금 내역 갱신
       const { data: payoutData } = await supabase
         .from("payout_requests")
         .select("*")
@@ -210,126 +204,329 @@ export default function ProWalletPage() {
     }
   };
 
+  const getTxMeta = (
+    item: any,
+  ): { label: string; icon: string; iconColor: string } => {
+    const type = item.tx_type;
+    if (type === "CHARGE")
+      return {
+        label: t("wallet.txCharge"),
+        icon: "payments",
+        iconColor: "text-[#ff88b5]",
+      };
+    if (type === "DEDUCT_QUOTE")
+      return {
+        label: t("wallet.txDeductQuote"),
+        icon: "shopping_bag",
+        iconColor: "text-[#aea9b2]",
+      };
+    if (type === "REFUND")
+      return {
+        label: t("wallet.txRefund"),
+        icon: "undo",
+        iconColor: "text-[#ff88b5]",
+      };
+    if (type === "BONUS") {
+      const label = item.description?.includes("Coupon")
+        ? t("wallet.txCouponRedeemed")
+        : item.description?.includes("Referral")
+          ? t("wallet.txReferralBonus")
+          : t("wallet.txBonus");
+      return { label, icon: "add_circle", iconColor: "text-[#ff88b5]" };
+    }
+    if (type === "BONUS_REFUND")
+      return {
+        label: t("wallet.txBonusRefund"),
+        icon: "undo",
+        iconColor: "text-[#ff88b5]",
+      };
+    if (type === "ADMIN_CHARGE")
+      return {
+        label: t("wallet.txAdminCharge"),
+        icon: "admin_panel_settings",
+        iconColor: "text-[#a68cff]",
+      };
+    if (type === "ADMIN_REFUND")
+      return {
+        label: t("wallet.txAdminRefund"),
+        icon: "undo",
+        iconColor: "text-[#a68cff]",
+      };
+    if (type === "DEDUCT_BONUS_QUOTE")
+      return {
+        label: t("wallet.txDeductBonusQuote"),
+        icon: "shopping_bag",
+        iconColor: "text-[#aea9b2]",
+      };
+    if (type === "ADMIN_BONUS_CHARGE")
+      return {
+        label: t("wallet.txAdminBonusCharge"),
+        icon: "admin_panel_settings",
+        iconColor: "text-[#a68cff]",
+      };
+    if (type === "ADMIN_BONUS_REFUND")
+      return {
+        label: t("wallet.txAdminBonusRefund"),
+        icon: "undo",
+        iconColor: "text-[#a68cff]",
+      };
+    if (type === "SIGNUP_BONUS")
+      return {
+        label: t("wallet.txSignupBonus"),
+        icon: "card_giftcard",
+        iconColor: "text-[#a68cff]",
+      };
+    return { label: type, icon: "receipt", iconColor: "text-[#aea9b2]" };
+  };
+
+  const filteredLedger = ledger.filter((item) => {
+    if (filterType === "ALL") return true;
+    if (filterType === "CHARGE") return item.amount > 0;
+    if (filterType === "USAGE") return item.amount < 0;
+    return true;
+  });
+
+  const totalIn = ledger
+    .filter((i) => i.amount > 0)
+    .reduce((s, i) => s + Number(i.amount), 0);
+  const totalOut = ledger
+    .filter((i) => i.amount < 0)
+    .reduce((s, i) => s + Math.abs(Number(i.amount)), 0);
+
   return (
-    <div className="flex flex-col items-center justify-start min-h-screen bg-gray-50 p-4 pt-4 sm:pt-8">
-      <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-sm text-center border">
-        <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-            <circle cx="18" cy="18" r="13" fill="#3B82F6" opacity="0.12" />
-            <circle
-              cx="18"
-              cy="18"
-              r="13"
-              stroke="#3B82F6"
-              strokeWidth="1.5"
-              fill="none"
-            />
-            <circle
-              cx="18"
-              cy="18"
-              r="9"
-              stroke="#3B82F6"
-              strokeWidth="1"
-              fill="none"
-              opacity="0.4"
-            />
-            <path
-              d="M13.5 14v8M22.5 14v8M13.5 18h9"
-              stroke="#1D4ED8"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-            />
-          </svg>
-        </div>
-        <h1 className="text-2xl font-bold text-gray-800 mb-2">
-          {t("wallet.title")}
-        </h1>
-        <p className="text-gray-500 mb-6">{t("wallet.subtitle")}</p>
-        {errorMsg && (
-          <div className="text-red-500 font-bold mb-4 bg-red-50 p-3 rounded-lg border border-red-200">
-            {errorMsg}
-          </div>
-        )}
-        <div className="bg-gray-50 p-4 rounded-xl mb-2 border border-gray-100">
-          <span className="text-3xl font-black text-blue-600">
+    <div className="min-h-screen bg-[#0f0d13] text-[#f8f1fb] pb-32">
+      <main className="px-6 space-y-8 pt-6">
+        {/* ── Balance Hero ── */}
+        <section className="flex flex-col items-center text-center space-y-3 py-6">
+          <p className="text-[#aea9b2] font-medium tracking-wide text-sm">
+            {t("wallet.title")}
+          </p>
+          <h2 className="font-extrabold text-5xl text-[#ff88b5] tracking-tighter">
             {loading
               ? "..."
               : balance !== null
                 ? (balance + bonusBalance).toLocaleString()
                 : "0"}{" "}
-            <span className="text-lg">{t("wallet.cashUnit")}</span>
-          </span>
-        </div>
-        {!loading && bonusBalance > 0 && (
-          <div className="flex justify-center gap-3 mb-4 text-xs">
-            <span className="bg-blue-50 text-blue-600 px-3 py-1 rounded-full font-bold border border-blue-100">
-              {t("wallet.realBalance")} {(balance || 0).toLocaleString()}
-            </span>
-            <span className="bg-green-50 text-green-600 px-3 py-1 rounded-full font-bold border border-green-100">
-              {t("wallet.bonusBalance")} {bonusBalance.toLocaleString()}
-            </span>
+            <span className="text-2xl font-bold">{t("wallet.cashUnit")}</span>
+          </h2>
+
+          {!loading && bonusBalance > 0 && (
+            <div className="flex justify-center gap-3 text-xs">
+              <span className="bg-[#151219] text-[#aea9b2] px-3 py-1 rounded-full font-bold border border-[#4a474e]/30">
+                {t("wallet.realBalance")} {(balance || 0).toLocaleString()}
+              </span>
+              <span className="bg-[#151219] text-[#b5ffc2] px-3 py-1 rounded-full font-bold border border-[#4a474e]/30">
+                🎁 {t("wallet.bonusBalance")} {bonusBalance.toLocaleString()}
+              </span>
+            </div>
+          )}
+
+          <div className="pt-2 w-full">
+            <button
+              onClick={() => setIsChargeModalOpen(true)}
+              className="w-full py-4 bg-gradient-to-r from-[#ff88b5] to-[#ff6ea9] text-[#610034] font-bold text-lg rounded-full shadow-[0_8px_30px_rgba(255,136,181,0.25)] active:scale-[0.96] transition-transform"
+            >
+              {t("wallet.chargeBtn")}
+            </button>
+          </div>
+        </section>
+
+        {/* ── Error ── */}
+        {errorMsg && (
+          <div className="text-[#ff6e84] font-bold p-3 rounded-xl border border-[#d73357]/30 bg-[#d73357]/10">
+            {errorMsg}
           </div>
         )}
-        {/* 추천인 초대 배너 */}
-        <div
+
+        {/* ── Referral Banner (Bento Style) ── */}
+        <section
           onClick={() => router.push("/referral")}
-          className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-xl p-4 mb-4 cursor-pointer hover:from-blue-600 hover:to-indigo-600 transition-all shadow-md"
+          className="relative overflow-hidden rounded-xl bg-[#211e26] p-6 cursor-pointer"
         >
-          <p className="font-bold text-sm">🎁 {t("referral.inviteBanner")}</p>
-          <p className="text-xs text-blue-100 mt-0.5">
-            Tap to invite friends →
-          </p>
-        </div>
-        <button
-          onClick={() => setIsChargeModalOpen(true)}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-md transition mb-3"
-        >
-          {t("wallet.chargeBtn")}
-        </button>
-        {false && (
-          <button
-            onClick={() => setIsPayoutModalOpen(true)}
-            disabled={!balance || (balance ?? 0) <= 0}
-            className={`w-full font-bold py-4 rounded-xl transition mb-6 ${!balance || (balance ?? 0) <= 0 ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-green-600 hover:bg-green-700 text-white shadow-md"}`}
+          <div className="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-[#a68cff]/20 blur-3xl rounded-full pointer-events-none" />
+          <div className="relative z-10 space-y-4">
+            <div className="flex items-start justify-between">
+              <div className="space-y-1">
+                <h3 className="font-bold text-xl leading-tight">
+                  {t("referral.inviteBanner")}
+                </h3>
+                <p className="text-[#aea9b2] text-sm max-w-[200px]">
+                  Spread the word and unlock more premium experiences.
+                </p>
+              </div>
+              <div className="bg-[#27242d] p-3 rounded-xl border border-[#4a474e]/20">
+                <span className="material-symbols-outlined text-[#a68cff] text-[30px]">
+                  card_giftcard
+                </span>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 font-bold text-[#ff88b5]">
+              <span>Invite Now</span>
+              <span className="material-symbols-outlined text-sm">
+                arrow_forward
+              </span>
+            </div>
+          </div>
+        </section>
+
+        {/* ── Credit Summary (Horizontal) ── */}
+        {!loading && (
+          <section
+            className="flex gap-4 overflow-x-auto pb-2"
+            style={{ scrollbarWidth: "none" }}
           >
-            {t("wallet.payoutBtn")}
-          </button>
+            <div className="flex-shrink-0 w-[160px] p-4 rounded-xl bg-[#151219] border-l-4 border-[#b5ffc2]">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[#aea9b2] mb-1">
+                {t("wallet.totalCharged")}
+              </p>
+              <p className="font-extrabold text-xl text-[#b5ffc2]">
+                +{totalIn.toLocaleString()}
+              </p>
+            </div>
+            <div className="flex-shrink-0 w-[160px] p-4 rounded-xl bg-[#151219] border-l-4 border-[#d73357]">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[#aea9b2] mb-1">
+                {t("wallet.totalUsed")}
+              </p>
+              <p className="font-extrabold text-xl text-[#f8f1fb]">
+                -{totalOut.toLocaleString()}
+              </p>
+            </div>
+          </section>
         )}
 
-        {/* 출금 신청 내역 */}
+        {/* ── Credit History ── */}
+        <section className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h3 className="font-bold text-lg">{t("wallet.ledgerTitle")}</h3>
+            <div className="flex bg-[#000000] p-1 rounded-full border border-[#4a474e]/20">
+              {(["ALL", "CHARGE", "USAGE"] as const).map((type) => (
+                <button
+                  key={type}
+                  onClick={() => setFilterType(type)}
+                  className={`px-4 py-1.5 text-xs font-bold rounded-full transition-colors ${
+                    filterType === type
+                      ? "bg-[#ff88b5] text-[#610034]"
+                      : "text-[#aea9b2] hover:text-[#f8f1fb]"
+                  }`}
+                >
+                  {type === "ALL"
+                    ? t("wallet.filterAll")
+                    : type === "CHARGE"
+                      ? t("wallet.filterCharge")
+                      : t("wallet.filterUsage")}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {loading ? (
+            <p className="text-center text-[#aea9b2] py-6">
+              {t("wallet.loading")}
+            </p>
+          ) : ledger.length === 0 ? (
+            <div className="text-center py-8 bg-[#1b1820] rounded-xl border border-[#4a474e]/20">
+              <p className="text-sm text-[#aea9b2]">{t("wallet.noLedger")}</p>
+            </div>
+          ) : filteredLedger.length === 0 ? (
+            <div className="text-center py-8 bg-[#1b1820] rounded-xl border border-[#4a474e]/20">
+              <p className="text-sm text-[#aea9b2]">{t("wallet.noFiltered")}</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {filteredLedger.map((item) => {
+                const isPositive = item.amount > 0;
+                const operator = isPositive ? "+" : "";
+                const amountColor = isPositive
+                  ? "text-[#b5ffc2]"
+                  : "text-[#ff6e84]";
+                const {
+                  label: txLabel,
+                  icon: txIcon,
+                  iconColor,
+                } = getTxMeta(item);
+
+                return (
+                  <div
+                    key={item.transaction_id}
+                    className="flex items-center justify-between p-4 rounded-xl bg-[#1b1820] hover:bg-[#211e26] transition-colors"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-full bg-[#27242d] flex items-center justify-center shrink-0">
+                        <span
+                          className={`material-symbols-outlined ${iconColor}`}
+                        >
+                          {txIcon}
+                        </span>
+                      </div>
+                      <div>
+                        <p className="font-semibold text-[#f8f1fb] text-sm">
+                          {txLabel}
+                        </p>
+                        <p className="text-xs text-[#aea9b2]">
+                          {new Date(item.created_at).toLocaleDateString()}{" "}
+                          {new Date(item.created_at).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </p>
+                        {item.description && (
+                          <p className="text-xs text-[#aea9b2] mt-0.5">
+                            {item.description}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0 ml-2">
+                      <p className={`font-bold text-base ${amountColor}`}>
+                        {operator}
+                        {Math.abs(item.amount).toLocaleString()}
+                      </p>
+                      <p className="text-xs text-[#aea9b2] mt-1">
+                        {t("wallet.balanceLabel")}
+                        {item.balance_snapshot?.toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </section>
+
+        {/* ── Payout History ── */}
         {payoutHistory.length > 0 && (
-          <div className="text-left border-t border-gray-100 pt-4 mb-4">
-            <h2 className="text-sm font-bold text-gray-700 mb-3">
+          <section className="space-y-3 border-t border-[#4a474e]/30 pt-6">
+            <h3 className="font-bold text-lg">
               {t("wallet.payoutHistoryTitle")}
-            </h2>
-            <ul className="space-y-2">
+            </h3>
+            <div className="space-y-2">
               {payoutHistory.map((p) => (
-                <li
+                <div
                   key={p.id}
-                  className="bg-gray-50 border border-gray-100 p-3 rounded-lg flex justify-between items-center"
+                  className="bg-[#1b1820] border border-[#4a474e]/20 p-3 rounded-xl flex justify-between items-center"
                 >
                   <div>
-                    <p className="text-xs text-gray-400">
+                    <p className="text-xs text-[#aea9b2]">
                       {new Date(p.requested_at).toLocaleDateString()}
                     </p>
-                    <p className="text-sm font-bold text-gray-800">
+                    <p className="text-sm font-bold text-[#f8f1fb]">
                       {p.bank_name} {p.account_number}
                     </p>
-                    <p className="text-xs text-gray-500">{p.account_holder}</p>
+                    <p className="text-xs text-[#aea9b2]">{p.account_holder}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-base font-bold text-green-600">
+                    <p className="text-base font-bold text-[#b5ffc2]">
                       {p.amount.toLocaleString()} {t("wallet.cashUnit")}
                     </p>
                     <span
                       className={`text-xs font-bold px-2 py-0.5 rounded-full ${
                         p.status === "APPROVED"
-                          ? "bg-green-100 text-green-600"
+                          ? "bg-[#b5ffc2]/10 text-[#b5ffc2]"
                           : p.status === "REJECTED"
-                            ? "bg-red-100 text-red-500"
+                            ? "bg-[#d73357]/10 text-[#ff6e84]"
                             : p.status === "HELD"
-                              ? "bg-yellow-100 text-yellow-600"
-                              : "bg-blue-100 text-blue-500"
+                              ? "bg-yellow-900/20 text-yellow-400"
+                              : "bg-[#a68cff]/10 text-[#a68cff]"
                       }`}
                     >
                       {p.status === "APPROVED"
@@ -341,223 +538,46 @@ export default function ProWalletPage() {
                             : t("wallet.statusPending")}
                     </span>
                   </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {/* 원장 내역(Ledger) 영역 */}
-        <div className="text-left border-t border-gray-100 pt-6">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-bold text-gray-800">
-              {t("wallet.ledgerTitle")}
-            </h2>
-          </div>
-
-          {/* 누적 합계 지표 */}
-          {!loading &&
-            ledger.length > 0 &&
-            (() => {
-              const filtered = ledger.filter((item) => {
-                if (filterType === "ALL") return true;
-                if (filterType === "CHARGE") return item.amount > 0;
-                if (filterType === "USAGE") return item.amount < 0;
-                return true;
-              });
-              const totalIn = filtered
-                .filter((i) => i.amount > 0)
-                .reduce((s, i) => s + Number(i.amount), 0);
-              const totalOut = filtered
-                .filter((i) => i.amount < 0)
-                .reduce((s, i) => s + Math.abs(Number(i.amount)), 0);
-              return (
-                <div className="grid grid-cols-2 gap-2 mb-4">
-                  <div className="bg-blue-50 rounded-xl p-3 border border-blue-100 text-center">
-                    <p className="text-[10px] font-bold text-blue-400 uppercase mb-0.5">
-                      {t("wallet.totalCharged")}
-                    </p>
-                    <p className="text-base font-black text-blue-600">
-                      +{totalIn.toLocaleString()}
-                    </p>
-                  </div>
-                  <div className="bg-red-50 rounded-xl p-3 border border-red-100 text-center">
-                    <p className="text-[10px] font-bold text-red-400 uppercase mb-0.5">
-                      {t("wallet.totalUsed")}
-                    </p>
-                    <p className="text-base font-black text-red-500">
-                      -{totalOut.toLocaleString()}
-                    </p>
-                  </div>
                 </div>
-              );
-            })()}
-
-          {/* 필터 탭 */}
-          <div className="flex space-x-2 mb-4 bg-gray-100 p-1 rounded-xl">
-            <button
-              onClick={() => setFilterType("ALL")}
-              className={`flex-1 py-2 text-sm font-bold rounded-lg transition ${filterType === "ALL" ? "bg-white text-blue-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
-            >
-              {t("wallet.filterAll")}
-            </button>
-            <button
-              onClick={() => setFilterType("CHARGE")}
-              className={`flex-1 py-2 text-sm font-bold rounded-lg transition ${filterType === "CHARGE" ? "bg-white text-blue-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
-            >
-              {t("wallet.filterCharge")}
-            </button>
-            <button
-              onClick={() => setFilterType("USAGE")}
-              className={`flex-1 py-2 text-sm font-bold rounded-lg transition ${filterType === "USAGE" ? "bg-white text-blue-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
-            >
-              {t("wallet.filterUsage")}
-            </button>
-          </div>
-
-          {loading ? (
-            <p className="text-center text-gray-400 py-4">
-              {t("wallet.loading")}
-            </p>
-          ) : ledger.length === 0 ? (
-            <div className="text-center py-6 bg-gray-50 rounded-xl border border-gray-100">
-              <p className="text-sm text-gray-500">{t("wallet.noLedger")}</p>
+              ))}
             </div>
-          ) : (
-            <ul className="space-y-3">
-              {(() => {
-                const filteredLedger = ledger.filter((item) => {
-                  if (filterType === "ALL") return true;
-                  if (filterType === "CHARGE") return item.amount > 0;
-                  if (filterType === "USAGE") return item.amount < 0;
-                  return true;
-                });
+          </section>
+        )}
+      </main>
 
-                const filteredWithBalance = ledger.filter((item) => {
-                  if (filterType === "ALL") return true;
-                  if (filterType === "CHARGE") return item.amount > 0;
-                  if (filterType === "USAGE") return item.amount < 0;
-                  return true;
-                });
-
-                if (filteredWithBalance.length === 0) {
-                  return (
-                    <div className="text-center py-6 bg-gray-50 rounded-xl border border-gray-100">
-                      <p className="text-sm text-gray-500">
-                        {t("wallet.noFiltered")}
-                      </p>
-                    </div>
-                  );
-                }
-
-                return filteredWithBalance.map((item) => {
-                  const isPositive = item.amount > 0;
-                  const operator = isPositive ? "+" : "";
-                  const colorClass = isPositive
-                    ? "text-blue-600"
-                    : "text-red-500";
-
-                  let txLabel = item.tx_type;
-                  if (item.tx_type === "CHARGE") txLabel = t("wallet.txCharge");
-                  else if (item.tx_type === "DEDUCT_QUOTE")
-                    txLabel = t("wallet.txDeductQuote");
-                  else if (item.tx_type === "REFUND")
-                    txLabel = t("wallet.txRefund");
-                  else if (item.tx_type === "BONUS")
-                    txLabel = item.description?.includes("Coupon")
-                      ? t("wallet.txCouponRedeemed")
-                      : item.description?.includes("Referral")
-                        ? t("wallet.txReferralBonus")
-                        : t("wallet.txBonus");
-                  else if (item.tx_type === "BONUS_REFUND")
-                    txLabel = t("wallet.txBonusRefund");
-                  else if (item.tx_type === "ADMIN_CHARGE")
-                    txLabel = t("wallet.txAdminCharge");
-                  else if (item.tx_type === "ADMIN_REFUND")
-                    txLabel = t("wallet.txAdminRefund");
-                  else if (item.tx_type === "DEDUCT_BONUS_QUOTE")
-                    txLabel = t("wallet.txDeductBonusQuote");
-                  else if (item.tx_type === "ADMIN_BONUS_CHARGE")
-                    txLabel = t("wallet.txAdminBonusCharge");
-                  else if (item.tx_type === "ADMIN_BONUS_REFUND")
-                    txLabel = t("wallet.txAdminBonusRefund");
-                  else if (item.tx_type === "SIGNUP_BONUS")
-                    txLabel = t("wallet.txSignupBonus");
-
-                  return (
-                    <li
-                      key={item.transaction_id}
-                      className="bg-white border border-gray-100 p-3 rounded-lg shadow-sm flex justify-between items-center"
-                    >
-                      <div>
-                        <p className="text-xs text-gray-400 mb-1">
-                          {new Date(item.created_at).toLocaleDateString()}{" "}
-                          {new Date(item.created_at).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </p>
-                        <p className="text-sm font-bold text-gray-800">
-                          {txLabel}
-                        </p>
-                        {item.description && (
-                          <p className="text-xs text-gray-400 mt-0.5">
-                            {item.description}
-                          </p>
-                        )}
-                      </div>
-                      <div className="text-right">
-                        <p className={`text-base font-bold ${colorClass}`}>
-                          {operator}
-                          {Math.abs(item.amount).toLocaleString()}
-                        </p>
-                        <p className="text-xs text-gray-500 mt-1">
-                          {t("wallet.balanceLabel")}
-                          {item.balance_snapshot?.toLocaleString()}
-                        </p>
-                      </div>
-                    </li>
-                  );
-                });
-              })()}
-            </ul>
-          )}
-        </div>
-      </div>
-
-      {/* 캐시 충전 선택 모달 */}
+      {/* ── Charge Modal ── */}
       {isChargeModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black bg-opacity-50 p-4 sm:items-center">
-          <div className="bg-white rounded-t-3xl sm:rounded-2xl w-full max-w-sm p-6 shadow-xl flex flex-col gap-4">
-            <h2 className="text-xl font-bold text-center text-gray-800 mb-2">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+          <div className="bg-[#1b1820] border border-[#4a474e]/30 rounded-2xl w-full max-w-sm p-6 shadow-xl flex flex-col gap-4">
+            <h2 className="text-xl font-bold text-center text-[#f8f1fb] mb-2">
               {t("wallet.chargeModalTitle")}
             </h2>
             <div className="flex flex-col gap-3">
               <button
                 onClick={() => handleChargeMock(100)}
-                className="w-full bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold py-4 rounded-xl border border-blue-200 transition text-lg"
+                className="w-full bg-[#211e26] hover:bg-[#27242d] text-[#ff88b5] font-bold py-4 rounded-xl border border-[#4a474e]/30 transition text-lg"
               >
                 100 Credits
               </button>
               <button
                 onClick={() => handleChargeMock(300)}
-                className="w-full bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold py-4 rounded-xl border border-blue-300 transition text-lg"
+                className="w-full bg-[#211e26] hover:bg-[#27242d] text-[#ff88b5] font-bold py-4 rounded-xl border border-[#ff88b5]/20 transition text-lg"
               >
                 300 Credits
               </button>
               <button
                 onClick={() => handleChargeMock(500)}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-md transition text-lg"
+                className="w-full bg-gradient-to-r from-[#ff88b5] to-[#ff6ea9] text-[#610034] font-bold py-4 rounded-xl shadow-md transition text-lg"
               >
                 500 Credits{" "}
-                <span className="text-sm bg-yellow-400 text-yellow-900 px-2 py-0.5 rounded-full ml-1">
+                <span className="text-sm bg-[#b5ffc2] text-[#004820] px-2 py-0.5 rounded-full ml-1">
                   BEST
                 </span>
               </button>
             </div>
             <button
               onClick={() => setIsChargeModalOpen(false)}
-              className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-4 rounded-xl transition mt-2"
+              className="w-full bg-[#211e26] hover:bg-[#27242d] text-[#aea9b2] font-bold py-4 rounded-xl transition mt-2"
             >
               {t("wallet.chargeClose")}
             </button>
@@ -565,16 +585,16 @@ export default function ProWalletPage() {
         </div>
       )}
 
-      {/* 출금 신청 모달 */}
+      {/* ── Payout Modal ── */}
       {isPayoutModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black bg-opacity-50 p-4 sm:items-center">
-          <div className="bg-white rounded-t-3xl sm:rounded-2xl w-full max-w-sm p-6 shadow-xl flex flex-col gap-4">
-            <h2 className="text-xl font-bold text-center text-gray-800 mb-2">
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 backdrop-blur-sm p-4 sm:items-center">
+          <div className="bg-[#1b1820] border border-[#4a474e]/30 rounded-t-3xl sm:rounded-2xl w-full max-w-sm p-6 shadow-xl flex flex-col gap-4">
+            <h2 className="text-xl font-bold text-center text-[#f8f1fb] mb-2">
               {t("wallet.payoutModalTitle")}
             </h2>
-            <p className="text-xs text-gray-500 text-center -mt-2">
+            <p className="text-xs text-[#aea9b2] text-center -mt-2">
               {t("wallet.payoutAvailable")}
-              <span className="font-bold text-blue-600">
+              <span className="font-bold text-[#ff88b5]">
                 {(balance || 0).toLocaleString()} {t("wallet.cashUnit")}
               </span>
             </p>
@@ -584,37 +604,37 @@ export default function ProWalletPage() {
                 value={payoutAmount}
                 onChange={(e) => setPayoutAmount(e.target.value)}
                 placeholder={t("wallet.payoutAmountPlaceholder")}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full px-4 py-3 bg-[#211e26] border border-[#4a474e]/30 rounded-xl text-sm text-[#f8f1fb] placeholder:text-[#aea9b2] focus:outline-none focus:ring-2 focus:ring-[#ff88b5]/50"
               />
               <input
                 type="text"
                 value={payoutBankName}
                 onChange={(e) => setPayoutBankName(e.target.value)}
                 placeholder={t("wallet.payoutBankPlaceholder")}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full px-4 py-3 bg-[#211e26] border border-[#4a474e]/30 rounded-xl text-sm text-[#f8f1fb] placeholder:text-[#aea9b2] focus:outline-none focus:ring-2 focus:ring-[#ff88b5]/50"
               />
               <input
                 type="text"
                 value={payoutAccountNumber}
                 onChange={(e) => setPayoutAccountNumber(e.target.value)}
                 placeholder={t("wallet.payoutAccountPlaceholder")}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full px-4 py-3 bg-[#211e26] border border-[#4a474e]/30 rounded-xl text-sm text-[#f8f1fb] placeholder:text-[#aea9b2] focus:outline-none focus:ring-2 focus:ring-[#ff88b5]/50"
               />
               <input
                 type="text"
                 value={payoutAccountHolder}
                 onChange={(e) => setPayoutAccountHolder(e.target.value)}
                 placeholder={t("wallet.payoutHolderPlaceholder")}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full px-4 py-3 bg-[#211e26] border border-[#4a474e]/30 rounded-xl text-sm text-[#f8f1fb] placeholder:text-[#aea9b2] focus:outline-none focus:ring-2 focus:ring-[#ff88b5]/50"
               />
-              <p className="text-xs text-yellow-600 bg-yellow-50 p-3 rounded-xl border border-yellow-200">
+              <p className="text-xs text-yellow-400 bg-yellow-900/20 p-3 rounded-xl border border-yellow-700/20">
                 {t("wallet.payoutWarning")}
               </p>
             </div>
             <button
               onClick={handlePayoutRequest}
               disabled={isPayoutLoading}
-              className="w-full bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white font-bold py-4 rounded-xl shadow-md transition"
+              className="w-full bg-[#b5ffc2] hover:opacity-90 disabled:opacity-50 text-[#004820] font-bold py-4 rounded-xl shadow-md transition"
             >
               {isPayoutLoading
                 ? t("wallet.payoutSubmitting")
@@ -622,7 +642,7 @@ export default function ProWalletPage() {
             </button>
             <button
               onClick={() => setIsPayoutModalOpen(false)}
-              className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-4 rounded-xl transition"
+              className="w-full bg-[#211e26] hover:bg-[#27242d] text-[#aea9b2] font-bold py-4 rounded-xl transition"
             >
               {t("wallet.payoutClose")}
             </button>
@@ -630,18 +650,18 @@ export default function ProWalletPage() {
         </div>
       )}
 
-      {/* 커스텀 인포 모달 */}
+      {/* ── Info Modal ── */}
       {infoModal && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl w-full max-w-xs shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+          <div className="bg-[#1b1820] border border-[#4a474e]/30 rounded-2xl w-full max-w-xs shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <div className="flex flex-col items-center px-6 pt-8 pb-6 gap-3">
-              <div className="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center text-4xl mb-1">
+              <div className="w-16 h-16 rounded-full bg-[#211e26] flex items-center justify-center text-4xl mb-1">
                 {infoModal.icon}
               </div>
-              <h3 className="text-lg font-black text-gray-800">
+              <h3 className="text-lg font-black text-[#f8f1fb]">
                 {infoModal.title}
               </h3>
-              <p className="text-sm text-gray-500 text-center whitespace-pre-line leading-relaxed">
+              <p className="text-sm text-[#aea9b2] text-center whitespace-pre-line leading-relaxed">
                 {infoModal.message}
               </p>
             </div>
@@ -650,7 +670,7 @@ export default function ProWalletPage() {
                 <>
                   <button
                     onClick={handleChargeMockConfirm}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl transition"
+                    className="w-full bg-gradient-to-r from-[#ff88b5] to-[#ff6ea9] text-[#610034] font-bold py-3.5 rounded-xl transition"
                   >
                     {t("wallet.chargeConfirmBtn")}
                   </button>
@@ -659,7 +679,7 @@ export default function ProWalletPage() {
                       setInfoModal(null);
                       setChargeAmountPending(null);
                     }}
-                    className="w-full bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold py-3 rounded-xl transition"
+                    className="w-full bg-[#211e26] hover:bg-[#27242d] text-[#aea9b2] font-bold py-3 rounded-xl transition"
                   >
                     {t("wallet.chargeCancelBtn")}
                   </button>
@@ -667,7 +687,7 @@ export default function ProWalletPage() {
               ) : (
                 <button
                   onClick={() => setInfoModal(null)}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl transition"
+                  className="w-full bg-gradient-to-r from-[#ff88b5] to-[#ff6ea9] text-[#610034] font-bold py-3.5 rounded-xl transition"
                 >
                   {t("wallet.infoConfirmBtn")}
                 </button>

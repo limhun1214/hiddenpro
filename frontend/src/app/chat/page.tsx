@@ -241,31 +241,39 @@ export default function ChatListPage() {
 
   if (loading)
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="min-h-screen bg-[#0f0d13] flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
-          <p className="text-sm text-gray-400">{t("chatList.loading")}</p>
+          <div className="w-10 h-10 border-4 border-[#ff88b5] border-t-transparent rounded-full animate-spin" />
+          <p className="text-sm text-white/40">{t("chatList.loading")}</p>
         </div>
       </div>
     );
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen bg-[#0f0d13] flex flex-col">
       {/* 헤더 */}
-      <div className="sticky top-0 z-10 bg-white border-b border-gray-100">
-        <div className="flex items-center justify-between px-4 py-4">
-          <h1 className="text-xl font-black text-gray-900">
+      <div className="sticky top-0 z-10 bg-[#0f0d13]/80 backdrop-blur-xl border-b border-white/5 shadow-[0_8px_32px_rgba(211,45,125,0.06)]">
+        <div className="flex items-center justify-between px-6 py-4">
+          <h1 className="text-xl font-black text-[#ff88b5] tracking-tight">
             {t("chatList.title")}
           </h1>
         </div>
         {/* 안내 배너 */}
-        <div className="mx-4 mb-3 bg-blue-50 text-blue-700 px-3 py-2 rounded-xl text-xs flex items-center gap-2">
-          <span>{t("chatList.banner")}</span>
+        <div className="mx-4 mb-3 bg-white/5 backdrop-blur-md border-l-4 border-[#ff88b5] px-4 py-3 rounded-xl flex items-start gap-3">
+          <span
+            className="material-symbols-outlined text-[#ff88b5] text-[18px] mt-0.5 flex-shrink-0"
+            style={{ fontVariationSettings: "'FILL' 0, 'wght' 400" }}
+          >
+            lightbulb
+          </span>
+          <p className="text-white/60 text-xs leading-relaxed font-medium">
+            {t("chatList.banner")}
+          </p>
         </div>
       </div>
 
       {errorMsg && (
-        <div className="mx-4 mt-3 text-red-500 text-sm bg-red-50 p-3 rounded-xl border border-red-100">
+        <div className="mx-4 mt-3 text-red-400 text-sm bg-red-500/10 p-3 rounded-xl border border-red-500/20">
           {t("chatList.dataError")}
           {errorMsg}
         </div>
@@ -273,14 +281,34 @@ export default function ChatListPage() {
 
       {/* 채팅방 목록 */}
       {!errorMsg && rooms.length === 0 ? (
-        <div className="flex-1 flex flex-col items-center justify-center gap-3 text-gray-400">
-          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center text-3xl">
-            💬
+        <div className="flex-1 flex flex-col items-center justify-center py-12 px-6">
+          <div className="relative group">
+            {/* 글로잉 배경 */}
+            <div className="absolute inset-0 bg-[#a68cff]/20 blur-[80px] rounded-full scale-150 group-hover:bg-[#ff88b5]/20 transition-colors duration-700" />
+            {/* 일러스트 */}
+            <div className="relative flex flex-col items-center">
+              <div className="w-48 h-48 mb-8 relative flex items-center justify-center">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#a68cff]/30 to-[#ff88b5]/30 rounded-full animate-pulse" />
+                <div className="bg-[#27242d] w-32 h-32 rounded-full flex items-center justify-center shadow-2xl">
+                  <span
+                    className="material-symbols-outlined text-6xl text-[#ff88b5]"
+                    style={{ fontVariationSettings: "'FILL' 1" }}
+                  >
+                    chat_bubble
+                  </span>
+                </div>
+                {/* 플로팅 액센트 */}
+                <div className="absolute top-4 right-4 w-4 h-4 bg-[#b5ffc2] rounded-full shadow-[0_0_15px_rgba(36,240,126,0.5)]" />
+                <div className="absolute bottom-8 left-0 w-6 h-6 bg-[#a68cff] rounded-full shadow-[0_0_20px_rgba(166,140,255,0.4)]" />
+              </div>
+              <h2 className="font-black text-2xl text-white/90 text-center tracking-tight">
+                {t("chatList.noRooms")}
+              </h2>
+            </div>
           </div>
-          <p className="text-sm font-medium">{t("chatList.noRooms")}</p>
         </div>
       ) : (
-        <ul className="flex-1 divide-y divide-gray-100">
+        <ul className="flex-1 divide-y divide-white/5">
           {rooms.map((room) => {
             const partnerName =
               room.pro_id === currentUserId
@@ -297,11 +325,11 @@ export default function ChatListPage() {
               <li key={room.room_id}>
                 <Link
                   href={`/chat/${room.room_id}`}
-                  className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 active:bg-gray-100 transition"
+                  className="flex items-center gap-3 px-4 py-3 hover:bg-white/5 active:bg-white/10 transition-colors duration-200"
                 >
                   {/* 아바타 */}
                   <div className="relative flex-shrink-0">
-                    <div className="w-12 h-12 rounded-full bg-gray-100 overflow-hidden border border-gray-200 flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-full bg-[#27242d] overflow-hidden border border-white/10 flex items-center justify-center">
                       {partnerAvatar ? (
                         <img
                           src={partnerAvatar}
@@ -310,7 +338,7 @@ export default function ChatListPage() {
                         />
                       ) : (
                         <svg
-                          className="w-6 h-6 text-gray-400"
+                          className="w-6 h-6 text-white/30"
                           fill="currentColor"
                           viewBox="0 0 24 24"
                         >
@@ -320,8 +348,8 @@ export default function ChatListPage() {
                     </div>
                     {/* 종료됨 오버레이 */}
                     {isClosed && (
-                      <div className="absolute inset-0 rounded-full bg-black/30 flex items-center justify-center">
-                        <span className="text-white text-[9px] font-bold">
+                      <div className="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center">
+                        <span className="text-white/80 text-[9px] font-bold">
                           {t("chatList.closedOverlay")}
                         </span>
                       </div>
@@ -332,18 +360,18 @@ export default function ChatListPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5">
                       <span
-                        className={`text-[15px] font-bold truncate ${isClosed ? "text-gray-400" : "text-gray-900"}`}
+                        className={`text-[15px] font-bold truncate ${isClosed ? "text-white/30" : "text-white/90"}`}
                       >
                         {partnerName}
                         {t("chatList.proSuffix")}
                       </span>
                       {isClosed && (
-                        <span className="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-full flex-shrink-0">
+                        <span className="text-[10px] text-white/30 bg-white/10 px-1.5 py-0.5 rounded-full flex-shrink-0">
                           {t("chatList.closedBadge")}
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-gray-400 mt-0.5 truncate">
+                    <p className="text-xs text-white/40 mt-0.5 truncate">
                       {isClosed
                         ? lastMessageMap[room.room_id] ||
                           t("chatList.closedMsg")
@@ -356,19 +384,19 @@ export default function ChatListPage() {
 
                   {/* 시간 + 뱃지 */}
                   <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
-                    <span className="text-[11px] text-gray-400">
+                    <span className="text-[11px] text-white/30">
                       {formatChatTime(room.created_at)}
                     </span>
                     {unread > 0 ? (
-                      <span className="min-w-[20px] h-5 bg-red-500 text-white text-[11px] font-black px-1.5 rounded-full flex items-center justify-center">
+                      <span className="min-w-[20px] h-5 bg-[#ff88b5] text-[#0f0d13] text-[11px] font-black px-1.5 rounded-full flex items-center justify-center">
                         {unread > 99 ? "99+" : unread}
                       </span>
                     ) : room.status === "MATCHED" ? (
-                      <span className="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
+                      <span className="text-[10px] font-bold text-[#b5ffc2] bg-[#b5ffc2]/10 px-2 py-0.5 rounded-full">
                         {t("chatList.matchedBadge")}
                       </span>
                     ) : !isClosed ? (
-                      <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
+                      <span className="text-[10px] font-bold text-[#a68cff] bg-[#a68cff]/10 px-2 py-0.5 rounded-full">
                         {t("chatList.inProgress")}
                       </span>
                     ) : null}
