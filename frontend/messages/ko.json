@@ -490,7 +490,8 @@
     "phoneLater": "나중에 하기",
     "phoneVerifying": "인증 중...",
     "phoneVerifyBtn": "인증하고 견적 받기",
-    "notesPlaceholder": "상세 내용을 적어주세요..."
+    "notesPlaceholder": "상세 내용을 적어주세요...",
+    "edit": "수정하기"
   },
   "proProfileModal": {
     "loading": "프로필 정보를 불러오는 중...",
@@ -536,6 +537,7 @@
     "requestTitle": "님의 요청",
     "expired": "마감됨",
     "timeLeft": "시간 {min}분 후 마감!",
+    "proCount": "명",
     "sentQuoteTitle": "✉️ 내가 보낸 견적 내용",
     "proposedAmount": "제안 금액",
     "quoteDescription": "견적 설명",

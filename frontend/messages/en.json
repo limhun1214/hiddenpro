@@ -495,7 +495,8 @@
     "phoneLater": "Later",
     "phoneVerifying": "Verifying...",
     "phoneVerifyBtn": "Verify & Get Quotes",
-    "notesPlaceholder": "Please enter details..."
+    "notesPlaceholder": "Please enter details...",
+    "edit": "Edit"
   },
   "proProfileModal": {
     "loading": "Loading profile information...",
@@ -541,6 +542,7 @@
     "requestTitle": "'s Request",
     "expired": "Closed",
     "timeLeft": "h {min}m left!",
+    "proCount": " pros",
     "sentQuoteTitle": "✉️ My Sent Quote",
     "proposedAmount": "Proposed Amount",
     "quoteDescription": "Quote Description",

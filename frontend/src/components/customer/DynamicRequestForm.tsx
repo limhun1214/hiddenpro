@@ -6988,7 +6988,7 @@ export default function DynamicRequestForm() {
     const loadCategories = async () => {
       const { data } = await supabase
         .from("categories")
-        .select("name, name_en, depth1, depth2")
+        .select("name, name_en, depth1, depth1_en, depth2, depth2_en")
         .eq("is_active", true)
         .order("sort_order", { ascending: true });
       if (data) {
@@ -7639,7 +7639,7 @@ export default function DynamicRequestForm() {
         const { data: catData } = await supabase
           .from("categories")
           .select("id")
-          .eq("name", answers.service_type)
+          .eq("name_en", koToEn[answers.service_type] ?? answers.service_type)
           .single();
         if (catData) realCategoryId = catData.id;
       }
@@ -7650,7 +7650,7 @@ export default function DynamicRequestForm() {
           customer_id: customerId,
           category_id: realCategoryId,
           region_id: 1,
-          service_type: answers.service_type,
+          service_type: koToEn[answers.service_type] ?? answers.service_type,
           region: finalRegion,
           dynamic_answers: { ...answers, _history: history },
           status: "OPEN",
@@ -7663,7 +7663,8 @@ export default function DynamicRequestForm() {
 
       // 1. 대분류 지역 추출 및 요청 서비스
       const mainRegion = finalRegion.split(",")[0].trim();
-      const requestedService = answers.service_type;
+      const requestedService =
+        koToEn[answers.service_type] ?? answers.service_type;
 
       // 2. DB 페칭: 괄호 등 특수문자로 인한 Supabase 파싱 에러를 피하기 위해 프로필 안전 조회
       const { data: prosData } = await supabase
@@ -7773,7 +7774,7 @@ export default function DynamicRequestForm() {
                 onClick={() => handleEdit(i)}
                 className="text-[10px] text-white/30 mt-1 hover:text-[#a68cff] underline text-right"
               >
-                수정하기
+                {t("requestForm.edit")}
               </button>
             </div>
           </div>

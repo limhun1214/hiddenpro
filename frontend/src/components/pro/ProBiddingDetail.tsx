@@ -5,6 +5,10 @@ import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/Toast";
 import { useTranslations } from "next-intl";
+import {
+  DYNAMIC_ANSWER_LABELS,
+  DYNAMIC_ANSWER_ORDERED_KEYS,
+} from "@/constants/dynamicAnswerLabels";
 
 export default function ProBiddingDetail({ requestId }: { requestId: string }) {
   const t = useTranslations();
@@ -449,33 +453,15 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
   }
 
   const answerEntries = Object.entries(dynamicAnswers).filter(([k, v]) => {
-    if (["details_mode", "depth1", "depth2"].includes(k)) return false;
+    if (["details_mode", "depth1", "depth2", "_history"].includes(k))
+      return false;
+    if (v === null || v === undefined || v === "") return false;
     return true;
   });
 
-  const ORDERED_KEYS = [
-    "depth1",
-    "depth2",
-    "service_type",
-    "merged_region",
-    "move_type",
-    "move_date",
-    "from_region",
-    "from_floor",
-    "from_size",
-    "from_elevator",
-    "appliances",
-    "furniture",
-    "images",
-    "to_region",
-    "to_floor",
-    "to_elevator",
-    "details",
-  ];
-
   answerEntries.sort((a, b) => {
-    const indexA = ORDERED_KEYS.indexOf(a[0]);
-    const indexB = ORDERED_KEYS.indexOf(b[0]);
+    const indexA = DYNAMIC_ANSWER_ORDERED_KEYS.indexOf(a[0]);
+    const indexB = DYNAMIC_ANSWER_ORDERED_KEYS.indexOf(b[0]);
     if (indexA === -1 && indexB === -1) return 0;
     if (indexA === -1) return 1;
     if (indexB === -1) return -1;
@@ -555,14 +541,15 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
             <span
               className={`inline-block font-bold px-3 py-1 rounded-full text-sm shadow-sm ${isExpired ? "bg-gray-100 text-gray-500" : "bg-red-50 text-red-600 border border-red-200 animate-pulse"}`}
             >
-              💡 {request.quote_count}/{maxQuotes}명
+              💡 {request.quote_count}/{maxQuotes}
+              {t("proBidding.proCount")}
             </span>
             <div
               className={`text-xs mt-1 font-bold ${isExpired ? "text-gray-500" : isHurry ? "text-red-500 animate-pulse" : "text-blue-500"}`}
             >
               {isExpired
                 ? t("proBidding.expired")
-                : `${hoursRemaining}${t("proBidding.timeLeft").replace("{min}", String(minutesRemaining))}`}
+                : `${hoursRemaining}${t("proBidding.timeLeft", { min: minutesRemaining })}`}
             </div>
           </div>
         </div>
@@ -648,28 +635,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
             <ul className="space-y-3">
               {answerEntries.map(([key, value]) => {
                 // 키 이름을 사람이 읽기 쉬운 형태로 변환
-                const labelMap: Record<string, string> = {
-                  depth1: "Service Category",
-                  depth2: "Service Subcategory",
-                  move_type: "Moving Type",
-                  move_date: "Moving Date",
-                  merged_region: "Service Region",
-                  from_region: "Departure Region",
-                  from_floor: "Departure Floor",
-                  from_size: "Departure Area / Occupants",
-                  from_elevator: "Departure Elevator",
-                  appliances: "Appliances to Move",
-                  furniture: "Furniture to Move",
-                  images: "Attached Photos",
-                  to_region: "Destination Region",
-                  to_floor: "Destination Floor",
-                  to_elevator: "Destination Elevator",
-                  details: "Additional Requests",
-                  service_type: "Detailed Service",
-                  region: "Region",
-                  region_reg: "Region",
-                  region_city: "City",
-                };
+                const labelMap = DYNAMIC_ANSWER_LABELS;
                 const label = labelMap[key] || key;
 
                 return (

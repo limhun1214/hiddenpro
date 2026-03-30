@@ -257,13 +257,17 @@ export default function AuthCompletePage() {
             const finalRegion = `${pendingAnswers.region_reg}, ${pendingAnswers.region_city}`;
 
             let realCategoryId = null;
+            let serviceTypeEn = pendingAnswers.service_type;
             if (pendingAnswers.service_type) {
               const { data: catData } = await supabase
                 .from("categories")
-                .select("id")
+                .select("id, name_en")
                 .eq("name", pendingAnswers.service_type)
                 .single();
-              if (catData) realCategoryId = catData.id;
+              if (catData) {
+                realCategoryId = catData.id;
+                serviceTypeEn = catData.name_en ?? pendingAnswers.service_type;
+              }
             }
 
             const { error: insertError } = await supabase
@@ -272,7 +276,7 @@ export default function AuthCompletePage() {
                 customer_id: sessionUser.id,
                 category_id: realCategoryId,
                 region_id: 1,
-                service_type: pendingAnswers.service_type,
+                service_type: serviceTypeEn,
                 region: finalRegion,
                 dynamic_answers: pendingAnswers,
                 status: "OPEN",

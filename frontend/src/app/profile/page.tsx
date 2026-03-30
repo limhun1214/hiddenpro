@@ -1349,7 +1349,7 @@ function ProProfile({ user }: { user: any }) {
     const loadCategories = async () => {
       const { data } = await supabase
         .from("categories")
-        .select("name, name_en, depth1, depth2")
+        .select("name, name_en, depth1, depth1_en, depth2, depth2_en")
         .eq("is_active", true)
         .order("sort_order", { ascending: true });
       if (data) {
@@ -1434,19 +1434,20 @@ function ProProfile({ user }: { user: any }) {
   };
 
   const handleServiceToggle = (service: string) => {
+    const enService = koToEnService[service] ?? service;
     setFormData((prev) => {
-      const isSelected = prev.services.includes(service);
+      const isSelected = prev.services.includes(enService);
       if (isSelected) {
         return {
           ...prev,
-          services: prev.services.filter((s) => s !== service),
+          services: prev.services.filter((s) => s !== enService),
         };
       } else {
         if (prev.services.length >= 5) {
           showToast(t("profile.maxServices"), "error");
           return prev;
         }
-        return { ...prev, services: [...prev.services, service] };
+        return { ...prev, services: [...prev.services, enService] };
       }
     });
   };
@@ -1817,7 +1818,9 @@ function ProProfile({ user }: { user: any }) {
           {depth3Items.length > 0 ? (
             <div className="bg-[#0f0d13] p-3 rounded-xl border border-[#2a2730] max-h-48 overflow-y-auto flex flex-col space-y-2">
               {depth3Items.map((service) => {
-                const isSelected = formData.services.includes(service);
+                const isSelected = formData.services.includes(
+                  koToEnService[service] ?? service,
+                );
                 const displayName =
                   locale === "en" && koToEnService[service]
                     ? koToEnService[service]
