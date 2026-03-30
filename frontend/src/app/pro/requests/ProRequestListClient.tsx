@@ -548,7 +548,6 @@ export default function ProRequestListClient() {
                 className="flex gap-3 items-start text-sm leading-relaxed p-4 rounded-2xl"
                 style={{
                   background: "#FFF7F0",
-                  borderLeft: "3px solid #0020A0",
                   border: "1px solid #F3E2D9",
                   borderLeft: "3px solid #0020A0",
                 }}
