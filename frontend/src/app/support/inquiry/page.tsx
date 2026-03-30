@@ -205,13 +205,13 @@ function InquiryContent() {
         );
       case "in_progress":
         return (
-          <span className="bg-[#a68cff]/10 text-[#a68cff] text-xs font-bold px-3 py-1 rounded-full border border-[#a68cff]/20">
+          <span className="bg-[#D32D7D]/10 text-[#D32D7D] text-xs font-bold px-3 py-1 rounded-full border border-[#D32D7D]/20">
             {t("inquiry.statusInProgress")}
           </span>
         );
       case "resolved":
         return (
-          <span className="bg-[#b5ffc2]/10 text-[#b5ffc2] text-xs font-bold px-3 py-1 rounded-full border border-[#b5ffc2]/20">
+          <span className="bg-green-50 text-green-600 text-xs font-bold px-3 py-1 rounded-full border border-green-200">
             {t("inquiry.statusResolved")}
           </span>
         );
@@ -222,36 +222,36 @@ function InquiryContent() {
 
   if (!user)
     return (
-      <div className="min-h-screen bg-[#0f0d13] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#ff88b5]"></div>
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#D32D7D]"></div>
       </div>
     );
 
   return (
-    <div className="min-h-screen bg-[#0f0d13] text-[#f8f1fb] flex flex-col pb-32">
+    <div className="min-h-screen bg-white text-gray-900 flex flex-col pb-32">
       {/* 내부 헤더 */}
-      <header className="flex items-center justify-between w-full px-4 h-14 bg-[#0f0d13] border-b border-[#4a474e]/15 sticky top-0 z-10">
+      <header className="flex items-center justify-between w-full px-4 h-14 bg-white border-b border-gray-200 shadow-sm sticky top-0 z-10">
         <button
           onClick={() => router.back()}
-          className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-[#1b1820] transition-colors active:scale-90"
+          className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 transition-colors active:scale-90"
         >
-          <span className="material-symbols-outlined text-[#ff88b5]">
+          <span className="material-symbols-outlined text-[#D32D7D]">
             arrow_back
           </span>
         </button>
-        <h1 className="font-bold text-[#f8f1fb]">{t("inquiry.pageTitle")}</h1>
+        <h1 className="font-bold text-gray-900">{t("inquiry.pageTitle")}</h1>
         <div className="w-10"></div>
       </header>
 
       <main className="flex-1 w-full max-w-2xl mx-auto px-4 pt-6">
         {/* 탭 바 */}
-        <div className="flex p-1 mb-8 rounded-full bg-[#151219] border border-[#4a474e]/10">
+        <div className="flex p-1 mb-8 rounded-full bg-gray-100 border border-gray-200">
           <button
             onClick={() => setActiveTab("WRITE")}
             className={`flex-1 py-3 text-sm font-semibold rounded-full transition-all ${
               activeTab === "WRITE"
-                ? "bg-[#ff6ea9] text-[#4b0027]"
-                : "text-[#aea9b2] hover:text-[#f8f1fb]"
+                ? "bg-[#ff6ea9] text-white"
+                : "text-gray-500 hover:text-gray-900"
             }`}
           >
             {t("inquiry.tabWrite")}
@@ -260,8 +260,8 @@ function InquiryContent() {
             onClick={() => setActiveTab("HISTORY")}
             className={`flex-1 py-3 text-sm font-semibold rounded-full transition-all ${
               activeTab === "HISTORY"
-                ? "bg-[#ff6ea9] text-[#4b0027]"
-                : "text-[#aea9b2] hover:text-[#f8f1fb]"
+                ? "bg-[#ff6ea9] text-white"
+                : "text-gray-500 hover:text-gray-900"
             }`}
           >
             {t("inquiry.tabHistory")}
@@ -274,15 +274,15 @@ function InquiryContent() {
             {/* 히어로 브랜딩 */}
             <div className="mb-10 flex gap-6 items-end">
               <div className="flex-1">
-                <p className="text-[#ff88b5] font-extrabold text-xs uppercase tracking-[0.2em] mb-2">
+                <p className="text-[#D32D7D] font-extrabold text-xs uppercase tracking-[0.2em] mb-2">
                   Service Excellence
                 </p>
                 <h2 className="text-3xl font-extrabold tracking-tight leading-tight">
-                  How can we <span className="text-[#ff88b5]">elevate</span>{" "}
+                  How can we <span className="text-[#D32D7D]">elevate</span>{" "}
                   your experience?
                 </h2>
               </div>
-              <div className="hidden md:block w-32 h-32 rounded-xl bg-[#211e26] overflow-hidden shadow-2xl rotate-3 flex-shrink-0">
+              <div className="hidden md:block w-32 h-32 rounded-xl bg-gray-100 overflow-hidden shadow-2xl rotate-3 flex-shrink-0">
                 <img
                   alt="Support Representative"
                   className="w-full h-full object-cover grayscale brightness-75 contrast-125"
@@ -295,15 +295,15 @@ function InquiryContent() {
             <form onSubmit={handleSubmit} className="space-y-8">
               {/* 카테고리 */}
               <div className="space-y-2">
-                <label className="block text-sm font-semibold text-[#aea9b2] ml-1">
+                <label className="block text-sm font-semibold text-gray-500 ml-1">
                   {t("inquiry.categoryLabel")}{" "}
-                  <span className="text-[#ff6e84]">*</span>
+                  <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="w-full h-14 px-6 bg-[#211e26] rounded-xl text-[#f8f1fb] appearance-none focus:outline-none focus:ring-2 focus:ring-[#ff88b5]/30 transition-all font-medium cursor-pointer"
+                    className="w-full h-14 px-6 bg-gray-50 rounded-xl text-gray-900 appearance-none focus:outline-none focus:ring-2 focus:ring-[#D32D7D]/30 transition-all font-medium cursor-pointer"
                     required
                   >
                     <option value="" disabled>
@@ -323,7 +323,7 @@ function InquiryContent() {
                     </option>
                     <option value="OTHER">{t("inquiry.categoryOther")}</option>
                   </select>
-                  <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-[#aea9b2]">
+                  <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
                     <span className="material-symbols-outlined">
                       expand_more
                     </span>
@@ -334,7 +334,7 @@ function InquiryContent() {
               {/* 거래 ID (결제 카테고리만) */}
               {category === "PAYMENT" && (
                 <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-[#aea9b2] ml-1">
+                  <label className="block text-sm font-semibold text-gray-500 ml-1">
                     {t("inquiry.transactionIdLabel")}
                   </label>
                   <input
@@ -342,10 +342,10 @@ function InquiryContent() {
                     value={transactionId}
                     onChange={(e) => setTransactionId(e.target.value)}
                     placeholder={t("inquiry.transactionIdPlaceholder")}
-                    className="w-full h-14 px-6 bg-[#211e26] rounded-xl text-[#f8f1fb] placeholder-[#78747c] focus:outline-none focus:ring-2 focus:ring-[#ff88b5]/30 transition-all font-medium"
+                    className="w-full h-14 px-6 bg-gray-50 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D32D7D]/30 transition-all font-medium"
                     maxLength={100}
                   />
-                  <p className="text-xs text-[#aea9b2]/70 ml-1">
+                  <p className="text-xs text-gray-500/70 ml-1">
                     {t("inquiry.transactionIdHint")}
                   </p>
                 </div>
@@ -353,16 +353,16 @@ function InquiryContent() {
 
               {/* 제목 */}
               <div className="space-y-2">
-                <label className="block text-sm font-semibold text-[#aea9b2] ml-1">
+                <label className="block text-sm font-semibold text-gray-500 ml-1">
                   {t("inquiry.titleLabel")}{" "}
-                  <span className="text-[#ff6e84]">*</span>
+                  <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder={t("inquiry.titlePlaceholder")}
-                  className="w-full h-14 px-6 bg-[#211e26] rounded-xl text-[#f8f1fb] placeholder-[#78747c] focus:outline-none focus:ring-2 focus:ring-[#ff88b5]/30 transition-all font-medium"
+                  className="w-full h-14 px-6 bg-gray-50 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D32D7D]/30 transition-all font-medium"
                   required
                   maxLength={100}
                 />
@@ -370,15 +370,15 @@ function InquiryContent() {
 
               {/* 내용 */}
               <div className="space-y-2">
-                <label className="block text-sm font-semibold text-[#aea9b2] ml-1">
+                <label className="block text-sm font-semibold text-gray-500 ml-1">
                   {t("inquiry.contentLabel")}{" "}
-                  <span className="text-[#ff6e84]">*</span>
+                  <span className="text-red-500">*</span>
                 </label>
                 <textarea
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   placeholder={t("inquiry.contentPlaceholder")}
-                  className="w-full p-6 bg-[#211e26] rounded-xl text-[#f8f1fb] placeholder-[#78747c] focus:outline-none focus:ring-2 focus:ring-[#ff88b5]/30 transition-all font-medium resize-none min-h-[150px]"
+                  className="w-full p-6 bg-gray-50 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D32D7D]/30 transition-all font-medium resize-none min-h-[150px]"
                   required
                   minLength={10}
                 />
@@ -387,10 +387,10 @@ function InquiryContent() {
               {/* 사진 첨부 */}
               <div className="space-y-4">
                 <div className="flex justify-between items-end ml-1">
-                  <label className="text-sm font-semibold text-[#aea9b2]">
+                  <label className="text-sm font-semibold text-gray-500">
                     {t("inquiry.photoLabel")}
                   </label>
-                  <span className="text-[10px] text-[#78747c] font-bold uppercase tracking-widest">
+                  <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
                     {t("inquiry.photoOptional")}
                   </span>
                 </div>
@@ -435,12 +435,12 @@ function InquiryContent() {
                       />
                       <label
                         htmlFor="inquiry-image-input"
-                        className="aspect-square rounded-xl bg-black border-2 border-dashed border-[#4a474e]/30 flex flex-col items-center justify-center group hover:border-[#ff88b5]/50 cursor-pointer transition-all"
+                        className="aspect-square rounded-xl bg-gray-50 border-2 border-dashed border-gray-300 flex flex-col items-center justify-center group hover:border-[#D32D7D]/50 cursor-pointer transition-all"
                       >
-                        <span className="material-symbols-outlined text-[#78747c] group-hover:text-[#ff88b5] transition-colors">
+                        <span className="material-symbols-outlined text-gray-400 group-hover:text-[#D32D7D] transition-colors">
                           add_a_photo
                         </span>
-                        <span className="text-[10px] mt-1.5 font-bold text-[#78747c] group-hover:text-[#ff88b5] uppercase tracking-tighter transition-colors">
+                        <span className="text-[10px] mt-1.5 font-bold text-gray-400 group-hover:text-[#D32D7D] uppercase tracking-tighter transition-colors">
                           {t("inquiry.addPhoto")} ({imageFiles.length}/5)
                         </span>
                       </label>
@@ -454,12 +454,12 @@ function InquiryContent() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-5 rounded-full bg-gradient-to-r from-[#ff88b5] to-[#ff6ea9] text-[#610034] text-base font-bold shadow-lg shadow-[#ff88b5]/20 active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                  className="w-full py-5 rounded-full bg-gradient-to-r from-[#D32D7D] to-[#ff6ea9] text-white text-base font-bold shadow-lg shadow-[#D32D7D]/20 active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
                 >
                   <span className="material-symbols-outlined">send</span>
                   {isSubmitting ? t("inquiry.submitting") : t("inquiry.submit")}
                 </button>
-                <p className="text-center text-[11px] text-[#78747c] mt-6 px-4 leading-relaxed font-medium">
+                <p className="text-center text-[11px] text-gray-400 mt-6 px-4 leading-relaxed font-medium">
                   {t("inquiry.formDesc")}
                 </p>
               </div>
@@ -472,19 +472,19 @@ function InquiryContent() {
           <div className="pb-4">
             {loadingHistory ? (
               <div className="flex flex-col items-center justify-center py-20 gap-3">
-                <div className="w-8 h-8 border-b-2 border-[#ff88b5] rounded-full animate-spin"></div>
-                <p className="text-[#aea9b2] text-sm">
+                <div className="w-8 h-8 border-b-2 border-[#D32D7D] rounded-full animate-spin"></div>
+                <p className="text-gray-500 text-sm">
                   {t("inquiry.loadingHistory")}
                 </p>
               </div>
             ) : inquiries.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-20 gap-4">
-                <div className="w-16 h-16 rounded-full bg-[#1b1820] flex items-center justify-center">
-                  <span className="material-symbols-outlined text-[#aea9b2] text-3xl">
+                <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center">
+                  <span className="material-symbols-outlined text-gray-500 text-3xl">
                     inbox
                   </span>
                 </div>
-                <p className="text-[#aea9b2] font-medium text-sm">
+                <p className="text-gray-500 font-medium text-sm">
                   {t("inquiry.noInquiries")}
                 </p>
               </div>
@@ -507,22 +507,22 @@ function InquiryContent() {
                   return (
                     <div
                       key={iq.id}
-                      className="bg-[#1b1820] rounded-xl overflow-hidden border border-[#4a474e]/15"
+                      className="bg-white rounded-xl overflow-hidden border border-gray-200"
                     >
                       <div
                         onClick={() => setExpandedId(isExpanded ? null : iq.id)}
-                        className="p-4 cursor-pointer flex flex-col gap-2 hover:bg-[#211e26] transition"
+                        className="p-4 cursor-pointer flex flex-col gap-2 hover:bg-gray-50 transition"
                       >
                         <div className="flex justify-between items-center w-full">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <span className="text-xs font-bold text-[#aea9b2] bg-[#27242d] px-2.5 py-1 rounded-md">
+                            <span className="text-xs font-bold text-gray-500 bg-gray-100 px-2.5 py-1 rounded-md">
                               {catLabel}
                             </span>
-                            <span className="text-xs text-[#aea9b2]/60">
+                            <span className="text-xs text-gray-400">
                               {new Date(iq.created_at).toLocaleDateString()}
                             </span>
                             {imgs.length > 0 && (
-                              <span className="text-xs text-[#aea9b2]/60 flex items-center gap-0.5">
+                              <span className="text-xs text-gray-400 flex items-center gap-0.5">
                                 <span className="material-symbols-outlined text-xs">
                                   attach_file
                                 </span>
@@ -533,11 +533,11 @@ function InquiryContent() {
                           <StatusBadge status={iq.status} />
                         </div>
                         <div className="flex justify-between items-center w-full">
-                          <h3 className="font-bold text-[#f8f1fb] line-clamp-1 flex-1 pr-3 text-sm">
+                          <h3 className="font-bold text-gray-900 line-clamp-1 flex-1 pr-3 text-sm">
                             {iq.title}
                           </h3>
                           <span
-                            className="material-symbols-outlined text-[#aea9b2] text-lg transition-transform duration-200"
+                            className="material-symbols-outlined text-gray-500 text-lg transition-transform duration-200"
                             style={{
                               transform: isExpanded ? "rotate(180deg)" : "none",
                             }}
@@ -548,12 +548,12 @@ function InquiryContent() {
                       </div>
 
                       {isExpanded && (
-                        <div className="bg-[#151219] px-4 pb-4 pt-3 border-t border-[#4a474e]/15 space-y-4">
+                        <div className="bg-gray-50 px-4 pb-4 pt-3 border-t border-gray-200 space-y-4">
                           <div>
-                            <span className="text-[10px] font-bold text-[#aea9b2]/60 uppercase tracking-wider mb-2 block">
+                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 block">
                               {t("inquiry.myQuestion")}
                             </span>
-                            <p className="text-[#aea9b2] text-sm whitespace-pre-wrap leading-relaxed">
+                            <p className="text-gray-500 text-sm whitespace-pre-wrap leading-relaxed">
                               {iq.content}
                             </p>
 
@@ -569,7 +569,7 @@ function InquiryContent() {
                                     <img
                                       src={url}
                                       alt={`Attachment ${idx + 1}`}
-                                      className="w-20 h-20 object-cover rounded-xl border border-[#4a474e]/20 hover:opacity-80 transition"
+                                      className="w-20 h-20 object-cover rounded-xl border border-gray-200 hover:opacity-80 transition"
                                     />
                                   </a>
                                 ))}
@@ -578,20 +578,20 @@ function InquiryContent() {
                           </div>
 
                           {iq.status === "resolved" && iq.admin_reply && (
-                            <div className="bg-[#a68cff]/10 border border-[#a68cff]/20 rounded-xl p-4">
+                            <div className="bg-[#D32D7D]/10 border border-[#D32D7D]/20 rounded-xl p-4">
                               <div className="flex items-center gap-2 mb-2">
                                 <span
-                                  className="material-symbols-outlined text-[#a68cff] text-lg"
+                                  className="material-symbols-outlined text-[#D32D7D] text-lg"
                                   style={{ fontVariationSettings: "'FILL' 1" }}
                                 >
                                   support_agent
                                 </span>
-                                <span className="text-xs font-bold text-[#a68cff] uppercase tracking-wider">
+                                <span className="text-xs font-bold text-[#D32D7D] uppercase tracking-wider">
                                   {t("inquiry.adminReply")}
                                 </span>
                               </div>
                               <div
-                                className="text-[#f8f1fb] text-sm whitespace-pre-wrap leading-relaxed border-t border-[#a68cff]/15 pt-2"
+                                className="text-gray-900 text-sm whitespace-pre-wrap leading-relaxed border-t border-[#D32D7D]/15 pt-2"
                                 dangerouslySetInnerHTML={{
                                   __html: iq.admin_reply,
                                 }}
@@ -610,7 +610,7 @@ function InquiryContent() {
                                           <img
                                             src={url}
                                             alt={`Reply Attachment ${idx + 1}`}
-                                            className="w-20 h-20 object-cover rounded-xl border border-[#a68cff]/20 hover:opacity-80 transition"
+                                            className="w-20 h-20 object-cover rounded-xl border border-[#D32D7D]/20 hover:opacity-80 transition"
                                           />
                                         </a>
                                       ),
@@ -637,8 +637,8 @@ export default function InquiryPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#0f0d13] flex items-center justify-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#ff88b5]"></div>
+        <div className="min-h-screen bg-white flex items-center justify-center">
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#D32D7D]"></div>
         </div>
       }
     >

@@ -532,10 +532,10 @@ export default function ClientLayout({
     ? "flex flex-col min-h-screen relative w-full bg-[#0f0d13]"
     : isAdminPage
       ? "flex flex-col min-h-screen relative overflow-hidden w-full"
-      : `flex flex-col lg:flex-row w-full min-h-screen lg:h-[100dvh] ${isInternalPage ? "bg-[#0f0d13]" : "bg-white"} relative shadow-xl lg:overflow-hidden`;
+      : `flex flex-col lg:flex-row w-full min-h-screen lg:h-[100dvh] ${isInternalPage ? "bg-[#FAFAFA]" : "bg-white"} relative shadow-xl lg:overflow-hidden`;
 
   // 우측 영역(본문) 컨테이너 클래스 (서브 페이지용)
-  const rightPanelClasses = `flex flex-col w-full flex-1 min-h-screen lg:min-h-0 lg:h-full ${isInternalPage ? "bg-[#0f0d13]" : "bg-white"} relative`;
+  const rightPanelClasses = `flex flex-col w-full flex-1 min-h-screen lg:min-h-0 lg:h-full ${isInternalPage ? "bg-[#FAFAFA]" : "bg-white"} relative`;
 
   return (
     <ToastProvider>
@@ -567,13 +567,15 @@ export default function ClientLayout({
 
             {/* 모바일 전용 상단 헤더: 알림 벨 + 언어 전환 */}
             {(!isSpecialPage || (isLandingPage && !!userId)) && !isChatRoom && (
-              <div className="lg:hidden sticky top-0 z-[60] w-full bg-[#0f0d13] border-b border-white/10 shrink-0">
+              <div
+                className={`lg:hidden sticky top-0 z-[60] w-full ${isLandingPage ? "bg-[#0f0d13] border-b border-white/10" : "bg-white border-b border-gray-100"} shrink-0`}
+              >
                 <div className="flex justify-end items-center px-4 py-3 gap-3">
                   {isProUser && (
                     <button
                       onClick={() => router.push("/pro/wallet")}
                       aria-label={t("pcTopNav.wallet")}
-                      className="relative transition-colors text-white/70 hover:text-white"
+                      className={`relative transition-colors ${isLandingPage ? "text-white/70 hover:text-white" : "text-[#6B7280] hover:text-[#1F2937]"}`}
                     >
                       <span
                         className="material-symbols-outlined text-[22px]"
@@ -590,7 +592,7 @@ export default function ClientLayout({
                   )}
                   <button
                     onClick={() => router.push("/notifications")}
-                    className="relative text-white/70 hover:text-white transition-colors"
+                    className={`relative transition-colors ${isLandingPage ? "text-white/70 hover:text-white" : "text-[#6B7280] hover:text-[#1F2937]"}`}
                   >
                     <span
                       className="material-symbols-outlined text-[22px]"
@@ -604,7 +606,9 @@ export default function ClientLayout({
                     {unreadNotifsCount > 0 && (
                       <span className="absolute -top-1 -right-1 flex h-3 w-3">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-[#0f0d13]"></span>
+                        <span
+                          className={`relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 ${isLandingPage ? "border-[#0f0d13]" : "border-white"}`}
+                        ></span>
                       </span>
                     )}
                   </button>
@@ -628,7 +632,7 @@ export default function ClientLayout({
 
                 {!hideNavBar && (
                   <nav
-                    className="fixed bottom-0 left-0 w-full bg-[#1a1721] border-t border-white/10 z-[999] px-2 py-2 md:hidden"
+                    className={`fixed bottom-0 left-0 w-full ${isLandingPage ? "bg-[#1a1721] border-t border-white/10" : "bg-white border-t border-gray-200"} z-[999] px-2 py-2 md:hidden`}
                     style={{
                       position: "fixed",
                       bottom: 0,
@@ -676,7 +680,13 @@ export default function ClientLayout({
                                   );
                               }}
                               className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${
-                                isActive ? "text-[#ff88b5]" : "text-white/50"
+                                isActive
+                                  ? isLandingPage
+                                    ? "text-[#ff88b5]"
+                                    : "text-[#D32D7D]"
+                                  : isLandingPage
+                                    ? "text-white/50"
+                                    : "text-[#374151]"
                               }`}
                             >
                               <div className="relative">
@@ -695,7 +705,9 @@ export default function ClientLayout({
                                   unreadNotifsCount > 0 && (
                                     <span className="absolute -top-1 -right-2 flex h-3 w-3">
                                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                      <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-[#1a1721]"></span>
+                                      <span
+                                        className={`relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 ${isLandingPage ? "border-[#1a1721]" : "border-white"}`}
+                                      ></span>
                                     </span>
                                   )}
 
@@ -703,7 +715,9 @@ export default function ClientLayout({
                                   unreadChatsCount > 0 && (
                                     <span className="absolute -top-1 -right-2 flex h-3 w-3">
                                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                      <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-[#1a1721]"></span>
+                                      <span
+                                        className={`relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 ${isLandingPage ? "border-[#1a1721]" : "border-white"}`}
+                                      ></span>
                                     </span>
                                   )}
 
@@ -722,7 +736,9 @@ export default function ClientLayout({
                                 )}
 
                                 {isProUser && item.key === "wallet" && (
-                                  <span className="absolute -bottom-1 -right-8 flex h-4 px-1 rounded-full bg-yellow-400 items-center justify-center text-[10px] font-black text-white border-2 border-[#1a1721] shadow-sm whitespace-nowrap">
+                                  <span
+                                    className={`absolute -bottom-1 -right-8 flex h-4 px-1 rounded-full bg-yellow-400 items-center justify-center text-[10px] font-black text-white border-2 ${isLandingPage ? "border-[#1a1721]" : "border-white"} shadow-sm whitespace-nowrap`}
+                                  >
                                     {walletBalance !== null
                                       ? walletBalance.toLocaleString()
                                       : "C"}

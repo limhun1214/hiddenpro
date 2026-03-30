@@ -59,7 +59,7 @@
 
 상세 가이드 → `docs/system/mcp_guidelines.md` 참조
 
-- `supabase-postgres`: DB 스키마 조회·교차 검증, DDL/DML은 마이그레이션 스크립트로 자동 실행 (대시보드 수동 조작 요구 금지)
+- `supabase-postgres`: 읽기 전용(SELECT)으로만 사용 — 스키마 조회·교차 검증 목적. DDL/DML 실행이 필요한 경우 SQL문을 작성하여 디렉터에게 전달하고, 디렉터가 Supabase SQL Editor에서 직접 실행한다.
 - `cloudflare`: 도메인·Workers/Pages·D1/KV/R2 인프라 제어 (전면 사용 승인됨)
 - `git`: 브랜치 상태, 커밋 이력, Diff 확인 및 푸시
 - `memory`: 핵심 아키텍처·비즈니스 규칙 등 세션 초월 컨텍스트 기록·조회

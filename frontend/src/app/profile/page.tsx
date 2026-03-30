@@ -210,13 +210,13 @@ export default function ProfilePage() {
 
   if (loading)
     return (
-      <div className="min-h-screen bg-[#0f0d13] p-10 text-center text-[#aea9b2]">
+      <div className="min-h-screen bg-white p-10 text-center text-gray-500">
         {t("profile.loading")}
       </div>
     );
   if (!userRole)
     return (
-      <div className="min-h-screen bg-[#0f0d13] p-10 text-center text-[#ff6e84]">
+      <div className="min-h-screen bg-white p-10 text-center text-red-500">
         {t("profile.error")}
       </div>
     );
@@ -224,13 +224,13 @@ export default function ProfilePage() {
   // [기획 핵심] 강제 Early Return (고객일 경우 고수 DB 조회 원천 차단)
   if (userRole === "CUSTOMER") {
     return (
-      <div className="min-h-screen bg-[#0f0d13] flex flex-col w-full lg:px-8 lg:py-8 lg:items-stretch">
-        <header className="w-full bg-[#151219] p-4 border-b border-[#2a2730] flex justify-center lg:justify-start items-center lg:text-left lg:mb-8 lg:bg-transparent lg:border-none lg:p-0 lg:mt-8">
-          <h1 className="text-xl lg:text-2xl lg:font-bold text-[#f8f1fb]">
+      <div className="min-h-screen bg-white flex flex-col w-full lg:px-8 lg:py-8 lg:items-stretch">
+        <header className="w-full bg-gray-50 p-4 border-b border-gray-200 flex justify-center lg:justify-start items-center lg:text-left lg:mb-8 lg:bg-transparent lg:border-none lg:p-0 lg:mt-8">
+          <h1 className="text-xl lg:text-2xl lg:font-bold text-gray-900">
             {t("profile.title")}
           </h1>
         </header>
-        <main className="flex-1 w-full space-y-6 mt-4 bg-[#0f0d13]">
+        <main className="flex-1 w-full space-y-6 mt-4 bg-white">
           <div className="px-4">
             <ProfileHeader
               user={sessionUser}
@@ -259,12 +259,12 @@ export default function ProfilePage() {
                 </span>
                 <button
                   onClick={() => router.push("/referral")}
-                  className="mt-2 self-start bg-[#ff88b5] text-black rounded-full px-4 py-1.5 text-xs font-bold hover:bg-[#ff6ea3] transition"
+                  className="mt-2 self-start bg-[#0020A0] text-black rounded-full px-4 py-1.5 text-xs font-bold hover:bg-[#001880] transition"
                 >
                   Send Invite
                 </button>
               </div>
-              <span className="material-symbols-outlined text-[22px] text-[#a68cff]">
+              <span className="material-symbols-outlined text-[22px] text-[#0020A0]">
                 card_giftcard
               </span>
             </div>
@@ -274,7 +274,7 @@ export default function ProfilePage() {
           <div className="pt-6 pb-2 flex justify-center gap-6">
             <button
               onClick={handleLogout}
-              className="text-sm text-white/70 hover:text-[#ff88b5] transition"
+              className="text-sm text-gray-600 hover:text-[#0020A0] transition"
             >
               {t("profile.logout")}
             </button>
@@ -284,7 +284,7 @@ export default function ProfilePage() {
                 setWithdrawReason("");
                 setWithdrawConfirmText("");
               }}
-              className="text-sm text-[#ff6e84]/60 hover:text-[#ff6e84] transition"
+              className="text-sm text-red-400 hover:text-red-500 transition"
             >
               {t("profile.withdraw")}
             </button>
@@ -294,35 +294,35 @@ export default function ProfilePage() {
           <div className="px-4 pt-2 pb-12 flex flex-wrap justify-center gap-x-3 gap-y-1">
             <Link
               href="/legal/TERMS"
-              className="text-xs text-[#aea9b2]/60 hover:text-[#aea9b2] transition"
+              className="text-xs text-gray-400 hover:text-gray-700 transition"
             >
               {t("footer.terms")}
             </Link>
-            <span className="text-xs text-[#aea9b2]/30">|</span>
+            <span className="text-xs text-gray-300">|</span>
             <Link
               href="/legal/PRIVACY"
-              className="text-xs text-[#aea9b2]/60 hover:text-[#aea9b2] transition"
+              className="text-xs text-gray-400 hover:text-gray-700 transition"
             >
               {t("footer.privacy")}
             </Link>
-            <span className="text-xs text-[#aea9b2]/30">|</span>
+            <span className="text-xs text-gray-300">|</span>
             <Link
               href="/legal/REFUND"
-              className="text-xs text-[#aea9b2]/60 hover:text-[#aea9b2] transition"
+              className="text-xs text-gray-400 hover:text-gray-700 transition"
             >
               {t("footer.refund")}
             </Link>
-            <span className="text-xs text-[#aea9b2]/30">|</span>
+            <span className="text-xs text-gray-300">|</span>
             <Link
               href="/support/inquiry"
-              className="text-xs text-[#aea9b2]/60 hover:text-[#aea9b2] transition"
+              className="text-xs text-gray-400 hover:text-gray-700 transition"
             >
               {t("footer.contactUs")}
             </Link>
-            <span className="text-xs text-[#aea9b2]/30">|</span>
+            <span className="text-xs text-gray-300">|</span>
             <Link
               href="/support/business-info"
-              className="text-xs text-[#aea9b2]/60 hover:text-[#aea9b2] transition"
+              className="text-xs text-gray-400 hover:text-gray-700 transition"
             >
               {t("footer.businessInfo")}
             </Link>
@@ -426,14 +426,14 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0f0d13] flex flex-col w-full lg:px-8 lg:py-8 lg:items-stretch">
-      <header className="w-full bg-[#151219] p-4 border-b border-[#2a2730] flex justify-center lg:justify-start items-center lg:text-left lg:mb-8 lg:bg-transparent lg:border-none lg:p-0 lg:mt-8">
-        <h1 className="text-xl lg:text-2xl lg:font-bold text-[#f8f1fb]">
+    <div className="min-h-screen bg-white flex flex-col w-full lg:px-8 lg:py-8 lg:items-stretch">
+      <header className="w-full bg-gray-50 p-4 border-b border-gray-200 flex justify-center lg:justify-start items-center lg:text-left lg:mb-8 lg:bg-transparent lg:border-none lg:p-0 lg:mt-8">
+        <h1 className="text-xl lg:text-2xl lg:font-bold text-gray-900">
           {t("profile.title")}
         </h1>
       </header>
 
-      <main className="flex-1 w-full space-y-6 mt-4 bg-[#0f0d13]">
+      <main className="flex-1 w-full space-y-6 mt-4 bg-white">
         <div className="px-4">
           <ProfileHeader
             user={sessionUser}
@@ -463,12 +463,12 @@ export default function ProfilePage() {
               </span>
               <button
                 onClick={() => router.push("/referral")}
-                className="mt-2 self-start bg-[#ff88b5] text-black rounded-full px-4 py-1.5 text-xs font-bold hover:bg-[#ff6ea3] transition"
+                className="mt-2 self-start bg-[#0020A0] text-black rounded-full px-4 py-1.5 text-xs font-bold hover:bg-[#001880] transition"
               >
                 Send Invite
               </button>
             </div>
-            <span className="material-symbols-outlined text-[22px] text-[#a68cff]">
+            <span className="material-symbols-outlined text-[22px] text-[#0020A0]">
               card_giftcard
             </span>
           </div>
@@ -478,7 +478,7 @@ export default function ProfilePage() {
         <div className="pt-6 pb-2 flex justify-center gap-6">
           <button
             onClick={handleLogout}
-            className="text-sm text-white/70 hover:text-[#ff88b5] transition"
+            className="text-sm text-gray-600 hover:text-[#0020A0] transition"
           >
             {t("profile.logout")}
           </button>
@@ -488,7 +488,7 @@ export default function ProfilePage() {
               setWithdrawReason("");
               setWithdrawConfirmText("");
             }}
-            className="text-sm text-[#ff6e84]/60 hover:text-[#ff6e84] transition"
+            className="text-sm text-red-400 hover:text-red-500 transition"
           >
             {t("profile.withdraw")}
           </button>
@@ -498,35 +498,35 @@ export default function ProfilePage() {
         <div className="px-4 pt-2 pb-12 flex flex-wrap justify-center gap-x-3 gap-y-1">
           <Link
             href="/legal/TERMS"
-            className="text-xs text-[#aea9b2]/60 hover:text-[#aea9b2] transition"
+            className="text-xs text-gray-400 hover:text-gray-700 transition"
           >
             {t("footer.terms")}
           </Link>
-          <span className="text-xs text-[#aea9b2]/30">|</span>
+          <span className="text-xs text-gray-300">|</span>
           <Link
             href="/legal/PRIVACY"
-            className="text-xs text-[#aea9b2]/60 hover:text-[#aea9b2] transition"
+            className="text-xs text-gray-400 hover:text-gray-700 transition"
           >
             {t("footer.privacy")}
           </Link>
-          <span className="text-xs text-[#aea9b2]/30">|</span>
+          <span className="text-xs text-gray-300">|</span>
           <Link
             href="/legal/REFUND"
-            className="text-xs text-[#aea9b2]/60 hover:text-[#aea9b2] transition"
+            className="text-xs text-gray-400 hover:text-gray-700 transition"
           >
             {t("footer.refund")}
           </Link>
-          <span className="text-xs text-[#aea9b2]/30">|</span>
+          <span className="text-xs text-gray-300">|</span>
           <Link
             href="/support/inquiry"
-            className="text-xs text-[#aea9b2]/60 hover:text-[#aea9b2] transition"
+            className="text-xs text-gray-400 hover:text-gray-700 transition"
           >
             {t("footer.contactUs")}
           </Link>
-          <span className="text-xs text-[#aea9b2]/30">|</span>
+          <span className="text-xs text-gray-300">|</span>
           <Link
             href="/support/business-info"
-            className="text-xs text-[#aea9b2]/60 hover:text-[#aea9b2] transition"
+            className="text-xs text-gray-400 hover:text-gray-700 transition"
           >
             {t("footer.businessInfo")}
           </Link>
@@ -933,13 +933,13 @@ function ProfileHeader({
     nickname || user.email?.split("@")[0] || t("profile.proDefaultName");
 
   return (
-    <div className="bg-[#211e26] rounded-2xl border border-[#2a2730] overflow-hidden">
+    <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
       {/* 프로필 헤더 영역 */}
       <div className="p-6 flex items-center gap-4">
         {/* 원형 프로필 사진 */}
         <div className="relative flex-shrink-0">
-          <div className="absolute -inset-1 bg-gradient-to-tr from-[#ff88b5] to-[#a68cff] rounded-full blur opacity-25"></div>
-          <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gradient-to-br from-[#2a2730] to-[#211e26] flex items-center justify-center border-2 border-[#211e26] shadow-md">
+          <div className="absolute -inset-1 bg-gradient-to-tr from-[#0020A0] to-pink-300 rounded-full blur opacity-25"></div>
+          <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center border-2 border-gray-100 shadow-md">
             {avatarUrl ? (
               <img
                 src={avatarUrl}
@@ -948,7 +948,7 @@ function ProfileHeader({
               />
             ) : (
               <svg
-                className="w-8 h-8 text-[#aea9b2]"
+                className="w-8 h-8 text-gray-500"
                 fill="currentColor"
                 viewBox="0 0 24 24"
               >
@@ -966,16 +966,16 @@ function ProfileHeader({
         {/* 이름 + 이메일 */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <h2 className="text-lg font-bold text-[#f8f1fb] truncate">
+            <h2 className="text-lg font-bold text-gray-900 truncate">
               {displayName}
             </h2>
-            <span className="text-sm text-[#aea9b2] flex-shrink-0">
+            <span className="text-sm text-gray-500 flex-shrink-0">
               {roleLabel}
             </span>
           </div>
           <div className="flex items-center gap-1.5 mt-1">
-            <span className="text-xs text-[#aea9b2]">✉️</span>
-            <span className="text-sm text-[#aea9b2] truncate">
+            <span className="text-xs text-gray-500">✉️</span>
+            <span className="text-sm text-gray-500 truncate">
               {user.email || t("profile.noEmail")}
             </span>
           </div>
@@ -986,8 +986,8 @@ function ProfileHeader({
           onClick={() => setShowSettings(!showSettings)}
           className={`flex-shrink-0 text-sm font-medium px-4 py-2 rounded-lg transition-all duration-200 ${
             showSettings
-              ? "bg-[#a68cff] text-[#0f0d13] shadow-md"
-              : "bg-[#2a2730] text-[#a68cff] hover:bg-[#33303a]"
+              ? "bg-[#0020A0] text-white shadow-md"
+              : "bg-gray-100 text-[#0020A0] hover:bg-gray-200"
           }`}
         >
           {t("profile.accountSettings")}
@@ -999,11 +999,11 @@ function ProfileHeader({
         <div className="px-6 pb-4 flex items-center gap-2">
           <button
             onClick={() => (window.location.href = reviewHref)}
-            className="flex-1 flex items-center justify-center gap-1.5 bg-[#2a2730] hover:bg-[#33303a] text-[#b5ffc2] font-semibold py-2.5 rounded-xl border border-[#33303a] transition text-sm"
+            className="flex-1 flex items-center justify-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-green-600 font-semibold py-2.5 rounded-xl border border-gray-200 transition text-sm"
           >
             <span>⭐</span>
             <span>{reviewStats.avg.toFixed(1)}</span>
-            <span className="text-[#b5ffc2]/70 text-xs">
+            <span className="text-green-600/70 text-xs">
               ({reviewStats.count}
               {t("profile.proReviewCount")})
             </span>
@@ -1015,14 +1015,14 @@ function ProfileHeader({
       <div
         className={`transition-all duration-300 ease-in-out overflow-hidden ${showSettings ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"}`}
       >
-        <div className="px-6 pb-6 space-y-5 border-t border-[#2a2730] pt-5">
+        <div className="px-6 pb-6 space-y-5 border-t border-gray-200 pt-5">
           {/* 프로필 사진 변경 */}
           <div className="space-y-3">
-            <label className="text-sm font-bold text-[#f8f1fb] flex items-center gap-2">
+            <label className="text-sm font-bold text-gray-900 flex items-center gap-2">
               {t("profile.photoLabel")}
             </label>
             <div className="flex items-center gap-4">
-              <div className="w-20 h-20 rounded-full overflow-hidden bg-gradient-to-br from-[#2a2730] to-[#211e26] flex items-center justify-center border-2 border-[#2a2730] shadow-inner">
+              <div className="w-20 h-20 rounded-full overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center border-2 border-gray-200 shadow-inner">
                 {avatarUrl ? (
                   <img
                     src={avatarUrl}
@@ -1031,7 +1031,7 @@ function ProfileHeader({
                   />
                 ) : (
                   <svg
-                    className="w-10 h-10 text-[#aea9b2]"
+                    className="w-10 h-10 text-gray-500"
                     fill="currentColor"
                     viewBox="0 0 24 24"
                   >
@@ -1043,7 +1043,7 @@ function ProfileHeader({
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploading || cooldownRemaining > 0}
-                  className="bg-[#2a2730] hover:bg-[#33303a] text-[#f8f1fb] font-medium text-sm px-4 py-2.5 rounded-xl border border-[#33303a] transition disabled:opacity-50"
+                  className="bg-gray-100 hover:bg-gray-200 text-gray-900 font-medium text-sm px-4 py-2.5 rounded-xl border border-gray-200 transition disabled:opacity-50"
                 >
                   {uploading
                     ? t("profile.photoUploading")
@@ -1051,7 +1051,7 @@ function ProfileHeader({
                       ? `${cooldownRemaining} ${t("profile.photoCooldown")}`
                       : t("profile.photoUploadBtn")}
                 </button>
-                <span className="text-[11px] text-[#aea9b2]">
+                <span className="text-[11px] text-gray-500">
                   {t("profile.proPhotoSpec")}
                 </span>
               </div>
@@ -1067,9 +1067,9 @@ function ProfileHeader({
 
           {/* 활동명 수정 */}
           <div className="space-y-3">
-            <label className="text-sm font-bold text-[#f8f1fb] flex items-center gap-2">
+            <label className="text-sm font-bold text-gray-900 flex items-center gap-2">
               ✏️ {t("profile.nicknameLabel")}
-              <span className="text-xs text-[#aea9b2] font-normal">
+              <span className="text-xs text-gray-500 font-normal">
                 {t("profile.proNicknameRule")}
               </span>
             </label>
@@ -1084,17 +1084,17 @@ function ProfileHeader({
                   }}
                   placeholder={t("profile.nicknamePlaceholder")}
                   maxLength={20}
-                  className={`w-full p-3 border rounded-xl focus:outline-none focus:ring-2 transition text-sm bg-[#151219] text-[#f8f1fb] placeholder:text-[#aea9b2]/50 ${
+                  className={`w-full p-3 border rounded-xl focus:outline-none focus:ring-2 transition text-sm bg-gray-50 text-gray-900 placeholder:text-gray-300 ${
                     nicknameStatus === "taken" || nicknameStatus === "error"
-                      ? "border-[#ff6e84] focus:ring-[#ff6e84]"
+                      ? "border-red-400 focus:ring-red-400"
                       : nicknameStatus === "available"
-                        ? "border-[#b5ffc2] focus:ring-[#b5ffc2]"
-                        : "border-[#2a2730] focus:ring-[#a68cff]"
+                        ? "border-green-400 focus:ring-green-400"
+                        : "border-gray-200 focus:ring-[#0020A0]"
                   }`}
                 />
                 {nicknameStatus === "checking" && (
                   <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                    <div className="w-4 h-4 border-2 border-[#a68cff] border-t-transparent rounded-full animate-spin"></div>
+                    <div className="w-4 h-4 border-2 border-[#0020A0] border-t-transparent rounded-full animate-spin"></div>
                   </div>
                 )}
               </div>
@@ -1105,7 +1105,7 @@ function ProfileHeader({
                   nicknameStatus !== "available" ||
                   nicknameCooldown > 0
                 }
-                className="bg-[#a68cff] hover:bg-[#9070ff] text-[#0f0d13] font-bold px-5 py-3 rounded-xl transition text-sm whitespace-nowrap disabled:bg-[#2a2730] disabled:text-[#aea9b2] disabled:cursor-not-allowed"
+                className="bg-[#0020A0] hover:bg-[#001880] text-white font-bold px-5 py-3 rounded-xl transition text-sm whitespace-nowrap disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
               >
                 {saving
                   ? t("profile.nicknameSaving")
@@ -1122,10 +1122,10 @@ function ProfileHeader({
               <p
                 className={`text-xs font-medium pl-1 ${
                   nicknameStatus === "taken" || nicknameStatus === "error"
-                    ? "text-[#ff6e84]"
+                    ? "text-red-500"
                     : nicknameStatus === "available"
-                      ? "text-[#b5ffc2]"
-                      : "text-[#aea9b2]"
+                      ? "text-green-600"
+                      : "text-gray-500"
                 }`}
               >
                 {nicknameMsg}
@@ -1213,32 +1213,32 @@ function CustomerProfile({ user }: { user: any }) {
   };
 
   return (
-    <div className="bg-[#211e26] p-6 rounded-2xl border border-[#2a2730] space-y-4">
-      <h2 className="text-sm font-bold text-[#ff88b5] tracking-widest uppercase border-b border-[#2a2730] pb-2">
+    <div className="bg-white p-6 rounded-2xl border border-gray-200 space-y-4">
+      <h2 className="text-sm font-bold text-[#0020A0] tracking-widest uppercase border-b border-gray-200 pb-2">
         {t("profile.basicInfo")}
       </h2>
       <div className="space-y-3">
         <div className="flex flex-col">
-          <span className="text-xs text-[#aea9b2] font-medium mb-1">
+          <span className="text-xs text-gray-500 font-medium mb-1">
             {t("profile.emailLabel")}
           </span>
-          <span className="text-[#f8f1fb] font-medium bg-[#151219] p-3 rounded-lg border border-[#2a2730]">
+          <span className="text-gray-900 font-medium bg-gray-50 p-3 rounded-lg border border-gray-200">
             {user.email || t("profile.noEmailInfo")}
           </span>
         </div>
         {phoneData?.is_phone_verified && phoneData?.phone ? (
           <div className="flex flex-col">
-            <span className="text-xs text-[#aea9b2] font-medium mb-1">
+            <span className="text-xs text-gray-500 font-medium mb-1">
               {t("profile.verifiedPhone")}
             </span>
-            <span className="text-[#b5ffc2] font-medium bg-[#b5ffc2]/10 p-3 rounded-lg border border-[#b5ffc2]/30 flex items-center gap-2">
+            <span className="text-green-600 font-medium bg-green-400/10 p-3 rounded-lg border border-green-400/30 flex items-center gap-2">
               <span className="text-sm">✅</span>
               {phoneData.phone}
             </span>
           </div>
         ) : (
           <div className="flex flex-col">
-            <span className="text-xs text-[#aea9b2] font-medium mb-1">
+            <span className="text-xs text-gray-500 font-medium mb-1">
               {t("profile.phoneVerification")}
             </span>
             <div className="flex gap-2">
@@ -1247,31 +1247,31 @@ function CustomerProfile({ user }: { user: any }) {
                 value={phoneInput}
                 onChange={(e) => setPhoneInput(e.target.value)}
                 placeholder={t("profile.phonePlaceholder")}
-                className="flex-1 p-3 bg-[#151219] border border-[#2a2730] text-[#f8f1fb] placeholder:text-[#aea9b2]/50 rounded-lg text-sm focus:ring-2 focus:ring-[#a68cff] focus:outline-none"
+                className="flex-1 p-3 bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#0020A0] focus:outline-none"
                 disabled={verifyingPhone}
               />
               <button
                 onClick={handlePhoneVerify}
                 disabled={verifyingPhone || !phoneInput.trim()}
-                className="bg-[#a68cff] hover:bg-[#9070ff] text-[#0f0d13] font-bold px-4 py-2 rounded-lg text-sm transition disabled:opacity-50 whitespace-nowrap"
+                className="bg-[#0020A0] hover:bg-[#001880] text-white font-bold px-4 py-2 rounded-lg text-sm transition disabled:opacity-50 whitespace-nowrap"
               >
                 {verifyingPhone
                   ? t("profile.phoneVerifying")
                   : t("profile.phoneVerifyBtn")}
               </button>
             </div>
-            <span className="text-xs text-[#aea9b2] mt-1">
+            <span className="text-xs text-gray-500 mt-1">
               {t("profile.phoneNote")}
             </span>
           </div>
         )}
         {joinDate && (
           <div className="flex flex-col">
-            <span className="text-xs text-[#aea9b2] font-medium mb-1">
+            <span className="text-xs text-gray-500 font-medium mb-1">
               {t("profile.joinDate")}
             </span>
-            <span className="text-[#f8f1fb] font-medium bg-[#151219] p-3 rounded-lg border border-[#2a2730] flex items-center gap-2">
-              <span className="text-[#aea9b2] text-sm">📅</span>
+            <span className="text-gray-900 font-medium bg-gray-50 p-3 rounded-lg border border-gray-200 flex items-center gap-2">
+              <span className="text-gray-500 text-sm">📅</span>
               {joinDate}
             </span>
           </div>
@@ -1280,13 +1280,13 @@ function CustomerProfile({ user }: { user: any }) {
           className="flex flex-col cursor-pointer group"
           onClick={() => (window.location.href = "/customer/my-reviews")}
         >
-          <span className="text-xs text-[#aea9b2] font-medium mb-1">
+          <span className="text-xs text-gray-500 font-medium mb-1">
             {t("profile.myReviewsLabel")}
           </span>
-          <span className="text-[#f8f1fb] font-medium bg-[#151219] p-3 rounded-lg border border-[#2a2730] flex items-center gap-2 group-hover:border-[#b5ffc2]/30 transition">
+          <span className="text-gray-900 font-medium bg-gray-50 p-3 rounded-lg border border-gray-200 flex items-center gap-2 group-hover:border-green-400/30 transition">
             <span className="text-sm">⭐</span>
             {reviewCount} {t("profile.reviewsCount")}
-            <span className="ml-auto text-[#aea9b2] text-xs group-hover:text-[#b5ffc2] transition">
+            <span className="ml-auto text-gray-500 text-xs group-hover:text-green-600 transition">
               {t("profile.viewBtn")}
             </span>
           </span>
@@ -1543,20 +1543,20 @@ function ProProfile({ user }: { user: any }) {
   };
 
   return (
-    <div className="bg-[#211e26] p-6 rounded-2xl border border-[#2a2730]">
-      <h2 className="text-sm font-bold text-[#ff88b5] tracking-widest uppercase border-b border-[#2a2730] pb-4 mb-4">
+    <div className="bg-white p-6 rounded-2xl border border-gray-200">
+      <h2 className="text-sm font-bold text-[#0020A0] tracking-widest uppercase border-b border-gray-200 pb-4 mb-4">
         {t("profile.proProfileTitle")}
       </h2>
 
       {/* 매칭 일시 정지 토글 섹션 */}
-      <div className="bg-[#151219] p-5 rounded-xl border border-[#2a2730] mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-gray-50 p-5 rounded-xl border border-gray-200 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h3 className="font-bold text-[#f8f1fb] flex items-center gap-2">
+          <h3 className="font-bold text-gray-900 flex items-center gap-2">
             {isAcceptingRequests
               ? t("profile.proAcceptingOn")
               : t("profile.proAcceptingOff")}
           </h3>
-          <p className="text-sm text-[#aea9b2] mt-1">
+          <p className="text-sm text-gray-500 mt-1">
             {t("profile.proAcceptingDesc")}
           </p>
         </div>
@@ -1567,41 +1567,41 @@ function ProProfile({ user }: { user: any }) {
             checked={isAcceptingRequests}
             onChange={handleToggleAccepting}
           />
-          <div className="w-14 h-7 bg-[#2a2730] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-[#33303a] after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-[#a68cff]"></div>
+          <div className="w-14 h-7 bg-gray-100 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-200 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-[#0020A0]"></div>
         </label>
       </div>
 
       {/* 인증 배지 영역 */}
       <div className="flex flex-wrap gap-2 mb-4">
         {isPhoneVerified && (
-          <span className="inline-flex items-center bg-[#b5ffc2]/10 text-[#b5ffc2] text-xs font-bold px-3 py-1.5 rounded-full border border-[#b5ffc2]/30">
+          <span className="inline-flex items-center bg-green-400/10 text-green-600 text-xs font-bold px-3 py-1.5 rounded-full border border-green-400/30">
             ✅ Phone Verified
           </span>
         )}
         {facebookUrl && (
-          <span className="inline-flex items-center bg-[#a68cff]/10 text-[#a68cff] text-xs font-bold px-3 py-1.5 rounded-full border border-[#a68cff]/30">
+          <span className="inline-flex items-center bg-[#0020A0]/10 text-[#0020A0] text-xs font-bold px-3 py-1.5 rounded-full border border-[#0020A0]/30">
             🔵 Facebook Linked
           </span>
         )}
         {!isPhoneVerified && !facebookUrl && (
-          <span className="text-xs text-[#aea9b2]">
+          <span className="text-xs text-gray-500">
             {t("profile.proNoBadges")}
           </span>
         )}
       </div>
 
       {/* 전화번호 인증 섹션 */}
-      <div className="bg-[#151219] p-4 rounded-xl border border-[#2a2730] mb-4 space-y-3">
-        <label className="text-sm font-bold text-[#f8f1fb] flex items-center gap-2">
+      <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 mb-4 space-y-3">
+        <label className="text-sm font-bold text-gray-900 flex items-center gap-2">
           {t("profile.proPhoneVerifyLabel")}
           {isPhoneVerified && (
-            <span className="text-[#b5ffc2] text-xs">
+            <span className="text-green-600 text-xs">
               {t("profile.proPhoneVerified")}
             </span>
           )}
         </label>
         {isPhoneVerified ? (
-          <div className="bg-[#b5ffc2]/10 text-[#b5ffc2] p-3 rounded-lg text-sm font-medium border border-[#b5ffc2]/30">
+          <div className="bg-green-400/10 text-green-600 p-3 rounded-lg text-sm font-medium border border-green-400/30">
             {t("profile.proPhoneVerifiedText")} {proPhone}
           </div>
         ) : (
@@ -1611,13 +1611,13 @@ function ProProfile({ user }: { user: any }) {
               value={phoneInput}
               onChange={(e) => setPhoneInput(e.target.value)}
               placeholder={t("profile.proPhonePlaceholder")}
-              className="flex-1 p-3 bg-[#0f0d13] border border-[#2a2730] text-[#f8f1fb] placeholder:text-[#aea9b2]/50 rounded-xl focus:ring-2 focus:ring-[#b5ffc2] focus:outline-none transition text-sm"
+              className="flex-1 p-3 bg-white border border-gray-200 text-gray-900 placeholder:text-gray-300 rounded-xl focus:ring-2 focus:ring-green-400 focus:outline-none transition text-sm"
             />
             <button
               type="button"
               onClick={handlePhoneVerify}
               disabled={verifyingPhone}
-              className="bg-[#b5ffc2] hover:bg-[#9ff0af] text-[#0f0d13] font-bold px-4 py-3 rounded-xl transition text-sm whitespace-nowrap disabled:opacity-50"
+              className="bg-green-400 hover:bg-green-500 text-white font-bold px-4 py-3 rounded-xl transition text-sm whitespace-nowrap disabled:opacity-50"
             >
               {verifyingPhone
                 ? t("profile.proPhoneProcessing")
@@ -1628,24 +1628,24 @@ function ProProfile({ user }: { user: any }) {
       </div>
 
       {/* Facebook 연동 섹션 */}
-      <div className="bg-[#151219] p-4 rounded-xl border border-[#2a2730] mb-4 space-y-3">
-        <label className="text-sm font-bold text-[#f8f1fb] flex items-center gap-2">
+      <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 mb-4 space-y-3">
+        <label className="text-sm font-bold text-gray-900 flex items-center gap-2">
           {t("profile.proFbLinkLabel")}
           {facebookUrl && (
-            <span className="text-[#a68cff] text-xs">
+            <span className="text-[#0020A0] text-xs">
               {t("profile.proFbLinked")}
             </span>
           )}
         </label>
         {facebookUrl && !editingFb ? (
           <div className="flex items-center gap-2">
-            <div className="flex-1 bg-[#a68cff]/10 text-[#a68cff] p-3 rounded-lg text-sm font-medium border border-[#a68cff]/30 break-all truncate">
+            <div className="flex-1 bg-[#0020A0]/10 text-[#0020A0] p-3 rounded-lg text-sm font-medium border border-[#0020A0]/30 break-all truncate">
               🔵 {facebookUrl}
             </div>
             <button
               type="button"
               onClick={() => setEditingFb(true)}
-              className="flex-shrink-0 text-xs font-bold text-[#a68cff] hover:text-[#c0a8ff] bg-[#a68cff]/10 px-3 py-2 rounded-lg border border-[#a68cff]/30 hover:bg-[#a68cff]/20 transition"
+              className="flex-shrink-0 text-xs font-bold text-[#0020A0] hover:text-[#001880] bg-[#0020A0]/10 px-3 py-2 rounded-lg border border-[#0020A0]/30 hover:bg-[#0020A0]/20 transition"
             >
               {t("profile.proFbEditBtn")}
             </button>
@@ -1657,7 +1657,7 @@ function ProProfile({ user }: { user: any }) {
               value={facebookInput}
               onChange={(e) => setFacebookInput(e.target.value)}
               placeholder="https://facebook.com/yourname"
-              className="flex-1 p-3 bg-[#0f0d13] border border-[#2a2730] text-[#f8f1fb] placeholder:text-[#aea9b2]/50 rounded-xl focus:ring-2 focus:ring-[#a68cff] focus:outline-none transition text-sm"
+              className="flex-1 p-3 bg-white border border-gray-200 text-gray-900 placeholder:text-gray-300 rounded-xl focus:ring-2 focus:ring-[#0020A0] focus:outline-none transition text-sm"
             />
             <button
               type="button"
@@ -1666,7 +1666,7 @@ function ProProfile({ user }: { user: any }) {
                 setEditingFb(false);
               }}
               disabled={linkingFb}
-              className="bg-[#a68cff] hover:bg-[#9070ff] text-[#0f0d13] font-bold px-4 py-3 rounded-xl transition text-sm whitespace-nowrap disabled:opacity-50"
+              className="bg-[#0020A0] hover:bg-[#001880] text-white font-bold px-4 py-3 rounded-xl transition text-sm whitespace-nowrap disabled:opacity-50"
             >
               {linkingFb
                 ? t("profile.proFbProcessing")
@@ -1679,7 +1679,7 @@ function ProProfile({ user }: { user: any }) {
                   setFacebookInput(facebookUrl);
                   setEditingFb(false);
                 }}
-                className="text-[#aea9b2] hover:text-[#f8f1fb] font-bold px-2 transition text-sm"
+                className="text-gray-500 hover:text-gray-900 font-bold px-2 transition text-sm"
               >
                 {t("profile.proFbCancelBtn")}
               </button>
@@ -1690,9 +1690,9 @@ function ProProfile({ user }: { user: any }) {
 
       <form onSubmit={handleSave} className="space-y-6">
         <div className="flex flex-col space-y-2">
-          <label className="text-sm font-bold text-[#f8f1fb]">
+          <label className="text-sm font-bold text-gray-900">
             {t("profile.proIntroLabel")}{" "}
-            <span className="text-xs text-[#aea9b2] font-normal ml-1">
+            <span className="text-xs text-gray-500 font-normal ml-1">
               {t("profile.proIntroLimit")}
             </span>
           </label>
@@ -1704,18 +1704,18 @@ function ProProfile({ user }: { user: any }) {
             }
             maxLength={50}
             placeholder={t("profile.proIntroPlaceholder")}
-            className="p-3 bg-[#151219] border border-[#2a2730] text-[#f8f1fb] placeholder:text-[#aea9b2]/50 rounded-xl focus:ring-2 focus:ring-[#a68cff] focus:outline-none transition"
+            className="p-3 bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-300 rounded-xl focus:ring-2 focus:ring-[#0020A0] focus:outline-none transition"
             required
           />
-          <span className="text-xs text-[#aea9b2] text-right">
+          <span className="text-xs text-gray-500 text-right">
             {formData.intro.length}/50
           </span>
         </div>
 
         <div className="flex flex-col space-y-2">
-          <label className="text-sm font-bold text-[#f8f1fb]">
+          <label className="text-sm font-bold text-gray-900">
             {t("profile.proDetailedLabel")}{" "}
-            <span className="text-xs text-[#aea9b2] font-normal ml-1">
+            <span className="text-xs text-gray-500 font-normal ml-1">
               {t("profile.proDetailedLimit")}
             </span>
           </label>
@@ -1726,12 +1726,12 @@ function ProProfile({ user }: { user: any }) {
             }
             rows={5}
             placeholder={t("profile.proDetailedPlaceholder")}
-            className="p-3 bg-[#151219] border border-[#2a2730] text-[#f8f1fb] placeholder:text-[#aea9b2]/50 rounded-xl focus:ring-2 focus:ring-[#a68cff] focus:outline-none transition resize-none text-sm"
+            className="p-3 bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-300 rounded-xl focus:ring-2 focus:ring-[#0020A0] focus:outline-none transition resize-none text-sm"
           />
         </div>
 
         <div className="flex flex-col space-y-3">
-          <label className="text-sm font-bold text-[#f8f1fb]">
+          <label className="text-sm font-bold text-gray-900">
             {t("profile.proRegionLabel")}
           </label>
           <div className="grid grid-cols-2 gap-3">
@@ -1741,7 +1741,7 @@ function ProProfile({ user }: { user: any }) {
                 setSelectedReg(e.target.value);
                 setSelectedCity("");
               }}
-              className="p-3 bg-[#151219] border border-[#2a2730] text-[#f8f1fb] rounded-xl focus:ring-2 focus:ring-[#a68cff] focus:outline-none transition"
+              className="p-3 bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-2 focus:ring-[#0020A0] focus:outline-none transition"
               required
             >
               <option value="" disabled>
@@ -1756,7 +1756,7 @@ function ProProfile({ user }: { user: any }) {
             <select
               value={selectedCity}
               onChange={(e) => setSelectedCity(e.target.value)}
-              className="p-3 bg-[#151219] border border-[#2a2730] text-[#f8f1fb] rounded-xl focus:ring-2 focus:ring-[#a68cff] focus:outline-none transition disabled:opacity-40 disabled:text-[#aea9b2]"
+              className="p-3 bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-2 focus:ring-[#0020A0] focus:outline-none transition disabled:opacity-40 disabled:text-gray-500"
               required
               disabled={!selectedReg}
             >
@@ -1772,12 +1772,12 @@ function ProProfile({ user }: { user: any }) {
           </div>
         </div>
 
-        <div className="flex flex-col space-y-3 border-t pt-4 border-[#2a2730]">
+        <div className="flex flex-col space-y-3 border-t pt-4 border-gray-200">
           <div className="flex justify-between items-end">
-            <label className="text-sm font-bold text-[#f8f1fb]">
+            <label className="text-sm font-bold text-gray-900">
               {t("profile.proServicesLabel")}
             </label>
-            <span className="text-xs font-bold text-[#a68cff]">
+            <span className="text-xs font-bold text-[#0020A0]">
               {formData.services.length} / 5
             </span>
           </div>
@@ -1790,7 +1790,7 @@ function ProProfile({ user }: { user: any }) {
                 setSelectedDepth1(e.target.value);
                 setSelectedDepth2("");
               }}
-              className="p-2 bg-[#151219] border border-[#2a2730] text-[#f8f1fb] rounded-lg text-sm"
+              className="p-2 bg-gray-50 border border-gray-200 text-gray-900 rounded-lg text-sm"
             >
               <option value="">{t("profile.depth1Placeholder")}</option>
               {depth1Keys.map((k) => (
@@ -1802,7 +1802,7 @@ function ProProfile({ user }: { user: any }) {
             <select
               value={selectedDepth2}
               onChange={(e) => setSelectedDepth2(e.target.value)}
-              className="p-2 bg-[#151219] border border-[#2a2730] text-[#f8f1fb] rounded-lg text-sm disabled:opacity-40"
+              className="p-2 bg-gray-50 border border-gray-200 text-gray-900 rounded-lg text-sm disabled:opacity-40"
               disabled={!selectedDepth1}
             >
               <option value="">{t("profile.depth2Placeholder")}</option>
@@ -1816,7 +1816,7 @@ function ProProfile({ user }: { user: any }) {
 
           {/* 3뎁스 선택 영역 */}
           {depth3Items.length > 0 ? (
-            <div className="bg-[#0f0d13] p-3 rounded-xl border border-[#2a2730] max-h-48 overflow-y-auto flex flex-col space-y-2">
+            <div className="bg-white p-3 rounded-xl border border-gray-200 max-h-48 overflow-y-auto flex flex-col space-y-2">
               {depth3Items.map((service) => {
                 const isSelected = formData.services.includes(
                   koToEnService[service] ?? service,
@@ -1828,16 +1828,16 @@ function ProProfile({ user }: { user: any }) {
                 return (
                   <label
                     key={service}
-                    className="flex items-center space-x-3 p-2 hover:bg-[#211e26] rounded-lg cursor-pointer transition"
+                    className="flex items-center space-x-3 p-2 hover:bg-white rounded-lg cursor-pointer transition"
                   >
                     <input
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => handleServiceToggle(service)}
-                      className="w-5 h-5 text-[#a68cff] rounded border-[#2a2730] focus:ring-[#a68cff] bg-[#151219]"
+                      className="w-5 h-5 text-[#0020A0] rounded border-gray-200 focus:ring-[#0020A0] bg-gray-50"
                     />
                     <span
-                      className={`text-sm ${isSelected ? "font-bold text-[#a68cff]" : "text-[#aea9b2]"}`}
+                      className={`text-sm ${isSelected ? "font-bold text-[#0020A0]" : "text-gray-500"}`}
                     >
                       {displayName}
                     </span>
@@ -1846,24 +1846,24 @@ function ProProfile({ user }: { user: any }) {
               })}
             </div>
           ) : (
-            <div className="text-center p-4 bg-[#0f0d13] rounded-xl border border-[#2a2730] text-xs text-[#aea9b2]">
+            <div className="text-center p-4 bg-white rounded-xl border border-gray-200 text-xs text-gray-500">
               {t("profile.selectParentFirst")}
             </div>
           )}
 
           {/* 선택된 서비스 태그 표시 */}
           {formData.services.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-3 p-3 border border-[#a68cff]/30 bg-[#a68cff]/5 rounded-xl">
+            <div className="flex flex-wrap gap-2 mt-3 p-3 border border-[#0020A0]/30 bg-[#0020A0]/5 rounded-xl">
               {formData.services.map((s) => (
                 <span
                   key={s}
-                  className="inline-flex items-center bg-[#211e26] border border-[#a68cff]/40 text-[#a68cff] text-xs px-2 py-1.5 rounded-md"
+                  className="inline-flex items-center bg-white border border-[#0020A0]/40 text-[#0020A0] text-xs px-2 py-1.5 rounded-md"
                 >
                   {locale === "en" && koToEnService[s] ? koToEnService[s] : s}
                   <button
                     type="button"
                     onClick={() => handleServiceToggle(s)}
-                    className="ml-1.5 text-[#aea9b2] hover:text-[#ff6e84] font-bold px-1"
+                    className="ml-1.5 text-gray-500 hover:text-red-500 font-bold px-1"
                   >
                     &times;
                   </button>
@@ -1878,8 +1878,8 @@ function ProProfile({ user }: { user: any }) {
           disabled={saving}
           className={`w-full font-bold py-4 rounded-xl transition mt-4 ${
             isSaved
-              ? "bg-[#b5ffc2] text-[#0f0d13] hover:bg-[#9ff0af]"
-              : "bg-[#a68cff] text-[#0f0d13] hover:bg-[#9070ff] disabled:bg-[#2a2730] disabled:text-[#aea9b2]"
+              ? "bg-green-400 text-white hover:bg-green-500"
+              : "bg-[#0020A0] text-white hover:bg-[#001880] disabled:bg-gray-100 disabled:text-gray-500"
           }`}
         >
           {saving
@@ -1934,27 +1934,27 @@ function CustomerSupportSection() {
   };
 
   return (
-    <div className="bg-[#211e26] rounded-2xl border border-[#2a2730] overflow-hidden">
-      <h2 className="text-sm font-bold text-[#ff88b5] tracking-widest uppercase p-6 pb-2 border-b border-[#2a2730]">
+    <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+      <h2 className="text-sm font-bold text-[#0020A0] tracking-widest uppercase p-6 pb-2 border-b border-gray-200">
         {t("profile.customerSupport")}
       </h2>
       <ul className="flex flex-col">
-        <li className="border-b border-[#2a2730] last:border-0 hover:bg-[#2a2730] transition cursor-pointer">
+        <li className="border-b border-gray-200 last:border-0 hover:bg-gray-100 transition cursor-pointer">
           <Link
             href="/support/inquiry"
             className="w-full flex justify-between items-center p-4"
           >
             <div className="flex items-center gap-3">
-              <span className="bg-[#2a2730] rounded-full p-2 flex items-center justify-center">
-                <span className="material-symbols-outlined text-[#ff88b5] text-[20px] leading-none">
+              <span className="bg-gray-100 rounded-full p-2 flex items-center justify-center">
+                <span className="material-symbols-outlined text-[#0020A0] text-[20px] leading-none">
                   headset_mic
                 </span>
               </span>
-              <span className="text-sm font-medium text-white">
+              <span className="text-sm font-medium text-gray-900">
                 {t("profile.inquiryLink")}
               </span>
             </div>
-            <span className="material-symbols-outlined text-white/40 text-[20px]">
+            <span className="material-symbols-outlined text-gray-400 text-[20px]">
               chevron_right
             </span>
           </Link>
@@ -1965,7 +1965,7 @@ function CustomerSupportSection() {
           return (
             <li
               key={cat.id}
-              className="border-b border-[#2a2730] last:border-0 hover:bg-[#2a2730] transition"
+              className="border-b border-gray-200 last:border-0 hover:bg-gray-100 transition"
             >
               <button
                 type="button"
@@ -1973,26 +1973,26 @@ function CustomerSupportSection() {
                 className="w-full flex justify-between items-center p-4 transition text-left cursor-pointer"
               >
                 <div className="flex items-center gap-3">
-                  <span className="bg-[#2a2730] rounded-full p-2 flex items-center justify-center">
-                    <span className="material-symbols-outlined text-[#aea9b2] text-[20px] leading-none">
+                  <span className="bg-gray-100 rounded-full p-2 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-gray-500 text-[20px] leading-none">
                       {getCatIcon(cat.title)}
                     </span>
                   </span>
-                  <span className="text-sm font-medium text-white">
+                  <span className="text-sm font-medium text-gray-900">
                     {cat.title}
                   </span>
                 </div>
                 <span
-                  className="material-symbols-outlined text-white/40 text-[20px] transition-transform duration-200"
+                  className="material-symbols-outlined text-gray-400 text-[20px] transition-transform duration-200"
                   style={{ transform: isExpanded ? "rotate(90deg)" : "none" }}
                 >
                   chevron_right
                 </span>
               </button>
               {isExpanded && (
-                <ul className="bg-[#151219] flex flex-col pt-1 pb-3 px-4">
+                <ul className="bg-gray-50 flex flex-col pt-1 pb-3 px-4">
                   {catPages.length === 0 ? (
-                    <li className="text-xs text-[#aea9b2] py-2 pl-2">
+                    <li className="text-xs text-gray-500 py-2 pl-2">
                       {t("profile.noPages")}
                     </li>
                   ) : (
@@ -2000,7 +2000,7 @@ function CustomerSupportSection() {
                       <li key={page.id} className="py-1">
                         <Link
                           href={`/support/${cat.slug}/${page.slug}`}
-                          className="flex items-center text-sm text-[#aea9b2] hover:text-[#ff88b5] hover:font-bold transition pl-2 py-2 border-l-2 border-transparent hover:border-[#ff88b5]"
+                          className="flex items-center text-sm text-gray-500 hover:text-[#0020A0] hover:font-bold transition pl-2 py-2 border-l-2 border-transparent hover:border-[#0020A0]"
                         >
                           📄 {page.title}
                         </Link>

@@ -484,7 +484,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
     isQuoteValid;
 
   return (
-    <div className="relative min-h-screen bg-gray-50 pb-24">
+    <div className="relative min-h-screen bg-[#FAFAFA] pb-24">
       {/* 1. 상단 정보 패널 */}
       <div className="bg-white p-4 border-b sticky top-0 z-10 shadow-sm">
         <div className="flex items-center gap-2 mb-2">
@@ -539,13 +539,13 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
           </div>
           <div className="text-right flex-shrink-0">
             <span
-              className={`inline-block font-bold px-3 py-1 rounded-full text-sm shadow-sm ${isExpired ? "bg-gray-100 text-gray-500" : "bg-red-50 text-red-600 border border-red-200 animate-pulse"}`}
+              className={`inline-block font-bold px-3 py-1 rounded-full text-sm shadow-sm ${isExpired ? "bg-gray-100 text-[#374151]" : "bg-[#D32D7D]/10 text-[#D32D7D] border border-[#D32D7D]/20 animate-pulse"}`}
             >
               💡 {request.quote_count}/{maxQuotes}
               {t("proBidding.proCount")}
             </span>
             <div
-              className={`text-xs mt-1 font-bold ${isExpired ? "text-gray-500" : isHurry ? "text-red-500 animate-pulse" : "text-blue-500"}`}
+              className={`text-xs mt-1 font-bold ${isExpired ? "text-[#374151]" : isHurry ? "text-[#D32D7D] animate-pulse" : "text-[#6B7280]"}`}
             >
               {isExpired
                 ? t("proBidding.expired")
@@ -558,32 +558,32 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
       <div className="p-4 space-y-4">
         {/* 1.5. 내가 보낸 견적 내용 (발송 완료 시 최상단 노출) */}
         {isSent && submittedQuote && (
-          <div className="bg-blue-50 rounded-xl p-4 shadow-sm border border-blue-200">
-            <h3 className="font-bold text-blue-800 mb-3 flex items-center gap-2">
+          <div className="bg-[#D32D7D]/5 rounded-xl p-4 shadow-sm border border-[#D32D7D]/20">
+            <h3 className="font-bold text-[#1F2937] mb-3 flex items-center gap-2">
               {t("proBidding.sentQuoteTitle")}
             </h3>
             <div className="space-y-3">
               <div>
-                <span className="text-xs text-blue-500 font-bold block mb-1">
+                <span className="text-xs text-[#D32D7D] font-bold block mb-1">
                   {t("proBidding.proposedAmount")}
                 </span>
-                <div className="text-sm font-bold text-gray-900 bg-white p-2.5 rounded-lg border border-blue-100">
+                <div className="text-sm font-bold text-gray-900 bg-white p-2.5 rounded-lg border border-gray-100">
                   {Number(submittedQuote.price).toLocaleString()}
                 </div>
               </div>
               {submittedQuote.description && (
                 <div>
-                  <span className="text-xs text-blue-500 font-bold block mb-1">
+                  <span className="text-xs text-[#D32D7D] font-bold block mb-1">
                     {t("proBidding.quoteDescription")}
                   </span>
-                  <div className="text-sm text-gray-800 bg-white p-2.5 rounded-lg border border-blue-100 whitespace-pre-wrap leading-relaxed">
+                  <div className="text-sm text-gray-800 bg-white p-2.5 rounded-lg border border-gray-100 whitespace-pre-wrap leading-relaxed">
                     {submittedQuote.description}
                   </div>
                 </div>
               )}
               {submittedQuote.image_url && (
                 <div>
-                  <span className="text-xs text-blue-500 font-bold block mb-1">
+                  <span className="text-xs text-[#D32D7D] font-bold block mb-1">
                     {t("proBidding.attachedPhotos")}
                   </span>
                   <div className="flex flex-wrap gap-2 mt-1">
@@ -643,14 +643,14 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                     <span className="text-xs text-gray-400 font-medium mb-1">
                       {label}
                     </span>
-                    <div className="text-sm font-medium text-gray-800 bg-blue-50 p-2.5 rounded-lg whitespace-pre-wrap leading-relaxed">
+                    <div className="text-sm font-medium text-gray-800 bg-gray-50 p-2.5 rounded-lg whitespace-pre-wrap leading-relaxed">
                       {(() => {
                         if (
                           value === "상담 시 논의할게요" ||
                           value === "To be discussed with pro"
                         ) {
                           return (
-                            <span className="text-blue-500 font-bold bg-blue-50 px-2 py-1 rounded-md">
+                            <span className="text-[#D32D7D] font-bold bg-[#D32D7D]/10 px-2 py-1 rounded-md">
                               {t("proBidding.discussLater")}
                             </span>
                           );
@@ -736,7 +736,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
 
         {/* 3. 견적 작성 폼 (금액 / 설명 / 사진) */}
         {!isSent && !isExpired && request.quote_count < maxQuotes && (
-          <div className="bg-white rounded-xl p-4 shadow-sm border border-blue-100">
+          <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
             <h3 className="font-bold text-gray-700 mb-3 flex items-center gap-2">
               {t("proBidding.quoteForm")}
             </h3>
@@ -753,7 +753,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                 onChange={(e) => setQuotePrice(e.target.value)}
                 placeholder={t("proBidding.pricePlaceholder")}
                 min="0"
-                className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition text-sm font-medium"
+                className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#D32D7D] focus:outline-none transition text-sm font-medium"
               />
             </div>
 
@@ -768,7 +768,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                 </label>
                 <button
                   onClick={() => setShowTemplatePanel(!showTemplatePanel)}
-                  className="text-xs font-bold text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-2.5 py-1 rounded-lg transition flex items-center gap-1"
+                  className="text-xs font-bold text-[#D32D7D] hover:text-[#b5256a] bg-[#D32D7D]/10 hover:bg-[#D32D7D]/20 px-2.5 py-1 rounded-lg transition flex items-center gap-1"
                 >
                   {t("proBidding.loadTemplate")}
                 </button>
@@ -776,7 +776,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
 
               {/* ── [확장 1단계] 템플릿 패널 ── */}
               {showTemplatePanel && (
-                <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 mb-2 space-y-2">
+                <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 mb-2 space-y-2">
                   {templates.length === 0 ? (
                     <p className="text-xs text-gray-500 text-center py-2">
                       {t("proBidding.noTemplates")}
@@ -785,7 +785,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                     templates.map((tpl) => (
                       <div
                         key={tpl.id}
-                        className="flex items-center gap-2 bg-white rounded-lg p-2.5 border border-blue-100 shadow-sm"
+                        className="flex items-center gap-2 bg-white rounded-lg p-2.5 border border-gray-100 shadow-sm"
                       >
                         <button
                           onClick={() => {
@@ -800,12 +800,12 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                               fileInputRef.current.value = "";
                             setShowTemplatePanel(false);
                           }}
-                          className="flex-1 text-left text-sm font-medium text-gray-800 hover:text-blue-600 transition truncate"
+                          className="flex-1 text-left text-sm font-medium text-gray-800 hover:text-[#D32D7D] transition truncate"
                           title={tpl.content}
                         >
                           📝 {tpl.title}{" "}
                           {tpl.attachments && tpl.attachments.length > 0 && (
-                            <span className="text-[10px] text-blue-500 ml-1">
+                            <span className="text-[10px] text-[#D32D7D] ml-1">
                               🖼️{tpl.attachments.length}
                             </span>
                           )}
@@ -841,7 +841,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                 onChange={(e) => setQuoteDescription(e.target.value)}
                 rows={3}
                 placeholder="서비스 범위, 포함 사항, 예상 소요 시간 등을 간략히 작성해주세요."
-                className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition text-sm resize-none"
+                className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#D32D7D] focus:outline-none transition text-sm resize-none"
               />
 
               {/* ── [확장 1단계] 현재 내용 템플릿으로 저장 ── */}
@@ -849,7 +849,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                 (!showSaveTpl ? (
                   <button
                     onClick={() => setShowSaveTpl(true)}
-                    className="mt-2 w-full text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 px-3 py-2.5 rounded-xl transition shadow-sm hover:shadow-md flex items-center justify-center gap-1.5"
+                    className="mt-2 w-full text-xs font-bold text-[#D32D7D] bg-[#D32D7D]/10 hover:bg-[#D32D7D]/20 border border-[#D32D7D]/20 px-3 py-2.5 rounded-xl transition shadow-sm hover:shadow-md flex items-center justify-center gap-1.5"
                   >
                     {t("proBidding.saveTplBtn")}
                   </button>
@@ -859,7 +859,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                       value={newTplTitle}
                       onChange={(e) => setNewTplTitle(e.target.value)}
                       placeholder={t("proBidding.tplTitlePlaceholder")}
-                      className="flex-1 text-xs px-2.5 py-1.5 border border-gray-300 rounded-lg focus:ring-1 focus:ring-blue-400 focus:outline-none"
+                      className="flex-1 text-xs px-2.5 py-1.5 border border-gray-300 rounded-lg focus:ring-1 focus:ring-[#D32D7D] focus:outline-none"
                     />
                     <button
                       disabled={savingTemplate}
@@ -938,7 +938,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                           setSavingTemplate(false);
                         }
                       }}
-                      className={`text-xs font-bold text-white px-3 py-1.5 rounded-lg transition ${savingTemplate ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}`}
+                      className={`text-xs font-bold text-white px-3 py-1.5 rounded-lg transition ${savingTemplate ? "bg-gray-400 cursor-not-allowed" : "bg-[#D32D7D] hover:bg-[#b5256a]"}`}
                     >
                       {savingTemplate
                         ? t("proBidding.savingTpl")
@@ -988,7 +988,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center text-gray-400 hover:border-blue-400 hover:text-blue-400 transition bg-gray-50 hover:bg-blue-50"
+                    className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center text-gray-400 hover:border-[#D32D7D] hover:text-[#D32D7D] transition bg-gray-50 hover:bg-[#D32D7D]/5"
                   >
                     <svg
                       className="w-6 h-6 mb-1"
@@ -1041,7 +1041,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                   alert(t("proBidding.chatRoomError"));
                 }
               }}
-              className="w-full max-w-md mx-auto block font-bold py-4 rounded-xl shadow-[0_10px_20px_rgba(37,99,235,0.3)] transition transform hover:-translate-y-1 bg-blue-600 hover:bg-blue-700 text-white"
+              className="w-full max-w-md mx-auto block font-bold py-4 rounded-xl shadow-[0_10px_20px_rgba(211,45,125,0.3)] transition transform hover:-translate-y-1 bg-[#D32D7D] hover:bg-[#b5256a] text-white"
             >
               {t("proBidding.goToChat")}
             </button>
@@ -1054,7 +1054,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
               setShowConfirmModal(true);
             }}
             disabled={!canSubmit}
-            className={`w-full max-w-md mx-auto block font-bold py-4 rounded-xl shadow-[0_10px_20px_rgba(37,99,235,0.3)] transition transform hover:-translate-y-1 ${!canSubmit ? "bg-gray-400 text-white cursor-not-allowed shadow-none hover:translate-y-0" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
+            className={`w-full max-w-md mx-auto block font-bold py-4 rounded-xl shadow-[0_10px_20px_rgba(211,45,125,0.3)] transition transform hover:-translate-y-1 ${!canSubmit ? "bg-gray-400 text-white cursor-not-allowed shadow-none hover:translate-y-0" : "bg-[#D32D7D] hover:bg-[#b5256a] text-white"}`}
           >
             {isSubmitting
               ? t("proBidding.submitting")
@@ -1114,7 +1114,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
             {/* ② 중앙 내용부 (스크롤 가능) */}
             <div className="flex-1 overflow-y-auto px-6 pb-4 min-h-0">
               {/* 견적 요약 */}
-              <div className="bg-blue-50 rounded-xl p-4 mb-4 border border-blue-100">
+              <div className="bg-gray-50 rounded-xl p-4 mb-4 border border-gray-200">
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-sm text-gray-500 font-medium">
                     {t("proBidding.serviceLabel")}
@@ -1129,7 +1129,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                   <span className="text-sm text-gray-500 font-medium">
                     {t("proBidding.quotePriceLabel")}
                   </span>
-                  <span className="text-lg font-bold text-blue-600">
+                  <span className="text-lg font-bold text-[#D32D7D]">
                     {Number(quotePrice).toLocaleString()}
                   </span>
                 </div>
@@ -1142,7 +1142,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                   </span>
                 </div>
                 {/* ── [확장 2단계] 보유 코인 명시 ── */}
-                <div className="flex justify-between items-center pt-2 mt-2 border-t border-blue-100">
+                <div className="flex justify-between items-center pt-2 mt-2 border-t border-gray-100">
                   <span className="text-sm text-gray-500 font-medium">
                     {t("proBidding.balanceLabel")}
                   </span>
@@ -1188,7 +1188,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                   type="checkbox"
                   checked={agreeNoRefund}
                   onChange={(e) => setAgreeNoRefund(e.target.checked)}
-                  className="mt-0.5 w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 flex-shrink-0"
+                  className="mt-0.5 w-4 h-4 rounded border-gray-300 text-[#D32D7D] focus:ring-[#D32D7D] flex-shrink-0"
                 />
                 <span className="text-xs text-gray-700 font-medium leading-relaxed break-keep">
                   {t("proBidding.agreeLabel")}
@@ -1211,7 +1211,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                 <button
                   onClick={handleSendQuote}
                   disabled={!agreeNoRefund || isSubmitting}
-                  className={`flex-[2] py-3.5 rounded-xl font-bold transition text-sm shadow-md ${!agreeNoRefund || isSubmitting ? "bg-gray-300 text-gray-500 cursor-not-allowed shadow-none" : "bg-blue-600 hover:bg-blue-700 text-white shadow-[0_4px_12px_rgba(37,99,235,0.4)]"}`}
+                  className={`flex-[2] py-3.5 rounded-xl font-bold transition text-sm shadow-md ${!agreeNoRefund || isSubmitting ? "bg-gray-300 text-gray-500 cursor-not-allowed shadow-none" : "bg-[#D32D7D] hover:bg-[#b5256a] text-white shadow-[0_4px_12px_rgba(211,45,125,0.4)]"}`}
                 >
                   {isSubmitting
                     ? t("proBidding.submitting")
@@ -1315,10 +1315,10 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                   }}
                   className={`w-full font-bold py-3.5 rounded-xl border transition text-base ${
                     i === 2
-                      ? "bg-blue-600 hover:bg-blue-700 text-white shadow-md border-blue-600"
+                      ? "bg-[#D32D7D] hover:bg-[#b5256a] text-white shadow-md border-[#D32D7D]"
                       : i === 1
-                        ? "bg-blue-100 hover:bg-blue-200 text-blue-800 border-blue-300"
-                        : "bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200"
+                        ? "bg-[#D32D7D]/20 hover:bg-[#D32D7D]/30 text-[#b5256a] border-[#D32D7D]/30"
+                        : "bg-[#D32D7D]/10 hover:bg-[#D32D7D]/20 text-[#D32D7D] border-[#D32D7D]/20"
                   }`}
                 >
                   {amount.toLocaleString()}

@@ -130,7 +130,7 @@ export default function ProRequestListClient() {
           if (qIds.length > 0) {
             const { data: biddedData } = await supabase
               .from("match_requests")
-              .select("*, categories(name)")
+              .select("*, categories(name, name_en)")
               .in("request_id", qIds);
             if (biddedData) biddedRequests = biddedData;
           }
@@ -150,7 +150,7 @@ export default function ProRequestListClient() {
             // Track B: 현재 프로필에 맞는 신규(OPEN) 요청건 조회
             let openQuery = supabase
               .from("match_requests")
-              .select("*, categories(name)")
+              .select("*, categories(name, name_en)")
               .eq("status", "OPEN");
 
             // 서비스 타입 필터 (프로필이 정상 로드된 경우에만 적용)
@@ -243,7 +243,7 @@ export default function ProRequestListClient() {
         } else {
           const { data } = await supabase
             .from("match_requests")
-            .select("*, categories(name)")
+            .select("*, categories(name, name_en)")
             .eq("status", "OPEN")
             .order("created_at", { ascending: false });
           if (data) {
@@ -463,33 +463,33 @@ export default function ProRequestListClient() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0f0d13] pb-24">
+    <div className="min-h-screen bg-[#F8F9FA] pb-24">
       {/* 헤더 */}
-      <header className="bg-[#0f0d13]/80 backdrop-blur-xl border-b border-white/5 shadow-[0_8px_32px_rgba(255,136,181,0.06)] sticky top-0 z-10 px-6 pt-4 pb-3 flex flex-col gap-3">
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-10 px-6 pt-4 pb-0 flex flex-col gap-3">
         <div className="flex items-center gap-2">
-          <h1 className="text-xl font-black text-[#f8f1fb] tracking-tight">
+          <h1 className="text-xl font-semibold text-[#1F2937] tracking-tight">
             {t("proRequestList.pageTitle")}
           </h1>
         </div>
 
-        {/* 메인 탭 토글 — pill */}
-        <div className="flex items-center gap-2 bg-[#211e26] p-1.5 rounded-full">
+        {/* 메인 탭 토글 — underline */}
+        <div className="flex items-center gap-0">
           <button
             onClick={() => setFilterType("NEW")}
-            className={`flex-1 py-2.5 px-6 rounded-full text-sm font-black transition-all duration-300 ${
+            className={`flex-1 py-2.5 px-6 text-sm font-semibold transition-all duration-300 border-b-2 ${
               filterType === "NEW"
-                ? "bg-[#ff88b5] text-[#610034] shadow-lg shadow-[#ff88b5]/20"
-                : "text-white/50 hover:text-white/80"
+                ? "text-[#0020A0] border-[#0020A0]"
+                : "text-[#6B7280] border-transparent hover:text-[#6B7280]"
             }`}
           >
             {t("proRequestList.tabNew")}
           </button>
           <button
             onClick={() => setFilterType("QUOTED")}
-            className={`flex-1 py-2.5 px-6 rounded-full text-sm font-black transition-all duration-300 ${
+            className={`flex-1 py-2.5 px-6 text-sm font-semibold transition-all duration-300 border-b-2 ${
               filterType === "QUOTED"
-                ? "bg-[#ff88b5] text-[#610034] shadow-lg shadow-[#ff88b5]/20"
-                : "text-white/50 hover:text-white/80"
+                ? "text-[#0020A0] border-[#0020A0]"
+                : "text-[#6B7280] border-transparent hover:text-[#6B7280]"
             }`}
           >
             {t("proRequestList.tabQuoted")}
@@ -498,13 +498,13 @@ export default function ProRequestListClient() {
 
         {/* 2뎁스 서브 탭 (보낸 견적 선택 시에만 노출) */}
         {filterType === "QUOTED" && (
-          <div className="flex space-x-2">
+          <div className="flex space-x-2 pb-3">
             <button
               onClick={() => setQuotedSubTab("IN_PROGRESS")}
               className={`flex-1 py-1.5 text-xs font-bold rounded-full transition ${
                 quotedSubTab === "IN_PROGRESS"
-                  ? "bg-[#ff88b5]/15 text-[#ff88b5] border border-[#ff88b5]/30"
-                  : "text-white/40 hover:text-white/60 border border-white/10"
+                  ? "bg-[#0020A0]/10 text-[#0020A0] border border-[#0020A0]/30"
+                  : "text-[#374151] hover:text-[#6B7280] border border-gray-200"
               }`}
             >
               {t("proRequestList.subTabInProgress")}
@@ -513,8 +513,8 @@ export default function ProRequestListClient() {
               onClick={() => setQuotedSubTab("ARCHIVED")}
               className={`flex-1 py-1.5 text-xs font-bold rounded-full transition ${
                 quotedSubTab === "ARCHIVED"
-                  ? "bg-white/10 text-white/80 border border-white/20"
-                  : "text-white/40 hover:text-white/60 border border-white/10"
+                  ? "bg-gray-100 text-[#1F2937] border border-gray-300"
+                  : "text-[#374151] hover:text-[#6B7280] border border-gray-200"
               }`}
             >
               {t("proRequestList.subTabArchived")}
@@ -525,17 +525,17 @@ export default function ProRequestListClient() {
 
       <div className="px-6 pt-4 space-y-3">
         {!isAcceptingRequests ? (
-          <div className="flex flex-col items-center justify-center p-12 bg-[#211e26]/60 backdrop-blur-xl rounded-2xl border border-white/10 mt-4 text-center">
+          <div className="flex flex-col items-center justify-center p-12 bg-white rounded-2xl border border-gray-200 shadow-sm mt-4 text-center">
             <span className="text-4xl mb-4 opacity-80">🔒</span>
-            <h2 className="text-lg font-black text-white/90 mb-2">
+            <h2 className="text-lg font-black text-[#1F2937] mb-2">
               {t("proRequestList.vacationTitle")}
             </h2>
-            <p className="text-sm text-white/50 max-w-xs leading-relaxed mb-4">
+            <p className="text-sm text-[#6B7280] max-w-xs leading-relaxed mb-4">
               {t("proRequestList.vacationDesc")}
             </p>
             <button
               onClick={() => router.push("/profile")}
-              className="bg-[#ff88b5] hover:bg-[#ff69a7] text-[#610034] font-black py-2 px-6 rounded-full text-sm transition shadow-lg shadow-[#ff88b5]/20"
+              className="bg-[#0020A0] hover:bg-[#001880] text-white font-black py-2 px-6 rounded-full text-sm transition shadow-lg shadow-[#0020A0]/20"
             >
               {t("proRequestList.vacationBtn")}
             </button>
@@ -547,20 +547,19 @@ export default function ProRequestListClient() {
               <div
                 className="flex gap-3 items-start text-sm leading-relaxed p-4 rounded-2xl"
                 style={{
-                  background: "rgba(39,36,45,0.85)",
-                  borderLeft: "3px solid #ff6ea9",
-                  borderTop: "1px solid rgba(255,255,255,0.06)",
-                  borderRight: "1px solid rgba(255,255,255,0.06)",
-                  borderBottom: "1px solid rgba(255,255,255,0.06)",
+                  background: "#FFF7F0",
+                  borderLeft: "3px solid #0020A0",
+                  border: "1px solid #F3E2D9",
+                  borderLeft: "3px solid #0020A0",
                 }}
               >
                 <span
-                  className="material-symbols-outlined text-[#ff6ea9] shrink-0"
+                  className="material-symbols-outlined text-[#0020A0] shrink-0"
                   style={{ fontSize: "1.1rem", marginTop: "1px" }}
                 >
                   lightbulb
                 </span>
-                <p className="text-white/70">
+                <p className="text-[#6B7280]">
                   {t("proRequestList.archiveBanner")}
                 </p>
               </div>
@@ -617,56 +616,30 @@ export default function ProRequestListClient() {
             }).length === 0 ? (
               filterType === "QUOTED" && quotedSubTab === "ARCHIVED" ? (
                 <div className="flex flex-col items-center justify-center py-12 w-full mt-2">
-                  {/* glow 장식 */}
                   <div className="relative flex flex-col items-center">
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-[#ff6ea9]/8 rounded-full blur-[60px] pointer-events-none" />
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-[#a68cff]/8 rounded-full blur-[40px] pointer-events-none" />
-                    {/* 아이콘 카드 */}
-                    <div
-                      className="relative z-10 w-20 h-20 mb-6 rounded-2xl flex items-center justify-center border border-white/10"
-                      style={{
-                        background: "rgba(39,36,45,0.7)",
-                        backdropFilter: "blur(20px)",
-                        WebkitBackdropFilter: "blur(20px)",
-                        boxShadow: "0 0 32px rgba(255,110,169,0.12)",
-                      }}
-                    >
+                    <div className="relative z-10 w-20 h-20 mb-6 rounded-2xl flex items-center justify-center border border-gray-200 bg-gray-50">
                       <span
-                        className="material-symbols-outlined text-[#ff6ea9]/70"
+                        className="material-symbols-outlined text-[#0020A0]/70"
                         style={{ fontSize: "2rem" }}
                       >
                         inventory_2
                       </span>
                     </div>
-                    {/* 텍스트 */}
-                    <h3 className="relative z-10 text-lg font-bold text-white/80 mb-2 tracking-tight">
+                    <h3 className="relative z-10 text-lg font-bold text-[#1F2937] mb-2 tracking-tight">
                       {t("proRequestList.noArchived")}
                     </h3>
-                    <p className="relative z-10 text-sm text-white/40 text-center max-w-[240px] leading-relaxed">
+                    <p className="relative z-10 text-sm text-[#374151] text-center max-w-[240px] leading-relaxed">
                       {t("proRequestList.noArchivedSubtext")}
                     </p>
                   </div>
                 </div>
               ) : (
-                /* 빈 상태: Stitch Dark Pulse 디자인 */
                 <div className="flex flex-col items-center justify-center py-8 w-full">
                   <div className="relative w-full aspect-square max-w-sm flex items-center justify-center">
-                    {/* 장식 glow */}
-                    <div className="absolute inset-0 bg-[#ff88b5]/5 rounded-full blur-[100px]" />
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[#a68cff]/5 rounded-full blur-[80px]" />
-                    {/* 중앙 카드 */}
                     <div className="relative z-10 flex flex-col items-center text-center">
-                      <div
-                        className="w-32 h-32 mb-8 rounded-xl flex items-center justify-center border border-white/10 -rotate-6"
-                        style={{
-                          background: "rgba(39,36,45,0.6)",
-                          backdropFilter: "blur(20px)",
-                          WebkitBackdropFilter: "blur(20px)",
-                          boxShadow: "0 0 40px rgba(255,136,181,0.15)",
-                        }}
-                      >
+                      <div className="w-32 h-32 mb-8 rounded-xl flex items-center justify-center border border-gray-200 bg-gray-50 -rotate-6 shadow-sm">
                         <span
-                          className="material-symbols-outlined text-[#ff88b5]"
+                          className="material-symbols-outlined text-[#0020A0]"
                           style={{
                             fontSize: "60px",
                             fontVariationSettings: "'FILL' 1, 'wght' 400",
@@ -675,39 +648,24 @@ export default function ProRequestListClient() {
                           assignment_late
                         </span>
                       </div>
-                      <h2 className="text-2xl font-black text-white/90 mb-3 tracking-tight">
+                      <h2 className="text-2xl font-black text-[#1F2937] mb-3 tracking-tight">
                         {t("proRequestList.emptyTitle")}
                       </h2>
-                      <p className="text-white/50 max-w-[280px] leading-relaxed text-sm">
+                      <p className="text-[#6B7280] max-w-[280px] leading-relaxed text-sm">
                         {t("proRequestList.emptySubtext")}
                       </p>
                     </div>
-                    {/* 부동 장식 카드 */}
-                    <div
-                      className="absolute top-10 right-4 w-12 h-12 rounded-full flex items-center justify-center opacity-40 border border-[#ff88b5]/20"
-                      style={{
-                        background: "rgba(39,36,45,0.6)",
-                        backdropFilter: "blur(20px)",
-                        WebkitBackdropFilter: "blur(20px)",
-                      }}
-                    >
+                    <div className="absolute top-10 right-4 w-12 h-12 rounded-full flex items-center justify-center opacity-40 border border-[#0020A0]/20 bg-[#0020A0]/5">
                       <span
-                        className="material-symbols-outlined text-[#ff88b5]"
+                        className="material-symbols-outlined text-[#0020A0]"
                         style={{ fontSize: "20px" }}
                       >
                         bolt
                       </span>
                     </div>
-                    <div
-                      className="absolute bottom-20 left-4 w-16 h-16 rounded-2xl flex items-center justify-center opacity-30 rotate-12 border border-[#a68cff]/20"
-                      style={{
-                        background: "rgba(39,36,45,0.6)",
-                        backdropFilter: "blur(20px)",
-                        WebkitBackdropFilter: "blur(20px)",
-                      }}
-                    >
+                    <div className="absolute bottom-20 left-4 w-16 h-16 rounded-2xl flex items-center justify-center opacity-30 rotate-12 border border-purple-200 bg-purple-50">
                       <span
-                        className="material-symbols-outlined text-[#a68cff]"
+                        className="material-symbols-outlined text-purple-400"
                         style={{ fontSize: "24px" }}
                       >
                         history
@@ -719,15 +677,11 @@ export default function ProRequestListClient() {
                     <button
                       onClick={() => setRefreshTrigger((prev) => prev + 1)}
                       disabled={isRefreshing}
-                      className="w-full py-4 rounded-full font-black text-base text-[#610034] transition-all active:scale-95 shadow-xl shadow-[#ff88b5]/10 flex items-center justify-center gap-2 disabled:opacity-70"
-                      style={{
-                        background:
-                          "linear-gradient(to right, #ff88b5, #ff6ea9)",
-                      }}
+                      className="w-full py-4 rounded-full font-black text-base text-white bg-[#0020A0] hover:bg-[#001880] transition-all active:scale-95 shadow-xl shadow-[#0020A0]/20 flex items-center justify-center gap-2 disabled:opacity-70"
                     >
                       {isRefreshing ? (
                         <>
-                          <div className="w-4 h-4 border-2 border-[#610034] border-t-transparent rounded-full animate-spin" />
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                           <span>{t("proRequestList.refreshFeed")}</span>
                         </>
                       ) : (
@@ -831,18 +785,18 @@ export default function ProRequestListClient() {
                   return (
                     <div
                       key={req.request_id}
-                      className={`p-4 rounded-2xl border transition-all duration-200 hover:-translate-y-0.5 ${
+                      className={`p-4 rounded-lg border transition-all duration-200 hover:-translate-y-0.5 ${
                         isExpired || isMatchedButNotMe
-                          ? "bg-white/[0.02] border-white/5 opacity-60"
+                          ? "bg-white border-gray-100 opacity-60"
                           : isReadLocally && !myQuote
-                            ? "bg-white/[0.03] border-white/5 opacity-70"
-                            : "bg-[#211e26]/60 border-[#ff88b5]/15 backdrop-blur-xl"
+                            ? "bg-white border-gray-200"
+                            : "bg-white border-gray-200"
                       }`}
-                      style={{ backdropFilter: "blur(20px)" }}
+                      style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}
                     >
                       <div className="flex justify-between items-start mb-2">
                         <div className="flex items-center gap-3 mb-2">
-                          <div className="w-10 h-10 bg-[#27242d] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden border border-white/10">
+                          <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden border border-gray-200">
                             {customerAvatar ? (
                               <img
                                 src={customerAvatar}
@@ -851,7 +805,7 @@ export default function ProRequestListClient() {
                               />
                             ) : (
                               <svg
-                                className="w-5 h-5 text-white/30"
+                                className="w-5 h-5 text-gray-400"
                                 fill="currentColor"
                                 viewBox="0 0 24 24"
                               >
@@ -860,26 +814,26 @@ export default function ProRequestListClient() {
                             )}
                           </div>
                           <div>
-                            <h2 className="text-base font-black text-white/90">
+                            <h2 className="text-sm font-medium text-[#1F2937]">
                               {customerName}
                               {t("proRequestList.requestTitle")}
                             </h2>
-                            <p className="text-sm text-white/40">
-                              {req.categories?.name || req.service_type
-                                ? `${req.categories?.name || req.service_type} | `
+                            <p className="text-xs text-[#374151]">
+                              {req.categories?.name_en || req.service_type
+                                ? `${req.categories?.name_en || req.service_type} | `
                                 : ""}
                               {req.region
                                 ? req.region
-                                : `카테고리: ${req.categories?.name || req.category_id} | 지역: ${req.region_id}`}
+                                : `카테고리: ${req.categories?.name_en || req.category_id} | 지역: ${req.region_id}`}
                             </p>
                             {customerVerifiedMap[req.customer_id] && (
-                              <span className="inline-flex items-center gap-1 bg-[#b5ffc2]/10 text-[#b5ffc2] text-xs font-bold px-2 py-0.5 rounded-full border border-[#b5ffc2]/20 mt-1">
+                              <span className="inline-flex items-center gap-1 bg-green-50 text-green-700 text-xs font-bold px-2 py-0.5 rounded-full mt-1">
                                 {t("proRequestList.verifiedCustomer")}
                               </span>
                             )}
                             {/* ── [확장] 3-15-0 어뷰징 경고 배지 (고수에게만 노출) ── */}
                             {flaggedCustomerIds.has(req.customer_id) && (
-                              <span className="inline-flex items-center gap-1 bg-red-500/10 text-red-400 text-xs font-bold px-2 py-0.5 rounded-full border border-red-500/20 mt-1 animate-pulse">
+                              <span className="inline-flex items-center gap-1 bg-red-50 text-red-600 text-xs font-bold px-2 py-0.5 rounded-full border border-red-200 mt-1 animate-pulse">
                                 {t("proRequestList.abuseWarning")}
                               </span>
                             )}
@@ -887,13 +841,14 @@ export default function ProRequestListClient() {
                         </div>
                         <div className="text-right">
                           <span
-                            className={`inline-block font-bold px-3 py-1 rounded-full text-xs ${
+                            className={`inline-block font-semibold px-3 py-1 rounded-full text-xs ${
                               isClosed
-                                ? "bg-white/5 text-white/40 border border-white/10"
-                                : "bg-[#ff88b5]/10 text-[#ff88b5] border border-[#ff88b5]/20 animate-pulse"
+                                ? "bg-gray-50 text-[#374151] border border-gray-200"
+                                : "bg-[#0020A0]/10 text-[#0020A0] border border-[#0020A0]/20 animate-pulse"
                             }`}
                           >
-                            💡 {req.quote_count} / {req.max_quotes || 5}명{" "}
+                            💡 {req.quote_count} / {req.max_quotes || 5}
+                            {t("proBidding.proCount")}{" "}
                             {isClosed
                               ? t("proRequestList.bidClosed")
                               : t("proRequestList.bidding")}
@@ -901,10 +856,10 @@ export default function ProRequestListClient() {
                           <div
                             className={`text-xs mt-1 font-bold ${
                               isExpired || isMatchedButNotMe
-                                ? "text-white/30"
+                                ? "text-[#6B7280]"
                                 : isHurrying
-                                  ? "text-[#ff88b5] animate-pulse"
-                                  : "text-[#a68cff]"
+                                  ? "text-[#0020A0] animate-pulse"
+                                  : "text-[#6B7280]"
                             }`}
                           >
                             {req.status === "MATCHED"
@@ -916,19 +871,19 @@ export default function ProRequestListClient() {
                         </div>
                       </div>
                       {isReviewed ? (
-                        <div className="mt-3 bg-white/5 text-white/50 px-3 py-2 rounded-xl text-sm font-bold flex items-center gap-2 border border-white/10">
+                        <div className="mt-3 bg-gray-50 text-[#6B7280] px-3 py-2 rounded-xl text-sm font-bold flex items-center gap-2 border border-gray-200">
                           <span>✅</span> {t("proRequestList.dealDone")}
                         </div>
                       ) : isAccepted ? (
-                        <div className="mt-3 bg-[#b5ffc2]/10 text-[#b5ffc2] px-3 py-2 rounded-xl text-sm font-bold flex items-center gap-2 border border-[#b5ffc2]/20">
+                        <div className="mt-3 bg-green-50 text-green-700 px-3 py-2 rounded-xl text-sm font-bold flex items-center gap-2 border border-green-200">
                           <span>🎉</span> {t("proRequestList.matchSuccess")}
                         </div>
                       ) : isMatchedButNotMe ? (
                         <div
                           className={`mt-3 px-3 py-2 rounded-xl text-sm font-bold flex items-center gap-2 border ${
                             isUnreadRefund
-                              ? "bg-[#b5ffc2]/10 text-[#b5ffc2] border-[#b5ffc2]/20"
-                              : "bg-white/5 text-white/40 border-white/10"
+                              ? "bg-green-50 text-green-700 border-green-200"
+                              : "bg-gray-50 text-[#374151] border-gray-100"
                           }`}
                         >
                           <span>{isUnreadRefund ? "🎁" : "🔒"}</span>
@@ -937,7 +892,7 @@ export default function ProRequestListClient() {
                             : t("proRequestList.closedOther")}
                         </div>
                       ) : myQuote ? (
-                        <div className="mt-3 bg-[#a68cff]/10 text-[#a68cff] px-3 py-2 rounded-xl text-sm font-bold flex items-center gap-2 border border-[#a68cff]/20">
+                        <div className="mt-3 bg-purple-50 text-purple-600 px-3 py-2 rounded-xl text-sm font-bold flex items-center gap-2 border border-purple-200">
                           <span>✅</span> {t("proRequestList.alreadySent")}
                         </div>
                       ) : null}
@@ -949,16 +904,16 @@ export default function ProRequestListClient() {
                           isMatchedButNotMe ||
                           req.status === "CANCELED"
                         }
-                        className={`w-full min-h-[48px] mt-4 font-black py-3 rounded-xl transition text-sm break-keep ${
+                        className={`w-full min-h-[48px] mt-4 font-semibold py-2.5 rounded-lg transition text-sm break-keep ${
                           (isExpired && !isAccepted) ||
                           isMatchedButNotMe ||
                           req.status === "CANCELED"
                             ? isUnreadRefund
-                              ? "bg-[#b5ffc2]/10 text-[#b5ffc2] cursor-not-allowed border border-[#b5ffc2]/20"
-                              : "bg-white/5 text-white/30 cursor-not-allowed border border-white/10"
+                              ? "bg-green-50 text-green-700 cursor-not-allowed border border-green-200"
+                              : "bg-gray-100 text-[#374151] cursor-not-allowed border border-gray-200"
                             : !myQuote && !isAccepted
-                              ? "bg-[#ff88b5] hover:bg-[#ff69a7] text-[#610034] shadow-lg shadow-[#ff88b5]/20"
-                              : "bg-[#ff88b5]/80 hover:bg-[#ff88b5] text-[#610034] shadow-md shadow-[#ff88b5]/10"
+                              ? "bg-[#0020A0] hover:bg-[#001880] text-white shadow-lg shadow-[#0020A0]/20"
+                              : "bg-[#0020A0]/80 hover:bg-[#0020A0] text-white shadow-md shadow-[#0020A0]/10"
                         }`}
                       >
                         {isAccepted

@@ -495,7 +495,7 @@ export default function CustomerQuotesClient() {
 
   if (loading)
     return (
-      <div className="p-4 text-center mt-20 text-[#aea9b2] bg-[#0f0d13] min-h-screen">
+      <div className="p-4 text-center mt-20 text-gray-500 bg-white min-h-screen">
         {t("customerQuotes.loading")}
       </div>
     );
@@ -572,41 +572,35 @@ export default function CustomerQuotesClient() {
     });
 
   return (
-    <div
-      className="flex flex-col flex-1 min-h-0 w-full overflow-y-auto bg-[#0f0d13] p-4 lg:p-10 space-y-4 lg:px-8 lg:py-8"
-      style={{
-        background:
-          "radial-gradient(circle at top right, #1a171e 0%, #0f0d13 100%)",
-      }}
-    >
+    <div className="flex flex-col flex-1 min-h-0 w-full overflow-y-auto bg-white p-4 lg:p-10 space-y-4 lg:px-8 lg:py-8">
       <BadgeCleaner type="quotes-read" />
       <div className="lg:text-left lg:mb-8">
-        <h1 className="text-2xl lg:text-2xl font-['Plus_Jakarta_Sans'] font-bold tracking-tight bg-[#0f0d13]/90 backdrop-blur-sm p-4 rounded-xl border border-[#4a474e]/30 flex items-center justify-between sticky top-0 z-10 text-center lg:text-left text-[#ff88b5]">
+        <h1 className="text-2xl lg:text-2xl font-['Plus_Jakarta_Sans'] font-bold tracking-tight bg-white/90 backdrop-blur-sm p-4 rounded-xl border border-gray-200 flex items-center justify-between sticky top-0 z-10 text-center lg:text-left text-[#0020A0]">
           {t("customerQuotes.pageTitle")}
         </h1>
       </div>
 
-      <div className="flex p-1 bg-[#1b1820] rounded-lg max-w-md mx-auto relative overflow-hidden border border-[#4a474e]/20 w-full">
+      <div className="flex p-1 bg-white rounded-lg max-w-md mx-auto relative overflow-hidden border border-gray-200 w-full">
         <button
           onClick={() => setActiveTab("IN_PROGRESS")}
-          className={`flex-1 py-3 text-sm font-['Plus_Jakarta_Sans'] font-bold relative z-10 transition-all duration-300 ${activeTab === "IN_PROGRESS" ? "text-[#ff88b5]" : "text-[#aea9b2]/60 hover:text-[#aea9b2]"}`}
+          className={`flex-1 py-3 text-sm font-['Plus_Jakarta_Sans'] font-bold relative z-10 transition-all duration-300 ${activeTab === "IN_PROGRESS" ? "text-[#0020A0]" : "text-gray-400 hover:text-gray-500"}`}
         >
           {t("customerQuotes.tabInProgress")}
           {activeTab === "IN_PROGRESS" && (
             <div
-              className="absolute inset-x-2 bottom-1 h-0.5 bg-[#ff88b5] rounded-full"
+              className="absolute inset-x-2 bottom-1 h-0.5 bg-[#0020A0] rounded-full"
               style={{ boxShadow: "0 0 8px rgba(255,136,181,0.6)" }}
             ></div>
           )}
         </button>
         <button
           onClick={() => setActiveTab("CLOSED")}
-          className={`flex-1 py-3 text-sm font-['Plus_Jakarta_Sans'] font-bold relative z-10 transition-all duration-300 ${activeTab === "CLOSED" ? "text-[#ff88b5]" : "text-[#aea9b2]/60 hover:text-[#aea9b2]"}`}
+          className={`flex-1 py-3 text-sm font-['Plus_Jakarta_Sans'] font-bold relative z-10 transition-all duration-300 ${activeTab === "CLOSED" ? "text-[#0020A0]" : "text-gray-400 hover:text-gray-500"}`}
         >
           {t("customerQuotes.tabClosed")}
           {activeTab === "CLOSED" && (
             <div
-              className="absolute inset-x-2 bottom-1 h-0.5 bg-[#ff88b5] rounded-full"
+              className="absolute inset-x-2 bottom-1 h-0.5 bg-[#0020A0] rounded-full"
               style={{ boxShadow: "0 0 8px rgba(255,136,181,0.6)" }}
             ></div>
           )}
@@ -614,13 +608,13 @@ export default function CustomerQuotesClient() {
       </div>
 
       {activeTab === "CLOSED" && (
-        <div className="bg-[#1b1820] border border-[#4a474e]/30 text-[#aea9b2] text-sm font-medium p-4 rounded-xl leading-relaxed">
+        <div className="bg-white border border-gray-200 text-gray-500 text-sm font-medium p-4 rounded-xl leading-relaxed">
           {t("customerQuotes.closedBanner")}
         </div>
       )}
 
       {errorMsg && (
-        <div className="text-[#ff6e84] font-bold mb-4 bg-[#a70138]/20 p-4 rounded-xl border border-[#a70138]/40">
+        <div className="text-red-500 font-bold mb-4 bg-red-50 p-4 rounded-xl border border-red-200">
           {t("customerQuotes.dataError")}
           {errorMsg}
         </div>
@@ -631,41 +625,39 @@ export default function CustomerQuotesClient() {
           {activeTab === "IN_PROGRESS" ? (
             <>
               <div className="relative mb-10 group">
-                <div className="absolute inset-0 bg-[#ff88b5]/20 blur-[60px] rounded-full group-hover:bg-[#ff88b5]/30 transition-all duration-500"></div>
-                <div className="relative w-40 h-40 flex items-center justify-center bg-[#211e26] rounded-xl border border-[#4a474e]/10 shadow-2xl overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#ff88b5]/10 to-transparent"></div>
+                <div className="absolute inset-0 bg-[#0020A0]/10 blur-[60px] rounded-full group-hover:bg-[#0020A0]/20 transition-all duration-500"></div>
+                <div className="relative w-40 h-40 flex items-center justify-center bg-gray-50 rounded-xl border border-gray-200 shadow-2xl overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#0020A0]/10 to-transparent"></div>
                   <span
-                    className="material-symbols-outlined text-[80px] text-[#ff88b5] opacity-40 select-none"
+                    className="material-symbols-outlined text-[80px] text-[#0020A0] opacity-40 select-none"
                     style={{ fontVariationSettings: "'wght' 200" }}
                   >
                     content_paste
                   </span>
                 </div>
               </div>
-              <h2 className="font-['Plus_Jakarta_Sans'] font-bold text-2xl text-[#f8f1fb] mb-3 tracking-tight">
+              <h2 className="font-['Plus_Jakarta_Sans'] font-bold text-2xl text-gray-900 mb-3 tracking-tight">
                 {t("customerQuotes.noInProgress")}
               </h2>
-              <p className="text-[#aea9b2] leading-relaxed mb-10 text-sm">
+              <p className="text-gray-500 leading-relaxed mb-10 text-sm">
                 {t("customerQuotes.noInProgressSub")}
               </p>
               <button
                 onClick={() => router.push("/request")}
-                className="group relative w-full py-5 rounded-full overflow-hidden transition-all duration-300 active:scale-95"
-                style={{ boxShadow: "0 10px 40px -10px rgba(255,136,181,0.5)" }}
+                className="group relative w-full py-5 rounded-full overflow-hidden transition-all duration-300 active:scale-95 bg-[#0020A0] hover:bg-[#001880]"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-[#ff88b5] to-[#ff69a7] transition-transform duration-300 group-hover:scale-105"></div>
                 <div className="relative flex items-center justify-center gap-2">
-                  <span className="material-symbols-outlined text-[#610034] text-xl">
+                  <span className="material-symbols-outlined text-white text-xl">
                     add_circle
                   </span>
-                  <span className="font-['Plus_Jakarta_Sans'] font-extrabold text-[#610034] tracking-wide text-sm">
+                  <span className="font-['Plus_Jakarta_Sans'] font-extrabold text-white tracking-wide text-sm">
                     {t("customerQuotes.newRequestBtn")}
                   </span>
                 </div>
               </button>
             </>
           ) : (
-            <p className="text-[#aea9b2]">{t("customerQuotes.noClosed")}</p>
+            <p className="text-gray-500">{t("customerQuotes.noClosed")}</p>
           )}
         </div>
       ) : (
@@ -697,8 +689,7 @@ export default function CustomerQuotesClient() {
               "bg-[#b5ffc2]/10 text-[#b5ffc2] border border-[#b5ffc2]/30";
           } else if (isFull || isExpired) {
             statusLabel = t("customerQuotes.statusClosed");
-            statusColor =
-              "bg-[#27242d] text-[#aea9b2] border border-[#4a474e]/30";
+            statusColor = "bg-gray-100 text-gray-500 border border-gray-200";
           }
 
           const reqQuotes = (
@@ -719,21 +710,21 @@ export default function CustomerQuotesClient() {
           return (
             <div
               key={request.request_id}
-              className={`bg-[#1b1820] p-5 rounded-2xl border mt-4 ${activeTab === "CLOSED" ? "border-[#4a474e]/20" : "border-[#ff88b5]/10"}`}
+              className={`bg-white p-5 rounded-2xl border mt-4 ${activeTab === "CLOSED" ? "border-gray-200" : "border-[#0020A0]/10"}`}
             >
-              <div className="flex justify-between items-start mb-3 border-b pb-3 border-[#4a474e]/30">
+              <div className="flex justify-between items-start mb-3 border-b pb-3 border-gray-200">
                 <div>
-                  <h2 className="text-base font-bold text-[#f8f1fb]">
+                  <h2 className="text-base font-bold text-gray-900">
                     {(locale === "en" ? request.categories?.name_en : null) ||
                       request.categories?.name ||
                       request.service_type ||
                       t("customerQuotes.defaultService")}
                   </h2>
                   <div className="flex items-center gap-2 mt-1 font-medium">
-                    <span className="text-sm text-[#aea9b2] flex items-center gap-1">
+                    <span className="text-sm text-gray-500 flex items-center gap-1">
                       📍 {request.region || t("customerQuotes.noRegion")}
                     </span>
-                    <span className="text-xs text-[#aea9b2]/60">
+                    <span className="text-xs text-gray-400">
                       {t("customerQuotes.requestDate")}
                       {new Date(request.created_at).toLocaleDateString()}
                     </span>
@@ -747,7 +738,7 @@ export default function CustomerQuotesClient() {
                   </span>
                   {activeTab === "IN_PROGRESS" && (
                     <div
-                      className={`text-xs mt-2 font-bold ${isHurry ? "text-[#ff6e84] animate-pulse" : "text-[#a68cff]"}`}
+                      className={`text-xs mt-2 font-bold ${isHurry ? "text-red-500 animate-pulse" : "text-[#0020A0]"}`}
                     >
                       {t("customerQuotes.timeLeft")}
                       {hoursRemaining}
@@ -763,7 +754,7 @@ export default function CustomerQuotesClient() {
                 <div className="flex gap-2 mb-3">
                   <button
                     onClick={() => setViewRequestModal({ request })}
-                    className="flex-1 bg-[#211e26] hover:bg-[#27242d] text-[#aea9b2] font-bold py-2 rounded-lg text-xs border border-[#4a474e]/30 transition flex items-center justify-center gap-1"
+                    className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-500 font-bold py-2 rounded-lg text-xs border border-gray-200 transition flex items-center justify-center gap-1"
                   >
                     {t("customerQuotes.viewMyRequest")}
                   </button>
@@ -771,13 +762,13 @@ export default function CustomerQuotesClient() {
               )}
 
               {activeTab === "IN_PROGRESS" && (
-                <div className="mb-4 bg-[#a68cff]/5 p-3 rounded-xl border border-[#a68cff]/20 flex items-center justify-between">
-                  <span className="text-sm text-[#a68cff] font-medium">
+                <div className="mb-4 bg-[#0020A0]/5 p-3 rounded-xl border border-[#0020A0]/20 flex items-center justify-between">
+                  <span className="text-sm text-[#0020A0] font-medium">
                     🚀 {request.quote_count || 0} / 5{" "}
                     {t("customerQuotes.quoteCount")}
                   </span>
                   {(request.quote_count || 0) === 0 && (
-                    <span className="text-xs text-[#a68cff]/70 animate-pulse">
+                    <span className="text-xs text-[#0020A0]/70 animate-pulse">
                       {t("customerQuotes.waitingPros")}
                     </span>
                   )}
@@ -786,7 +777,7 @@ export default function CustomerQuotesClient() {
 
               {reqQuotes.length > 0 ? (
                 <div className="space-y-3">
-                  <h3 className="text-xs font-bold text-[#aea9b2]/60 uppercase tracking-wider">
+                  <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">
                     {t("customerQuotes.quotesArrived")} ({reqQuotes.length})
                   </h3>
                   {reqQuotes.map((quote: any) => {
@@ -816,13 +807,13 @@ export default function CustomerQuotesClient() {
                       return (
                         <div
                           key={quote.quote_id}
-                          className="bg-[#211e26] p-3 rounded-xl border border-[#4a474e]/20 opacity-50"
+                          className="bg-gray-50 p-3 rounded-xl border border-gray-200 opacity-50"
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                              <div className="w-6 h-6 bg-[#27242d] rounded-full flex items-center justify-center flex-shrink-0">
+                              <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
                                 <svg
-                                  className="w-3.5 h-3.5 text-[#aea9b2]"
+                                  className="w-3.5 h-3.5 text-gray-500"
                                   fill="currentColor"
                                   viewBox="0 0 20 20"
                                 >
@@ -833,11 +824,11 @@ export default function CustomerQuotesClient() {
                                   />
                                 </svg>
                               </div>
-                              <span className="font-medium text-[#aea9b2] text-sm">
+                              <span className="font-medium text-gray-500 text-sm">
                                 {proName}님
                               </span>
                             </div>
-                            <span className="text-xs text-[#aea9b2] bg-[#27242d] px-2 py-0.5 rounded-full">
+                            <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
                               {t("customerQuotes.notSelected")}
                             </span>
                           </div>
@@ -848,7 +839,7 @@ export default function CustomerQuotesClient() {
                     return (
                       <div
                         key={quote.quote_id}
-                        className="bg-[#211e26] p-4 rounded-xl border border-[#4a474e]/20 flex flex-col space-y-3"
+                        className="bg-gray-50 p-4 rounded-xl border border-gray-200 flex flex-col space-y-3"
                       >
                         {/* 상단 터치 존: 전체 클릭 시 프로필 모달 오픈 */}
                         <div
@@ -876,7 +867,7 @@ export default function CustomerQuotesClient() {
                           <div className="flex justify-between items-center">
                             <div className="flex items-center flex-wrap gap-1.5">
                               {/* 고수 아바타 아이콘 */}
-                              <div className="w-7 h-7 bg-[#27242d] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden border border-[#4a474e]/40">
+                              <div className="w-7 h-7 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden border border-gray-200">
                                 {avatarUrl ? (
                                   <img
                                     src={avatarUrl}
@@ -885,7 +876,7 @@ export default function CustomerQuotesClient() {
                                   />
                                 ) : (
                                   <svg
-                                    className="w-4 h-4 text-[#ff88b5]/60"
+                                    className="w-4 h-4 text-[#0020A0]/60"
                                     fill="currentColor"
                                     viewBox="0 0 20 20"
                                   >
@@ -897,7 +888,7 @@ export default function CustomerQuotesClient() {
                                   </svg>
                                 )}
                               </div>
-                              <span className="font-bold text-[#ff88b5]">
+                              <span className="font-bold text-[#0020A0]">
                                 {proName}님
                               </span>
                               {proUser?.is_phone_verified && (
@@ -906,25 +897,25 @@ export default function CustomerQuotesClient() {
                                 </span>
                               )}
                               {proUser?.facebook_url && (
-                                <span className="inline-flex items-center gap-0.5 text-[10px] bg-[#a68cff]/10 text-[#a68cff] font-bold px-1.5 py-0.5 rounded-full border border-[#a68cff]/30 whitespace-nowrap flex-shrink-0">
+                                <span className="inline-flex items-center gap-0.5 text-[10px] bg-[#0020A0]/10 text-[#0020A0] font-bold px-1.5 py-0.5 rounded-full border border-[#0020A0]/30 whitespace-nowrap flex-shrink-0">
                                   {t("customerQuotes.facebookLinked")}
                                 </span>
                               )}
                               <span className="text-xs font-bold text-yellow-400">
                                 ⭐ {Number(avgRating).toFixed(1)}
                               </span>
-                              <span className="text-xs text-[#aea9b2]/60">
+                              <span className="text-xs text-gray-400">
                                 ({reviewCount}개)
                               </span>
                             </div>
-                            <span className="text-xs text-[#aea9b2]/60 flex-shrink-0">
+                            <span className="text-xs text-gray-400 flex-shrink-0">
                               {new Date(quote.created_at).toLocaleTimeString(
                                 [],
                                 { hour: "2-digit", minute: "2-digit" },
                               )}
                             </span>
                           </div>
-                          <p className="text-xs text-[#aea9b2]/50 text-right">
+                          <p className="text-xs text-gray-400 text-right">
                             {t("customerQuotes.viewProfile")}
                           </p>
                         </div>
@@ -933,7 +924,7 @@ export default function CustomerQuotesClient() {
                           // ── [확장] 이미 다른 고수와 MATCHED된 요청건의 미확정 고수 카드 버튼 비활성화 ──
                           request.status === "MATCHED" &&
                           quote.status !== "ACCEPTED" ? (
-                            <div className="mt-2 bg-[#27242d] text-[#aea9b2] font-bold py-2.5 rounded-lg text-sm text-center border border-[#4a474e]/30">
+                            <div className="mt-2 bg-gray-100 text-gray-500 font-bold py-2.5 rounded-lg text-sm text-center border border-gray-200">
                               {t("customerQuotes.matchedOther")}
                             </div>
                           ) : (
@@ -954,8 +945,8 @@ export default function CustomerQuotesClient() {
                                 }}
                                 className={`flex-1 font-bold py-2.5 rounded-lg shadow-sm transition text-sm border ${
                                   !quote.is_read
-                                    ? "bg-gradient-to-r from-[#ff88b5] to-[#ff69a7] text-[#610034] border-transparent animate-pulse"
-                                    : "bg-[#211e26] text-[#aea9b2] border-[#4a474e]/30 hover:bg-[#27242d]"
+                                    ? "bg-[#0020A0] hover:bg-[#001880] text-white border-transparent animate-pulse"
+                                    : "bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100"
                                 }`}
                                 style={
                                   !quote.is_read
@@ -977,7 +968,7 @@ export default function CustomerQuotesClient() {
                                     request_id: request.request_id,
                                   })
                                 }
-                                className="flex-1 bg-[#a68cff] hover:bg-[#7e51ff] text-[#25006b] font-bold py-2.5 rounded-lg shadow-sm transition text-sm"
+                                className="flex-1 bg-[#0020A0] hover:bg-[#001880] text-white font-bold py-2.5 rounded-lg shadow-sm transition text-sm"
                               >
                                 {t("customerQuotes.chatBtn")}
                               </button>
@@ -1014,7 +1005,7 @@ export default function CustomerQuotesClient() {
                                           request,
                                         });
                                       }}
-                                      className="w-full bg-[#211e26] hover:bg-[#27242d] text-[#a68cff] font-bold py-2.5 rounded-lg shadow-sm transition text-sm border border-[#a68cff]/30 flex items-center justify-center gap-2"
+                                      className="w-full bg-gray-50 hover:bg-gray-100 text-[#0020A0] font-bold py-2.5 rounded-lg shadow-sm transition text-sm border border-[#0020A0]/30 flex items-center justify-center gap-2"
                                     >
                                       {t("customerQuotes.viewQuoteDetail")}
                                     </button>
@@ -1022,7 +1013,7 @@ export default function CustomerQuotesClient() {
                                     {isReviewed ? (
                                       <button
                                         disabled
-                                        className="w-full bg-[#27242d] text-[#aea9b2] font-bold py-2.5 rounded-lg shadow-sm transition text-sm flex items-center justify-center gap-2 cursor-not-allowed border border-[#4a474e]/20"
+                                        className="w-full bg-gray-100 text-gray-500 font-bold py-2.5 rounded-lg shadow-sm transition text-sm flex items-center justify-center gap-2 cursor-not-allowed border border-gray-200"
                                       >
                                         {t("customerQuotes.dealDone")}
                                       </button>
@@ -1034,7 +1025,7 @@ export default function CustomerQuotesClient() {
                                             request_id: request.request_id,
                                           })
                                         }
-                                        className="w-full bg-[#a68cff] hover:bg-[#7e51ff] text-[#25006b] font-bold py-2.5 rounded-lg shadow-sm transition text-sm flex items-center justify-center gap-2"
+                                        className="w-full bg-[#0020A0] hover:bg-[#001880] text-white font-bold py-2.5 rounded-lg shadow-sm transition text-sm flex items-center justify-center gap-2"
                                       >
                                         {t("customerQuotes.chatRoomBtn")}
                                       </button>
@@ -1043,7 +1034,7 @@ export default function CustomerQuotesClient() {
                                     {isReviewed ? (
                                       <button
                                         disabled
-                                        className="w-full bg-[#27242d] text-[#aea9b2] font-bold py-2.5 rounded-lg text-sm flex items-center justify-center gap-2 cursor-not-allowed border border-[#4a474e]/20"
+                                        className="w-full bg-gray-100 text-gray-500 font-bold py-2.5 rounded-lg text-sm flex items-center justify-center gap-2 cursor-not-allowed border border-gray-200"
                                       >
                                         {t("customerQuotes.reviewDone")}
                                       </button>
@@ -1055,7 +1046,7 @@ export default function CustomerQuotesClient() {
                                             request.request_id,
                                           )
                                         }
-                                        className="w-full bg-gradient-to-r from-[#ff88b5] to-[#ff69a7] hover:opacity-90 text-[#610034] font-bold py-2.5 rounded-lg shadow-sm transition text-sm flex items-center justify-center gap-2"
+                                        className="w-full bg-[#0020A0] hover:bg-[#001880] text-white font-bold py-2.5 rounded-lg shadow-sm transition text-sm flex items-center justify-center gap-2"
                                       >
                                         {t("customerQuotes.leaveReview")}
                                       </button>
@@ -1065,7 +1056,7 @@ export default function CustomerQuotesClient() {
                               })()
                             ) : quote.status === "REJECTED" ||
                               request.status === "MATCHED" ? (
-                              <div className="bg-[#27242d] text-[#aea9b2] py-2 rounded-lg text-sm font-bold border border-[#4a474e]/30">
+                              <div className="bg-gray-100 text-gray-500 py-2 rounded-lg text-sm font-bold border border-gray-200">
                                 {request.status === "MATCHED"
                                   ? t("customerQuotes.matchFailed")
                                   : t("customerQuotes.rejected")}
@@ -1087,7 +1078,7 @@ export default function CustomerQuotesClient() {
                                       request,
                                     });
                                   }}
-                                  className="w-full bg-[#211e26] hover:bg-[#27242d] text-[#a68cff] font-bold py-2.5 rounded-lg shadow-sm transition text-sm border border-[#a68cff]/30 flex items-center justify-center gap-2"
+                                  className="w-full bg-gray-50 hover:bg-gray-100 text-[#0020A0] font-bold py-2.5 rounded-lg shadow-sm transition text-sm border border-[#0020A0]/30 flex items-center justify-center gap-2"
                                 >
                                   {t("customerQuotes.viewQuoteDetail2")}
                                 </button>
@@ -1098,7 +1089,7 @@ export default function CustomerQuotesClient() {
                                       request_id: request.request_id,
                                     })
                                   }
-                                  className="w-full bg-[#a68cff] hover:bg-[#7e51ff] text-[#25006b] font-bold py-2.5 rounded-lg shadow-sm transition text-sm flex items-center justify-center gap-2"
+                                  className="w-full bg-[#0020A0] hover:bg-[#001880] text-white font-bold py-2.5 rounded-lg shadow-sm transition text-sm flex items-center justify-center gap-2"
                                 >
                                   {t("customerQuotes.consultChat")}
                                 </button>
@@ -1111,18 +1102,18 @@ export default function CustomerQuotesClient() {
                   })}
                 </div>
               ) : (
-                <div className="text-center p-6 bg-[#1b1820] rounded-xl border border-[#4a474e]/20 border-dashed text-sm">
+                <div className="text-center p-6 bg-white rounded-xl border border-gray-200 border-dashed text-sm">
                   {activeTab === "IN_PROGRESS" ? (
                     <div className="flex flex-col items-center gap-4 py-8">
-                      <div className="w-28 h-28 rounded-full border-2 border-[#ff88b5]/40 flex items-center justify-center">
-                        <div className="w-20 h-20 bg-[#2a2630] rounded-2xl flex items-center justify-center shadow-lg shadow-black/20">
+                      <div className="w-28 h-28 rounded-full border-2 border-[#0020A0]/20 flex items-center justify-center">
+                        <div className="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center shadow-sm">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="48"
                             height="48"
                             viewBox="0 0 24 24"
                             fill="none"
-                            stroke="#ff88b5"
+                            stroke="#0020A0"
                             strokeWidth="1.2"
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -1146,26 +1137,26 @@ export default function CustomerQuotesClient() {
                         <p className="text-white font-semibold text-base">
                           {t("customerQuotes.noActiveRequests")}
                         </p>
-                        <p className="text-[#aea9b2]/60 text-xs">
+                        <p className="text-gray-400 text-xs">
                           {t("customerQuotes.noQuotesInProgress")}
                         </p>
                       </div>
                       <button
                         onClick={() => router.push("/request")}
-                        className="bg-[#ff88b5] text-white rounded-full px-6 py-3 font-semibold text-sm flex items-center gap-2"
+                        className="bg-[#0020A0] text-white rounded-full px-6 py-3 font-semibold text-sm flex items-center gap-2"
                       >
                         <span className="text-lg">⊕</span>{" "}
                         {t("customerQuotes.createNewRequest")}
                       </button>
                       <button
                         onClick={() => router.push("/")}
-                        className="text-[#ff88b5] text-xs font-bold tracking-wider uppercase"
+                        className="text-[#0020A0] text-xs font-bold tracking-wider uppercase"
                       >
                         {t("customerQuotes.browseProfessionals")}
                       </button>
                     </div>
                   ) : (
-                    <span className="text-[#aea9b2]/50">
+                    <span className="text-gray-400">
                       {t("customerQuotes.noQuotesClosed")}
                     </span>
                   )}
@@ -1175,7 +1166,7 @@ export default function CustomerQuotesClient() {
               {activeTab === "CLOSED" && (
                 <button
                   disabled
-                  className="w-full mt-4 bg-[#1b1820] text-[#4a474e] font-bold py-3 rounded-xl shadow-none cursor-not-allowed text-sm border border-[#4a474e]/20"
+                  className="w-full mt-4 bg-white text-gray-400 font-bold py-3 rounded-xl shadow-none cursor-not-allowed text-sm border border-gray-200"
                 >
                   {t("customerQuotes.closedRequest")}
                 </button>
@@ -1188,12 +1179,12 @@ export default function CustomerQuotesClient() {
       {/* 리뷰 모달 */}
       {isReviewModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="bg-[#1b1820] border border-[#4a474e]/30 rounded-2xl w-full max-w-sm p-6 shadow-2xl flex flex-col gap-4">
-            <h2 className="text-lg font-bold text-center text-[#f8f1fb] font-['Plus_Jakarta_Sans']">
+          <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-sm p-6 shadow-2xl flex flex-col gap-4">
+            <h2 className="text-lg font-bold text-center text-gray-900 font-['Plus_Jakarta_Sans']">
               {t("customerQuotes.reviewTitle")}
             </h2>
             <div className="flex flex-col items-center">
-              <span className="text-sm text-[#aea9b2] mb-2">
+              <span className="text-sm text-gray-500 mb-2">
                 {t("customerQuotes.reviewRatingLabel")}
               </span>
               <div className="flex gap-2">
@@ -1201,7 +1192,7 @@ export default function CustomerQuotesClient() {
                   <button
                     key={star}
                     onClick={() => setReviewRating(star)}
-                    className={`text-3xl transition ${star <= reviewRating ? "text-[#ff88b5]" : "text-[#4a474e]"}`}
+                    className={`text-3xl transition ${star <= reviewRating ? "text-[#0020A0]" : "text-gray-300"}`}
                   >
                     ★
                   </button>
@@ -1212,18 +1203,18 @@ export default function CustomerQuotesClient() {
               value={reviewComment}
               onChange={(e) => setReviewComment(e.target.value)}
               placeholder={t("customerQuotes.reviewPlaceholder")}
-              className="w-full bg-[#27242d] border border-[#4a474e]/30 rounded-xl p-3 text-sm text-[#f8f1fb] placeholder-[#aea9b2]/40 focus:outline-none focus:ring-2 focus:ring-[#ff88b5]/30 min-h-[100px]"
+              className="w-full bg-gray-100 border border-gray-200 rounded-xl p-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0020A0]/30 min-h-[100px]"
             />
             <div className="flex gap-2 mt-2">
               <button
                 onClick={() => setIsReviewModalOpen(false)}
-                className="flex-1 bg-[#27242d] hover:bg-[#2e2a36] text-[#aea9b2] font-bold py-3 rounded-xl transition text-sm border border-[#4a474e]/20"
+                className="flex-1 bg-gray-100 hover:bg-gray-100 text-gray-500 font-bold py-3 rounded-xl transition text-sm border border-gray-200"
               >
                 {t("customerQuotes.reviewCancel")}
               </button>
               <button
                 onClick={handleReviewSubmit}
-                className="flex-1 bg-gradient-to-r from-[#ff88b5] to-[#ff69a7] hover:opacity-90 text-[#610034] font-bold py-3 rounded-xl transition text-sm"
+                className="flex-1 bg-[#0020A0] hover:bg-[#001880] text-white font-bold py-3 rounded-xl transition text-sm"
               >
                 {t("customerQuotes.reviewSubmit")}
               </button>
@@ -1289,51 +1280,51 @@ export default function CustomerQuotesClient() {
 
           return (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-              <div className="bg-[#1b1820] border border-[#4a474e]/30 rounded-2xl w-full max-w-md max-h-[80vh] overflow-y-auto shadow-2xl">
-                <div className="sticky top-0 bg-[#1b1820] p-5 pb-3 border-b border-[#4a474e]/20 rounded-t-2xl">
+              <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-md max-h-[80vh] overflow-y-auto shadow-2xl">
+                <div className="sticky top-0 bg-white p-5 pb-3 border-b border-gray-200 rounded-t-2xl">
                   <div className="flex justify-between items-center">
-                    <h2 className="text-lg font-bold text-[#f8f1fb] font-['Plus_Jakarta_Sans']">
+                    <h2 className="text-lg font-bold text-gray-900 font-['Plus_Jakarta_Sans']">
                       {t("customerQuotes.viewRequestTitle")}
                     </h2>
                     <button
                       onClick={() => setViewRequestModal(null)}
-                      className="text-[#aea9b2] hover:text-[#f8f1fb] text-xl transition"
+                      className="text-gray-500 hover:text-gray-900 text-xl transition"
                     >
                       ✕
                     </button>
                   </div>
                   {hasQuotes && (
-                    <div className="mt-3 bg-[#ff88b5]/10 border border-[#ff88b5]/20 text-[#ff88b5] text-xs font-bold p-3 rounded-lg">
+                    <div className="mt-3 bg-[#0020A0]/10 border border-[#0020A0]/20 text-[#0020A0] text-xs font-bold p-3 rounded-lg">
                       {t("customerQuotes.quoteLocked")}
                     </div>
                   )}
                 </div>
                 <div className="p-5 space-y-4">
                   <div className="space-y-3">
-                    <div className="bg-[#27242d] p-3 rounded-lg border border-[#4a474e]/10">
-                      <span className="text-xs font-bold text-[#aea9b2]/60">
+                    <div className="bg-gray-100 p-3 rounded-lg border border-gray-200">
+                      <span className="text-xs font-bold text-gray-400">
                         {t("customerQuotes.serviceLabel")}
                       </span>
-                      <p className="text-sm font-bold text-[#f8f1fb] mt-1">
+                      <p className="text-sm font-bold text-gray-900 mt-1">
                         {(locale === "en" ? req.categories?.name_en : null) ||
                           req.categories?.name ||
                           req.service_type ||
                           "-"}
                       </p>
                     </div>
-                    <div className="bg-[#27242d] p-3 rounded-lg border border-[#4a474e]/10">
-                      <span className="text-xs font-bold text-[#aea9b2]/60">
+                    <div className="bg-gray-100 p-3 rounded-lg border border-gray-200">
+                      <span className="text-xs font-bold text-gray-400">
                         {t("customerQuotes.regionLabel")}
                       </span>
-                      <p className="text-sm font-bold text-[#f8f1fb] mt-1">
+                      <p className="text-sm font-bold text-gray-900 mt-1">
                         📍 {req.region || "-"}
                       </p>
                     </div>
-                    <div className="bg-[#27242d] p-3 rounded-lg border border-[#4a474e]/10">
-                      <span className="text-xs font-bold text-[#aea9b2]/60">
+                    <div className="bg-gray-100 p-3 rounded-lg border border-gray-200">
+                      <span className="text-xs font-bold text-gray-400">
                         {t("customerQuotes.requestDateLabel")}
                       </span>
-                      <p className="text-sm font-bold text-[#f8f1fb] mt-1">
+                      <p className="text-sm font-bold text-gray-900 mt-1">
                         {new Date(req.created_at).toLocaleDateString()}
                       </p>
                     </div>
@@ -1341,8 +1332,8 @@ export default function CustomerQuotesClient() {
 
                   {/* _history가 있으면 질문-답변 형식, 없으면 기존 fallback */}
                   {historyData.length > 0 ? (
-                    <div className="space-y-3 border-t pt-4 border-[#4a474e]/20">
-                      <h3 className="text-xs font-bold text-[#aea9b2]/50 uppercase tracking-wider">
+                    <div className="space-y-3 border-t pt-4 border-gray-200">
+                      <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">
                         {t("customerQuotes.detailedAnswers")}
                       </h3>
                       {historyData
@@ -1365,12 +1356,12 @@ export default function CustomerQuotesClient() {
                         .map((item, idx) => (
                           <div
                             key={idx}
-                            className="bg-[#27242d] p-3 rounded-lg border border-[#4a474e]/10"
+                            className="bg-gray-100 p-3 rounded-lg border border-gray-200"
                           >
-                            <span className="text-xs font-bold text-[#a68cff]">
+                            <span className="text-xs font-bold text-[#0020A0]">
                               Q. {item.stepText}
                             </span>
-                            <p className="text-sm text-[#f8f1fb] mt-1 font-medium">
+                            <p className="text-sm text-gray-900 mt-1 font-medium">
                               {Array.isArray(item.userAnswer)
                                 ? item.userAnswer.join(", ")
                                 : String(item.userAnswer)}
@@ -1379,19 +1370,19 @@ export default function CustomerQuotesClient() {
                         ))}
                     </div>
                   ) : fallbackEntries.length > 0 ? (
-                    <div className="space-y-3 border-t pt-4 border-[#4a474e]/20">
-                      <h3 className="text-xs font-bold text-[#aea9b2]/50 uppercase tracking-wider">
+                    <div className="space-y-3 border-t pt-4 border-gray-200">
+                      <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">
                         {t("customerQuotes.detailedAnswers")}
                       </h3>
                       {fallbackEntries.map(([key, value]) => (
                         <div
                           key={key}
-                          className="bg-[#27242d] p-3 rounded-lg border border-[#4a474e]/10"
+                          className="bg-gray-100 p-3 rounded-lg border border-gray-200"
                         >
-                          <span className="text-xs font-bold text-[#aea9b2]/60">
+                          <span className="text-xs font-bold text-gray-400">
                             {key}
                           </span>
-                          <p className="text-sm text-[#f8f1fb] mt-1">
+                          <p className="text-sm text-gray-900 mt-1">
                             {Array.isArray(value)
                               ? value.join(", ")
                               : String(value)}
@@ -1401,10 +1392,10 @@ export default function CustomerQuotesClient() {
                     </div>
                   ) : null}
                 </div>
-                <div className="sticky bottom-0 bg-[#1b1820] p-5 pt-3 border-t border-[#4a474e]/20 rounded-b-2xl">
+                <div className="sticky bottom-0 bg-white p-5 pt-3 border-t border-gray-200 rounded-b-2xl">
                   <button
                     onClick={() => setViewRequestModal(null)}
-                    className="w-full bg-[#27242d] hover:bg-[#2e2a36] text-[#aea9b2] font-bold py-3 rounded-xl transition text-sm border border-[#4a474e]/20"
+                    className="w-full bg-gray-100 hover:bg-gray-100 text-gray-500 font-bold py-3 rounded-xl transition text-sm border border-gray-200"
                   >
                     {t("customerQuotes.closeBtn")}
                   </button>
@@ -1426,13 +1417,13 @@ export default function CustomerQuotesClient() {
 
           return (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-              <div className="bg-[#1b1820] border border-[#4a474e]/30 rounded-2xl w-full max-w-sm p-6 shadow-2xl flex flex-col gap-4">
-                <h2 className="text-lg font-bold text-center text-[#f8f1fb] font-['Plus_Jakarta_Sans']">
+              <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-sm p-6 shadow-2xl flex flex-col gap-4">
+                <h2 className="text-lg font-bold text-center text-gray-900 font-['Plus_Jakarta_Sans']">
                   {t("customerQuotes.cancelTitle")}
                 </h2>
-                <div className="text-sm text-[#aea9b2] text-center space-y-2">
+                <div className="text-sm text-gray-500 text-center space-y-2">
                   <p>
-                    <strong className="text-[#f8f1fb]">
+                    <strong className="text-gray-900">
                       {(locale === "en" ? req.categories?.name_en : null) ||
                         req.categories?.name ||
                         req.service_type ||
@@ -1447,7 +1438,7 @@ export default function CustomerQuotesClient() {
                   )}
                   {/* ── [확장] 미열람 견적 환불 안내 ── */}
                   {unreadQuoteCount > 0 && (
-                    <div className="bg-[#a68cff]/10 border border-[#a68cff]/20 text-[#a68cff] text-xs font-bold p-3 rounded-lg mt-2 text-left">
+                    <div className="bg-[#0020A0]/10 border border-[#0020A0]/20 text-[#0020A0] text-xs font-bold p-3 rounded-lg mt-2 text-left">
                       {t("customerQuotes.cancelUnreadRefund").replace(
                         "{count}",
                         String(unreadQuoteCount),
@@ -1459,7 +1450,7 @@ export default function CustomerQuotesClient() {
                   <button
                     onClick={() => setCancelConfirmModal(null)}
                     disabled={cancelLoading}
-                    className="flex-1 bg-[#27242d] hover:bg-[#2e2a36] text-[#aea9b2] font-bold py-3 rounded-xl transition text-sm border border-[#4a474e]/20 disabled:opacity-50"
+                    className="flex-1 bg-gray-100 hover:bg-gray-100 text-gray-500 font-bold py-3 rounded-xl transition text-sm border border-gray-200 disabled:opacity-50"
                   >
                     {t("customerQuotes.cancelBack")}
                   </button>
