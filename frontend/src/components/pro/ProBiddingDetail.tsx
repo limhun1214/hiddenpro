@@ -418,14 +418,22 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
 
   if (loading)
     return (
-      <div className="p-4 text-center mt-20 text-gray-500">
-        {t("proBidding.loading")}
+      <div className="min-h-screen bg-[#F8F9FA] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-2 border-[#0020A0] border-t-transparent rounded-full animate-spin" />
+          <p className="text-sm text-[#6B7280] font-medium">{t("proBidding.loading")}</p>
+        </div>
       </div>
     );
   if (!request)
     return (
-      <div className="p-4 text-center mt-20 text-red-500">
-        {t("proBidding.notFound")}
+      <div className="min-h-screen bg-[#F8F9FA] flex items-center justify-center p-6">
+        <div className="text-center">
+          <span className="material-symbols-outlined text-[#6B7280] mb-4 block" style={{ fontSize: "48px" }}>
+            error_outline
+          </span>
+          <p className="text-[#374151] font-semibold">{t("proBidding.notFound")}</p>
+        </div>
       </div>
     );
 
@@ -484,30 +492,20 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
     isQuoteValid;
 
   return (
-    <div className="relative min-h-screen bg-[#FAFAFA] pb-24">
-      {/* 1. 상단 정보 패널 */}
-      <div className="bg-white p-4 border-b sticky top-0 z-10 shadow-sm">
-        <div className="flex items-center gap-2 mb-2">
+    <div className="relative min-h-screen bg-[#F8F9FA] pb-24">
+      {/* 1. 상단 헤더 */}
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-10 px-4 pt-4 pb-3">
+        <div className="flex items-center gap-3">
           <button
             onClick={() => router.back()}
-            className="p-1.5 text-gray-500 hover:bg-gray-100 rounded-full transition"
+            className="flex items-center justify-center w-9 h-9 rounded-full hover:bg-gray-100 transition-colors active:scale-90 flex-shrink-0"
           >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
+            <span className="material-symbols-outlined text-[#1F2937]" style={{ fontSize: "22px" }}>
+              arrow_back
+            </span>
           </button>
-          <div className="flex items-center gap-3 flex-1">
-            <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden border border-gray-200">
+          <div className="flex items-center gap-3 flex-1 min-w-0">
+            <div className="w-9 h-9 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden border border-gray-200">
               {customerAvatar ? (
                 <img
                   src={customerAvatar}
@@ -515,37 +513,37 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <svg
-                  className="w-5 h-5 text-gray-400"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-                </svg>
+                <span className="material-symbols-outlined text-gray-400" style={{ fontSize: "18px" }}>
+                  person
+                </span>
               )}
             </div>
-            <div>
-              <h1 className="text-lg font-bold">
+            <div className="min-w-0">
+              <h1 className="text-sm font-semibold text-[#1F2937] truncate">
                 {customerName || t("proBidding.unknownCustomer")}
                 {t("proBidding.requestTitle")}
               </h1>
-              <p className="text-xs text-gray-500">
-                {request.service_type ? `${request.service_type} | ` : ""}
-                {request.region
-                  ? request.region
-                  : `Category: ${request.category_id} | Region: ${request.region_id}`}
+              <p className="text-xs text-[#6B7280] truncate">
+                {request.service_type ? `${request.service_type} · ` : ""}
+                {request.region || `${request.categories?.name_en || request.category_id}`}
               </p>
             </div>
           </div>
           <div className="text-right flex-shrink-0">
             <span
-              className={`inline-block font-bold px-3 py-1 rounded-full text-sm shadow-sm ${isExpired ? "bg-gray-100 text-[#374151]" : "bg-[#D32D7D]/10 text-[#D32D7D] border border-[#D32D7D]/20 animate-pulse"}`}
+              className={`inline-flex items-center gap-1 font-semibold px-2.5 py-1 rounded-full text-xs ${
+                isExpired
+                  ? "bg-gray-100 text-[#374151] border border-gray-200"
+                  : "bg-[#0020A0]/10 text-[#0020A0] border border-[#0020A0]/20 animate-pulse"
+              }`}
             >
               💡 {request.quote_count}/{maxQuotes}
               {t("proBidding.proCount")}
             </span>
             <div
-              className={`text-xs mt-1 font-bold ${isExpired ? "text-[#374151]" : isHurry ? "text-[#D32D7D] animate-pulse" : "text-[#6B7280]"}`}
+              className={`text-xs mt-1 font-bold ${
+                isExpired ? "text-[#6B7280]" : isHurry ? "text-[#0020A0] animate-pulse" : "text-[#6B7280]"
+              }`}
             >
               {isExpired
                 ? t("proBidding.expired")
@@ -553,37 +551,42 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
             </div>
           </div>
         </div>
-      </div>
+      </header>
 
-      <div className="p-4 space-y-4">
+      <div className="px-4 pt-4 pb-4 space-y-3">
         {/* 1.5. 내가 보낸 견적 내용 (발송 완료 시 최상단 노출) */}
         {isSent && submittedQuote && (
-          <div className="bg-[#D32D7D]/5 rounded-xl p-4 shadow-sm border border-[#D32D7D]/20">
-            <h3 className="font-bold text-[#1F2937] mb-3 flex items-center gap-2">
-              {t("proBidding.sentQuoteTitle")}
-            </h3>
-            <div className="space-y-3">
+          <div className="bg-[#0020A0]/5 rounded-lg border border-[#0020A0]/20" style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
+            <div className="px-4 pt-4 pb-1 flex items-center gap-2 border-b border-[#0020A0]/10">
+              <span className="material-symbols-outlined text-[#0020A0]" style={{ fontSize: "18px" }}>
+                send
+              </span>
+              <h3 className="font-semibold text-[#1F2937] text-sm">
+                {t("proBidding.sentQuoteTitle")}
+              </h3>
+            </div>
+            <div className="p-4 space-y-3">
               <div>
-                <span className="text-xs text-[#D32D7D] font-bold block mb-1">
+                <span className="text-xs text-[#0020A0] font-bold block mb-1 uppercase tracking-wide">
                   {t("proBidding.proposedAmount")}
                 </span>
-                <div className="text-sm font-bold text-gray-900 bg-white p-2.5 rounded-lg border border-gray-100">
+                <div className="text-sm font-bold text-[#1F2937] bg-white p-2.5 rounded-lg border border-gray-100">
                   {Number(submittedQuote.price).toLocaleString()}
                 </div>
               </div>
               {submittedQuote.description && (
                 <div>
-                  <span className="text-xs text-[#D32D7D] font-bold block mb-1">
+                  <span className="text-xs text-[#0020A0] font-bold block mb-1 uppercase tracking-wide">
                     {t("proBidding.quoteDescription")}
                   </span>
-                  <div className="text-sm text-gray-800 bg-white p-2.5 rounded-lg border border-gray-100 whitespace-pre-wrap leading-relaxed">
+                  <div className="text-sm text-[#374151] bg-white p-2.5 rounded-lg border border-gray-100 whitespace-pre-wrap leading-relaxed">
                     {submittedQuote.description}
                   </div>
                 </div>
               )}
               {submittedQuote.image_url && (
                 <div>
-                  <span className="text-xs text-[#D32D7D] font-bold block mb-1">
+                  <span className="text-xs text-[#0020A0] font-bold block mb-1 uppercase tracking-wide">
                     {t("proBidding.attachedPhotos")}
                   </span>
                   <div className="flex flex-wrap gap-2 mt-1">
@@ -622,10 +625,16 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
         )}
 
         {/* 2. 요청 상세 내용 (dynamic_answers 전체 파싱) */}
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-          <h3 className="font-bold text-gray-700 mb-3 flex items-center gap-2">
-            {t("proBidding.requestDetails")}
-          </h3>
+        <div className="bg-white rounded-lg border border-gray-200" style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
+          <div className="px-4 pt-4 pb-1 flex items-center gap-2 border-b border-gray-100">
+            <span className="material-symbols-outlined text-[#6B7280]" style={{ fontSize: "18px" }}>
+              description
+            </span>
+            <h3 className="font-semibold text-[#1F2937] text-sm">
+              {t("proBidding.requestDetails")}
+            </h3>
+          </div>
+          <div className="p-4">
 
           {answerEntries.length === 0 ? (
             <p className="text-sm text-gray-400 text-center py-4">
@@ -650,7 +659,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                           value === "To be discussed with pro"
                         ) {
                           return (
-                            <span className="text-[#D32D7D] font-bold bg-[#D32D7D]/10 px-2 py-1 rounded-md">
+                            <span className="text-[#0020A0] font-bold bg-[#0020A0]/10 px-2 py-1 rounded-md">
                               {t("proBidding.discussLater")}
                             </span>
                           );
@@ -732,18 +741,25 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
               })}
             </ul>
           )}
+          </div>
         </div>
 
         {/* 3. 견적 작성 폼 (금액 / 설명 / 사진) */}
         {!isSent && !isExpired && request.quote_count < maxQuotes && (
-          <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-            <h3 className="font-bold text-gray-700 mb-3 flex items-center gap-2">
-              {t("proBidding.quoteForm")}
-            </h3>
+          <div className="bg-white rounded-lg border border-gray-200" style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
+            <div className="px-4 pt-4 pb-1 flex items-center gap-2 border-b border-gray-100">
+              <span className="material-symbols-outlined text-[#6B7280]" style={{ fontSize: "18px" }}>
+                edit_note
+              </span>
+              <h3 className="font-semibold text-[#1F2937] text-sm">
+                {t("proBidding.quoteForm")}
+              </h3>
+            </div>
+            <div className="p-4">
 
             {/* 금액 입력 */}
             <div className="mb-3">
-              <label className="text-xs font-bold text-gray-600 mb-1 block">
+              <label className="text-xs font-bold text-[#374151] mb-1 block uppercase tracking-wide">
                 {t("proBidding.priceLabel")}{" "}
                 <span className="text-red-500">*</span>
               </label>
@@ -753,7 +769,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                 onChange={(e) => setQuotePrice(e.target.value)}
                 placeholder={t("proBidding.pricePlaceholder")}
                 min="0"
-                className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#D32D7D] focus:outline-none transition text-sm font-medium"
+                className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#0020A0] focus:outline-none transition text-sm font-medium"
               />
             </div>
 
@@ -768,7 +784,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                 </label>
                 <button
                   onClick={() => setShowTemplatePanel(!showTemplatePanel)}
-                  className="text-xs font-bold text-[#D32D7D] hover:text-[#b5256a] bg-[#D32D7D]/10 hover:bg-[#D32D7D]/20 px-2.5 py-1 rounded-lg transition flex items-center gap-1"
+                  className="text-xs font-bold text-[#0020A0] hover:text-[#001880] bg-[#0020A0]/10 hover:bg-[#0020A0]/20 px-2.5 py-1 rounded-lg transition flex items-center gap-1"
                 >
                   {t("proBidding.loadTemplate")}
                 </button>
@@ -800,12 +816,12 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                               fileInputRef.current.value = "";
                             setShowTemplatePanel(false);
                           }}
-                          className="flex-1 text-left text-sm font-medium text-gray-800 hover:text-[#D32D7D] transition truncate"
+                          className="flex-1 text-left text-sm font-medium text-gray-800 hover:text-[#0020A0] transition truncate"
                           title={tpl.content}
                         >
                           📝 {tpl.title}{" "}
                           {tpl.attachments && tpl.attachments.length > 0 && (
-                            <span className="text-[10px] text-[#D32D7D] ml-1">
+                            <span className="text-[10px] text-[#0020A0] ml-1">
                               🖼️{tpl.attachments.length}
                             </span>
                           )}
@@ -841,7 +857,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                 onChange={(e) => setQuoteDescription(e.target.value)}
                 rows={3}
                 placeholder="서비스 범위, 포함 사항, 예상 소요 시간 등을 간략히 작성해주세요."
-                className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#D32D7D] focus:outline-none transition text-sm resize-none"
+                className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#0020A0] focus:outline-none transition text-sm resize-none"
               />
 
               {/* ── [확장 1단계] 현재 내용 템플릿으로 저장 ── */}
@@ -849,7 +865,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                 (!showSaveTpl ? (
                   <button
                     onClick={() => setShowSaveTpl(true)}
-                    className="mt-2 w-full text-xs font-bold text-[#D32D7D] bg-[#D32D7D]/10 hover:bg-[#D32D7D]/20 border border-[#D32D7D]/20 px-3 py-2.5 rounded-xl transition shadow-sm hover:shadow-md flex items-center justify-center gap-1.5"
+                    className="mt-2 w-full text-xs font-bold text-[#0020A0] bg-[#0020A0]/10 hover:bg-[#0020A0]/20 border border-[#0020A0]/20 px-3 py-2.5 rounded-lg transition shadow-sm hover:shadow-md flex items-center justify-center gap-1.5"
                   >
                     {t("proBidding.saveTplBtn")}
                   </button>
@@ -859,7 +875,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                       value={newTplTitle}
                       onChange={(e) => setNewTplTitle(e.target.value)}
                       placeholder={t("proBidding.tplTitlePlaceholder")}
-                      className="flex-1 text-xs px-2.5 py-1.5 border border-gray-300 rounded-lg focus:ring-1 focus:ring-[#D32D7D] focus:outline-none"
+                      className="flex-1 text-xs px-2.5 py-1.5 border border-gray-300 rounded-lg focus:ring-1 focus:ring-[#0020A0] focus:outline-none"
                     />
                     <button
                       disabled={savingTemplate}
@@ -938,7 +954,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                           setSavingTemplate(false);
                         }
                       }}
-                      className={`text-xs font-bold text-white px-3 py-1.5 rounded-lg transition ${savingTemplate ? "bg-gray-400 cursor-not-allowed" : "bg-[#D32D7D] hover:bg-[#b5256a]"}`}
+                      className={`text-xs font-bold text-white px-3 py-1.5 rounded-lg transition ${savingTemplate ? "bg-gray-400 cursor-not-allowed" : "bg-[#0020A0] hover:bg-[#001880]"}`}
                     >
                       {savingTemplate
                         ? t("proBidding.savingTpl")
@@ -988,7 +1004,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center text-gray-400 hover:border-[#D32D7D] hover:text-[#D32D7D] transition bg-gray-50 hover:bg-[#D32D7D]/5"
+                    className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center text-gray-400 hover:border-[#0020A0] hover:text-[#0020A0] transition bg-gray-50 hover:bg-[#0020A0]/5"
                   >
                     <svg
                       className="w-6 h-6 mb-1"
@@ -1018,6 +1034,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                 className="hidden"
               />
             </div>
+            </div>
           </div>
         )}
       </div>
@@ -1041,7 +1058,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                   alert(t("proBidding.chatRoomError"));
                 }
               }}
-              className="w-full max-w-md mx-auto block font-bold py-4 rounded-xl shadow-[0_10px_20px_rgba(211,45,125,0.3)] transition transform hover:-translate-y-1 bg-[#D32D7D] hover:bg-[#b5256a] text-white"
+              className="w-full max-w-md mx-auto block font-bold py-4 rounded-xl shadow-[0_10px_20px_rgba(0,32,160,0.25)] transition transform hover:-translate-y-1 bg-[#0020A0] hover:bg-[#001880] text-white"
             >
               {t("proBidding.goToChat")}
             </button>
@@ -1054,7 +1071,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
               setShowConfirmModal(true);
             }}
             disabled={!canSubmit}
-            className={`w-full max-w-md mx-auto block font-bold py-4 rounded-xl shadow-[0_10px_20px_rgba(211,45,125,0.3)] transition transform hover:-translate-y-1 ${!canSubmit ? "bg-gray-400 text-white cursor-not-allowed shadow-none hover:translate-y-0" : "bg-[#D32D7D] hover:bg-[#b5256a] text-white"}`}
+            className={`w-full max-w-md mx-auto block font-bold py-4 rounded-xl shadow-[0_10px_20px_rgba(0,32,160,0.25)] transition transform hover:-translate-y-1 ${!canSubmit ? "bg-gray-400 text-white cursor-not-allowed shadow-none hover:translate-y-0" : "bg-[#0020A0] hover:bg-[#001880] text-white"}`}
           >
             {isSubmitting
               ? t("proBidding.submitting")
@@ -1129,7 +1146,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                   <span className="text-sm text-gray-500 font-medium">
                     {t("proBidding.quotePriceLabel")}
                   </span>
-                  <span className="text-lg font-bold text-[#D32D7D]">
+                  <span className="text-lg font-bold text-[#0020A0]">
                     {Number(quotePrice).toLocaleString()}
                   </span>
                 </div>
@@ -1188,7 +1205,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                   type="checkbox"
                   checked={agreeNoRefund}
                   onChange={(e) => setAgreeNoRefund(e.target.checked)}
-                  className="mt-0.5 w-4 h-4 rounded border-gray-300 text-[#D32D7D] focus:ring-[#D32D7D] flex-shrink-0"
+                  className="mt-0.5 w-4 h-4 rounded border-gray-300 text-[#0020A0] focus:ring-[#0020A0] flex-shrink-0"
                 />
                 <span className="text-xs text-gray-700 font-medium leading-relaxed break-keep">
                   {t("proBidding.agreeLabel")}
@@ -1211,7 +1228,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                 <button
                   onClick={handleSendQuote}
                   disabled={!agreeNoRefund || isSubmitting}
-                  className={`flex-[2] py-3.5 rounded-xl font-bold transition text-sm shadow-md ${!agreeNoRefund || isSubmitting ? "bg-gray-300 text-gray-500 cursor-not-allowed shadow-none" : "bg-[#D32D7D] hover:bg-[#b5256a] text-white shadow-[0_4px_12px_rgba(211,45,125,0.4)]"}`}
+                  className={`flex-[2] py-3.5 rounded-xl font-bold transition text-sm shadow-md ${!agreeNoRefund || isSubmitting ? "bg-gray-300 text-gray-500 cursor-not-allowed shadow-none" : "bg-[#0020A0] hover:bg-[#001880] text-white shadow-[0_4px_12px_rgba(0,32,160,0.3)]"}`}
                 >
                   {isSubmitting
                     ? t("proBidding.submitting")
@@ -1315,10 +1332,10 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                   }}
                   className={`w-full font-bold py-3.5 rounded-xl border transition text-base ${
                     i === 2
-                      ? "bg-[#D32D7D] hover:bg-[#b5256a] text-white shadow-md border-[#D32D7D]"
+                      ? "bg-[#0020A0] hover:bg-[#001880] text-white shadow-md border-[#0020A0]"
                       : i === 1
-                        ? "bg-[#D32D7D]/20 hover:bg-[#D32D7D]/30 text-[#b5256a] border-[#D32D7D]/30"
-                        : "bg-[#D32D7D]/10 hover:bg-[#D32D7D]/20 text-[#D32D7D] border-[#D32D7D]/20"
+                        ? "bg-[#0020A0]/20 hover:bg-[#0020A0]/30 text-[#001880] border-[#0020A0]/30"
+                        : "bg-[#0020A0]/10 hover:bg-[#0020A0]/20 text-[#0020A0] border-[#0020A0]/20"
                   }`}
                 >
                   {amount.toLocaleString()}
