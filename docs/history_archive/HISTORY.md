@@ -1,3 +1,5 @@
+[2026-03-31] /profile 페이지 Stitch "Profile & Support (Added Services)" 라이트 테마 적용 — ProfileHeader(editorial-shadow 카드, 아바타 링, 세팅 패널 bottom-border 인풋), CustomerProfile(divide 리스트, 전화번호 인풋, 리뷰 링크), ProProfile(toggle+뱃지+바텀보더인풋+서비스칩+저장버튼), CustomerSupportSection(no-border shadow 카드, 아이콘 no-circle, slate-50 hover, Sapphire 셰브론), CUSTOMER/PRO 경로 헤더+배경+Invite Banner+로그아웃/탈퇴/법적 링크; 비즈니스 로직 전량 보존 / frontend/src/app/profile/page.tsx / DB변경 없음
+[2026-03-31] /notifications 페이지 Stitch "Notifications Redesign (Sapphire Ledger)" 라이트 테마 적용 — bg-white→bg-[#f7f9fc]; 헤더 slate-200/50+shadow-sm; 빈 상태 rounded-3xl gradient 벨 아이콘(#0020a0→#001269)+스켈레톤 미리보기+새로고침 버튼; 알림 카드 border-[#c5c5d6]/bg-white(읽음), bg-[#001269]/5(안읽음); 배경 그라디언트 장식 2개; i18n refresh 키 추가; 비즈니스 로직 전량 보존 / frontend/src/app/notifications/page.tsx, messages/en.json, messages/ko.json / DB변경 없음
 [2026-03-31] /pro/wallet Referral Banner 아이콘 SVG 교체 — Material Symbols text-[160px] 미적용 문제 → inline SVG 140×140 gift 아이콘으로 교체, opacity-20 우측 중앙 고정 / frontend/src/app/pro/wallet/page.tsx / DB변경 없음
 [2026-03-31] /pro/wallet 디자인 2차 미세조정 — Top-up 버튼 SVG 아이콘(add_circle filled)+max-w-[300px] 폭 제한; Referral Banner redeem 아이콘 w-32→w-48/text-96→text-160 대폭 확대+수직 중앙 정렬; 루트 div font-body(Manrope) 추가로 전체 폰트 통일 / frontend/src/app/pro/wallet/page.tsx / DB변경 없음
 [2026-03-30] /pro/wallet 이미지 피드백 반영 — 폰트 font-headline 적용; Credits 글자 크기 통일(text-5xl); Top-up 버튼 add_circle 아이콘 추가; Credit Summary 섹션 Referral Banner 위로 이동; ledgerTitle "Credit History"→"History"; 날짜 en-US 영어 표기; Referral Banner redeem 아이콘+Send Invite 버튼 추가 / frontend/src/app/pro/wallet/page.tsx, messages/en.json / DB변경 없음
@@ -36,15 +38,6 @@
 [2026-03-28] 서비스 섹션 텍스트·링크 수정 — 섹션 타이틀/서브타이틀 하드코딩, "View All Services →" 링크 추가, categoryStitchUI에 title+desc 필드 추가하여 카드 6개 영문 하드코딩 / frontend/src/app/page.tsx / DB변경 없음
 [2026-03-28] 히어로 섹션 텍스트·레이아웃 수정 — 타이틀 하드코딩("HiddenPro: Your Trusted Home Service"), 서브텍스트 교체, searchBtn 삭제, 전폭 CTA 버튼 추가("Get a Free Quote in 1 Minute"), 아바타 통계 "12k+ professionals active this week" 변경 / frontend/src/app/page.tsx / DB변경 없음
 [2026-03-28] 메인 홈 화면 Stitch 디자인 교체 완료 — JSX return 블록 전체 교체 (비즈니스 로직 100% 보존), 섹션: Header/Hero/Explore Services/Live Reviews/HiddenPro Difference/Join as a Pro/Footer, Stitch 다크테마 색상+폰트+Material Symbols 적용 / frontend/src/app/page.tsx, tailwind.config.ts, layout.tsx, public/images/ / DB변경 없음
-[2026-03-27] CLAUDE.md 모듈형 라우터 리팩토링 — MCP 섹션 docs/system/mcp_guidelines.md 분리, PHASE 1~6 불릿포인트 압축, archive:history 명령어 추가, 92줄→63줄(32% 감소) / CLAUDE.md, docs/system/mcp_guidelines.md / DB변경 없음
-[2026-03-27] 루트 디렉토리 제로 노이즈 정리 — MD 5개(docs/system/, history_archive/), JS 3개(scripts/) 이동, temp_pg_script/ → \_backups/ 격리, CLAUDE.md 경로 반영, archive_history.js HISTORY_PATH 수정 / CLAUDE.md, scripts/archive_history.js / DB변경 없음
-[2026-03-27] 백업 자산 격리 — \_backups/ 생성 후 backup 관련 4개 항목 이동, .gitignore + .claudeignore + CLAUDE.md 3중 차단 계층 확장 / .gitignore, .claudeignore, CLAUDE.md / DB변경 없음
-[2026-03-27] 개인 전용 폴더 구축 및 에이전트 접근 차단 — \_개인메모/ 생성, 개인 파일 2개 이동, .gitignore + .claudeignore 업데이트, CLAUDE.md 접근 금지 규칙 추가 / .gitignore, .claudeignore, CLAUDE.md / DB변경 없음
-[2026-03-27] HISTORY.md 롤링 아카이브 스크립트 구현 — scripts/archive_history.js 신규 생성, 루트 package.json 신규 생성 (archive:history), 108줄 아카이빙 → docs/history_archive/2026-03_history.md / DB변경 없음
-[2026-03-27] 아키텍처 방향성 전환 — Vercel 이전 계획 폐기 + Cloudflare Native 확정 + SMS OTP 도입 공식화 / docs/system_architecture.md, docs/nextjs_frontend.md / DB변경 없음
-[2026-03-27] CLAUDE.md MCP 도구 활용 원칙 섹션 추가 — 5대 MCP 서버(supabase-postgres/cloudflare/git/memory/stitch) 활용 원칙 명문화 / CLAUDE.md / DB변경 없음
-[2026-03-27] supabase-postgres MCP 서버 크래시 복구 — command/args 구조 오류(전체 명령줄이 command 단일 문자열로 잘못 저장됨) 진단 및 자동 교정, .claude.json.bak 백업 후 command="npx"+args 배열 분리 구조로 업데이트 / DB변경 없음
-[2026-03-27] Cloudflare MCP 서버 크래시 복구 — .claude.json args에 "run" + account_id 추가로 stdio 대기 정상화 + CLAUDE.md 인프라 정책 업데이트(Cloudflare 금지→엣지 리소스 활용 승인) / DB변경 없음
 [System Core Prerequisite: 비파괴적 확장 및 회귀 방지]
 
 # HiddenPro - CLAUDE Task History

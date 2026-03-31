@@ -92,7 +92,8 @@
     "loginRequired": "Login is required.",
     "empty": "No notifications yet.",
     "emptySubtext": "When you receive updates about requests, quotes, or chats, they'll appear right here. Stay tuned!",
-    "delete": "Delete"
+    "delete": "Delete",
+    "refresh": "Refresh"
   },
   "proReviews": {
     "loading": "Loading...",

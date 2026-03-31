@@ -89,7 +89,8 @@
     "loginRequired": "로그인이 필요합니다.",
     "empty": "아직 도착한 알림이 없습니다.",
     "emptySubtext": "요청, 견적, 채팅 관련 업데이트가 생기면 여기에 표시됩니다. 기대해 주세요!",
-    "delete": "삭제"
+    "delete": "삭제",
+    "refresh": "새로고침"
   },
   "proReviews": {
     "loading": "불러오는 중...",

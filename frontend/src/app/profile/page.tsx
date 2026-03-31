@@ -210,13 +210,13 @@ export default function ProfilePage() {
 
   if (loading)
     return (
-      <div className="min-h-screen bg-white p-10 text-center text-gray-500">
+      <div className="min-h-screen bg-[#f7f9fc] p-10 text-center text-[#757685]">
         {t("profile.loading")}
       </div>
     );
   if (!userRole)
     return (
-      <div className="min-h-screen bg-white p-10 text-center text-red-500">
+      <div className="min-h-screen bg-[#f7f9fc] p-10 text-center text-red-500">
         {t("profile.error")}
       </div>
     );
@@ -224,105 +224,112 @@ export default function ProfilePage() {
   // [기획 핵심] 강제 Early Return (고객일 경우 고수 DB 조회 원천 차단)
   if (userRole === "CUSTOMER") {
     return (
-      <div className="min-h-screen bg-white flex flex-col w-full lg:px-8 lg:py-8 lg:items-stretch">
-        <header className="w-full bg-gray-50 p-4 border-b border-gray-200 flex justify-center lg:justify-start items-center lg:text-left lg:mb-8 lg:bg-transparent lg:border-none lg:p-0 lg:mt-8">
-          <h1 className="text-xl lg:text-2xl lg:font-bold text-gray-900">
+      <div
+        className="min-h-screen bg-[#f7f9fc] flex flex-col"
+        onClick={() => {}}
+      >
+        {/* 배경 장식 */}
+        <div className="fixed top-0 right-0 -z-10 w-1/2 h-1/2 bg-gradient-to-bl from-[#001269]/5 to-transparent blur-3xl pointer-events-none" />
+        <div className="fixed bottom-0 left-0 -z-10 w-2/3 h-1/2 bg-gradient-to-tr from-[#c2c9fe]/10 to-transparent blur-3xl pointer-events-none" />
+
+        {/* 헤더 */}
+        <header className="bg-white/80 backdrop-blur-xl border-b border-slate-200/50 shadow-sm sticky top-0 z-10 h-16 flex items-center px-6">
+          <h1 className="font-headline font-bold text-lg tracking-tight text-indigo-900">
             {t("profile.title")}
           </h1>
         </header>
-        <main className="flex-1 w-full space-y-6 mt-4 bg-white">
-          <div className="px-4">
-            <ProfileHeader
-              user={sessionUser}
-              role="CUSTOMER"
-              tableName="users"
-              idColumn="user_id"
-              onLogout={handleLogout}
-            />
-          </div>
-          <div className="px-4">
-            <CustomerProfile user={sessionUser} />
-          </div>
-          <div className="px-4">
-            <CustomerSupportSection />
-          </div>
+
+        <main className="flex-1 max-w-xl mx-auto w-full px-6 pt-8 space-y-8 pb-24">
+          <ProfileHeader
+            user={sessionUser}
+            role="CUSTOMER"
+            tableName="users"
+            idColumn="user_id"
+            onLogout={handleLogout}
+          />
+          <CustomerProfile user={sessionUser} />
+          <CustomerSupportSection />
 
           {/* Invite & Earn */}
-          <div className="px-4">
-            <div className="relative overflow-hidden flex items-center justify-between w-full px-6 py-5 rounded-xl bg-gradient-to-br from-[#591adc] to-[#211e26]">
-              <div className="flex flex-col gap-1">
-                <span className="text-base font-extrabold text-[#e4daff]">
-                  Invite &amp; Earn
-                </span>
-                <span className="text-xs text-[#e4daff]/70">
-                  Get $20 for every friend you invite to the curated platform.
-                </span>
-                <button
-                  onClick={() => router.push("/referral")}
-                  className="mt-2 self-start bg-[#0020A0] text-black rounded-full px-4 py-1.5 text-xs font-bold hover:bg-[#001880] transition"
-                >
-                  Send Invite
-                </button>
-              </div>
-              <span className="material-symbols-outlined text-[22px] text-[#0020A0]">
-                card_giftcard
+          <div className="relative overflow-hidden bg-gradient-to-br from-[#0020A0] to-[#3e52c9] rounded-2xl p-8 shadow-xl">
+            {/* 장식 원 */}
+            <div className="absolute -top-8 -right-8 w-40 h-40 bg-white/10 rounded-full blur-2xl pointer-events-none" />
+            <div className="absolute -bottom-10 -left-6 w-32 h-32 bg-[#c2c9fe]/20 rounded-full blur-xl pointer-events-none" />
+            <div className="relative z-10 flex flex-col gap-4">
+              <span className="material-symbols-outlined text-[32px] text-white/80">
+                featured_seasonal
               </span>
+              <div>
+                <p className="font-bold text-lg text-white leading-snug">
+                  Invite your friends &amp; earn credits together
+                </p>
+                <p className="text-sm text-white/70 mt-1">
+                  Get $20 for every friend you invite to the curated platform.
+                </p>
+              </div>
+              <button
+                onClick={() => router.push("/referral")}
+                className="self-start bg-white text-[#0020A0] px-5 py-3 rounded-xl text-sm font-bold hover:bg-white/90 transition"
+              >
+                Send Invite
+              </button>
             </div>
           </div>
 
           {/* 로그아웃 + 탈퇴 버튼 (가로) */}
-          <div className="pt-6 pb-2 flex justify-center gap-6">
+          <div className="pt-4 pb-2 flex justify-center items-center gap-4">
             <button
               onClick={handleLogout}
-              className="text-sm text-gray-600 hover:text-[#0020A0] transition"
+              className="text-sm text-[#ba1a1a] font-medium hover:text-[#ba1a1a]/80 transition"
             >
               {t("profile.logout")}
             </button>
+            <span className="w-[1px] h-3 bg-[#c5c5d6]" />
             <button
               onClick={() => {
                 setShowWithdrawModal(true);
                 setWithdrawReason("");
                 setWithdrawConfirmText("");
               }}
-              className="text-sm text-red-400 hover:text-red-500 transition"
+              className="text-sm text-[#ba1a1a] font-medium hover:text-[#ba1a1a]/80 transition"
             >
               {t("profile.withdraw")}
             </button>
           </div>
 
           {/* Legal Links */}
-          <div className="px-4 pt-2 pb-12 flex flex-wrap justify-center gap-x-3 gap-y-1">
+          <div className="pt-1 pb-12 flex flex-wrap justify-center gap-x-3 gap-y-1">
             <Link
               href="/legal/TERMS"
-              className="text-xs text-gray-400 hover:text-gray-700 transition"
+              className="text-[11px] text-[#454653] font-medium hover:text-[#001269] transition"
             >
               {t("footer.terms")}
             </Link>
-            <span className="text-xs text-gray-300">|</span>
+            <span className="text-[11px] text-[#c5c5d6]">·</span>
             <Link
               href="/legal/PRIVACY"
-              className="text-xs text-gray-400 hover:text-gray-700 transition"
+              className="text-[11px] text-[#454653] font-medium hover:text-[#001269] transition"
             >
               {t("footer.privacy")}
             </Link>
-            <span className="text-xs text-gray-300">|</span>
+            <span className="text-[11px] text-[#c5c5d6]">·</span>
             <Link
               href="/legal/REFUND"
-              className="text-xs text-gray-400 hover:text-gray-700 transition"
+              className="text-[11px] text-[#454653] font-medium hover:text-[#001269] transition"
             >
               {t("footer.refund")}
             </Link>
-            <span className="text-xs text-gray-300">|</span>
+            <span className="text-[11px] text-[#c5c5d6]">·</span>
             <Link
               href="/support/inquiry"
-              className="text-xs text-gray-400 hover:text-gray-700 transition"
+              className="text-[11px] text-[#454653] font-medium hover:text-[#001269] transition"
             >
               {t("footer.contactUs")}
             </Link>
-            <span className="text-xs text-gray-300">|</span>
+            <span className="text-[11px] text-[#c5c5d6]">·</span>
             <Link
               href="/support/business-info"
-              className="text-xs text-gray-400 hover:text-gray-700 transition"
+              className="text-[11px] text-[#454653] font-medium hover:text-[#001269] transition"
             >
               {t("footer.businessInfo")}
             </Link>
@@ -426,107 +433,110 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col w-full lg:px-8 lg:py-8 lg:items-stretch">
-      <header className="w-full bg-gray-50 p-4 border-b border-gray-200 flex justify-center lg:justify-start items-center lg:text-left lg:mb-8 lg:bg-transparent lg:border-none lg:p-0 lg:mt-8">
-        <h1 className="text-xl lg:text-2xl lg:font-bold text-gray-900">
+    <div className="min-h-screen bg-[#f7f9fc] flex flex-col">
+      {/* 배경 장식 */}
+      <div className="fixed top-0 right-0 -z-10 w-1/2 h-1/2 bg-gradient-to-bl from-[#001269]/5 to-transparent blur-3xl pointer-events-none" />
+      <div className="fixed bottom-0 left-0 -z-10 w-2/3 h-1/2 bg-gradient-to-tr from-[#c2c9fe]/10 to-transparent blur-3xl pointer-events-none" />
+
+      {/* 헤더 */}
+      <header className="bg-white/80 backdrop-blur-xl border-b border-slate-200/50 shadow-sm sticky top-0 z-10 h-16 flex items-center px-6">
+        <h1 className="font-headline font-bold text-lg tracking-tight text-indigo-900">
           {t("profile.title")}
         </h1>
       </header>
 
-      <main className="flex-1 w-full space-y-6 mt-4 bg-white">
-        <div className="px-4">
-          <ProfileHeader
-            user={sessionUser}
-            role="PRO"
-            tableName="pro_profiles"
-            idColumn="pro_id"
-            onLogout={handleLogout}
-            reviewHref="/pro/reviews"
-          />
-        </div>
-        <div className="px-4">
-          <ProProfile user={sessionUser} />
-        </div>
-        <div className="px-4">
-          <CustomerSupportSection />
-        </div>
+      <main className="flex-1 max-w-xl mx-auto w-full px-6 pt-8 space-y-8 pb-24">
+        <ProfileHeader
+          user={sessionUser}
+          role="PRO"
+          tableName="pro_profiles"
+          idColumn="pro_id"
+          onLogout={handleLogout}
+          reviewHref="/pro/reviews"
+        />
+        <ProProfile user={sessionUser} />
+        <CustomerSupportSection />
 
         {/* Invite & Earn */}
-        <div className="px-4">
-          <div className="relative overflow-hidden flex items-center justify-between w-full px-6 py-5 rounded-xl bg-gradient-to-br from-[#591adc] to-[#211e26]">
-            <div className="flex flex-col gap-1">
-              <span className="text-base font-extrabold text-[#e4daff]">
-                Invite &amp; Earn
-              </span>
-              <span className="text-xs text-[#e4daff]/70">
-                Get $20 for every friend you invite to the curated platform.
-              </span>
-              <button
-                onClick={() => router.push("/referral")}
-                className="mt-2 self-start bg-[#0020A0] text-black rounded-full px-4 py-1.5 text-xs font-bold hover:bg-[#001880] transition"
-              >
-                Send Invite
-              </button>
-            </div>
-            <span className="material-symbols-outlined text-[22px] text-[#0020A0]">
-              card_giftcard
+        <div className="relative overflow-hidden bg-gradient-to-br from-[#0020A0] to-[#3e52c9] rounded-2xl p-8 shadow-xl">
+          {/* 장식 원 */}
+          <div className="absolute -top-8 -right-8 w-40 h-40 bg-white/10 rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute -bottom-10 -left-6 w-32 h-32 bg-[#c2c9fe]/20 rounded-full blur-xl pointer-events-none" />
+          <div className="relative z-10 flex flex-col gap-4">
+            <span className="material-symbols-outlined text-[32px] text-white/80">
+              featured_seasonal
             </span>
+            <div>
+              <p className="font-bold text-lg text-white leading-snug">
+                Invite your friends &amp; earn credits together
+              </p>
+              <p className="text-sm text-white/70 mt-1">
+                Get $20 for every friend you invite to the curated platform.
+              </p>
+            </div>
+            <button
+              onClick={() => router.push("/referral")}
+              className="self-start bg-white text-[#0020A0] px-5 py-3 rounded-xl text-sm font-bold hover:bg-white/90 transition"
+            >
+              Send Invite
+            </button>
           </div>
         </div>
 
         {/* 로그아웃 + 탈퇴 버튼 (가로) */}
-        <div className="pt-6 pb-2 flex justify-center gap-6">
+        <div className="pt-4 pb-2 flex justify-center items-center gap-4">
           <button
             onClick={handleLogout}
-            className="text-sm text-gray-600 hover:text-[#0020A0] transition"
+            className="text-sm text-[#ba1a1a] font-medium hover:text-[#ba1a1a]/80 transition"
           >
             {t("profile.logout")}
           </button>
+          <span className="w-[1px] h-3 bg-[#c5c5d6]" />
           <button
             onClick={() => {
               setShowWithdrawModal(true);
               setWithdrawReason("");
               setWithdrawConfirmText("");
             }}
-            className="text-sm text-red-400 hover:text-red-500 transition"
+            className="text-sm text-[#ba1a1a] font-medium hover:text-[#ba1a1a]/80 transition"
           >
             {t("profile.withdraw")}
           </button>
         </div>
 
         {/* Legal Links */}
-        <div className="px-4 pt-2 pb-12 flex flex-wrap justify-center gap-x-3 gap-y-1">
+        <div className="pt-1 pb-12 flex flex-wrap justify-center gap-x-3 gap-y-1">
           <Link
             href="/legal/TERMS"
-            className="text-xs text-gray-400 hover:text-gray-700 transition"
+            className="text-[11px] text-[#454653] font-medium hover:text-[#001269] transition"
           >
             {t("footer.terms")}
           </Link>
-          <span className="text-xs text-gray-300">|</span>
+          <span className="text-[11px] text-[#c5c5d6]">·</span>
           <Link
             href="/legal/PRIVACY"
-            className="text-xs text-gray-400 hover:text-gray-700 transition"
+            className="text-[11px] text-[#454653] font-medium hover:text-[#001269] transition"
           >
             {t("footer.privacy")}
           </Link>
-          <span className="text-xs text-gray-300">|</span>
+          <span className="text-[11px] text-[#c5c5d6]">·</span>
           <Link
             href="/legal/REFUND"
-            className="text-xs text-gray-400 hover:text-gray-700 transition"
+            className="text-[11px] text-[#454653] font-medium hover:text-[#001269] transition"
           >
             {t("footer.refund")}
           </Link>
-          <span className="text-xs text-gray-300">|</span>
+          <span className="text-[11px] text-[#c5c5d6]">·</span>
           <Link
             href="/support/inquiry"
-            className="text-xs text-gray-400 hover:text-gray-700 transition"
+            className="text-[11px] text-[#454653] font-medium hover:text-[#001269] transition"
           >
             {t("footer.contactUs")}
           </Link>
-          <span className="text-xs text-gray-300">|</span>
+          <span className="text-[11px] text-[#c5c5d6]">·</span>
           <Link
             href="/support/business-info"
-            className="text-xs text-gray-400 hover:text-gray-700 transition"
+            className="text-[11px] text-[#454653] font-medium hover:text-[#001269] transition"
           >
             {t("footer.businessInfo")}
           </Link>
@@ -933,13 +943,14 @@ function ProfileHeader({
     nickname || user.email?.split("@")[0] || t("profile.proDefaultName");
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
-      {/* 프로필 헤더 영역 */}
-      <div className="p-6 flex items-center gap-4">
-        {/* 원형 프로필 사진 */}
-        <div className="relative flex-shrink-0">
-          <div className="absolute -inset-1 bg-gradient-to-tr from-[#0020A0] to-pink-300 rounded-full blur opacity-25"></div>
-          <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center border-2 border-gray-100 shadow-md">
+    <div
+      className="bg-white rounded-2xl p-8 text-center space-y-6"
+      style={{ boxShadow: "0 32px 64px -15px rgba(0, 15, 93, 0.06)" }}
+    >
+      {/* 아바타 */}
+      <div className="flex flex-col items-center gap-4">
+        <div className="relative">
+          <div className="w-24 h-24 rounded-full overflow-hidden ring-4 ring-[#001269]/5 bg-gradient-to-br from-[#eceef1] to-[#e6e8eb] flex items-center justify-center shadow-sm">
             {avatarUrl ? (
               <img
                 src={avatarUrl}
@@ -948,7 +959,7 @@ function ProfileHeader({
               />
             ) : (
               <svg
-                className="w-8 h-8 text-gray-500"
+                className="w-12 h-12 text-[#757685]"
                 fill="currentColor"
                 viewBox="0 0 24 24"
               >
@@ -957,72 +968,56 @@ function ProfileHeader({
             )}
           </div>
           {uploading && (
-            <div className="absolute inset-0 w-16 h-16 rounded-full bg-black/40 flex items-center justify-center">
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            <div className="absolute inset-0 w-24 h-24 rounded-full bg-black/40 flex items-center justify-center">
+              <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
             </div>
           )}
         </div>
 
-        {/* 이름 + 이메일 */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <h2 className="text-lg font-bold text-gray-900 truncate">
-              {displayName}
-            </h2>
-            <span className="text-sm text-gray-500 flex-shrink-0">
-              {roleLabel}
-            </span>
-          </div>
-          <div className="flex items-center gap-1.5 mt-1">
-            <span className="text-xs text-gray-500">✉️</span>
-            <span className="text-sm text-gray-500 truncate">
-              {user.email || t("profile.noEmail")}
-            </span>
-          </div>
+        {/* 이름 + 역할 + 이메일 */}
+        <div className="space-y-1">
+          <h2 className="font-headline font-extrabold text-2xl text-[#001269]">
+            {displayName}
+          </h2>
+          <p className="text-[#454653] text-sm opacity-70">
+            {user.email || t("profile.noEmail")}
+          </p>
+          {reviewHref && reviewStats.count > 0 && (
+            <button
+              onClick={() => (window.location.href = reviewHref)}
+              className="inline-flex items-center gap-1.5 bg-amber-400/10 text-amber-600 text-xs font-bold px-3 py-1 rounded-full mt-1 hover:bg-amber-400/20 transition"
+            >
+              <span>★</span>
+              <span>{reviewStats.avg.toFixed(1)}</span>
+              <span className="opacity-70">
+                ({reviewStats.count}
+                {t("profile.proReviewCount")})
+              </span>
+            </button>
+          )}
         </div>
 
         {/* 계정 설정 버튼 */}
         <button
           onClick={() => setShowSettings(!showSettings)}
-          className={`flex-shrink-0 text-sm font-medium px-4 py-2 rounded-lg transition-all duration-200 ${
-            showSettings
-              ? "bg-[#0020A0] text-white shadow-md"
-              : "bg-gray-100 text-[#0020A0] hover:bg-gray-200"
-          }`}
+          className="border border-[#001269] text-[#001269] px-8 py-2.5 rounded-lg text-sm font-medium hover:bg-[#001269]/5 transition"
         >
           {t("profile.accountSettings")}
         </button>
       </div>
 
-      {/* 평점/리뷰 링크 바 (Pro 전용) */}
-      {reviewHref && (
-        <div className="px-6 pb-4 flex items-center gap-2">
-          <button
-            onClick={() => (window.location.href = reviewHref)}
-            className="flex-1 flex items-center justify-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-green-600 font-semibold py-2.5 rounded-xl border border-gray-200 transition text-sm"
-          >
-            <span>⭐</span>
-            <span>{reviewStats.avg.toFixed(1)}</span>
-            <span className="text-green-600/70 text-xs">
-              ({reviewStats.count}
-              {t("profile.proReviewCount")})
-            </span>
-          </button>
-        </div>
-      )}
-
       {/* 계정 설정 패널 (슬라이드 다운) */}
       <div
         className={`transition-all duration-300 ease-in-out overflow-hidden ${showSettings ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"}`}
       >
-        <div className="px-6 pb-6 space-y-5 border-t border-gray-200 pt-5">
+        <div className="text-left space-y-5 border-t border-[#c5c5d6]/40 pt-6">
           {/* 프로필 사진 변경 */}
           <div className="space-y-3">
-            <label className="text-sm font-bold text-gray-900 flex items-center gap-2">
+            <label className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#454653]">
               {t("profile.photoLabel")}
             </label>
             <div className="flex items-center gap-4">
-              <div className="w-20 h-20 rounded-full overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center border-2 border-gray-200 shadow-inner">
+              <div className="w-20 h-20 rounded-full overflow-hidden bg-[#eceef1] flex items-center justify-center ring-2 ring-[#c5c5d6]/30">
                 {avatarUrl ? (
                   <img
                     src={avatarUrl}
@@ -1031,7 +1026,7 @@ function ProfileHeader({
                   />
                 ) : (
                   <svg
-                    className="w-10 h-10 text-gray-500"
+                    className="w-10 h-10 text-[#757685]"
                     fill="currentColor"
                     viewBox="0 0 24 24"
                   >
@@ -1043,7 +1038,7 @@ function ProfileHeader({
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploading || cooldownRemaining > 0}
-                  className="bg-gray-100 hover:bg-gray-200 text-gray-900 font-medium text-sm px-4 py-2.5 rounded-xl border border-gray-200 transition disabled:opacity-50"
+                  className="bg-[#f2f4f7] hover:bg-[#eceef1] text-[#191c1e] font-medium text-sm px-4 py-2.5 rounded-xl border border-[#c5c5d6]/50 transition disabled:opacity-50"
                 >
                   {uploading
                     ? t("profile.photoUploading")
@@ -1051,7 +1046,7 @@ function ProfileHeader({
                       ? `${cooldownRemaining} ${t("profile.photoCooldown")}`
                       : t("profile.photoUploadBtn")}
                 </button>
-                <span className="text-[11px] text-gray-500">
+                <span className="text-[11px] text-[#454653]">
                   {t("profile.proPhotoSpec")}
                 </span>
               </div>
@@ -1067,9 +1062,9 @@ function ProfileHeader({
 
           {/* 활동명 수정 */}
           <div className="space-y-3">
-            <label className="text-sm font-bold text-gray-900 flex items-center gap-2">
-              ✏️ {t("profile.nicknameLabel")}
-              <span className="text-xs text-gray-500 font-normal">
+            <label className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#454653]">
+              {t("profile.nicknameLabel")}
+              <span className="ml-2 text-[10px] text-[#757685] font-normal normal-case tracking-normal">
                 {t("profile.proNicknameRule")}
               </span>
             </label>
@@ -1084,17 +1079,17 @@ function ProfileHeader({
                   }}
                   placeholder={t("profile.nicknamePlaceholder")}
                   maxLength={20}
-                  className={`w-full p-3 border rounded-xl focus:outline-none focus:ring-2 transition text-sm bg-gray-50 text-gray-900 placeholder:text-gray-300 ${
+                  className={`w-full bg-[#f2f4f7] border-b-2 px-4 py-3 rounded-t-lg focus:outline-none transition text-sm text-[#191c1e] placeholder:text-[#757685]/50 ${
                     nicknameStatus === "taken" || nicknameStatus === "error"
-                      ? "border-red-400 focus:ring-red-400"
+                      ? "border-[#ba1a1a]"
                       : nicknameStatus === "available"
-                        ? "border-green-400 focus:ring-green-400"
-                        : "border-gray-200 focus:ring-[#0020A0]"
+                        ? "border-green-500"
+                        : "border-transparent focus:border-[#001269]"
                   }`}
                 />
                 {nicknameStatus === "checking" && (
                   <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                    <div className="w-4 h-4 border-2 border-[#0020A0] border-t-transparent rounded-full animate-spin"></div>
+                    <div className="w-4 h-4 border-2 border-[#001269] border-t-transparent rounded-full animate-spin"></div>
                   </div>
                 )}
               </div>
@@ -1105,7 +1100,7 @@ function ProfileHeader({
                   nicknameStatus !== "available" ||
                   nicknameCooldown > 0
                 }
-                className="bg-[#0020A0] hover:bg-[#001880] text-white font-bold px-5 py-3 rounded-xl transition text-sm whitespace-nowrap disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
+                className="bg-[#0020a0] hover:bg-[#001269] text-white font-bold px-5 py-3 rounded-xl transition text-sm whitespace-nowrap disabled:bg-[#eceef1] disabled:text-[#757685] disabled:cursor-not-allowed"
               >
                 {saving
                   ? t("profile.nicknameSaving")
@@ -1122,10 +1117,10 @@ function ProfileHeader({
               <p
                 className={`text-xs font-medium pl-1 ${
                   nicknameStatus === "taken" || nicknameStatus === "error"
-                    ? "text-red-500"
+                    ? "text-[#ba1a1a]"
                     : nicknameStatus === "available"
                       ? "text-green-600"
-                      : "text-gray-500"
+                      : "text-[#454653]"
                 }`}
               >
                 {nicknameMsg}
@@ -1213,32 +1208,37 @@ function CustomerProfile({ user }: { user: any }) {
   };
 
   return (
-    <div className="bg-white p-6 rounded-2xl border border-gray-200 space-y-4">
-      <h2 className="text-sm font-bold text-[#0020A0] tracking-widest uppercase border-b border-gray-200 pb-2">
-        {t("profile.basicInfo")}
-      </h2>
-      <div className="space-y-3">
-        <div className="flex flex-col">
-          <span className="text-xs text-gray-500 font-medium mb-1">
+    <div
+      className="bg-white rounded-2xl overflow-hidden"
+      style={{ boxShadow: "0 32px 64px -15px rgba(0, 15, 93, 0.06)" }}
+    >
+      <div className="divide-y divide-[#c5c5d6]/20">
+        {/* 이메일 */}
+        <div className="flex flex-col p-5">
+          <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#454653] mb-1">
             {t("profile.emailLabel")}
           </span>
-          <span className="text-gray-900 font-medium bg-gray-50 p-3 rounded-lg border border-gray-200">
+          <span className="text-[#191c1e] font-medium text-sm">
             {user.email || t("profile.noEmailInfo")}
           </span>
         </div>
+
+        {/* 전화번호 */}
         {phoneData?.is_phone_verified && phoneData?.phone ? (
-          <div className="flex flex-col">
-            <span className="text-xs text-gray-500 font-medium mb-1">
-              {t("profile.verifiedPhone")}
-            </span>
-            <span className="text-green-600 font-medium bg-green-400/10 p-3 rounded-lg border border-green-400/30 flex items-center gap-2">
-              <span className="text-sm">✅</span>
-              {phoneData.phone}
-            </span>
+          <div className="flex items-center p-5 gap-3">
+            <div className="flex-1">
+              <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#454653] block mb-1">
+                {t("profile.verifiedPhone")}
+              </span>
+              <span className="text-[#191c1e] font-medium text-sm">
+                {phoneData.phone}
+              </span>
+            </div>
+            <span className="text-green-600 text-lg font-bold">✓</span>
           </div>
         ) : (
-          <div className="flex flex-col">
-            <span className="text-xs text-gray-500 font-medium mb-1">
+          <div className="flex flex-col p-5 gap-2">
+            <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#454653]">
               {t("profile.phoneVerification")}
             </span>
             <div className="flex gap-2">
@@ -1247,48 +1247,52 @@ function CustomerProfile({ user }: { user: any }) {
                 value={phoneInput}
                 onChange={(e) => setPhoneInput(e.target.value)}
                 placeholder={t("profile.phonePlaceholder")}
-                className="flex-1 p-3 bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#0020A0] focus:outline-none"
+                className="flex-1 bg-[#f2f4f7] border-b-2 border-transparent focus:border-[#001269] px-4 py-3 rounded-t-lg text-sm text-[#191c1e] placeholder:text-[#757685]/50 focus:outline-none transition"
                 disabled={verifyingPhone}
               />
               <button
                 onClick={handlePhoneVerify}
                 disabled={verifyingPhone || !phoneInput.trim()}
-                className="bg-[#0020A0] hover:bg-[#001880] text-white font-bold px-4 py-2 rounded-lg text-sm transition disabled:opacity-50 whitespace-nowrap"
+                className="bg-[#0020a0] hover:bg-[#001269] text-white font-bold px-4 py-2 rounded-xl text-sm transition disabled:opacity-50 whitespace-nowrap"
               >
                 {verifyingPhone
                   ? t("profile.phoneVerifying")
                   : t("profile.phoneVerifyBtn")}
               </button>
             </div>
-            <span className="text-xs text-gray-500 mt-1">
+            <span className="text-xs text-[#757685]">
               {t("profile.phoneNote")}
             </span>
           </div>
         )}
+
+        {/* 가입일 */}
         {joinDate && (
-          <div className="flex flex-col">
-            <span className="text-xs text-gray-500 font-medium mb-1">
+          <div className="flex flex-col p-5">
+            <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#454653] mb-1">
               {t("profile.joinDate")}
             </span>
-            <span className="text-gray-900 font-medium bg-gray-50 p-3 rounded-lg border border-gray-200 flex items-center gap-2">
-              <span className="text-gray-500 text-sm">📅</span>
+            <span className="text-[#191c1e] font-medium text-sm">
               {joinDate}
             </span>
           </div>
         )}
+
+        {/* 내 리뷰 */}
         <div
-          className="flex flex-col cursor-pointer group"
+          className="flex items-center p-5 cursor-pointer group hover:bg-slate-50 transition"
           onClick={() => (window.location.href = "/customer/my-reviews")}
         >
-          <span className="text-xs text-gray-500 font-medium mb-1">
-            {t("profile.myReviewsLabel")}
-          </span>
-          <span className="text-gray-900 font-medium bg-gray-50 p-3 rounded-lg border border-gray-200 flex items-center gap-2 group-hover:border-green-400/30 transition">
-            <span className="text-sm">⭐</span>
-            {reviewCount} {t("profile.reviewsCount")}
-            <span className="ml-auto text-gray-500 text-xs group-hover:text-green-600 transition">
-              {t("profile.viewBtn")}
+          <div className="flex-1">
+            <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#454653] block mb-1">
+              {t("profile.myReviewsLabel")}
             </span>
+            <span className="text-[#191c1e] font-medium text-sm">
+              {reviewCount} {t("profile.reviewsCount")}
+            </span>
+          </div>
+          <span className="material-symbols-outlined text-[20px] text-[#c5c5d6] group-hover:text-[#001269] transition">
+            chevron_right
           </span>
         </div>
       </div>
@@ -1543,20 +1547,19 @@ function ProProfile({ user }: { user: any }) {
   };
 
   return (
-    <div className="bg-white p-6 rounded-2xl border border-gray-200">
-      <h2 className="text-sm font-bold text-[#0020A0] tracking-widest uppercase border-b border-gray-200 pb-4 mb-4">
-        {t("profile.proProfileTitle")}
-      </h2>
-
-      {/* 매칭 일시 정지 토글 섹션 */}
-      <div className="bg-gray-50 p-5 rounded-xl border border-gray-200 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div
+      className="bg-white rounded-2xl p-6 space-y-6"
+      style={{ boxShadow: "0 32px 64px -15px rgba(0, 15, 93, 0.06)" }}
+    >
+      {/* 매칭 수락 토글 */}
+      <div className="bg-[#eceef1] rounded-lg px-4 py-2 flex items-center justify-between gap-4">
         <div>
-          <h3 className="font-bold text-gray-900 flex items-center gap-2">
+          <span className="text-sm font-bold text-[#191c1e]">
             {isAcceptingRequests
               ? t("profile.proAcceptingOn")
               : t("profile.proAcceptingOff")}
-          </h3>
-          <p className="text-sm text-gray-500 mt-1">
+          </span>
+          <p className="text-xs text-[#454653] mt-0.5">
             {t("profile.proAcceptingDesc")}
           </p>
         </div>
@@ -1567,41 +1570,41 @@ function ProProfile({ user }: { user: any }) {
             checked={isAcceptingRequests}
             onChange={handleToggleAccepting}
           />
-          <div className="w-14 h-7 bg-gray-100 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-200 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-[#0020A0]"></div>
+          <div className="w-14 h-7 bg-[#c5c5d6] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-[#c5c5d6] after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-[#0020a0]"></div>
         </label>
       </div>
 
-      {/* 인증 배지 영역 */}
-      <div className="flex flex-wrap gap-2 mb-4">
+      {/* 인증 배지 */}
+      <div className="flex flex-wrap gap-2">
         {isPhoneVerified && (
-          <span className="inline-flex items-center bg-green-400/10 text-green-600 text-xs font-bold px-3 py-1.5 rounded-full border border-green-400/30">
-            ✅ Phone Verified
+          <span className="inline-flex items-center bg-[#c2c9fe]/30 text-[#001269] text-xs font-bold px-3 py-1.5 rounded-full">
+            ✓ Phone Verified
           </span>
         )}
         {facebookUrl && (
-          <span className="inline-flex items-center bg-[#0020A0]/10 text-[#0020A0] text-xs font-bold px-3 py-1.5 rounded-full border border-[#0020A0]/30">
-            🔵 Facebook Linked
+          <span className="inline-flex items-center bg-[#c2c9fe]/30 text-[#001269] text-xs font-bold px-3 py-1.5 rounded-full">
+            ● Facebook Linked
           </span>
         )}
         {!isPhoneVerified && !facebookUrl && (
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-[#757685]">
             {t("profile.proNoBadges")}
           </span>
         )}
       </div>
 
-      {/* 전화번호 인증 섹션 */}
-      <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 mb-4 space-y-3">
-        <label className="text-sm font-bold text-gray-900 flex items-center gap-2">
+      {/* 전화번호 인증 */}
+      <div className="space-y-2">
+        <label className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#454653] flex items-center gap-2">
           {t("profile.proPhoneVerifyLabel")}
           {isPhoneVerified && (
-            <span className="text-green-600 text-xs">
+            <span className="text-green-600 text-[10px] font-bold normal-case tracking-normal">
               {t("profile.proPhoneVerified")}
             </span>
           )}
         </label>
         {isPhoneVerified ? (
-          <div className="bg-green-400/10 text-green-600 p-3 rounded-lg text-sm font-medium border border-green-400/30">
+          <div className="bg-[#f2f4f7] text-[#191c1e] px-4 py-3 rounded-t-lg border-b-2 border-green-500 text-sm font-medium">
             {t("profile.proPhoneVerifiedText")} {proPhone}
           </div>
         ) : (
@@ -1611,13 +1614,13 @@ function ProProfile({ user }: { user: any }) {
               value={phoneInput}
               onChange={(e) => setPhoneInput(e.target.value)}
               placeholder={t("profile.proPhonePlaceholder")}
-              className="flex-1 p-3 bg-white border border-gray-200 text-gray-900 placeholder:text-gray-300 rounded-xl focus:ring-2 focus:ring-green-400 focus:outline-none transition text-sm"
+              className="flex-1 bg-[#f2f4f7] border-b-2 border-transparent focus:border-[#001269] px-4 py-3 rounded-t-lg text-sm text-[#191c1e] placeholder:text-[#757685]/50 focus:outline-none transition"
             />
             <button
               type="button"
               onClick={handlePhoneVerify}
               disabled={verifyingPhone}
-              className="bg-green-400 hover:bg-green-500 text-white font-bold px-4 py-3 rounded-xl transition text-sm whitespace-nowrap disabled:opacity-50"
+              className="bg-[#0020a0] hover:bg-[#001269] text-white font-bold px-4 py-3 rounded-xl transition text-sm whitespace-nowrap disabled:opacity-50"
             >
               {verifyingPhone
                 ? t("profile.proPhoneProcessing")
@@ -1627,25 +1630,25 @@ function ProProfile({ user }: { user: any }) {
         )}
       </div>
 
-      {/* Facebook 연동 섹션 */}
-      <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 mb-4 space-y-3">
-        <label className="text-sm font-bold text-gray-900 flex items-center gap-2">
+      {/* Facebook 연동 */}
+      <div className="space-y-2">
+        <label className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#454653] flex items-center gap-2">
           {t("profile.proFbLinkLabel")}
           {facebookUrl && (
-            <span className="text-[#0020A0] text-xs">
+            <span className="text-[#001269] text-[10px] font-bold normal-case tracking-normal">
               {t("profile.proFbLinked")}
             </span>
           )}
         </label>
         {facebookUrl && !editingFb ? (
           <div className="flex items-center gap-2">
-            <div className="flex-1 bg-[#0020A0]/10 text-[#0020A0] p-3 rounded-lg text-sm font-medium border border-[#0020A0]/30 break-all truncate">
-              🔵 {facebookUrl}
+            <div className="flex-1 bg-[#f2f4f7] border-b-2 border-[#0020a0] px-4 py-3 rounded-t-lg text-sm text-[#191c1e] truncate">
+              {facebookUrl}
             </div>
             <button
               type="button"
               onClick={() => setEditingFb(true)}
-              className="flex-shrink-0 text-xs font-bold text-[#0020A0] hover:text-[#001880] bg-[#0020A0]/10 px-3 py-2 rounded-lg border border-[#0020A0]/30 hover:bg-[#0020A0]/20 transition"
+              className="flex-shrink-0 text-xs font-bold text-[#001269] hover:text-[#0020a0] bg-[#dee0ff] px-3 py-2 rounded-lg hover:bg-[#c2c9fe] transition"
             >
               {t("profile.proFbEditBtn")}
             </button>
@@ -1657,7 +1660,7 @@ function ProProfile({ user }: { user: any }) {
               value={facebookInput}
               onChange={(e) => setFacebookInput(e.target.value)}
               placeholder="https://facebook.com/yourname"
-              className="flex-1 p-3 bg-white border border-gray-200 text-gray-900 placeholder:text-gray-300 rounded-xl focus:ring-2 focus:ring-[#0020A0] focus:outline-none transition text-sm"
+              className="flex-1 bg-[#f2f4f7] border-b-2 border-transparent focus:border-[#001269] px-4 py-3 rounded-t-lg text-sm text-[#191c1e] placeholder:text-[#757685]/50 focus:outline-none transition"
             />
             <button
               type="button"
@@ -1666,7 +1669,7 @@ function ProProfile({ user }: { user: any }) {
                 setEditingFb(false);
               }}
               disabled={linkingFb}
-              className="bg-[#0020A0] hover:bg-[#001880] text-white font-bold px-4 py-3 rounded-xl transition text-sm whitespace-nowrap disabled:opacity-50"
+              className="bg-[#0020a0] hover:bg-[#001269] text-white font-bold px-4 py-3 rounded-xl transition text-sm whitespace-nowrap disabled:opacity-50"
             >
               {linkingFb
                 ? t("profile.proFbProcessing")
@@ -1679,7 +1682,7 @@ function ProProfile({ user }: { user: any }) {
                   setFacebookInput(facebookUrl);
                   setEditingFb(false);
                 }}
-                className="text-gray-500 hover:text-gray-900 font-bold px-2 transition text-sm"
+                className="text-[#757685] hover:text-[#191c1e] font-bold px-2 transition text-sm"
               >
                 {t("profile.proFbCancelBtn")}
               </button>
@@ -1689,10 +1692,11 @@ function ProProfile({ user }: { user: any }) {
       </div>
 
       <form onSubmit={handleSave} className="space-y-6">
+        {/* 한줄 소개 */}
         <div className="flex flex-col space-y-2">
-          <label className="text-sm font-bold text-gray-900">
+          <label className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#454653]">
             {t("profile.proIntroLabel")}{" "}
-            <span className="text-xs text-gray-500 font-normal ml-1">
+            <span className="text-[10px] text-[#757685] font-normal normal-case tracking-normal ml-1">
               {t("profile.proIntroLimit")}
             </span>
           </label>
@@ -1704,18 +1708,19 @@ function ProProfile({ user }: { user: any }) {
             }
             maxLength={50}
             placeholder={t("profile.proIntroPlaceholder")}
-            className="p-3 bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-300 rounded-xl focus:ring-2 focus:ring-[#0020A0] focus:outline-none transition"
+            className="bg-[#f2f4f7] border-b-2 border-transparent focus:border-[#001269] px-4 py-3 rounded-t-lg text-sm text-[#191c1e] placeholder:text-[#757685]/50 focus:outline-none transition"
             required
           />
-          <span className="text-xs text-gray-500 text-right">
+          <span className="text-xs text-[#757685] text-right">
             {formData.intro.length}/50
           </span>
         </div>
 
+        {/* 상세 소개 */}
         <div className="flex flex-col space-y-2">
-          <label className="text-sm font-bold text-gray-900">
+          <label className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#454653]">
             {t("profile.proDetailedLabel")}{" "}
-            <span className="text-xs text-gray-500 font-normal ml-1">
+            <span className="text-[10px] text-[#757685] font-normal normal-case tracking-normal ml-1">
               {t("profile.proDetailedLimit")}
             </span>
           </label>
@@ -1726,12 +1731,13 @@ function ProProfile({ user }: { user: any }) {
             }
             rows={5}
             placeholder={t("profile.proDetailedPlaceholder")}
-            className="p-3 bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-300 rounded-xl focus:ring-2 focus:ring-[#0020A0] focus:outline-none transition resize-none text-sm"
+            className="bg-[#f2f4f7] border-b-2 border-transparent focus:border-[#001269] px-4 py-3 rounded-t-lg text-sm text-[#191c1e] placeholder:text-[#757685]/50 focus:outline-none transition resize-none"
           />
         </div>
 
-        <div className="flex flex-col space-y-3">
-          <label className="text-sm font-bold text-gray-900">
+        {/* 활동 지역 */}
+        <div className="flex flex-col space-y-2">
+          <label className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#454653]">
             {t("profile.proRegionLabel")}
           </label>
           <div className="grid grid-cols-2 gap-3">
@@ -1741,7 +1747,7 @@ function ProProfile({ user }: { user: any }) {
                 setSelectedReg(e.target.value);
                 setSelectedCity("");
               }}
-              className="p-3 bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-2 focus:ring-[#0020A0] focus:outline-none transition"
+              className="bg-[#f2f4f7] border-b-2 border-transparent focus:border-[#001269] px-4 py-3 rounded-t-lg text-sm text-[#191c1e] focus:outline-none transition"
               required
             >
               <option value="" disabled>
@@ -1756,7 +1762,7 @@ function ProProfile({ user }: { user: any }) {
             <select
               value={selectedCity}
               onChange={(e) => setSelectedCity(e.target.value)}
-              className="p-3 bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-2 focus:ring-[#0020A0] focus:outline-none transition disabled:opacity-40 disabled:text-gray-500"
+              className="bg-[#f2f4f7] border-b-2 border-transparent focus:border-[#001269] px-4 py-3 rounded-t-lg text-sm text-[#191c1e] focus:outline-none transition disabled:opacity-40"
               required
               disabled={!selectedReg}
             >
@@ -1772,25 +1778,26 @@ function ProProfile({ user }: { user: any }) {
           </div>
         </div>
 
-        <div className="flex flex-col space-y-3 border-t pt-4 border-gray-200">
+        {/* 서비스 선택 */}
+        <div className="flex flex-col space-y-3 border-t border-[#c5c5d6]/30 pt-4">
           <div className="flex justify-between items-end">
-            <label className="text-sm font-bold text-gray-900">
+            <label className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#454653]">
               {t("profile.proServicesLabel")}
             </label>
-            <span className="text-xs font-bold text-[#0020A0]">
+            <span className="text-xs font-bold text-[#001269]">
               {formData.services.length} / 5
             </span>
           </div>
 
           {/* 카테고리 뎁스 브라우저 */}
-          <div className="grid grid-cols-2 gap-3 mb-2">
+          <div className="grid grid-cols-2 gap-3">
             <select
               value={selectedDepth1}
               onChange={(e) => {
                 setSelectedDepth1(e.target.value);
                 setSelectedDepth2("");
               }}
-              className="p-2 bg-gray-50 border border-gray-200 text-gray-900 rounded-lg text-sm"
+              className="bg-[#f2f4f7] border-b-2 border-transparent focus:border-[#001269] px-4 py-3 rounded-t-lg text-sm text-[#191c1e] focus:outline-none transition"
             >
               <option value="">{t("profile.depth1Placeholder")}</option>
               {depth1Keys.map((k) => (
@@ -1802,7 +1809,7 @@ function ProProfile({ user }: { user: any }) {
             <select
               value={selectedDepth2}
               onChange={(e) => setSelectedDepth2(e.target.value)}
-              className="p-2 bg-gray-50 border border-gray-200 text-gray-900 rounded-lg text-sm disabled:opacity-40"
+              className="bg-[#f2f4f7] border-b-2 border-transparent focus:border-[#001269] px-4 py-3 rounded-t-lg text-sm text-[#191c1e] focus:outline-none transition disabled:opacity-40"
               disabled={!selectedDepth1}
             >
               <option value="">{t("profile.depth2Placeholder")}</option>
@@ -1816,7 +1823,7 @@ function ProProfile({ user }: { user: any }) {
 
           {/* 3뎁스 선택 영역 */}
           {depth3Items.length > 0 ? (
-            <div className="bg-white p-3 rounded-xl border border-gray-200 max-h-48 overflow-y-auto flex flex-col space-y-2">
+            <div className="bg-[#f2f4f7] rounded-xl p-3 max-h-48 overflow-y-auto flex flex-col space-y-1">
               {depth3Items.map((service) => {
                 const isSelected = formData.services.includes(
                   koToEnService[service] ?? service,
@@ -1828,16 +1835,16 @@ function ProProfile({ user }: { user: any }) {
                 return (
                   <label
                     key={service}
-                    className="flex items-center space-x-3 p-2 hover:bg-white rounded-lg cursor-pointer transition"
+                    className="flex items-center space-x-3 px-3 py-2 hover:bg-white rounded-lg cursor-pointer transition"
                   >
                     <input
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => handleServiceToggle(service)}
-                      className="w-5 h-5 text-[#0020A0] rounded border-gray-200 focus:ring-[#0020A0] bg-gray-50"
+                      className="w-5 h-5 text-[#0020a0] rounded border-[#c5c5d6] focus:ring-[#0020a0] bg-white"
                     />
                     <span
-                      className={`text-sm ${isSelected ? "font-bold text-[#0020A0]" : "text-gray-500"}`}
+                      className={`text-sm ${isSelected ? "font-bold text-[#001269]" : "text-[#454653]"}`}
                     >
                       {displayName}
                     </span>
@@ -1846,26 +1853,26 @@ function ProProfile({ user }: { user: any }) {
               })}
             </div>
           ) : (
-            <div className="text-center p-4 bg-white rounded-xl border border-gray-200 text-xs text-gray-500">
+            <div className="text-center p-4 bg-[#f2f4f7] rounded-xl text-xs text-[#757685]">
               {t("profile.selectParentFirst")}
             </div>
           )}
 
-          {/* 선택된 서비스 태그 표시 */}
+          {/* 선택된 서비스 칩 */}
           {formData.services.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-3 p-3 border border-[#0020A0]/30 bg-[#0020A0]/5 rounded-xl">
+            <div className="flex flex-wrap gap-2 mt-1">
               {formData.services.map((s) => (
                 <span
                   key={s}
-                  className="inline-flex items-center bg-white border border-[#0020A0]/40 text-[#0020A0] text-xs px-2 py-1.5 rounded-md"
+                  className="inline-flex items-center bg-[#0020a0] text-white text-xs font-bold px-4 py-2 rounded-full"
                 >
                   {locale === "en" && koToEnService[s] ? koToEnService[s] : s}
                   <button
                     type="button"
                     onClick={() => handleServiceToggle(s)}
-                    className="ml-1.5 text-gray-500 hover:text-red-500 font-bold px-1"
+                    className="ml-2 text-white/70 hover:text-white font-bold"
                   >
-                    &times;
+                    ×
                   </button>
                 </span>
               ))}
@@ -1876,10 +1883,10 @@ function ProProfile({ user }: { user: any }) {
         <button
           type="submit"
           disabled={saving}
-          className={`w-full font-bold py-4 rounded-xl transition mt-4 ${
+          className={`w-full font-bold py-4 rounded-xl transition ${
             isSaved
-              ? "bg-green-400 text-white hover:bg-green-500"
-              : "bg-[#0020A0] text-white hover:bg-[#001880] disabled:bg-gray-100 disabled:text-gray-500"
+              ? "bg-green-500 text-white hover:bg-green-600"
+              : "bg-[#0020a0] text-white hover:bg-[#001269] disabled:bg-[#eceef1] disabled:text-[#757685]"
           }`}
         >
           {saving
@@ -1934,27 +1941,25 @@ function CustomerSupportSection() {
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
-      <h2 className="text-sm font-bold text-[#0020A0] tracking-widest uppercase p-6 pb-2 border-b border-gray-200">
-        {t("profile.customerSupport")}
-      </h2>
-      <ul className="flex flex-col">
-        <li className="border-b border-gray-200 last:border-0 hover:bg-gray-100 transition cursor-pointer">
+    <div
+      className="bg-white rounded-2xl overflow-hidden"
+      style={{ boxShadow: "0 32px 64px -15px rgba(0, 15, 93, 0.06)" }}
+    >
+      <ul className="flex flex-col divide-y divide-[#c5c5d6]/20">
+        <li className="hover:bg-slate-50 transition cursor-pointer group">
           <Link
             href="/support/inquiry"
-            className="w-full flex justify-between items-center p-4"
+            className="w-full flex justify-between items-center p-5"
           >
             <div className="flex items-center gap-3">
-              <span className="bg-gray-100 rounded-full p-2 flex items-center justify-center">
-                <span className="material-symbols-outlined text-[#0020A0] text-[20px] leading-none">
-                  headset_mic
-                </span>
+              <span className="material-symbols-outlined text-indigo-900 text-[22px] leading-none">
+                headset_mic
               </span>
-              <span className="text-sm font-medium text-gray-900">
+              <span className="text-sm font-medium text-[#191c1e]">
                 {t("profile.inquiryLink")}
               </span>
             </div>
-            <span className="material-symbols-outlined text-gray-400 text-[20px]">
+            <span className="material-symbols-outlined text-[#c5c5d6] group-hover:text-[#001269] text-[20px] transition-colors">
               chevron_right
             </span>
           </Link>
@@ -1963,36 +1968,31 @@ function CustomerSupportSection() {
           const catPages = pages.filter((p) => p.category_id === cat.id);
           const isExpanded = expandedCatId === cat.id;
           return (
-            <li
-              key={cat.id}
-              className="border-b border-gray-200 last:border-0 hover:bg-gray-100 transition"
-            >
+            <li key={cat.id} className="hover:bg-slate-50 transition group">
               <button
                 type="button"
                 onClick={() => toggleCat(cat.id)}
-                className="w-full flex justify-between items-center p-4 transition text-left cursor-pointer"
+                className="w-full flex justify-between items-center p-5 text-left cursor-pointer"
               >
                 <div className="flex items-center gap-3">
-                  <span className="bg-gray-100 rounded-full p-2 flex items-center justify-center">
-                    <span className="material-symbols-outlined text-gray-500 text-[20px] leading-none">
-                      {getCatIcon(cat.title)}
-                    </span>
+                  <span className="material-symbols-outlined text-indigo-900 text-[22px] leading-none">
+                    {getCatIcon(cat.title)}
                   </span>
-                  <span className="text-sm font-medium text-gray-900">
+                  <span className="text-sm font-medium text-[#191c1e]">
                     {cat.title}
                   </span>
                 </div>
                 <span
-                  className="material-symbols-outlined text-gray-400 text-[20px] transition-transform duration-200"
+                  className="material-symbols-outlined text-[#c5c5d6] group-hover:text-[#001269] text-[20px] transition-all duration-200"
                   style={{ transform: isExpanded ? "rotate(90deg)" : "none" }}
                 >
                   chevron_right
                 </span>
               </button>
               {isExpanded && (
-                <ul className="bg-gray-50 flex flex-col pt-1 pb-3 px-4">
+                <ul className="bg-[#f7f9fc] flex flex-col pt-1 pb-3 px-5">
                   {catPages.length === 0 ? (
-                    <li className="text-xs text-gray-500 py-2 pl-2">
+                    <li className="text-xs text-[#757685] py-2 pl-2">
                       {t("profile.noPages")}
                     </li>
                   ) : (
@@ -2000,9 +2000,9 @@ function CustomerSupportSection() {
                       <li key={page.id} className="py-1">
                         <Link
                           href={`/support/${cat.slug}/${page.slug}`}
-                          className="flex items-center text-sm text-gray-500 hover:text-[#0020A0] hover:font-bold transition pl-2 py-2 border-l-2 border-transparent hover:border-[#0020A0]"
+                          className="flex items-center text-sm text-[#454653] hover:text-[#001269] hover:font-semibold transition pl-2 py-2 border-l-2 border-transparent hover:border-[#001269]"
                         >
-                          📄 {page.title}
+                          {page.title}
                         </Link>
                       </li>
                     ))

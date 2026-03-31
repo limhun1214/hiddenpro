@@ -108,3 +108,13 @@
 [2026-03-10] 신고 관리 탭 빌드 에러 수정 — 중복 state(suspendModal, suspendReason) 제거 및 기존 타입 재사용 / 수정파일: frontend/src/app/admin/page.tsx / DB변경점: 없음
 [2026-03-10] 관리자 신고 관리 탭(reports) 추가 / 수정파일: frontend/src/app/admin/page.tsx / DB변경점: 없음
 [2026-03-10] 채팅방 신고 기능 + 관리자 3단계 제재 추가 / 수정파일: frontend/src/app/chat/[room_id]/page.tsx, frontend/src/app/admin/AdminDashboard.tsx, frontend/src/components/common/ChatRoom.tsx / DB변경점: 없음 (reports 테이블, users.suspended_until, users.suspension_type 컬럼은 기존 DB 준비 완료 상태)
+
+[2026-03-27] CLAUDE.md 모듈형 라우터 리팩토링 — MCP 섹션 docs/system/mcp_guidelines.md 분리, PHASE 1~6 불릿포인트 압축, archive:history 명령어 추가, 92줄→63줄(32% 감소) / CLAUDE.md, docs/system/mcp_guidelines.md / DB변경 없음
+[2026-03-27] 루트 디렉토리 제로 노이즈 정리 — MD 5개(docs/system/, history_archive/), JS 3개(scripts/) 이동, temp_pg_script/ → \_backups/ 격리, CLAUDE.md 경로 반영, archive_history.js HISTORY_PATH 수정 / CLAUDE.md, scripts/archive_history.js / DB변경 없음
+[2026-03-27] 백업 자산 격리 — \_backups/ 생성 후 backup 관련 4개 항목 이동, .gitignore + .claudeignore + CLAUDE.md 3중 차단 계층 확장 / .gitignore, .claudeignore, CLAUDE.md / DB변경 없음
+[2026-03-27] 개인 전용 폴더 구축 및 에이전트 접근 차단 — \_개인메모/ 생성, 개인 파일 2개 이동, .gitignore + .claudeignore 업데이트, CLAUDE.md 접근 금지 규칙 추가 / .gitignore, .claudeignore, CLAUDE.md / DB변경 없음
+[2026-03-27] HISTORY.md 롤링 아카이브 스크립트 구현 — scripts/archive_history.js 신규 생성, 루트 package.json 신규 생성 (archive:history), 108줄 아카이빙 → docs/history_archive/2026-03_history.md / DB변경 없음
+[2026-03-27] 아키텍처 방향성 전환 — Vercel 이전 계획 폐기 + Cloudflare Native 확정 + SMS OTP 도입 공식화 / docs/system_architecture.md, docs/nextjs_frontend.md / DB변경 없음
+[2026-03-27] CLAUDE.md MCP 도구 활용 원칙 섹션 추가 — 5대 MCP 서버(supabase-postgres/cloudflare/git/memory/stitch) 활용 원칙 명문화 / CLAUDE.md / DB변경 없음
+[2026-03-27] supabase-postgres MCP 서버 크래시 복구 — command/args 구조 오류(전체 명령줄이 command 단일 문자열로 잘못 저장됨) 진단 및 자동 교정, .claude.json.bak 백업 후 command="npx"+args 배열 분리 구조로 업데이트 / DB변경 없음
+[2026-03-27] Cloudflare MCP 서버 크래시 복구 — .claude.json args에 "run" + account_id 추가로 stdio 대기 정상화 + CLAUDE.md 인프라 정책 업데이트(Cloudflare 금지→엣지 리소스 활용 승인) / DB변경 없음

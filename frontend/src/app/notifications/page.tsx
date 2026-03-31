@@ -243,12 +243,16 @@ export default function NotificationsPage() {
 
   return (
     <div
-      className="min-h-screen bg-white flex flex-col"
+      className="min-h-screen bg-[#f7f9fc] flex flex-col"
       onClick={() => setOpenMenuId(null)}
     >
+      {/* 배경 장식 */}
+      <div className="fixed top-0 right-0 -z-10 w-1/2 h-1/2 bg-gradient-to-bl from-[#001269]/5 to-transparent blur-3xl pointer-events-none" />
+      <div className="fixed bottom-0 left-0 -z-10 w-2/3 h-1/2 bg-gradient-to-tr from-[#c2c9fe]/10 to-transparent blur-3xl pointer-events-none" />
+
       {/* 헤더 */}
-      <header className="bg-white/80 backdrop-blur-xl border-b border-gray-200 shadow-[0_8px_32px_rgba(211,45,125,0.05)] sticky top-0 z-10 flex justify-between items-center px-6 h-16">
-        <h1 className="text-xl font-black text-[#0020A0] tracking-tight">
+      <header className="bg-white/80 backdrop-blur-xl border-b border-slate-200/50 shadow-sm sticky top-0 z-10 h-16 flex items-center px-6">
+        <h1 className="font-headline font-bold text-lg tracking-tight text-indigo-900">
           {t("notifications.title")}
         </h1>
       </header>
@@ -256,50 +260,76 @@ export default function NotificationsPage() {
       <div className="flex-1 overflow-y-auto p-4 space-y-3 pb-24 relative">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 gap-3">
-            <div className="w-10 h-10 border-4 border-[#0020A0] border-t-transparent rounded-full animate-spin" />
-            <p className="text-sm text-gray-400">
+            <div className="w-10 h-10 border-4 border-[#001269] border-t-transparent rounded-full animate-spin" />
+            <p className="text-sm text-[#757685]">
               {t("notifications.loading")}
             </p>
           </div>
         ) : !currentUser ? (
-          <div className="text-center py-10 text-gray-500 bg-gray-50 rounded-2xl border border-gray-200 mt-4">
+          <div className="text-center py-10 text-[#454653] bg-white rounded-2xl border border-[#c5c5d6] mt-4">
             <p>{t("notifications.loginRequired")}</p>
           </div>
         ) : notifications.length === 0 ? (
           /* 빈 상태 */
-          <div className="flex flex-col items-center justify-center py-16 px-6 relative overflow-hidden">
-            {/* 배경 블러 */}
-            <div
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full pointer-events-none"
-              style={{
-                filter: "blur(40px)",
-                background: "linear-gradient(45deg, #0020A0, #ff6ea9)",
-                opacity: 0.1,
-              }}
-            />
-            <div className="relative z-10 flex flex-col items-center text-center max-w-sm">
+          <div className="flex flex-col items-center justify-center py-16 px-6">
+            <div className="max-w-md w-full text-center space-y-8">
               {/* 벨 아이콘 */}
-              <div className="mb-8 relative">
-                <div className="absolute inset-0 bg-[#0020A0]/10 blur-3xl rounded-full" />
-                <div className="w-40 h-40 rounded-full bg-gray-100 flex items-center justify-center relative border border-gray-200 shadow-sm overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#0020A0]/10 to-transparent" />
+              <div className="relative flex justify-center">
+                <div className="absolute inset-0 bg-[#dee0ff]/20 blur-3xl rounded-full scale-75 -z-10" />
+                <div
+                  className="w-32 h-32 rounded-3xl bg-gradient-to-br from-[#0020a0] to-[#001269] flex items-center justify-center"
+                  style={{ boxShadow: "0 32px 64px -12px rgba(0,15,93,0.08)" }}
+                >
                   <span
-                    className="material-symbols-outlined text-[#0020A0]"
+                    className="material-symbols-outlined text-white"
                     style={{
-                      fontSize: "80px",
-                      fontVariationSettings: "'FILL' 1, 'wght' 400",
+                      fontSize: "48px",
+                      fontVariationSettings: "'FILL' 1",
                     }}
                   >
                     notifications
                   </span>
                 </div>
               </div>
-              <h2 className="font-black text-3xl tracking-tight mb-4 text-gray-900">
-                {t("notifications.empty")}
-              </h2>
-              <p className="text-gray-500 text-base leading-relaxed">
-                {t("notifications.emptySubtext")}
-              </p>
+
+              {/* 텍스트 */}
+              <div className="space-y-4">
+                <h2 className="font-headline text-3xl font-bold tracking-tight text-[#191c1e]">
+                  {t("notifications.empty")}
+                </h2>
+                <p className="text-[#454653] leading-relaxed max-w-xs mx-auto">
+                  {t("notifications.emptySubtext")}
+                </p>
+              </div>
+
+              {/* 새로고침 버튼 */}
+              <div className="pt-6">
+                <button
+                  onClick={() => window.location.reload()}
+                  className="bg-[#0020a0] text-white px-8 py-3 rounded-xl font-headline font-bold text-sm tracking-wide hover:bg-[#001269] transition-all active:scale-95"
+                  style={{ boxShadow: "0 8px 24px -4px rgba(0,32,160,0.20)" }}
+                >
+                  {t("notifications.refresh")}
+                </button>
+              </div>
+
+              {/* 스켈레톤 미리보기 */}
+              <div className="mt-12 opacity-30 pointer-events-none space-y-4">
+                <div className="flex items-start gap-4 p-4 bg-white rounded-xl">
+                  <div className="w-10 h-10 rounded-full bg-[#eceef1] shrink-0" />
+                  <div className="flex-1 text-left space-y-2">
+                    <div className="h-3 w-3/4 bg-[#eceef1] rounded" />
+                    <div className="h-2 w-1/2 bg-[#e6e8eb] rounded" />
+                  </div>
+                </div>
+                <div className="flex items-start gap-4 p-4 bg-white rounded-xl ml-8">
+                  <div className="w-10 h-10 rounded-full bg-[#eceef1] shrink-0" />
+                  <div className="flex-1 text-left space-y-2">
+                    <div className="h-3 w-2/3 bg-[#eceef1] rounded" />
+                    <div className="h-2 w-1/3 bg-[#e6e8eb] rounded" />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         ) : (
@@ -309,8 +339,8 @@ export default function NotificationsPage() {
               onClick={() => handleNotificationClick(notif)}
               className={`relative p-4 rounded-2xl border transition-colors duration-200 cursor-pointer flex gap-3 ${
                 notif.is_read
-                  ? "bg-gray-50 border-gray-200"
-                  : "bg-[#0020A0]/5 border-[#0020A0]/20 border-l-4"
+                  ? "bg-white border-[#c5c5d6]"
+                  : "bg-[#001269]/5 border-[#001269]/20 border-l-4"
               }`}
             >
               <div className="flex-shrink-0 relative mt-1">
@@ -318,22 +348,22 @@ export default function NotificationsPage() {
                   <img
                     src={notif.sender.avatar}
                     alt="Profile"
-                    className="w-12 h-12 rounded-full object-cover border border-gray-200 shadow-sm"
+                    className="w-12 h-12 rounded-full object-cover border border-[#c5c5d6] shadow-sm"
                   />
                 ) : (
-                  <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200 shadow-sm">
+                  <div className="w-12 h-12 rounded-full bg-[#eceef1] flex items-center justify-center border border-[#c5c5d6] shadow-sm">
                     <span className="text-xl">{getIcon(notif.type)}</span>
                   </div>
                 )}
 
                 {!notif.is_read && (
-                  <div className="absolute top-0 right-0 w-3 h-3 bg-[#0020A0] rounded-full border-2 border-white" />
+                  <div className="absolute top-0 right-0 w-3 h-3 bg-[#001269] rounded-full border-2 border-white" />
                 )}
               </div>
 
               <div className="flex-1 min-w-0 pl-1 pr-6">
                 {notif.sender && (
-                  <p className="text-sm font-bold text-gray-900 mb-0.5 truncate">
+                  <p className="text-sm font-bold text-[#191c1e] mb-0.5 truncate">
                     {notif.sender.name}
                   </p>
                 )}
@@ -341,14 +371,14 @@ export default function NotificationsPage() {
                 <p
                   className={`text-sm line-clamp-2 ${
                     notif.is_read
-                      ? "text-gray-400"
-                      : "text-gray-700 font-medium"
+                      ? "text-[#757685]"
+                      : "text-[#191c1e] font-medium"
                   }`}
                 >
                   {notif.message}
                 </p>
 
-                <p className="text-xs text-gray-400 mt-1.5">
+                <p className="text-xs text-[#757685] mt-1.5">
                   {new Date(notif.created_at).toLocaleString([], {
                     month: "short",
                     day: "numeric",
@@ -361,17 +391,17 @@ export default function NotificationsPage() {
               {/* 점 3개 메뉴 버튼 */}
               <button
                 onClick={(e) => toggleMenu(e, notif.id)}
-                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 p-1 transition-colors"
+                className="absolute top-4 right-4 text-[#757685] hover:text-[#454653] p-1 transition-colors"
               >
                 ⋮
               </button>
 
               {/* 삭제 팝업 */}
               {openMenuId === notif.id && (
-                <div className="absolute top-10 right-4 bg-white border border-gray-200 shadow-xl rounded-xl py-1 z-20 backdrop-blur-xl">
+                <div className="absolute top-10 right-4 bg-white border border-[#c5c5d6] shadow-xl rounded-xl py-1 z-20 backdrop-blur-xl">
                   <button
                     onClick={(e) => deleteNotification(e, notif.id)}
-                    className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-100 font-medium transition-colors"
+                    className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-[#f2f4f7] font-medium transition-colors"
                   >
                     {t("notifications.delete")}
                   </button>
