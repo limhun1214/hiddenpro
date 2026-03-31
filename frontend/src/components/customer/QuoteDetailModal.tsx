@@ -142,7 +142,7 @@ export default function QuoteDetailModal({
             )}
 
             {/* B. 제안 금액 (가장 눈에 띄게) */}
-            <div className="bg-blue-50 p-5 rounded-xl border border-blue-100 text-center">
+            <div className="bg-blue-50 py-3 px-5 rounded-xl border border-blue-100 text-center">
               <span className="text-xs font-bold text-blue-500 uppercase tracking-wider block mb-1">
                 {t("quoteModal.proposedPrice")}
               </span>
@@ -339,26 +339,16 @@ export default function QuoteDetailModal({
             {/* 견적 도착 시간 */}
             <p className="text-xs text-gray-400 text-right">
               {t("quoteModal.arrivedAt")}
-              {new Date(quote.created_at).toLocaleString([], {
+              {new Date(quote.created_at).toLocaleString("en-US", {
+                year: "numeric",
                 month: "short",
                 day: "numeric",
-                hour: "2-digit",
+                hour: "numeric",
                 minute: "2-digit",
+                hour12: true,
               })}
             </p>
           </div>
-
-          {/* 하단 고정 CTA */}
-          {!isReadOnly && (
-            <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
-              <button
-                onClick={() => onStartChat({ ...quote, request_id: requestId })}
-                className="w-full bg-yellow-400 hover:bg-yellow-500 text-white font-bold py-4 rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-base active:scale-[0.98]"
-              >
-                {t("quoteModal.chatBtn")}
-              </button>
-            </div>
-          )}
         </div>
       </div>
     </div>

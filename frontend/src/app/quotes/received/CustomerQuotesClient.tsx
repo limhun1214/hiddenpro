@@ -572,311 +572,267 @@ export default function CustomerQuotesClient() {
     });
 
   return (
-    <div className="flex flex-col flex-1 min-h-0 w-full overflow-y-auto bg-white p-4 lg:p-10 space-y-4 lg:px-8 lg:py-8">
+    <div className="flex flex-col flex-1 min-h-0 w-full overflow-y-auto bg-[#f7f9fc]">
       <BadgeCleaner type="quotes-read" />
-      <div className="lg:text-left lg:mb-8">
-        <h1 className="text-2xl lg:text-2xl font-['Plus_Jakarta_Sans'] font-bold tracking-tight bg-white/90 backdrop-blur-sm p-4 rounded-xl border border-gray-200 flex items-center justify-between sticky top-0 z-10 text-center lg:text-left text-[#0020A0]">
-          {t("customerQuotes.pageTitle")}
-        </h1>
-      </div>
+      <div className="px-4 pb-32 pt-6 max-w-3xl mx-auto w-full">
+        {/* Tab Navigation */}
+        <nav className="flex w-full mb-8 border-b border-[#c5c5d6]/15">
+          <button
+            onClick={() => setActiveTab("IN_PROGRESS")}
+            className={`flex-1 pb-4 text-center text-sm tracking-wide transition-colors ${
+              activeTab === "IN_PROGRESS"
+                ? "font-bold text-indigo-700 border-b-2 border-[#0020a0]"
+                : "font-medium text-slate-500 hover:text-indigo-600"
+            }`}
+          >
+            {t("customerQuotes.tabInProgress").toUpperCase()}
+          </button>
+          <button
+            onClick={() => setActiveTab("CLOSED")}
+            className={`flex-1 pb-4 text-center text-sm tracking-wide transition-colors ${
+              activeTab === "CLOSED"
+                ? "font-bold text-indigo-700 border-b-2 border-[#0020a0]"
+                : "font-medium text-slate-500 hover:text-indigo-600"
+            }`}
+          >
+            {t("customerQuotes.tabClosed").toUpperCase()}
+          </button>
+        </nav>
 
-      <div className="flex p-1 bg-white rounded-lg max-w-md mx-auto relative overflow-hidden border border-gray-200 w-full">
-        <button
-          onClick={() => setActiveTab("IN_PROGRESS")}
-          className={`flex-1 py-3 text-sm font-['Plus_Jakarta_Sans'] font-bold relative z-10 transition-all duration-300 ${activeTab === "IN_PROGRESS" ? "text-[#0020A0]" : "text-gray-400 hover:text-gray-500"}`}
-        >
-          {t("customerQuotes.tabInProgress")}
-          {activeTab === "IN_PROGRESS" && (
-            <div
-              className="absolute inset-x-2 bottom-1 h-0.5 bg-[#0020A0] rounded-full"
-              style={{ boxShadow: "0 0 8px rgba(255,136,181,0.6)" }}
-            ></div>
-          )}
-        </button>
-        <button
-          onClick={() => setActiveTab("CLOSED")}
-          className={`flex-1 py-3 text-sm font-['Plus_Jakarta_Sans'] font-bold relative z-10 transition-all duration-300 ${activeTab === "CLOSED" ? "text-[#0020A0]" : "text-gray-400 hover:text-gray-500"}`}
-        >
-          {t("customerQuotes.tabClosed")}
-          {activeTab === "CLOSED" && (
-            <div
-              className="absolute inset-x-2 bottom-1 h-0.5 bg-[#0020A0] rounded-full"
-              style={{ boxShadow: "0 0 8px rgba(255,136,181,0.6)" }}
-            ></div>
-          )}
-        </button>
-      </div>
-
-      {activeTab === "CLOSED" && (
-        <div className="bg-white border border-gray-200 text-gray-500 text-sm font-medium p-4 rounded-xl leading-relaxed">
-          {t("customerQuotes.closedBanner")}
+        {/* Section Header */}
+        <div className="flex justify-between items-end mb-6">
+          <h2 className="font-['Manrope'] font-bold text-[#191c1e] text-lg">
+            {t("customerQuotes.pageTitle")}
+          </h2>
+          <span className="text-[11px] font-medium text-slate-400 uppercase tracking-widest">
+            {displayRequests.length}{" "}
+            {activeTab === "IN_PROGRESS" ? "ACTIVE" : "CLOSED"}
+          </span>
         </div>
-      )}
 
-      {errorMsg && (
-        <div className="text-red-500 font-bold mb-4 bg-red-50 p-4 rounded-xl border border-red-200">
-          {t("customerQuotes.dataError")}
-          {errorMsg}
-        </div>
-      )}
+        {activeTab === "CLOSED" && (
+          <div className="bg-white border border-[#c5c5d6]/20 text-[#454653] text-sm font-medium p-4 rounded-lg leading-relaxed">
+            {t("customerQuotes.closedBanner")}
+          </div>
+        )}
 
-      {!errorMsg && displayRequests.length === 0 ? (
-        <div className="flex-1 flex flex-col items-center justify-center px-8 text-center max-w-lg mx-auto py-16">
-          {activeTab === "IN_PROGRESS" ? (
-            <>
-              <div className="relative mb-10 group">
-                <div className="absolute inset-0 bg-[#0020A0]/10 blur-[60px] rounded-full group-hover:bg-[#0020A0]/20 transition-all duration-500"></div>
-                <div className="relative w-40 h-40 flex items-center justify-center bg-gray-50 rounded-xl border border-gray-200 shadow-2xl overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#0020A0]/10 to-transparent"></div>
-                  <span
-                    className="material-symbols-outlined text-[80px] text-[#0020A0] opacity-40 select-none"
-                    style={{ fontVariationSettings: "'wght' 200" }}
-                  >
-                    content_paste
-                  </span>
-                </div>
-              </div>
-              <h2 className="font-['Plus_Jakarta_Sans'] font-bold text-2xl text-gray-900 mb-3 tracking-tight">
-                {t("customerQuotes.noInProgress")}
-              </h2>
-              <p className="text-gray-500 leading-relaxed mb-10 text-sm">
-                {t("customerQuotes.noInProgressSub")}
-              </p>
-              <button
-                onClick={() => router.push("/request")}
-                className="group relative w-full py-5 rounded-full overflow-hidden transition-all duration-300 active:scale-95 bg-[#0020A0] hover:bg-[#001880]"
-              >
-                <div className="relative flex items-center justify-center gap-2">
-                  <span className="material-symbols-outlined text-white text-xl">
-                    add_circle
-                  </span>
-                  <span className="font-['Plus_Jakarta_Sans'] font-extrabold text-white tracking-wide text-sm">
-                    {t("customerQuotes.newRequestBtn")}
-                  </span>
-                </div>
-              </button>
-            </>
-          ) : (
-            <p className="text-gray-500">{t("customerQuotes.noClosed")}</p>
-          )}
-        </div>
-      ) : (
-        displayRequests.map((request) => {
-          const isMatched = request?.status === "MATCHED";
-          const isFull = (request?.quote_count || 0) >= 5;
+        {errorMsg && (
+          <div className="text-red-500 font-bold mb-4 bg-red-50 p-4 rounded-xl border border-red-200">
+            {t("customerQuotes.dataError")}
+            {errorMsg}
+          </div>
+        )}
 
-          const expirationTime = request?.created_at
-            ? new Date(request.created_at).getTime() + 48 * 60 * 60 * 1000
-            : 0;
-          const timeRemainingMs = expirationTime - currentTime;
-          const isExpired = timeRemainingMs <= 0;
-
-          const hoursRemaining = Math.max(
-            0,
-            Math.floor(timeRemainingMs / (1000 * 60 * 60)),
-          );
-          const minutesRemaining = Math.max(
-            0,
-            Math.floor((timeRemainingMs % (1000 * 60 * 60)) / (1000 * 60)),
-          );
-          const isHurry = hoursRemaining < 24 && !isExpired;
-
-          let statusLabel = t("customerQuotes.statusRecruiting");
-          let statusColor = "bg-blue-50 text-blue-600";
-          if (isMatched) {
-            statusLabel = t("customerQuotes.statusMatched");
-            statusColor =
-              "bg-[#b5ffc2]/10 text-[#b5ffc2] border border-[#b5ffc2]/30";
-          } else if (isFull || isExpired) {
-            statusLabel = t("customerQuotes.statusClosed");
-            statusColor = "bg-gray-100 text-gray-500 border border-gray-200";
-          }
-
-          const reqQuotes = (
-            Array.isArray(request.match_quotes) ? request.match_quotes : []
-          )
-            .slice()
-            .sort((a: any, b: any) => {
-              // 1순위: 미확인(is_read=false) 우선
-              if (!a.is_read && b.is_read) return -1;
-              if (a.is_read && !b.is_read) return 1;
-              // 2순위: 최신순(created_at DESC)
-              return (
-                new Date(b.created_at).getTime() -
-                new Date(a.created_at).getTime()
-              );
-            });
-
-          return (
-            <div
-              key={request.request_id}
-              className={`bg-white p-5 rounded-2xl border mt-4 ${activeTab === "CLOSED" ? "border-gray-200" : "border-[#0020A0]/10"}`}
-            >
-              <div className="flex justify-between items-start mb-3 border-b pb-3 border-gray-200">
-                <div>
-                  <h2 className="text-base font-bold text-gray-900">
-                    {(locale === "en" ? request.categories?.name_en : null) ||
-                      request.categories?.name ||
-                      request.service_type ||
-                      t("customerQuotes.defaultService")}
-                  </h2>
-                  <div className="flex items-center gap-2 mt-1 font-medium">
-                    <span className="text-sm text-gray-500 flex items-center gap-1">
-                      📍 {request.region || t("customerQuotes.noRegion")}
-                    </span>
-                    <span className="text-xs text-gray-400">
-                      {t("customerQuotes.requestDate")}
-                      {new Date(request.created_at).toLocaleDateString()}
+        {!errorMsg && displayRequests.length === 0 ? (
+          <div className="flex-1 flex flex-col items-center justify-center px-8 text-center max-w-lg mx-auto py-16">
+            {activeTab === "IN_PROGRESS" ? (
+              <>
+                <div className="relative mb-10 group">
+                  <div className="absolute inset-0 bg-[#0020A0]/10 blur-[60px] rounded-full group-hover:bg-[#0020A0]/20 transition-all duration-500"></div>
+                  <div className="relative w-40 h-40 flex items-center justify-center bg-gray-50 rounded-xl border border-gray-200 shadow-2xl overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#0020A0]/10 to-transparent"></div>
+                    <span
+                      className="material-symbols-outlined text-[80px] text-[#0020A0] opacity-40 select-none"
+                      style={{ fontVariationSettings: "'wght' 200" }}
+                    >
+                      content_paste
                     </span>
                   </div>
                 </div>
-                <div className="text-right flex flex-col items-end">
-                  <span
-                    className={`${statusColor} font-bold px-2 py-1 rounded text-xs whitespace-nowrap`}
-                  >
-                    {statusLabel}
-                  </span>
-                  {activeTab === "IN_PROGRESS" && (
-                    <div
-                      className={`text-xs mt-2 font-bold ${isHurry ? "text-red-500 animate-pulse" : "text-[#0020A0]"}`}
-                    >
-                      {t("customerQuotes.timeLeft")}
-                      {hoursRemaining}
-                      {t("customerQuotes.hours")} {minutesRemaining}
-                      {t("customerQuotes.minutes")}
-                    </div>
-                  )}
-                </div>
-              </div>
+                <h2 className="font-['Plus_Jakarta_Sans'] font-bold text-2xl text-gray-900 mb-3 tracking-tight">
+                  {t("customerQuotes.noInProgress")}
+                </h2>
+                <p className="text-gray-500 leading-relaxed mb-10 text-sm">
+                  {t("customerQuotes.noInProgressSub")}
+                </p>
+                <button
+                  onClick={() => router.push("/request")}
+                  className="group relative w-full py-5 rounded-full overflow-hidden transition-all duration-300 active:scale-95 bg-[#0020A0] hover:bg-[#001880]"
+                >
+                  <div className="relative flex items-center justify-center gap-2">
+                    <span className="material-symbols-outlined text-white text-xl">
+                      add_circle
+                    </span>
+                    <span className="font-['Plus_Jakarta_Sans'] font-extrabold text-white tracking-wide text-sm">
+                      {t("customerQuotes.newRequestBtn")}
+                    </span>
+                  </div>
+                </button>
+              </>
+            ) : (
+              <p className="text-gray-500">{t("customerQuotes.noClosed")}</p>
+            )}
+          </div>
+        ) : (
+          displayRequests.map((request) => {
+            const isMatched = request?.status === "MATCHED";
+            const isFull = (request?.quote_count || 0) >= 5;
 
-              {/* ── [확장] 요청 통제 버튼: 내 요청서 보기 ── */}
-              {activeTab === "IN_PROGRESS" && (
-                <div className="flex gap-2 mb-3">
+            const expirationTime = request?.created_at
+              ? new Date(request.created_at).getTime() + 48 * 60 * 60 * 1000
+              : 0;
+            const timeRemainingMs = expirationTime - currentTime;
+            const isExpired = timeRemainingMs <= 0;
+
+            const hoursRemaining = Math.max(
+              0,
+              Math.floor(timeRemainingMs / (1000 * 60 * 60)),
+            );
+            const minutesRemaining = Math.max(
+              0,
+              Math.floor((timeRemainingMs % (1000 * 60 * 60)) / (1000 * 60)),
+            );
+            const isHurry = hoursRemaining < 24 && !isExpired;
+
+            let statusLabel = t("customerQuotes.statusRecruiting");
+            let statusBadgeClass = "bg-[#c2c9fe] text-[#4c5381]";
+            let statusIcon = "sync";
+            if (isMatched) {
+              statusLabel = t("customerQuotes.statusMatched");
+              statusBadgeClass = "bg-[#ffdad3] text-[#87200e]";
+              statusIcon = "handshake";
+            } else if (isFull || isExpired) {
+              statusLabel = t("customerQuotes.statusClosed");
+              statusBadgeClass = "bg-[#e0e3e6] text-[#454653]";
+              statusIcon = "lock";
+            }
+
+            const reqQuotes = (
+              Array.isArray(request.match_quotes) ? request.match_quotes : []
+            )
+              .slice()
+              .sort((a: any, b: any) => {
+                // 1순위: 미확인(is_read=false) 우선
+                if (!a.is_read && b.is_read) return -1;
+                if (a.is_read && !b.is_read) return 1;
+                // 2순위: 최신순(created_at DESC)
+                return (
+                  new Date(b.created_at).getTime() -
+                  new Date(a.created_at).getTime()
+                );
+              });
+
+            return (
+              <div
+                key={request.request_id}
+                className="bg-white rounded-lg p-6 shadow-[0_32px_32px_0_rgba(0,15,93,0.06)] border border-[#c5c5d6]/10 relative overflow-hidden mb-4"
+              >
+                {/* Card Header */}
+                <div className="mb-5">
+                  <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-tighter mb-1">
+                    #{request.request_id?.slice(-6).toUpperCase()}
+                  </p>
+                  <div className="flex justify-between items-start">
+                    <h2 className="font-['Manrope'] font-bold text-[#191c1e] text-base leading-snug">
+                      {(locale === "en" ? request.categories?.name_en : null) ||
+                        request.categories?.name ||
+                        request.service_type ||
+                        t("customerQuotes.defaultService")}
+                    </h2>
+                    <div className="flex flex-col items-end ml-2 flex-shrink-0 gap-1">
+                      <span
+                        className={`${statusBadgeClass} inline-flex items-center gap-1 font-bold px-2 py-1 rounded text-[10px] whitespace-nowrap`}
+                      >
+                        <span className="material-symbols-outlined text-[12px]">
+                          {statusIcon}
+                        </span>
+                        {statusLabel}
+                      </span>
+                      {activeTab === "IN_PROGRESS" && !isExpired && (
+                        <span
+                          className={`text-[10px] font-bold ${isHurry ? "text-red-500 animate-pulse" : "text-[#454653]"}`}
+                        >
+                          {t("customerQuotes.timeLeft")}
+                          {hoursRemaining}
+                          {t("customerQuotes.hours")} {minutesRemaining}
+                          {t("customerQuotes.minutes")}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-y-3 gap-x-2 mt-4">
+                    <div className="flex items-center gap-1.5">
+                      <span className="material-symbols-outlined text-indigo-300 text-[18px]">
+                        location_on
+                      </span>
+                      <span className="text-xs text-[#454653]">
+                        {request.region || t("customerQuotes.noRegion")}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="material-symbols-outlined text-indigo-300 text-[18px]">
+                        groups
+                      </span>
+                      <span className="text-xs text-[#454653]">
+                        {request.quote_count || 0} / 5
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="material-symbols-outlined text-indigo-300 text-[18px]">
+                        calendar_today
+                      </span>
+                      <span className="text-xs text-[#454653]">
+                        {new Date(request.created_at).toLocaleDateString(
+                          "en-US",
+                          { year: "numeric", month: "short", day: "numeric" },
+                        )}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* ── [확장] 요청 통제 버튼: 내 요청서 보기 ── */}
+                {activeTab === "IN_PROGRESS" && (
                   <button
                     onClick={() => setViewRequestModal({ request })}
-                    className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-500 font-bold py-2 rounded-lg text-xs border border-gray-200 transition flex items-center justify-center gap-1"
+                    className="w-full bg-[#0020a0] hover:bg-[#001880] text-white py-3.5 rounded-lg font-bold text-sm mb-4 transition flex items-center justify-center gap-2"
                   >
+                    <span className="material-symbols-outlined text-[18px]">
+                      description
+                    </span>
                     {t("customerQuotes.viewMyRequest")}
                   </button>
-                </div>
-              )}
+                )}
 
-              {activeTab === "IN_PROGRESS" && (
-                <div className="mb-4 bg-[#0020A0]/5 p-3 rounded-xl border border-[#0020A0]/20 flex items-center justify-between">
-                  <span className="text-sm text-[#0020A0] font-medium">
-                    🚀 {request.quote_count || 0} / 5{" "}
-                    {t("customerQuotes.quoteCount")}
-                  </span>
-                  {(request.quote_count || 0) === 0 && (
-                    <span className="text-xs text-[#0020A0]/70 animate-pulse">
-                      {t("customerQuotes.waitingPros")}
-                    </span>
-                  )}
-                </div>
-              )}
+                {reqQuotes.length > 0 ? (
+                  <div className="space-y-3">
+                    <h3 className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-2">
+                      {t("customerQuotes.quotesArrived")} · {reqQuotes.length}
+                    </h3>
+                    {reqQuotes.map((quote: any) => {
+                      const profilesArray = Array.isArray(quote.pro_profiles)
+                        ? quote.pro_profiles
+                        : [quote.pro_profiles];
+                      const proUser =
+                        profilesArray.find(
+                          (p: any) =>
+                            p?.user_id === quote.pro_id ||
+                            p?.pro_id === quote.pro_id,
+                        ) || profilesArray[0];
+                      const proName =
+                        proUser?.users?.nickname &&
+                        proUser.users.nickname.trim() !== ""
+                          ? proUser.users.nickname
+                          : proUser?.users?.name || "Pro";
+                      const avatarUrl = proUser?.users?.avatar_url || null;
+                      const avgRating = proUser?.average_rating || 0.0;
+                      const reviewCount = proUser?.review_count || 0;
 
-              {reqQuotes.length > 0 ? (
-                <div className="space-y-3">
-                  <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">
-                    {t("customerQuotes.quotesArrived")} ({reqQuotes.length})
-                  </h3>
-                  {reqQuotes.map((quote: any) => {
-                    const profilesArray = Array.isArray(quote.pro_profiles)
-                      ? quote.pro_profiles
-                      : [quote.pro_profiles];
-                    const proUser =
-                      profilesArray.find(
-                        (p: any) =>
-                          p?.user_id === quote.pro_id ||
-                          p?.pro_id === quote.pro_id,
-                      ) || profilesArray[0];
-                    const proName =
-                      proUser?.users?.nickname &&
-                      proUser.users.nickname.trim() !== ""
-                        ? proUser.users.nickname
-                        : proUser?.users?.name || "전문가";
-                    const avatarUrl = proUser?.users?.avatar_url || null;
-                    const avgRating = proUser?.average_rating || 0.0;
-                    const reviewCount = proUser?.review_count || 0;
-
-                    // ── [확장] MATCHED 상태에서 미확정 고수 카드 축소 표시 ──
-                    if (
-                      request.status === "MATCHED" &&
-                      quote.status !== "ACCEPTED"
-                    ) {
-                      return (
-                        <div
-                          key={quote.quote_id}
-                          className="bg-gray-50 p-3 rounded-xl border border-gray-200 opacity-50"
-                        >
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                <svg
-                                  className="w-3.5 h-3.5 text-gray-500"
-                                  fill="currentColor"
-                                  viewBox="0 0 20 20"
-                                >
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                                    clipRule="evenodd"
-                                  />
-                                </svg>
-                              </div>
-                              <span className="font-medium text-gray-500 text-sm">
-                                {proName}님
-                              </span>
-                            </div>
-                            <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
-                              {t("customerQuotes.notSelected")}
-                            </span>
-                          </div>
-                        </div>
-                      );
-                    }
-
-                    return (
-                      <div
-                        key={quote.quote_id}
-                        className="bg-gray-50 p-4 rounded-xl border border-gray-200 flex flex-col space-y-3"
-                      >
-                        {/* 상단 터치 존: 전체 클릭 시 프로필 모달 오픈 */}
-                        <div
-                          onClick={() => {
-                            if (!quote.is_read)
-                              handleMarkAsRead(
-                                quote.quote_id,
-                                request.request_id,
-                              );
-                            const roomId =
-                              quoteRoomMap[
-                                `${request.request_id} | ${quote.pro_id}`
-                              ];
-                            const isCompleted = roomId
-                              ? reviewedRoomIds.has(roomId)
-                              : false;
-                            setProfileModal({
-                              proId: quote.pro_id,
-                              requestId: request.request_id,
-                              isCompleted,
-                            });
-                          }}
-                          className="cursor-pointer hover:bg-gray-100 -m-1 p-2 rounded-lg transition active:bg-gray-200 mt-1 space-y-1.5"
-                        >
-                          <div className="flex justify-between items-center">
-                            <div className="flex items-center flex-wrap gap-1.5">
-                              {/* 고수 아바타 아이콘 */}
-                              <div className="w-7 h-7 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden border border-gray-200">
-                                {avatarUrl ? (
-                                  <img
-                                    src={avatarUrl}
-                                    alt="Profile"
-                                    className="w-full h-full object-cover"
-                                  />
-                                ) : (
+                      // ── [확장] MATCHED 상태에서 미확정 고수 카드 축소 표시 ──
+                      if (
+                        request.status === "MATCHED" &&
+                        quote.status !== "ACCEPTED"
+                      ) {
+                        return (
+                          <div
+                            key={quote.quote_id}
+                            className="bg-[#f7f9fc] p-3 rounded-lg border border-[#c5c5d6]/20 opacity-50"
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
                                   <svg
-                                    className="w-4 h-4 text-[#0020A0]/60"
+                                    className="w-3.5 h-3.5 text-gray-500"
                                     fill="currentColor"
                                     viewBox="0 0 20 20"
                                   >
@@ -886,184 +842,116 @@ export default function CustomerQuotesClient() {
                                       clipRule="evenodd"
                                     />
                                   </svg>
-                                )}
+                                </div>
+                                <span className="font-medium text-gray-500 text-sm">
+                                  {proName}
+                                </span>
                               </div>
-                              <span className="font-bold text-[#0020A0]">
-                                {proName}님
-                              </span>
-                              {proUser?.is_phone_verified && (
-                                <span className="inline-flex items-center gap-0.5 text-[10px] bg-[#b5ffc2]/10 text-[#b5ffc2] font-bold px-1.5 py-0.5 rounded-full border border-[#b5ffc2]/30 whitespace-nowrap flex-shrink-0">
-                                  {t("customerQuotes.phoneVerified")}
-                                </span>
-                              )}
-                              {proUser?.facebook_url && (
-                                <span className="inline-flex items-center gap-0.5 text-[10px] bg-[#0020A0]/10 text-[#0020A0] font-bold px-1.5 py-0.5 rounded-full border border-[#0020A0]/30 whitespace-nowrap flex-shrink-0">
-                                  {t("customerQuotes.facebookLinked")}
-                                </span>
-                              )}
-                              <span className="text-xs font-bold text-yellow-400">
-                                ⭐ {Number(avgRating).toFixed(1)}
-                              </span>
-                              <span className="text-xs text-gray-400">
-                                ({reviewCount}개)
+                              <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+                                {t("customerQuotes.notSelected")}
                               </span>
                             </div>
-                            <span className="text-xs text-gray-400 flex-shrink-0">
-                              {new Date(quote.created_at).toLocaleTimeString(
-                                [],
-                                { hour: "2-digit", minute: "2-digit" },
-                              )}
-                            </span>
                           </div>
-                          <p className="text-xs text-gray-400 text-right">
-                            {t("customerQuotes.viewProfile")}
-                          </p>
-                        </div>
+                        );
+                      }
 
-                        {activeTab === "IN_PROGRESS" ? (
-                          // ── [확장] 이미 다른 고수와 MATCHED된 요청건의 미확정 고수 카드 버튼 비활성화 ──
-                          request.status === "MATCHED" &&
-                          quote.status !== "ACCEPTED" ? (
-                            <div className="mt-2 bg-gray-100 text-gray-500 font-bold py-2.5 rounded-lg text-sm text-center border border-gray-200">
-                              {t("customerQuotes.matchedOther")}
-                            </div>
-                          ) : (
-                            <div className="flex gap-2 mt-2">
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  if (!quote.is_read)
-                                    handleMarkAsRead(
-                                      quote.quote_id,
-                                      request.request_id,
-                                    );
-                                  setQuoteDetailModal({
-                                    quote: { ...quote },
-                                    requestId: request.request_id,
-                                    request,
-                                  });
-                                }}
-                                className={`flex-1 font-bold py-2.5 rounded-lg shadow-sm transition text-sm border ${
-                                  !quote.is_read
-                                    ? "bg-[#0020A0] hover:bg-[#001880] text-white border-transparent animate-pulse"
-                                    : "bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100"
-                                }`}
-                                style={
-                                  !quote.is_read
-                                    ? {
-                                        boxShadow:
-                                          "0 0 20px rgba(255,136,181,0.3)",
-                                      }
-                                    : {}
-                                }
-                              >
-                                {!quote.is_read
-                                  ? t("customerQuotes.newQuoteBtn")
-                                  : t("customerQuotes.viewQuoteBtn")}
-                              </button>
-                              <button
-                                onClick={() =>
-                                  handleStartChat({
-                                    ...quote,
-                                    request_id: request.request_id,
-                                  })
-                                }
-                                className="flex-1 bg-[#0020A0] hover:bg-[#001880] text-white font-bold py-2.5 rounded-lg shadow-sm transition text-sm"
-                              >
-                                {t("customerQuotes.chatBtn")}
-                              </button>
-                            </div>
-                          )
-                        ) : (
-                          <div className="mt-2 text-center">
-                            {quote.status === "ACCEPTED" ? (
-                              (() => {
-                                const roomId =
-                                  quoteRoomMap[
-                                    `${request.request_id} | ${quote.pro_id}`
-                                  ];
-                                const isReviewed = roomId
-                                  ? reviewedRoomIds.has(roomId)
-                                  : false;
-
-                                return (
-                                  <div className="flex flex-col gap-2">
-                                    <div className="bg-[#b5ffc2]/10 text-[#b5ffc2] py-2 rounded-lg text-sm font-bold border border-[#b5ffc2]/30">
-                                      {t("customerQuotes.finalMatch")}
-                                    </div>
-                                    <button
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        if (!quote.is_read)
-                                          handleMarkAsRead(
-                                            quote.quote_id,
-                                            request.request_id,
-                                          );
-                                        setQuoteDetailModal({
-                                          quote: { ...quote },
-                                          requestId: request.request_id,
-                                          request,
-                                        });
-                                      }}
-                                      className="w-full bg-gray-50 hover:bg-gray-100 text-[#0020A0] font-bold py-2.5 rounded-lg shadow-sm transition text-sm border border-[#0020A0]/30 flex items-center justify-center gap-2"
-                                    >
-                                      {t("customerQuotes.viewQuoteDetail")}
-                                    </button>
-
-                                    {isReviewed ? (
-                                      <button
-                                        disabled
-                                        className="w-full bg-gray-100 text-gray-500 font-bold py-2.5 rounded-lg shadow-sm transition text-sm flex items-center justify-center gap-2 cursor-not-allowed border border-gray-200"
-                                      >
-                                        {t("customerQuotes.dealDone")}
-                                      </button>
-                                    ) : (
-                                      <button
-                                        onClick={() =>
-                                          handleStartChat({
-                                            ...quote,
-                                            request_id: request.request_id,
-                                          })
-                                        }
-                                        className="w-full bg-[#0020A0] hover:bg-[#001880] text-white font-bold py-2.5 rounded-lg shadow-sm transition text-sm flex items-center justify-center gap-2"
-                                      >
-                                        {t("customerQuotes.chatRoomBtn")}
-                                      </button>
-                                    )}
-
-                                    {isReviewed ? (
-                                      <button
-                                        disabled
-                                        className="w-full bg-gray-100 text-gray-500 font-bold py-2.5 rounded-lg text-sm flex items-center justify-center gap-2 cursor-not-allowed border border-gray-200"
-                                      >
-                                        {t("customerQuotes.reviewDone")}
-                                      </button>
-                                    ) : (
-                                      <button
-                                        onClick={() =>
-                                          openReviewModal(
-                                            quote,
-                                            request.request_id,
-                                          )
-                                        }
-                                        className="w-full bg-[#0020A0] hover:bg-[#001880] text-white font-bold py-2.5 rounded-lg shadow-sm transition text-sm flex items-center justify-center gap-2"
-                                      >
-                                        {t("customerQuotes.leaveReview")}
-                                      </button>
-                                    )}
-                                  </div>
+                      return (
+                        <div
+                          key={quote.quote_id}
+                          className="bg-[#f7f9fc] p-4 rounded-lg border border-[#c5c5d6]/20 flex flex-col space-y-3"
+                        >
+                          {/* 상단 터치 존: 전체 클릭 시 프로필 모달 오픈 */}
+                          <div
+                            onClick={() => {
+                              if (!quote.is_read)
+                                handleMarkAsRead(
+                                  quote.quote_id,
+                                  request.request_id,
                                 );
-                              })()
-                            ) : quote.status === "REJECTED" ||
-                              request.status === "MATCHED" ? (
-                              <div className="bg-gray-100 text-gray-500 py-2 rounded-lg text-sm font-bold border border-gray-200">
-                                {request.status === "MATCHED"
-                                  ? t("customerQuotes.matchFailed")
-                                  : t("customerQuotes.rejected")}
+                              const roomId =
+                                quoteRoomMap[
+                                  `${request.request_id} | ${quote.pro_id}`
+                                ];
+                              const isCompleted = roomId
+                                ? reviewedRoomIds.has(roomId)
+                                : false;
+                              setProfileModal({
+                                proId: quote.pro_id,
+                                requestId: request.request_id,
+                                isCompleted,
+                              });
+                            }}
+                            className="cursor-pointer hover:bg-[#e8eaf6]/30 -m-1 p-2 rounded-lg transition active:bg-[#e8eaf6]/60 mt-1 space-y-1.5"
+                          >
+                            <div className="flex justify-between items-center">
+                              <div className="flex items-center flex-wrap gap-1.5">
+                                {/* 고수 아바타 아이콘 */}
+                                <div className="w-7 h-7 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden border border-gray-200">
+                                  {avatarUrl ? (
+                                    <img
+                                      src={avatarUrl}
+                                      alt="Profile"
+                                      className="w-full h-full object-cover"
+                                    />
+                                  ) : (
+                                    <svg
+                                      className="w-4 h-4 text-[#0020A0]/60"
+                                      fill="currentColor"
+                                      viewBox="0 0 20 20"
+                                    >
+                                      <path
+                                        fillRule="evenodd"
+                                        d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                        clipRule="evenodd"
+                                      />
+                                    </svg>
+                                  )}
+                                </div>
+                                <span className="font-bold text-[#191c1e]">
+                                  {proName}
+                                </span>
+                                {proUser?.is_phone_verified && (
+                                  <span className="inline-flex items-center gap-0.5 text-[10px] bg-[#c2c9fe] text-[#4c5381] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap flex-shrink-0">
+                                    {t("customerQuotes.phoneVerified")}
+                                  </span>
+                                )}
+                                {proUser?.facebook_url && (
+                                  <span className="inline-flex items-center gap-0.5 text-[10px] bg-[#ffdad3] text-[#87200e] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap flex-shrink-0">
+                                    {t("customerQuotes.facebookLinked")}
+                                  </span>
+                                )}
+                                <span className="text-xs font-bold text-yellow-400">
+                                  ⭐ {Number(avgRating).toFixed(1)}
+                                </span>
+                                <span className="text-xs text-gray-400">
+                                  ({reviewCount}개)
+                                </span>
+                              </div>
+                              <span className="text-xs text-gray-400 flex-shrink-0">
+                                {new Date(quote.created_at).toLocaleTimeString(
+                                  "en-US",
+                                  {
+                                    hour: "numeric",
+                                    minute: "2-digit",
+                                    hour12: true,
+                                  },
+                                )}
+                              </span>
+                            </div>
+                            <p className="text-xs text-gray-400 text-right">
+                              {t("customerQuotes.viewProfile")}
+                            </p>
+                          </div>
+
+                          {activeTab === "IN_PROGRESS" ? (
+                            // ── [확장] 이미 다른 고수와 MATCHED된 요청건의 미확정 고수 카드 버튼 비활성화 ──
+                            request.status === "MATCHED" &&
+                            quote.status !== "ACCEPTED" ? (
+                              <div className="mt-2 bg-gray-100 text-gray-500 font-bold py-2.5 rounded-lg text-sm text-center border border-gray-200">
+                                {t("customerQuotes.matchedOther")}
                               </div>
                             ) : (
-                              /* 입찰만 마감(5명 도달 또는 48h 경과)되었지만 아직 매칭 미확정 → 고객이 검토·채팅·매칭 확정 가능 */
-                              <div className="flex flex-col gap-2">
+                              <div className="flex gap-2 mt-2">
                                 <button
                                   onClick={(e) => {
                                     e.stopPropagation();
@@ -1078,9 +966,23 @@ export default function CustomerQuotesClient() {
                                       request,
                                     });
                                   }}
-                                  className="w-full bg-gray-50 hover:bg-gray-100 text-[#0020A0] font-bold py-2.5 rounded-lg shadow-sm transition text-sm border border-[#0020A0]/30 flex items-center justify-center gap-2"
+                                  className={`flex-1 font-bold py-2.5 rounded-lg shadow-sm transition text-sm border ${
+                                    !quote.is_read
+                                      ? "bg-[#0020A0] hover:bg-[#001880] text-white border-transparent animate-pulse"
+                                      : "bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100"
+                                  }`}
+                                  style={
+                                    !quote.is_read
+                                      ? {
+                                          boxShadow:
+                                            "0 0 20px rgba(255,136,181,0.3)",
+                                        }
+                                      : {}
+                                  }
                                 >
-                                  {t("customerQuotes.viewQuoteDetail2")}
+                                  {!quote.is_read
+                                    ? t("customerQuotes.newQuoteBtn")
+                                    : t("customerQuotes.viewQuoteBtn")}
                                 </button>
                                 <button
                                   onClick={() =>
@@ -1089,93 +991,235 @@ export default function CustomerQuotesClient() {
                                       request_id: request.request_id,
                                     })
                                   }
-                                  className="w-full bg-[#0020A0] hover:bg-[#001880] text-white font-bold py-2.5 rounded-lg shadow-sm transition text-sm flex items-center justify-center gap-2"
+                                  className="flex-1 bg-[#0020A0] hover:bg-[#001880] text-white font-bold py-2.5 rounded-lg shadow-sm transition text-sm"
                                 >
-                                  {t("customerQuotes.consultChat")}
+                                  {t("customerQuotes.chatBtn")}
                                 </button>
                               </div>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="text-center p-6 bg-white rounded-xl border border-gray-200 border-dashed text-sm">
-                  {activeTab === "IN_PROGRESS" ? (
-                    <div className="flex flex-col items-center gap-4 py-8">
-                      <div className="w-28 h-28 rounded-full border-2 border-[#0020A0]/20 flex items-center justify-center">
-                        <div className="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center shadow-sm">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="48"
-                            height="48"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="#0020A0"
-                            strokeWidth="1.2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            opacity="0.7"
-                          >
-                            <rect
-                              x="8"
-                              y="2"
-                              width="8"
-                              height="4"
-                              rx="1"
-                              ry="1"
-                            />
-                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
-                            <path d="M9 12h6" />
-                            <path d="M9 16h6" />
-                          </svg>
+                            )
+                          ) : (
+                            <div className="mt-2 text-center">
+                              {quote.status === "ACCEPTED" ? (
+                                (() => {
+                                  const roomId =
+                                    quoteRoomMap[
+                                      `${request.request_id} | ${quote.pro_id}`
+                                    ];
+                                  const isReviewed = roomId
+                                    ? reviewedRoomIds.has(roomId)
+                                    : false;
+
+                                  return (
+                                    <div className="flex flex-col gap-2">
+                                      <div className="bg-[#ffdad3] text-[#87200e] py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-1">
+                                        <span className="material-symbols-outlined text-[16px]">
+                                          handshake
+                                        </span>
+                                        {t("customerQuotes.finalMatch")}
+                                      </div>
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          if (!quote.is_read)
+                                            handleMarkAsRead(
+                                              quote.quote_id,
+                                              request.request_id,
+                                            );
+                                          setQuoteDetailModal({
+                                            quote: { ...quote },
+                                            requestId: request.request_id,
+                                            request,
+                                          });
+                                        }}
+                                        className="w-full bg-gray-50 hover:bg-gray-100 text-[#0020A0] font-bold py-2.5 rounded-lg shadow-sm transition text-sm border border-[#0020A0]/30 flex items-center justify-center gap-2"
+                                      >
+                                        {t("customerQuotes.viewQuoteDetail")}
+                                      </button>
+
+                                      {isReviewed ? (
+                                        <button
+                                          disabled
+                                          className="w-full bg-gray-100 text-gray-500 font-bold py-2.5 rounded-lg shadow-sm transition text-sm flex items-center justify-center gap-2 cursor-not-allowed border border-gray-200"
+                                        >
+                                          {t("customerQuotes.dealDone")}
+                                        </button>
+                                      ) : (
+                                        <button
+                                          onClick={() =>
+                                            handleStartChat({
+                                              ...quote,
+                                              request_id: request.request_id,
+                                            })
+                                          }
+                                          className="w-full bg-[#0020A0] hover:bg-[#001880] text-white font-bold py-2.5 rounded-lg shadow-sm transition text-sm flex items-center justify-center gap-2"
+                                        >
+                                          {t("customerQuotes.chatRoomBtn")}
+                                        </button>
+                                      )}
+
+                                      {isReviewed ? (
+                                        <button
+                                          disabled
+                                          className="w-full bg-gray-100 text-gray-500 font-bold py-2.5 rounded-lg text-sm flex items-center justify-center gap-2 cursor-not-allowed border border-gray-200"
+                                        >
+                                          {t("customerQuotes.reviewDone")}
+                                        </button>
+                                      ) : (
+                                        <button
+                                          onClick={() =>
+                                            openReviewModal(
+                                              quote,
+                                              request.request_id,
+                                            )
+                                          }
+                                          className="w-full bg-[#0020A0] hover:bg-[#001880] text-white font-bold py-2.5 rounded-lg shadow-sm transition text-sm flex items-center justify-center gap-2"
+                                        >
+                                          {t("customerQuotes.leaveReview")}
+                                        </button>
+                                      )}
+                                    </div>
+                                  );
+                                })()
+                              ) : quote.status === "REJECTED" ||
+                                request.status === "MATCHED" ? (
+                                <div className="bg-gray-100 text-gray-500 py-2 rounded-lg text-sm font-bold border border-gray-200">
+                                  {request.status === "MATCHED"
+                                    ? t("customerQuotes.matchFailed")
+                                    : t("customerQuotes.rejected")}
+                                </div>
+                              ) : (
+                                /* 입찰만 마감(5명 도달 또는 48h 경과)되었지만 아직 매칭 미확정 → 고객이 검토·채팅·매칭 확정 가능 */
+                                <div className="flex flex-col gap-2">
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (!quote.is_read)
+                                        handleMarkAsRead(
+                                          quote.quote_id,
+                                          request.request_id,
+                                        );
+                                      setQuoteDetailModal({
+                                        quote: { ...quote },
+                                        requestId: request.request_id,
+                                        request,
+                                      });
+                                    }}
+                                    className="w-full bg-gray-50 hover:bg-gray-100 text-[#0020A0] font-bold py-2.5 rounded-lg shadow-sm transition text-sm border border-[#0020A0]/30 flex items-center justify-center gap-2"
+                                  >
+                                    {t("customerQuotes.viewQuoteDetail2")}
+                                  </button>
+                                  <button
+                                    onClick={() =>
+                                      handleStartChat({
+                                        ...quote,
+                                        request_id: request.request_id,
+                                      })
+                                    }
+                                    className="w-full bg-[#0020A0] hover:bg-[#001880] text-white font-bold py-2.5 rounded-lg shadow-sm transition text-sm flex items-center justify-center gap-2"
+                                  >
+                                    {t("customerQuotes.consultChat")}
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          )}
                         </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-center p-6 bg-[#f7f9fc] rounded-lg border border-[#c5c5d6]/20 border-dashed text-sm">
+                    {activeTab === "IN_PROGRESS" ? (
+                      <div className="flex flex-col items-center gap-4 py-8">
+                        <div className="w-28 h-28 rounded-full border-2 border-[#0020a0]/20 flex items-center justify-center">
+                          <div className="w-20 h-20 bg-[#f0f2ff] rounded-2xl flex items-center justify-center shadow-sm">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="48"
+                              height="48"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="#0020A0"
+                              strokeWidth="1.2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              opacity="0.7"
+                            >
+                              <rect
+                                x="8"
+                                y="2"
+                                width="8"
+                                height="4"
+                                rx="1"
+                                ry="1"
+                              />
+                              <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+                              <path d="M9 12h6" />
+                              <path d="M9 16h6" />
+                            </svg>
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-center gap-1">
+                          <p className="text-[#191c1e] font-semibold text-base">
+                            {t("customerQuotes.noActiveRequests")}
+                          </p>
+                          <p className="text-[#454653] text-xs">
+                            {t("customerQuotes.noQuotesInProgress")}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => router.push("/request")}
+                          className="bg-[#0020a0] hover:bg-[#001880] text-white rounded-lg px-6 py-3.5 font-bold text-sm flex items-center gap-2 transition"
+                        >
+                          <span className="material-symbols-outlined text-[18px]">
+                            add_circle
+                          </span>
+                          {t("customerQuotes.createNewRequest")}
+                        </button>
+                        <button
+                          onClick={() => router.push("/")}
+                          className="text-indigo-700 text-xs font-bold tracking-wider uppercase"
+                        >
+                          {t("customerQuotes.browseProfessionals")}
+                        </button>
                       </div>
-                      <div className="flex flex-col items-center gap-1">
-                        <p className="text-white font-semibold text-base">
-                          {t("customerQuotes.noActiveRequests")}
-                        </p>
-                        <p className="text-gray-400 text-xs">
-                          {t("customerQuotes.noQuotesInProgress")}
-                        </p>
-                      </div>
-                      <button
-                        onClick={() => router.push("/request")}
-                        className="bg-[#0020A0] text-white rounded-full px-6 py-3 font-semibold text-sm flex items-center gap-2"
-                      >
-                        <span className="text-lg">⊕</span>{" "}
-                        {t("customerQuotes.createNewRequest")}
-                      </button>
-                      <button
-                        onClick={() => router.push("/")}
-                        className="text-[#0020A0] text-xs font-bold tracking-wider uppercase"
-                      >
-                        {t("customerQuotes.browseProfessionals")}
-                      </button>
-                    </div>
-                  ) : (
-                    <span className="text-gray-400">
-                      {t("customerQuotes.noQuotesClosed")}
-                    </span>
-                  )}
-                </div>
-              )}
+                    ) : (
+                      <span className="text-gray-400">
+                        {t("customerQuotes.noQuotesClosed")}
+                      </span>
+                    )}
+                  </div>
+                )}
 
-              {activeTab === "CLOSED" && (
-                <button
-                  disabled
-                  className="w-full mt-4 bg-white text-gray-400 font-bold py-3 rounded-xl shadow-none cursor-not-allowed text-sm border border-gray-200"
-                >
-                  {t("customerQuotes.closedRequest")}
-                </button>
-              )}
-            </div>
-          );
-        })
-      )}
+                {activeTab === "CLOSED" && (
+                  <button
+                    disabled
+                    className="w-full mt-4 bg-[#f7f9fc] text-[#454653] font-bold py-3 rounded-lg cursor-not-allowed text-sm border border-[#c5c5d6]/20"
+                  >
+                    {t("customerQuotes.closedRequest")}
+                  </button>
+                )}
+              </div>
+            );
+          })
+        )}
 
+        {/* Discovery Banner */}
+        {activeTab === "IN_PROGRESS" && displayRequests.length > 0 && (
+          <div className="bg-indigo-900 rounded-lg p-6 relative overflow-hidden mt-2">
+            <div className="absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_top_right,_#6366f1_0%,_transparent_60%)]" />
+            <p className="text-[10px] font-bold text-indigo-300 uppercase tracking-widest mb-2">
+              HIDDEN PRO
+            </p>
+            <h3 className="font-['Manrope'] font-bold text-white text-base mb-1">
+              {t("customerQuotes.bannerTitle")}
+            </h3>
+            <p className="text-indigo-200 text-xs leading-relaxed">
+              {t("customerQuotes.bannerDesc")}
+            </p>
+          </div>
+        )}
+      </div>
       {/* 리뷰 모달 */}
       {isReviewModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
@@ -1325,7 +1369,11 @@ export default function CustomerQuotesClient() {
                         {t("customerQuotes.requestDateLabel")}
                       </span>
                       <p className="text-sm font-bold text-gray-900 mt-1">
-                        {new Date(req.created_at).toLocaleDateString()}
+                        {new Date(req.created_at).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        })}
                       </p>
                     </div>
                   </div>
