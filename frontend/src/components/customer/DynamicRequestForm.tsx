@@ -7712,8 +7712,10 @@ export default function DynamicRequestForm() {
         "success",
       );
       showToast(
-        "🎁 Invite friends & get a discount coupon! → /referral",
+        "🎁 Invite friends & get a discount coupon! Tap to go →",
         "info",
+        undefined,
+        "/referral",
       );
 
       // ── [추천인 보상] 첫 견적 요청 판별 → 보상 트리거 (fire-and-forget) ──

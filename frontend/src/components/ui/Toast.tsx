@@ -9,6 +9,7 @@ import React, {
   useEffect,
 } from "react";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 
 type ToastType = "success" | "error" | "warning" | "info";
 
@@ -17,6 +18,7 @@ interface ToastItem {
   message: string;
   type: ToastType;
   requireConfirm?: boolean;
+  href?: string;
 }
 
 interface ToastContextType {
@@ -24,6 +26,7 @@ interface ToastContextType {
     message: string,
     type?: ToastType,
     requireConfirm?: boolean,
+    href?: string,
   ) => void;
 }
 
@@ -39,6 +42,7 @@ function ToastEntry({
   onRemove: (id: number) => void;
 }) {
   const t = useTranslations();
+  const router = useRouter();
   const needsConfirm = toast.type === "error" || !!toast.requireConfirm;
   const [exiting, setExiting] = useState(false);
 
@@ -52,6 +56,12 @@ function ToastEntry({
     const timer = setTimeout(remove, 10000);
     return () => clearTimeout(timer);
   }, [toast.id, needsConfirm, remove]);
+
+  const handleBannerClick = useCallback(() => {
+    if (!toast.href) return;
+    remove();
+    router.push(toast.href);
+  }, [toast.href, remove, router]);
 
   const colorMap: Record<ToastType, string> = {
     success: "bg-emerald-600 border-emerald-400 text-white",
@@ -68,7 +78,8 @@ function ToastEntry({
 
   return (
     <div
-      className={`pointer-events-auto px-4 py-3 rounded-xl border shadow-2xl flex flex-col gap-1 transition-all duration-300 ${colorMap[toast.type]} ${exiting ? "opacity-0 translate-x-8" : "opacity-100 translate-x-0 animate-[slideInRight_0.3s_ease-out]"}`}
+      onClick={toast.href ? handleBannerClick : undefined}
+      className={`pointer-events-auto px-4 py-3 rounded-xl border shadow-2xl flex flex-col gap-1 transition-all duration-300 ${colorMap[toast.type]} ${toast.href ? "cursor-pointer" : ""} ${exiting ? "opacity-0 translate-x-8" : "opacity-100 translate-x-0 animate-[slideInRight_0.3s_ease-out]"}`}
     >
       <div className="flex items-start gap-2.5">
         <span className="text-lg flex-shrink-0 mt-0.5">
@@ -78,7 +89,10 @@ function ToastEntry({
           {toast.message}
         </p>
         <button
-          onClick={remove}
+          onClick={(e) => {
+            e.stopPropagation();
+            remove();
+          }}
           className="flex-shrink-0 text-white/70 hover:text-white text-sm ml-1 transition"
           aria-label={t("toast.close")}
         >
@@ -87,7 +101,10 @@ function ToastEntry({
       </div>
       {needsConfirm && (
         <button
-          onClick={remove}
+          onClick={(e) => {
+            e.stopPropagation();
+            remove();
+          }}
           className="mt-2 w-full text-xs font-bold py-1.5 rounded-lg bg-white/20 hover:bg-white/30 text-white transition"
         >
           {t("toast.confirm")}
@@ -102,9 +119,17 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   const idRef = useRef(0);
 
   const showToast = useCallback(
-    (message: string, type: ToastType = "info", requireConfirm?: boolean) => {
+    (
+      message: string,
+      type: ToastType = "info",
+      requireConfirm?: boolean,
+      href?: string,
+    ) => {
       const id = ++idRef.current;
-      setToasts((prev) => [...prev, { id, message, type, requireConfirm }]);
+      setToasts((prev) => [
+        ...prev,
+        { id, message, type, requireConfirm, href },
+      ]);
     },
     [],
   );
