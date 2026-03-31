@@ -25,6 +25,7 @@
     "notFoundSub": "등록된 문서가 없거나 현재 활성화된 버전이 없습니다.",
     "terms": "이용약관",
     "privacy": "개인정보처리방침",
+    "refund": "결제 및 환불 정책",
     "effectiveDate": "시행일자:"
   },
   "businessInfo": {
@@ -432,7 +433,7 @@
   "footer": {
     "terms": "이용약관",
     "privacy": "개인정보처리방침",
-    "refund": "환불정책",
+    "refund": "결제 및 환불 정책",
     "contactUs": "문의하기",
     "businessInfo": "사업자정보",
     "businessRegNo": "사업자등록번호:"

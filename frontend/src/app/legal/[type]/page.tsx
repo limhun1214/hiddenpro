@@ -106,7 +106,9 @@ export default function LegalDocumentViewer() {
         <h1 className="font-bold text-gray-900">
           {legalDoc.document_type === "TERMS"
             ? t("legal.terms")
-            : t("legal.privacy")}
+            : legalDoc.document_type === "REFUND"
+              ? t("legal.refund")
+              : t("legal.privacy")}
         </h1>
         <div className="w-10"></div>
       </header>

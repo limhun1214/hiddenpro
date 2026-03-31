@@ -25,6 +25,7 @@
     "notFoundSub": "No registered document or active version found.",
     "terms": "Terms of Service",
     "privacy": "Privacy Policy",
+    "refund": "Payment & Refund Policy",
     "effectiveDate": "Effective Date:"
   },
   "businessInfo": {
@@ -437,7 +438,7 @@
   "footer": {
     "terms": "Terms of Service",
     "privacy": "Privacy Policy",
-    "refund": "Refund Policy",
+    "refund": "Payment & Refund Policy",
     "contactUs": "Contact Us",
     "businessInfo": "Business Information",
     "businessRegNo": "Business Reg. No.:"
