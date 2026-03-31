@@ -109,7 +109,7 @@ export default function QuoteDetailModal({
               <div>
                 <div className="flex items-center flex-wrap gap-1.5">
                   <span className="font-bold text-gray-800 text-base">
-                    {displayProName}님
+                    {displayProName}
                   </span>
                   {proProfile?.is_phone_verified && (
                     <span className="inline-flex items-center text-[10px] bg-green-50 text-green-700 font-bold px-1.5 py-0.5 rounded-full border border-green-200 whitespace-nowrap">
