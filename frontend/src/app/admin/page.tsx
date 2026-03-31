@@ -8451,7 +8451,9 @@ function AdminDashboardPageContent() {
                                   <td className="px-4 py-3 font-bold text-white">
                                     {doc.document_type === "TERMS"
                                       ? "Terms of Service "
-                                      : "Privacy Policy "}
+                                      : doc.document_type === "PRIVACY"
+                                        ? "Privacy Policy "
+                                        : "Refund Policy "}
                                     <span className="text-blue-400 font-mono text-xs font-normal">
                                       (/legal/{doc.document_type.toLowerCase()})
                                     </span>
@@ -8539,6 +8541,9 @@ function AdminDashboardPageContent() {
                                   </option>
                                   <option value="PRIVACY">
                                     Privacy Policy (PRIVACY)
+                                  </option>
+                                  <option value="REFUND">
+                                    Refund Policy (REFUND)
                                   </option>
                                 </select>
                               </div>

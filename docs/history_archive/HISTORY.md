@@ -1,3 +1,4 @@
+[2026-03-31] 환불정책 CMS 경로 불일치 버그 수정 — admin legal_documents 드롭다운에 REFUND 옵션 추가, 목록 라벨에 "Refund Policy" 케이스 추가 / frontend/src/app/admin/page.tsx / DB변경 없음 (데이터 마이그레이션은 디렉터 직접 실행 필요)
 [2026-03-31] 모달 하단 네비 위 가두기 — CustomerQuotesClient 3개 모달(리뷰/My Request/취소확인) max-h-[90vh|80vh] → max-h-[calc(100vh-72px)], ProProfileDetailModal overlay pb-[72px] 추가 + 내부박스 max-h-[calc(100vh-72px)] / CustomerQuotesClient.tsx, ProProfileDetailModal.tsx / DB변경 없음
 [2026-03-31] /quotes/received "My Request" 모달 Close 버튼 항상 노출 — 외부 div overflow-y-auto 제거, flex flex-col 구조로 변경, 본문만 flex-1 overflow-y-auto, 헤더·푸터 flex-none 고정 / frontend/src/app/quotes/received/CustomerQuotesClient.tsx / DB변경 없음
 [2026-03-31] /request 페이지 Stitch Sapphire 디자인 적용 — 헤더(Manrope/ambient-shadow/h-16), depth1 카드(w-14 아이콘/Sapphire shadow/그룹호버), Pro Verification 배너 추가, #D32D7D→#0020a0 전체 교체 / frontend/src/components/customer/DynamicRequestForm.tsx / DB변경 없음
