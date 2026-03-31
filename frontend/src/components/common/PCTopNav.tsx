@@ -65,7 +65,7 @@ export default function PCTopNav({ isFixed = false }: { isFixed?: boolean }) {
                 }
                 router.push(item.href);
               }}
-              className={`flex items-center space-x-2 transition-colors relative ${isActive ? "text-[#ff88b5]" : "text-white/50 hover:text-white/80"}`}
+              className={`flex items-center space-x-2 transition-colors relative ${isActive ? "text-[#6b8cff]" : "text-white/50 hover:text-white/80"}`}
             >
               <div className="relative text-xl">
                 <span
@@ -128,7 +128,7 @@ export default function PCTopNav({ isFixed = false }: { isFixed?: boolean }) {
           onClick={() => router.push("/notifications")}
           className={`flex items-center space-x-2 transition-colors relative ${
             pathname === "/notifications"
-              ? "text-[#ff88b5]"
+              ? "text-[#6b8cff]"
               : "text-white/50 hover:text-white/80"
           }`}
         >

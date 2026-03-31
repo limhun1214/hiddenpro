@@ -1203,56 +1203,42 @@ export default function CustomerQuotesClient() {
             );
           })
         )}
-
-        {/* Discovery Banner */}
-        {activeTab === "IN_PROGRESS" && displayRequests.length > 0 && (
-          <div className="bg-indigo-900 rounded-lg p-6 relative overflow-hidden mt-2">
-            <div className="absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_top_right,_#6366f1_0%,_transparent_60%)]" />
-            <p className="text-[10px] font-bold text-indigo-300 uppercase tracking-widest mb-2">
-              HIDDEN PRO
-            </p>
-            <h3 className="font-['Manrope'] font-bold text-white text-base mb-1">
-              {t("customerQuotes.bannerTitle")}
-            </h3>
-            <p className="text-indigo-200 text-xs leading-relaxed">
-              {t("customerQuotes.bannerDesc")}
-            </p>
-          </div>
-        )}
       </div>
       {/* 리뷰 모달 */}
       {isReviewModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-sm p-6 shadow-2xl flex flex-col gap-4">
-            <h2 className="text-lg font-bold text-center text-gray-900 font-['Plus_Jakarta_Sans']">
-              {t("customerQuotes.reviewTitle")}
-            </h2>
-            <div className="flex flex-col items-center">
-              <span className="text-sm text-gray-500 mb-2">
-                {t("customerQuotes.reviewRatingLabel")}
-              </span>
-              <div className="flex gap-2">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <button
-                    key={star}
-                    onClick={() => setReviewRating(star)}
-                    className={`text-3xl transition ${star <= reviewRating ? "text-[#0020A0]" : "text-gray-300"}`}
-                  >
-                    ★
-                  </button>
-                ))}
+          <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-sm shadow-2xl flex flex-col max-h-[90vh]">
+            <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4">
+              <h2 className="text-lg font-bold text-center text-gray-900 font-['Plus_Jakarta_Sans']">
+                {t("customerQuotes.reviewTitle")}
+              </h2>
+              <div className="flex flex-col items-center">
+                <span className="text-sm text-gray-500 mb-2">
+                  {t("customerQuotes.reviewRatingLabel")}
+                </span>
+                <div className="flex gap-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      onClick={() => setReviewRating(star)}
+                      className={`text-3xl transition ${star <= reviewRating ? "text-[#0020A0]" : "text-gray-300"}`}
+                    >
+                      ★
+                    </button>
+                  ))}
+                </div>
               </div>
+              <textarea
+                value={reviewComment}
+                onChange={(e) => setReviewComment(e.target.value)}
+                placeholder={t("customerQuotes.reviewPlaceholder")}
+                className="w-full bg-gray-100 border border-gray-200 rounded-xl p-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0020A0]/30 min-h-[100px]"
+              />
             </div>
-            <textarea
-              value={reviewComment}
-              onChange={(e) => setReviewComment(e.target.value)}
-              placeholder={t("customerQuotes.reviewPlaceholder")}
-              className="w-full bg-gray-100 border border-gray-200 rounded-xl p-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0020A0]/30 min-h-[100px]"
-            />
-            <div className="flex gap-2 mt-2">
+            <div className="flex-none border-t border-gray-200 p-4 flex gap-2">
               <button
                 onClick={() => setIsReviewModalOpen(false)}
-                className="flex-1 bg-gray-100 hover:bg-gray-100 text-gray-500 font-bold py-3 rounded-xl transition text-sm border border-gray-200"
+                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-500 font-bold py-3 rounded-xl transition text-sm border border-gray-200"
               >
                 {t("customerQuotes.reviewCancel")}
               </button>
@@ -1324,8 +1310,8 @@ export default function CustomerQuotesClient() {
 
           return (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-              <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-md max-h-[80vh] overflow-y-auto shadow-2xl">
-                <div className="sticky top-0 bg-white p-5 pb-3 border-b border-gray-200 rounded-t-2xl">
+              <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-md max-h-[80vh] shadow-2xl flex flex-col">
+                <div className="flex-none bg-white p-5 pb-3 border-b border-gray-200 rounded-t-2xl">
                   <div className="flex justify-between items-center">
                     <h2 className="text-lg font-bold text-gray-900 font-['Plus_Jakarta_Sans']">
                       {t("customerQuotes.viewRequestTitle")}
@@ -1343,7 +1329,7 @@ export default function CustomerQuotesClient() {
                     </div>
                   )}
                 </div>
-                <div className="p-5 space-y-4">
+                <div className="flex-1 overflow-y-auto p-5 space-y-4">
                   <div className="space-y-3">
                     <div className="bg-gray-100 p-3 rounded-lg border border-gray-200">
                       <span className="text-xs font-bold text-gray-400">
@@ -1440,7 +1426,7 @@ export default function CustomerQuotesClient() {
                     </div>
                   ) : null}
                 </div>
-                <div className="sticky bottom-0 bg-white p-5 pt-3 border-t border-gray-200 rounded-b-2xl">
+                <div className="flex-none bg-white p-5 pt-3 border-t border-gray-200 rounded-b-2xl">
                   <button
                     onClick={() => setViewRequestModal(null)}
                     className="w-full bg-gray-100 hover:bg-gray-100 text-gray-500 font-bold py-3 rounded-xl transition text-sm border border-gray-200"

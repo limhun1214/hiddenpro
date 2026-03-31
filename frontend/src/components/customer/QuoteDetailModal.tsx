@@ -82,7 +82,7 @@ export default function QuoteDetailModal({
           </div>
 
           {/* 스크롤 가능 본문 */}
-          <div className="flex-1 overflow-y-auto p-4 pb-24 space-y-4">
+          <div className="flex-1 overflow-y-auto p-4 pb-4 space-y-4">
             {/* A. 고수 정보 + 트러스트 배지 */}
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden border border-gray-200">
@@ -348,6 +348,16 @@ export default function QuoteDetailModal({
                 hour12: true,
               })}
             </p>
+          </div>
+
+          {/* 하단 고정 Close 버튼 */}
+          <div className="flex-none bg-white border-t border-gray-100 p-4">
+            <button
+              onClick={onClose}
+              className="w-full bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold py-3 rounded-xl transition text-sm border border-gray-200"
+            >
+              {t("quoteModal.closeBtn")}
+            </button>
           </div>
         </div>
       </div>

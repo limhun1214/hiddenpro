@@ -1,3 +1,6 @@
+[2026-03-31] /quotes/received "My Request" 모달 Close 버튼 항상 노출 — 외부 div overflow-y-auto 제거, flex flex-col 구조로 변경, 본문만 flex-1 overflow-y-auto, 헤더·푸터 flex-none 고정 / frontend/src/app/quotes/received/CustomerQuotesClient.tsx / DB변경 없음
+[2026-03-31] /request 페이지 Stitch Sapphire 디자인 적용 — 헤더(Manrope/ambient-shadow/h-16), depth1 카드(w-14 아이콘/Sapphire shadow/그룹호버), Pro Verification 배너 추가, #D32D7D→#0020a0 전체 교체 / frontend/src/components/customer/DynamicRequestForm.tsx / DB변경 없음
+[2026-03-31] Chat Room 헤더 아이콘 버튼 압축 — "Quote/Request Details" 텍스트 제거, 32×32 description/priority_high 아이콘 버튼으로 교체, gap-[6px], 클릭 이벤트 유지 / frontend/src/app/chat/[room_id]/page.tsx / DB변경 없음
 [2026-03-31] /chat 페이지 Stitch Sapphire Ledger 디자인 적용 — fixed 헤더(Manrope/햄버거/wallet/notifications), 검색바(animated underline), 채팅 카드(ambient-shadow/ring/uppercase badge), FAB(add_comment) 추가 / frontend/src/app/chat/page.tsx, messages/en.json, messages/ko.json / DB변경 없음
 [2026-03-31] Quote Details 모달 날짜/시간 영어 형식 변환 — toLocaleString([]→"en-US") + year 추가 + hour12:true → "Mar 30, 2026, 10:52 PM" / frontend/src/components/customer/QuoteDetailModal.tsx / DB변경 없음
 [2026-03-31] Quote Details 모달 레이아웃 개선 — PROPOSED AMOUNT 섹션 p-5→py-3 px-5 패딩 축소; 하단 sticky 노란 CTA 버튼 바 완전 제거 / frontend/src/components/customer/QuoteDetailModal.tsx / DB변경 없음

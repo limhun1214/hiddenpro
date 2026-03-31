@@ -575,7 +575,7 @@ export default function ClientLayout({
                     <button
                       onClick={() => router.push("/pro/wallet")}
                       aria-label={t("pcTopNav.wallet")}
-                      className={`relative transition-colors ${isLandingPage ? "text-white/70 hover:text-white" : "text-[#6B7280] hover:text-[#1F2937]"}`}
+                      className={`relative transition-colors ${isLandingPage ? "text-white/70 hover:text-white" : currentPath === "/pro/wallet" ? "text-[#0020a0]" : "text-[#6B7280] hover:text-[#1F2937]"}`}
                     >
                       <span
                         className="material-symbols-outlined text-[22px]"
@@ -592,7 +592,7 @@ export default function ClientLayout({
                   )}
                   <button
                     onClick={() => router.push("/notifications")}
-                    className={`relative transition-colors ${isLandingPage ? "text-white/70 hover:text-white" : "text-[#6B7280] hover:text-[#1F2937]"}`}
+                    className={`relative transition-colors ${isLandingPage ? "text-white/70 hover:text-white" : currentPath === "/notifications" ? "text-[#0020a0]" : "text-[#6B7280] hover:text-[#1F2937]"}`}
                   >
                     <span
                       className="material-symbols-outlined text-[22px]"
@@ -682,8 +682,8 @@ export default function ClientLayout({
                               className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${
                                 isActive
                                   ? isLandingPage
-                                    ? "text-[#ff88b5]"
-                                    : "text-[#D32D7D]"
+                                    ? "text-[#6b8cff]"
+                                    : "text-[#0020a0]"
                                   : isLandingPage
                                     ? "text-white/50"
                                     : "text-[#374151]"

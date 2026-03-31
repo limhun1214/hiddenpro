@@ -177,7 +177,7 @@ export default function ProProfileDetailModal({
           </div>
 
           {/* 탭 본문 (스크롤 가능) */}
-          <div className="flex-1 overflow-y-auto p-4 pb-24 space-y-4">
+          <div className="flex-1 overflow-y-auto p-4 pb-4 space-y-4">
             {activeTab === "INFO" ? (
               <>
                 {/* 인증 배지 */}
@@ -295,9 +295,9 @@ export default function ProProfileDetailModal({
             )}
           </div>
 
-          {/* 하단 고정 채팅 버튼 — 거래 완료 시 숨김 */}
-          {!hideChat && (
-            <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
+          {/* 하단 고정 버튼 영역 */}
+          <div className="flex-none bg-white border-t border-gray-200 p-4 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] flex flex-col gap-2">
+            {!hideChat && (
               <button
                 onClick={() =>
                   onStartChat({ pro_id: proId, request_id: requestId })
@@ -306,8 +306,14 @@ export default function ProProfileDetailModal({
               >
                 {t("proProfileModal.chatBtn")}
               </button>
-            </div>
-          )}
+            )}
+            <button
+              onClick={onClose}
+              className="w-full bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold py-3 rounded-xl transition text-sm border border-gray-200"
+            >
+              {t("proProfileModal.closeBtn")}
+            </button>
+          </div>
         </div>
       </div>
     </div>

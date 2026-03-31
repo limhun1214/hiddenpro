@@ -698,19 +698,31 @@ export default function ChatRoomPage({
           </div>
 
           {/* 우측 액션 버튼 묶음 */}
-          <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+          <div className="flex items-center gap-[6px] flex-shrink-0 ml-2">
             <button
               onClick={() => setIsQuoteModalOpen(true)}
-              className="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-semibold px-2.5 py-1 rounded-lg text-[11px] shadow-sm transition"
+              className="w-8 h-8 rounded-lg bg-white border border-gray-200 hover:bg-gray-50 flex items-center justify-center transition shadow-sm"
+              title={t("chatRoom.quoteDetailBtn")}
             >
-              {t("chatRoom.quoteDetailBtn")}
+              <span
+                className="material-symbols-outlined"
+                style={{ fontSize: "15px" }}
+              >
+                description
+              </span>
             </button>
             {reportStatus === "none" && (
               <button
                 onClick={() => setShowReportModal(true)}
-                className="text-[11px] text-red-400 hover:text-red-600 border border-red-200 hover:border-red-400 px-2.5 py-1 rounded-lg transition"
+                className="w-8 h-8 rounded-lg bg-red-50 border border-red-200 hover:bg-red-100 flex items-center justify-center transition"
+                title={t("chatRoom.reportBtn")}
               >
-                {t("chatRoom.reportBtn")}
+                <span
+                  className="material-symbols-outlined text-red-400"
+                  style={{ fontSize: "15px" }}
+                >
+                  priority_high
+                </span>
               </button>
             )}
             {reportStatus === "pending" && (
@@ -923,9 +935,10 @@ export default function ChatRoomPage({
                         {msg.isMine && !msg.is_read && (
                           <span className="text-yellow-500 font-bold">1</span>
                         )}
-                        {new Date(msg.created_at).toLocaleTimeString([], {
+                        {new Date(msg.created_at).toLocaleTimeString("en-US", {
                           hour: "2-digit",
                           minute: "2-digit",
+                          hour12: true,
                         })}
                       </span>
                     </div>
