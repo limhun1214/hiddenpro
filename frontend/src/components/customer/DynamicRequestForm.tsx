@@ -7958,7 +7958,7 @@ export default function DynamicRequestForm() {
                           commitAnswer(tempText, tempText)
                         }
                         className="border border-gray-200 bg-gray-50 text-gray-900 p-3 rounded-xl focus:ring-2 focus:ring-[#0020a0] w-full placeholder:text-gray-400"
-                        placeholder="입력해주세요"
+                        placeholder="Please enter here"
                       />
                     ) : (
                       <textarea
