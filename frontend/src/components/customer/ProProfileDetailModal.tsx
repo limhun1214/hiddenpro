@@ -307,12 +307,6 @@ export default function ProProfileDetailModal({
                 {t("proProfileModal.chatBtn")}
               </button>
             )}
-            <button
-              onClick={onClose}
-              className="w-full bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold py-3 rounded-xl transition text-sm border border-gray-200"
-            >
-              {t("proProfileModal.closeBtn")}
-            </button>
           </div>
         </div>
       </div>
