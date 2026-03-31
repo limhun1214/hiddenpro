@@ -340,7 +340,7 @@
     "matchSuccess": "🎉 매칭 성공 (계약 확정)",
     "unreadRefund": "🎁 고객 미열람 마감 — 캐시 100% 보너스 환급 완료",
     "closedOther": "마감됨 (다른 고수 매칭)",
-    "alreadySent": "✅ 이미 견적을 발송한 요청입니다.",
+    "alreadySent": "이미 견적을 발송한 요청입니다.",
     "btnDetail": "상세보기",
     "btnCanceled": "고객이 요청을 취소하여 마감되었습니다.",
     "btnClosedOther": "고객이 다른 고수와 매칭을 완료하여 마감되었습니다.",
