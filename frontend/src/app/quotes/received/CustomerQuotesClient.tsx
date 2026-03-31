@@ -1207,7 +1207,7 @@ export default function CustomerQuotesClient() {
       {/* 리뷰 모달 */}
       {isReviewModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-sm shadow-2xl flex flex-col max-h-[90vh]">
+          <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-sm shadow-2xl flex flex-col max-h-[calc(100vh-72px)]">
             <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4">
               <h2 className="text-lg font-bold text-center text-gray-900 font-['Plus_Jakarta_Sans']">
                 {t("customerQuotes.reviewTitle")}
@@ -1310,7 +1310,7 @@ export default function CustomerQuotesClient() {
 
           return (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-              <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-md max-h-[80vh] shadow-2xl flex flex-col">
+              <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-md max-h-[calc(100vh-72px)] shadow-2xl flex flex-col">
                 <div className="flex-none bg-white p-5 pb-3 border-b border-gray-200 rounded-t-2xl">
                   <div className="flex justify-between items-center">
                     <h2 className="text-lg font-bold text-gray-900 font-['Plus_Jakarta_Sans']">
@@ -1451,7 +1451,7 @@ export default function CustomerQuotesClient() {
 
           return (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-              <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-sm p-6 shadow-2xl flex flex-col gap-4">
+              <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-sm p-6 shadow-2xl flex flex-col gap-4 max-h-[calc(100vh-72px)]">
                 <h2 className="text-lg font-bold text-center text-gray-900 font-['Plus_Jakarta_Sans']">
                   {t("customerQuotes.cancelTitle")}
                 </h2>

@@ -111,10 +111,10 @@ export default function ProProfileDetailModal({
     : [];
 
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col bg-black bg-opacity-50">
+    <div className="fixed inset-0 z-[100] flex flex-col bg-black bg-opacity-50 pb-[72px]">
       {/* 모달 컨테이너 */}
       <div className="flex-1 flex items-end justify-center sm:items-center p-0 sm:p-4">
-        <div className="bg-white w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl flex flex-col max-h-[90vh] relative">
+        <div className="bg-white w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl flex flex-col max-h-[calc(100vh-72px)] relative">
           {/* 헤더 */}
           <div className="flex items-center justify-between p-4 border-b border-gray-100">
             <div className="flex items-center gap-3">
