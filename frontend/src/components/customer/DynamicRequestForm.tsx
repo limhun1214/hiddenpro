@@ -7708,7 +7708,7 @@ export default function DynamicRequestForm() {
       }
 
       showToast(
-        "성공적으로 견적을 요청했습니다! 고수들의 견적을 기다려주세요.",
+        "Your quote request has been submitted! Please wait for quotes from pros.",
         "success",
       );
       showToast(
