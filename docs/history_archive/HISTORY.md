@@ -1,3 +1,4 @@
+[2026-03-31] 랜딩 페이지 재디자인 — Stitch 다크 변수 시스템 → 라이트 명시적 색상 전환, #ff88b5/#a68cff 핑크/퍼플 → #0020A0 네이비, bg-background → bg-[#F8F9FA], 히어로 bg-[#0020A0] 솔리드 네이비, 카드 rounded-2xl 다크 → rounded-lg border-gray-200 라이트, 카테고리 아이콘 색상 다양화 / frontend/src/app/page.tsx / DB변경 없음
 [2026-03-31] 환불정책 링크 경로 수정 — /legal/REFUND → /support/customer/refund (GlobalFooter, profile/page.tsx ×2) / DB변경 없음 (legal_documents REFUND row 삭제는 디렉터 직접 실행 필요)
 [2026-03-31] 환불정책 CMS 경로 불일치 버그 수정 — admin legal_documents 드롭다운에 REFUND 옵션 추가, 목록 라벨에 "Refund Policy" 케이스 추가 / frontend/src/app/admin/page.tsx / DB변경 없음 (데이터 마이그레이션은 디렉터 직접 실행 필요)
 [2026-03-31] 모달 하단 네비 위 가두기 — CustomerQuotesClient 3개 모달(리뷰/My Request/취소확인) max-h-[90vh|80vh] → max-h-[calc(100vh-72px)], ProProfileDetailModal overlay pb-[72px] 추가 + 내부박스 max-h-[calc(100vh-72px)] / CustomerQuotesClient.tsx, ProProfileDetailModal.tsx / DB변경 없음

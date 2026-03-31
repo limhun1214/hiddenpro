@@ -421,7 +421,9 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
       <div className="min-h-screen bg-[#F8F9FA] flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 border-2 border-[#0020A0] border-t-transparent rounded-full animate-spin" />
-          <p className="text-sm text-[#6B7280] font-medium">{t("proBidding.loading")}</p>
+          <p className="text-sm text-[#6B7280] font-medium">
+            {t("proBidding.loading")}
+          </p>
         </div>
       </div>
     );
@@ -429,10 +431,15 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
     return (
       <div className="min-h-screen bg-[#F8F9FA] flex items-center justify-center p-6">
         <div className="text-center">
-          <span className="material-symbols-outlined text-[#6B7280] mb-4 block" style={{ fontSize: "48px" }}>
+          <span
+            className="material-symbols-outlined text-[#6B7280] mb-4 block"
+            style={{ fontSize: "48px" }}
+          >
             error_outline
           </span>
-          <p className="text-[#374151] font-semibold">{t("proBidding.notFound")}</p>
+          <p className="text-[#374151] font-semibold">
+            {t("proBidding.notFound")}
+          </p>
         </div>
       </div>
     );
@@ -500,7 +507,10 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
             onClick={() => router.back()}
             className="flex items-center justify-center w-9 h-9 rounded-full hover:bg-gray-100 transition-colors active:scale-90 flex-shrink-0"
           >
-            <span className="material-symbols-outlined text-[#1F2937]" style={{ fontSize: "22px" }}>
+            <span
+              className="material-symbols-outlined text-[#1F2937]"
+              style={{ fontSize: "22px" }}
+            >
               arrow_back
             </span>
           </button>
@@ -513,7 +523,10 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <span className="material-symbols-outlined text-gray-400" style={{ fontSize: "18px" }}>
+                <span
+                  className="material-symbols-outlined text-gray-400"
+                  style={{ fontSize: "18px" }}
+                >
                   person
                 </span>
               )}
@@ -525,7 +538,8 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
               </h1>
               <p className="text-xs text-[#6B7280] truncate">
                 {request.service_type ? `${request.service_type} · ` : ""}
-                {request.region || `${request.categories?.name_en || request.category_id}`}
+                {request.region ||
+                  `${request.categories?.name_en || request.category_id}`}
               </p>
             </div>
           </div>
@@ -542,7 +556,11 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
             </span>
             <div
               className={`text-xs mt-1 font-bold ${
-                isExpired ? "text-[#6B7280]" : isHurry ? "text-[#0020A0] animate-pulse" : "text-[#6B7280]"
+                isExpired
+                  ? "text-[#6B7280]"
+                  : isHurry
+                    ? "text-[#0020A0] animate-pulse"
+                    : "text-[#6B7280]"
               }`}
             >
               {isExpired
@@ -556,9 +574,15 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
       <div className="px-4 pt-4 pb-4 space-y-3">
         {/* 1.5. 내가 보낸 견적 내용 (발송 완료 시 최상단 노출) */}
         {isSent && submittedQuote && (
-          <div className="bg-[#0020A0]/5 rounded-lg border border-[#0020A0]/20" style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
+          <div
+            className="bg-[#0020A0]/5 rounded-lg border border-[#0020A0]/20"
+            style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}
+          >
             <div className="px-4 pt-4 pb-1 flex items-center gap-2 border-b border-[#0020A0]/10">
-              <span className="material-symbols-outlined text-[#0020A0]" style={{ fontSize: "18px" }}>
+              <span
+                className="material-symbols-outlined text-[#0020A0]"
+                style={{ fontSize: "18px" }}
+              >
                 send
               </span>
               <h3 className="font-semibold text-[#1F2937] text-sm">
@@ -625,9 +649,15 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
         )}
 
         {/* 2. 요청 상세 내용 (dynamic_answers 전체 파싱) */}
-        <div className="bg-white rounded-lg border border-gray-200" style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
+        <div
+          className="bg-white rounded-lg border border-gray-200"
+          style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}
+        >
           <div className="px-4 pt-4 pb-1 flex items-center gap-2 border-b border-gray-100">
-            <span className="material-symbols-outlined text-[#6B7280]" style={{ fontSize: "18px" }}>
+            <span
+              className="material-symbols-outlined text-[#6B7280]"
+              style={{ fontSize: "18px" }}
+            >
               description
             </span>
             <h3 className="font-semibold text-[#1F2937] text-sm">
@@ -635,120 +665,125 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
             </h3>
           </div>
           <div className="p-4">
+            {answerEntries.length === 0 ? (
+              <p className="text-sm text-gray-400 text-center py-4">
+                {t("proBidding.noDetails")}
+              </p>
+            ) : (
+              <ul className="space-y-3">
+                {answerEntries.map(([key, value]) => {
+                  // 키 이름을 사람이 읽기 쉬운 형태로 변환
+                  const labelMap = DYNAMIC_ANSWER_LABELS;
+                  const label = labelMap[key] || key;
 
-          {answerEntries.length === 0 ? (
-            <p className="text-sm text-gray-400 text-center py-4">
-              {t("proBidding.noDetails")}
-            </p>
-          ) : (
-            <ul className="space-y-3">
-              {answerEntries.map(([key, value]) => {
-                // 키 이름을 사람이 읽기 쉬운 형태로 변환
-                const labelMap = DYNAMIC_ANSWER_LABELS;
-                const label = labelMap[key] || key;
+                  return (
+                    <li key={key} className="flex flex-col">
+                      <span className="text-xs text-gray-400 font-medium mb-1">
+                        {label}
+                      </span>
+                      <div className="text-sm font-medium text-gray-800 bg-gray-50 p-2.5 rounded-lg whitespace-pre-wrap leading-relaxed">
+                        {(() => {
+                          if (
+                            value === "상담 시 논의할게요" ||
+                            value === "To be discussed with pro"
+                          ) {
+                            return (
+                              <span className="text-[#0020A0] font-bold bg-[#0020A0]/10 px-2 py-1 rounded-md">
+                                {t("proBidding.discussLater")}
+                              </span>
+                            );
+                          }
+                          if (
+                            value === null ||
+                            value === undefined ||
+                            value === ""
+                          ) {
+                            return (
+                              <span className="text-gray-400 italic">
+                                {t("proBidding.notEntered")}
+                              </span>
+                            );
+                          }
+                          if (Array.isArray(value) && value.length === 0) {
+                            return (
+                              <span className="text-gray-400 italic">
+                                {t("proBidding.noSelection")}
+                              </span>
+                            );
+                          }
+                          if (
+                            value === "없음" ||
+                            (Array.isArray(value) &&
+                              value.length === 1 &&
+                              value[0] === "없음")
+                          ) {
+                            return (
+                              <span className="text-gray-500 font-bold">
+                                {t("proBidding.none")}
+                              </span>
+                            );
+                          }
 
-                return (
-                  <li key={key} className="flex flex-col">
-                    <span className="text-xs text-gray-400 font-medium mb-1">
-                      {label}
-                    </span>
-                    <div className="text-sm font-medium text-gray-800 bg-gray-50 p-2.5 rounded-lg whitespace-pre-wrap leading-relaxed">
-                      {(() => {
-                        if (
-                          value === "상담 시 논의할게요" ||
-                          value === "To be discussed with pro"
-                        ) {
-                          return (
-                            <span className="text-[#0020A0] font-bold bg-[#0020A0]/10 px-2 py-1 rounded-md">
-                              {t("proBidding.discussLater")}
-                            </span>
-                          );
-                        }
-                        if (
-                          value === null ||
-                          value === undefined ||
-                          value === ""
-                        ) {
-                          return (
-                            <span className="text-gray-400 italic">
-                              {t("proBidding.notEntered")}
-                            </span>
-                          );
-                        }
-                        if (Array.isArray(value) && value.length === 0) {
-                          return (
-                            <span className="text-gray-400 italic">
-                              {t("proBidding.noSelection")}
-                            </span>
-                          );
-                        }
-                        if (
-                          value === "없음" ||
-                          (Array.isArray(value) &&
-                            value.length === 1 &&
-                            value[0] === "없음")
-                        ) {
-                          return (
-                            <span className="text-gray-500 font-bold">
-                              {t("proBidding.none")}
-                            </span>
-                          );
-                        }
-
-                        if (key === "images" && Array.isArray(value)) {
-                          return (
-                            <div className="flex flex-wrap gap-2 mt-1">
-                              {value.map((img: any, i: number) => (
-                                <a
-                                  key={i}
-                                  href={img.url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="block relative cursor-pointer hover:opacity-90 transition group overflow-hidden rounded-lg"
-                                >
-                                  <img
-                                    src={img.url}
-                                    className="w-24 h-24 object-cover border border-blue-200"
-                                    alt={`${t("proBidding.submittedImageAlt")}${i + 1}`}
-                                  />
-                                  {img.description && (
-                                    <span className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-[10px] p-1.5 truncate text-center transition-all group-hover:bg-black/80">
-                                      {img.description}
-                                    </span>
-                                  )}
-                                </a>
-                              ))}
-                            </div>
-                          );
-                        }
-                        if (
-                          value &&
-                          typeof value === "object" &&
-                          !Array.isArray(value)
-                        ) {
-                          const v = value as any;
-                          if (v.reg && v.city) return `${v.reg}, ${v.city}`;
-                          return JSON.stringify(value);
-                        }
-                        if (Array.isArray(value)) {
-                          return value.join(", ");
-                        }
-                        return String(value);
-                      })()}
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
+                          if (key === "images" && Array.isArray(value)) {
+                            return (
+                              <div className="flex flex-wrap gap-2 mt-1">
+                                {value.map((img: any, i: number) => (
+                                  <a
+                                    key={i}
+                                    href={img.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="block relative cursor-pointer hover:opacity-90 transition group overflow-hidden rounded-lg"
+                                  >
+                                    <img
+                                      src={img.url}
+                                      className="w-24 h-24 object-cover border border-blue-200"
+                                      alt={`${t("proBidding.submittedImageAlt")}${i + 1}`}
+                                    />
+                                    {img.description && (
+                                      <span className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-[10px] p-1.5 truncate text-center transition-all group-hover:bg-black/80">
+                                        {img.description}
+                                      </span>
+                                    )}
+                                  </a>
+                                ))}
+                              </div>
+                            );
+                          }
+                          if (
+                            value &&
+                            typeof value === "object" &&
+                            !Array.isArray(value)
+                          ) {
+                            const v = value as any;
+                            if (v.reg && v.city) return `${v.reg}, ${v.city}`;
+                            return JSON.stringify(value);
+                          }
+                          if (Array.isArray(value)) {
+                            return value.join(", ");
+                          }
+                          return String(value);
+                        })()}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
           </div>
         </div>
 
         {/* 3. 견적 작성 폼 (금액 / 설명 / 사진) */}
         {!isSent && !isExpired && request.quote_count < maxQuotes && (
-          <div className="bg-white rounded-lg border border-gray-200" style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
+          <div
+            className="bg-white rounded-lg border border-gray-200"
+            style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}
+          >
             <div className="px-4 pt-4 pb-1 flex items-center gap-2 border-b border-gray-100">
-              <span className="material-symbols-outlined text-[#6B7280]" style={{ fontSize: "18px" }}>
+              <span
+                className="material-symbols-outlined text-[#6B7280]"
+                style={{ fontSize: "18px" }}
+              >
                 edit_note
               </span>
               <h3 className="font-semibold text-[#1F2937] text-sm">
@@ -756,284 +791,284 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
               </h3>
             </div>
             <div className="p-4">
-
-            {/* 금액 입력 */}
-            <div className="mb-3">
-              <label className="text-xs font-bold text-[#374151] mb-1 block uppercase tracking-wide">
-                {t("proBidding.priceLabel")}{" "}
-                <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="number"
-                value={quotePrice}
-                onChange={(e) => setQuotePrice(e.target.value)}
-                placeholder={t("proBidding.pricePlaceholder")}
-                min="0"
-                className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#0020A0] focus:outline-none transition text-sm font-medium"
-              />
-            </div>
-
-            {/* 설명 입력 */}
-            <div className="mb-3">
-              <div className="flex items-center justify-between mb-1">
-                <label className="text-xs font-bold text-gray-600">
-                  {t("proBidding.descLabel")}{" "}
-                  <span className="text-xs text-gray-400 font-normal">
-                    {t("proBidding.descOptional")}
-                  </span>
+              {/* 금액 입력 */}
+              <div className="mb-3">
+                <label className="text-xs font-bold text-[#374151] mb-1 block uppercase tracking-wide">
+                  {t("proBidding.priceLabel")}{" "}
+                  <span className="text-red-500">*</span>
                 </label>
-                <button
-                  onClick={() => setShowTemplatePanel(!showTemplatePanel)}
-                  className="text-xs font-bold text-[#0020A0] hover:text-[#001880] bg-[#0020A0]/10 hover:bg-[#0020A0]/20 px-2.5 py-1 rounded-lg transition flex items-center gap-1"
-                >
-                  {t("proBidding.loadTemplate")}
-                </button>
+                <input
+                  type="number"
+                  value={quotePrice}
+                  onChange={(e) => setQuotePrice(e.target.value)}
+                  placeholder={t("proBidding.pricePlaceholder")}
+                  min="0"
+                  className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#0020A0] focus:outline-none transition text-sm font-medium"
+                />
               </div>
 
-              {/* ── [확장 1단계] 템플릿 패널 ── */}
-              {showTemplatePanel && (
-                <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 mb-2 space-y-2">
-                  {templates.length === 0 ? (
-                    <p className="text-xs text-gray-500 text-center py-2">
-                      {t("proBidding.noTemplates")}
-                    </p>
-                  ) : (
-                    templates.map((tpl) => (
-                      <div
-                        key={tpl.id}
-                        className="flex items-center gap-2 bg-white rounded-lg p-2.5 border border-gray-100 shadow-sm"
-                      >
-                        <button
-                          onClick={() => {
-                            // 템스트만 삽입 (금액 절대 미변경)
-                            setQuoteDescription(tpl.content);
-                            // ── [확장] 첨부 이미지 동기화 ──
-                            const tplImgs = tpl.attachments || [];
-                            setPreloadedImageUrls(tplImgs);
-                            setQuoteImages([]); // File 객체 초기화
-                            setImagePreviews(tplImgs); // URL을 미리보기로 설정
-                            if (fileInputRef.current)
-                              fileInputRef.current.value = "";
-                            setShowTemplatePanel(false);
-                          }}
-                          className="flex-1 text-left text-sm font-medium text-gray-800 hover:text-[#0020A0] transition truncate"
-                          title={tpl.content}
-                        >
-                          📝 {tpl.title}{" "}
-                          {tpl.attachments && tpl.attachments.length > 0 && (
-                            <span className="text-[10px] text-[#0020A0] ml-1">
-                              🖼️{tpl.attachments.length}
-                            </span>
-                          )}
-                        </button>
-                        <button
-                          onClick={async () => {
-                            if (
-                              !window.confirm(
-                                `"${tpl.title}" 템플릿을 삭제하시겠습니까?`,
-                              )
-                            )
-                              return;
-                            await supabase
-                              .from("pro_quote_templates")
-                              .delete()
-                              .eq("id", tpl.id);
-                            setTemplates((prev) =>
-                              prev.filter((t) => t.id !== tpl.id),
-                            );
-                          }}
-                          className="text-xs text-red-400 hover:text-red-600 px-1.5 py-0.5 flex-shrink-0"
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    ))
-                  )}
-                </div>
-              )}
-
-              <textarea
-                value={quoteDescription}
-                onChange={(e) => setQuoteDescription(e.target.value)}
-                rows={3}
-                placeholder="서비스 범위, 포함 사항, 예상 소요 시간 등을 간략히 작성해주세요."
-                className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#0020A0] focus:outline-none transition text-sm resize-none"
-              />
-
-              {/* ── [확장 1단계] 현재 내용 템플릿으로 저장 ── */}
-              {quoteDescription.trim().length >= 10 &&
-                (!showSaveTpl ? (
+              {/* 설명 입력 */}
+              <div className="mb-3">
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-xs font-bold text-gray-600">
+                    {t("proBidding.descLabel")}{" "}
+                    <span className="text-xs text-gray-400 font-normal">
+                      {t("proBidding.descOptional")}
+                    </span>
+                  </label>
                   <button
-                    onClick={() => setShowSaveTpl(true)}
-                    className="mt-2 w-full text-xs font-bold text-[#0020A0] bg-[#0020A0]/10 hover:bg-[#0020A0]/20 border border-[#0020A0]/20 px-3 py-2.5 rounded-lg transition shadow-sm hover:shadow-md flex items-center justify-center gap-1.5"
+                    onClick={() => setShowTemplatePanel(!showTemplatePanel)}
+                    className="text-xs font-bold text-[#0020A0] hover:text-[#001880] bg-[#0020A0]/10 hover:bg-[#0020A0]/20 px-2.5 py-1 rounded-lg transition flex items-center gap-1"
                   >
-                    {t("proBidding.saveTplBtn")}
+                    {t("proBidding.loadTemplate")}
                   </button>
-                ) : (
-                  <div className="mt-1.5 flex gap-2 items-center">
-                    <input
-                      value={newTplTitle}
-                      onChange={(e) => setNewTplTitle(e.target.value)}
-                      placeholder={t("proBidding.tplTitlePlaceholder")}
-                      className="flex-1 text-xs px-2.5 py-1.5 border border-gray-300 rounded-lg focus:ring-1 focus:ring-[#0020A0] focus:outline-none"
-                    />
-                    <button
-                      disabled={savingTemplate}
-                      onClick={async () => {
-                        if (
-                          !newTplTitle.trim() ||
-                          !currentProId ||
-                          savingTemplate
-                        )
-                          return;
-                        // ── [정책] 고수당 최대 5개 템플릿 제한 ──
-                        if (templates.length >= 5) {
-                          showToast(
-                            "템플릿은 최대 5개까지만 저장할 수 있습니다. 기존 템플릿을 삭제 후 다시 시도해주세요.",
-                            "error",
-                          );
-                          return;
-                        }
-                        setSavingTemplate(true);
-                        try {
-                          // ── [버그 수정] 로컬 File 객체를 Storage에 선행 업로드 ──
-                          let uploadedNewUrls: string[] = [];
-                          if (quoteImages.length > 0) {
-                            const uploads = quoteImages.map(async (file) => {
-                              const tempId = crypto.randomUUID();
-                              const fileExt = file.name.split(".").pop();
-                              const filePath = `templates/${currentProId}/${tempId}.${fileExt}`;
-                              const { error: upErr } = await supabase.storage
-                                .from("quote_images")
-                                .upload(filePath, file, { upsert: true });
-                              if (upErr) throw upErr;
-                              const { data: pub } = supabase.storage
-                                .from("quote_images")
-                                .getPublicUrl(filePath);
-                              return pub.publicUrl;
-                            });
-                            uploadedNewUrls = await Promise.all(uploads);
-                          }
-                          // 기업로드 URL + 새로 업로드된 URL 합산
-                          const allUrls = [
-                            ...preloadedImageUrls,
-                            ...uploadedNewUrls,
-                          ];
+                </div>
 
-                          const { data: newTpl, error } = await supabase
-                            .from("pro_quote_templates")
-                            .insert({
-                              pro_id: currentProId,
-                              title: newTplTitle.trim(),
-                              content: quoteDescription.trim(),
-                              attachments: allUrls.length > 0 ? allUrls : null,
-                            })
-                            .select("id, title, content, attachments")
-                            .single();
-                          if (!error && newTpl) {
-                            setTemplates((prev) => [newTpl, ...prev]);
-                            // 업로드된 URL로 preloaded 상태 갱신 (다음 저장 시 중복 업로드 방지)
-                            setPreloadedImageUrls(allUrls);
-                            setImagePreviews(allUrls);
-                            setQuoteImages([]);
-                            setNewTplTitle("");
-                            setShowSaveTpl(false);
-                            showToast("템플릿이 저장되었습니다!", "success");
-                          } else {
+                {/* ── [확장 1단계] 템플릿 패널 ── */}
+                {showTemplatePanel && (
+                  <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 mb-2 space-y-2">
+                    {templates.length === 0 ? (
+                      <p className="text-xs text-gray-500 text-center py-2">
+                        {t("proBidding.noTemplates")}
+                      </p>
+                    ) : (
+                      templates.map((tpl) => (
+                        <div
+                          key={tpl.id}
+                          className="flex items-center gap-2 bg-white rounded-lg p-2.5 border border-gray-100 shadow-sm"
+                        >
+                          <button
+                            onClick={() => {
+                              // 템스트만 삽입 (금액 절대 미변경)
+                              setQuoteDescription(tpl.content);
+                              // ── [확장] 첨부 이미지 동기화 ──
+                              const tplImgs = tpl.attachments || [];
+                              setPreloadedImageUrls(tplImgs);
+                              setQuoteImages([]); // File 객체 초기화
+                              setImagePreviews(tplImgs); // URL을 미리보기로 설정
+                              if (fileInputRef.current)
+                                fileInputRef.current.value = "";
+                              setShowTemplatePanel(false);
+                            }}
+                            className="flex-1 text-left text-sm font-medium text-gray-800 hover:text-[#0020A0] transition truncate"
+                            title={tpl.content}
+                          >
+                            📝 {tpl.title}{" "}
+                            {tpl.attachments && tpl.attachments.length > 0 && (
+                              <span className="text-[10px] text-[#0020A0] ml-1">
+                                🖼️{tpl.attachments.length}
+                              </span>
+                            )}
+                          </button>
+                          <button
+                            onClick={async () => {
+                              if (
+                                !window.confirm(
+                                  `"${tpl.title}" 템플릿을 삭제하시겠습니까?`,
+                                )
+                              )
+                                return;
+                              await supabase
+                                .from("pro_quote_templates")
+                                .delete()
+                                .eq("id", tpl.id);
+                              setTemplates((prev) =>
+                                prev.filter((t) => t.id !== tpl.id),
+                              );
+                            }}
+                            className="text-xs text-red-400 hover:text-red-600 px-1.5 py-0.5 flex-shrink-0"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
+
+                <textarea
+                  value={quoteDescription}
+                  onChange={(e) => setQuoteDescription(e.target.value)}
+                  rows={3}
+                  placeholder="서비스 범위, 포함 사항, 예상 소요 시간 등을 간략히 작성해주세요."
+                  className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#0020A0] focus:outline-none transition text-sm resize-none"
+                />
+
+                {/* ── [확장 1단계] 현재 내용 템플릿으로 저장 ── */}
+                {quoteDescription.trim().length >= 10 &&
+                  (!showSaveTpl ? (
+                    <button
+                      onClick={() => setShowSaveTpl(true)}
+                      className="mt-2 w-full text-xs font-bold text-[#0020A0] bg-[#0020A0]/10 hover:bg-[#0020A0]/20 border border-[#0020A0]/20 px-3 py-2.5 rounded-lg transition shadow-sm hover:shadow-md flex items-center justify-center gap-1.5"
+                    >
+                      {t("proBidding.saveTplBtn")}
+                    </button>
+                  ) : (
+                    <div className="mt-1.5 flex gap-2 items-center">
+                      <input
+                        value={newTplTitle}
+                        onChange={(e) => setNewTplTitle(e.target.value)}
+                        placeholder={t("proBidding.tplTitlePlaceholder")}
+                        className="flex-1 text-xs px-2.5 py-1.5 border border-gray-300 rounded-lg focus:ring-1 focus:ring-[#0020A0] focus:outline-none"
+                      />
+                      <button
+                        disabled={savingTemplate}
+                        onClick={async () => {
+                          if (
+                            !newTplTitle.trim() ||
+                            !currentProId ||
+                            savingTemplate
+                          )
+                            return;
+                          // ── [정책] 고수당 최대 5개 템플릿 제한 ──
+                          if (templates.length >= 5) {
                             showToast(
-                              "저장 실패: " + (error?.message || ""),
+                              "템플릿은 최대 5개까지만 저장할 수 있습니다. 기존 템플릿을 삭제 후 다시 시도해주세요.",
                               "error",
                             );
+                            return;
                           }
-                        } catch (e: any) {
-                          showToast(
-                            "이미지 업로드 실패: " + e.message,
-                            "error",
-                          );
-                        } finally {
-                          setSavingTemplate(false);
-                        }
-                      }}
-                      className={`text-xs font-bold text-white px-3 py-1.5 rounded-lg transition ${savingTemplate ? "bg-gray-400 cursor-not-allowed" : "bg-[#0020A0] hover:bg-[#001880]"}`}
-                    >
-                      {savingTemplate
-                        ? t("proBidding.savingTpl")
-                        : t("proBidding.saveTpl")}
-                    </button>
-                    <button
-                      onClick={() => {
-                        setShowSaveTpl(false);
-                        setNewTplTitle("");
-                      }}
-                      className="text-xs text-gray-400 hover:text-gray-600"
-                    >
-                      {t("proBidding.cancelTpl")}
-                    </button>
-                  </div>
-                ))}
-            </div>
+                          setSavingTemplate(true);
+                          try {
+                            // ── [버그 수정] 로컬 File 객체를 Storage에 선행 업로드 ──
+                            let uploadedNewUrls: string[] = [];
+                            if (quoteImages.length > 0) {
+                              const uploads = quoteImages.map(async (file) => {
+                                const tempId = crypto.randomUUID();
+                                const fileExt = file.name.split(".").pop();
+                                const filePath = `templates/${currentProId}/${tempId}.${fileExt}`;
+                                const { error: upErr } = await supabase.storage
+                                  .from("quote_images")
+                                  .upload(filePath, file, { upsert: true });
+                                if (upErr) throw upErr;
+                                const { data: pub } = supabase.storage
+                                  .from("quote_images")
+                                  .getPublicUrl(filePath);
+                                return pub.publicUrl;
+                              });
+                              uploadedNewUrls = await Promise.all(uploads);
+                            }
+                            // 기업로드 URL + 새로 업로드된 URL 합산
+                            const allUrls = [
+                              ...preloadedImageUrls,
+                              ...uploadedNewUrls,
+                            ];
 
-            {/* 사진 첨부 */}
-            <div>
-              <label className="text-xs font-bold text-gray-600 mb-1 block">
-                사진 첨부{" "}
-                <span className="text-xs text-gray-400 font-normal">
-                  ({imagePreviews.length}/{MAX_IMAGES}장 최대 5MB)
-                </span>
-              </label>
-
-              <div className="flex flex-wrap gap-2">
-                {imagePreviews.map((preview, idx) => (
-                  <div key={idx} className="relative inline-block">
-                    <img
-                      src={preview}
-                      alt={`${t("proBidding.imagePreviewAlt")}${idx + 1}`}
-                      className="w-24 h-24 object-cover rounded-xl border border-gray-200 shadow-sm"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveImage(idx)}
-                      className="absolute -top-2 -right-2 bg-red-500 text-white w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold shadow-md hover:bg-red-600 transition"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                ))}
-
-                {imagePreviews.length < MAX_IMAGES && (
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center text-gray-400 hover:border-[#0020A0] hover:text-[#0020A0] transition bg-gray-50 hover:bg-[#0020A0]/5"
-                  >
-                    <svg
-                      className="w-6 h-6 mb-1"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={1.5}
-                        d="M12 4v16m8-8H4"
-                      />
-                    </svg>
-                    <span className="text-[10px] font-medium">
-                      {t("proBidding.addPhoto")}
-                    </span>
-                  </button>
-                )}
+                            const { data: newTpl, error } = await supabase
+                              .from("pro_quote_templates")
+                              .insert({
+                                pro_id: currentProId,
+                                title: newTplTitle.trim(),
+                                content: quoteDescription.trim(),
+                                attachments:
+                                  allUrls.length > 0 ? allUrls : null,
+                              })
+                              .select("id, title, content, attachments")
+                              .single();
+                            if (!error && newTpl) {
+                              setTemplates((prev) => [newTpl, ...prev]);
+                              // 업로드된 URL로 preloaded 상태 갱신 (다음 저장 시 중복 업로드 방지)
+                              setPreloadedImageUrls(allUrls);
+                              setImagePreviews(allUrls);
+                              setQuoteImages([]);
+                              setNewTplTitle("");
+                              setShowSaveTpl(false);
+                              showToast("템플릿이 저장되었습니다!", "success");
+                            } else {
+                              showToast(
+                                "저장 실패: " + (error?.message || ""),
+                                "error",
+                              );
+                            }
+                          } catch (e: any) {
+                            showToast(
+                              "이미지 업로드 실패: " + e.message,
+                              "error",
+                            );
+                          } finally {
+                            setSavingTemplate(false);
+                          }
+                        }}
+                        className={`text-xs font-bold text-white px-3 py-1.5 rounded-lg transition ${savingTemplate ? "bg-gray-400 cursor-not-allowed" : "bg-[#0020A0] hover:bg-[#001880]"}`}
+                      >
+                        {savingTemplate
+                          ? t("proBidding.savingTpl")
+                          : t("proBidding.saveTpl")}
+                      </button>
+                      <button
+                        onClick={() => {
+                          setShowSaveTpl(false);
+                          setNewTplTitle("");
+                        }}
+                        className="text-xs text-gray-400 hover:text-gray-600"
+                      >
+                        {t("proBidding.cancelTpl")}
+                      </button>
+                    </div>
+                  ))}
               </div>
 
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleImageSelect}
-                className="hidden"
-              />
-            </div>
+              {/* 사진 첨부 */}
+              <div>
+                <label className="text-xs font-bold text-gray-600 mb-1 block">
+                  사진 첨부{" "}
+                  <span className="text-xs text-gray-400 font-normal">
+                    ({imagePreviews.length}/{MAX_IMAGES}장 최대 5MB)
+                  </span>
+                </label>
+
+                <div className="flex flex-wrap gap-2">
+                  {imagePreviews.map((preview, idx) => (
+                    <div key={idx} className="relative inline-block">
+                      <img
+                        src={preview}
+                        alt={`${t("proBidding.imagePreviewAlt")}${idx + 1}`}
+                        className="w-24 h-24 object-cover rounded-xl border border-gray-200 shadow-sm"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveImage(idx)}
+                        className="absolute -top-2 -right-2 bg-red-500 text-white w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold shadow-md hover:bg-red-600 transition"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+
+                  {imagePreviews.length < MAX_IMAGES && (
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center text-gray-400 hover:border-[#0020A0] hover:text-[#0020A0] transition bg-gray-50 hover:bg-[#0020A0]/5"
+                    >
+                      <svg
+                        className="w-6 h-6 mb-1"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={1.5}
+                          d="M12 4v16m8-8H4"
+                        />
+                      </svg>
+                      <span className="text-[10px] font-medium">
+                        {t("proBidding.addPhoto")}
+                      </span>
+                    </button>
+                  )}
+                </div>
+
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageSelect}
+                  className="hidden"
+                />
+              </div>
             </div>
           </div>
         )}

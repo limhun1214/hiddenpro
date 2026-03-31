@@ -715,21 +715,21 @@ export default function HomePage() {
 
       <main className={isLoggedIn ? "" : "pt-20"}>
         {/* [히어로] Stitch Hero */}
-        <section className="relative min-h-[751px] flex items-center px-6 overflow-hidden bg-[#0020A0]">
+        <section className="relative min-h-[751px] flex items-center px-6 overflow-hidden bg-[#06101E]">
           {/* 배경 이미지 */}
           <div className="absolute inset-0 z-0">
             {isCmsLoading ? (
-              <div className="w-full h-full bg-[#001880] animate-pulse" />
+              <div className="w-full h-full bg-[#06101E] animate-pulse" />
             ) : (
               <Image
                 src={heroBanner?.media_url || "/images/hero-bg.jpg"}
                 alt="HiddenPro Service Professional"
                 fill
                 priority
-                className="object-cover object-center opacity-15 mix-blend-luminosity"
+                className="object-cover object-center"
               />
             )}
-            <div className="absolute inset-0 bg-gradient-to-br from-[#0020A0] via-[#0020A0]/90 to-[#001060]/80" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#06101E] via-[#06101E]/80 to-[#06101E]/10" />
           </div>
 
           <div className="relative z-10 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -1255,7 +1255,7 @@ export default function HomePage() {
         {/* [섹션 5: Join as a Pro - Stitch] */}
         <section className="py-24 bg-[#F8F9FA]">
           <div className="max-w-7xl mx-auto px-6">
-            <div className="relative rounded-xl overflow-hidden bg-[#0020A0] p-10 md:p-16">
+            <div className="relative rounded-xl overflow-hidden bg-gradient-to-r from-[#07101F] to-[#1840C8] p-10 md:p-16">
               {/* 텍스트 + CTA */}
               <div className="flex-1 text-center md:text-left">
                 <h2 className="text-4xl md:text-5xl font-headline font-bold text-white mb-5 leading-tight break-keep">

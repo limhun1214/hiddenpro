@@ -680,9 +680,7 @@ export default function ClientLayout({
                                   );
                               }}
                               className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${
-                                isActive
-                                  ? "text-[#0020a0]"
-                                  : "text-[#374151]"
+                                isActive ? "text-[#0020a0]" : "text-[#374151]"
                               }`}
                             >
                               <div className="relative">
