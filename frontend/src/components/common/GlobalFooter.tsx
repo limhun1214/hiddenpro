@@ -21,7 +21,7 @@ export default function GlobalFooter() {
             {t("footer.privacy")}
           </Link>
           <span className="text-gray-700">|</span>
-          <Link href="/legal/REFUND" className="hover:text-gray-400 transition">
+          <Link href="/support/customer/refund" className="hover:text-gray-400 transition">
             {t("footer.refund")}
           </Link>
         </div>

@@ -314,7 +314,7 @@ export default function ProfilePage() {
             </Link>
             <span className="text-[11px] text-[#c5c5d6]">·</span>
             <Link
-              href="/legal/REFUND"
+              href="/support/customer/refund"
               className="text-[11px] text-[#454653] font-medium hover:text-[#001269] transition"
             >
               {t("footer.refund")}
@@ -521,7 +521,7 @@ export default function ProfilePage() {
           </Link>
           <span className="text-[11px] text-[#c5c5d6]">·</span>
           <Link
-            href="/legal/REFUND"
+            href="/support/customer/refund"
             className="text-[11px] text-[#454653] font-medium hover:text-[#001269] transition"
           >
             {t("footer.refund")}
