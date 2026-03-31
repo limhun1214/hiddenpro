@@ -349,16 +349,6 @@ export default function QuoteDetailModal({
               })}
             </p>
           </div>
-
-          {/* 하단 고정 Close 버튼 */}
-          <div className="flex-none bg-white border-t border-gray-100 p-4">
-            <button
-              onClick={onClose}
-              className="w-full bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold py-3 rounded-xl transition text-sm border border-gray-200"
-            >
-              {t("quoteModal.closeBtn")}
-            </button>
-          </div>
         </div>
       </div>
     </div>
