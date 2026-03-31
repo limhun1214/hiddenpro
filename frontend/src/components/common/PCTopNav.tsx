@@ -43,7 +43,7 @@ export default function PCTopNav({ isFixed = false }: { isFixed?: boolean }) {
 
   return (
     <div
-      className={`hidden lg:block w-full bg-[#0f0d13] border-b border-white/10 z-[60] shrink-0 ${isFixed ? "fixed top-0 left-0" : "sticky top-0"}`}
+      className={`hidden lg:block w-full bg-white border-b border-gray-200 z-[60] shrink-0 ${isFixed ? "fixed top-0 left-0" : "sticky top-0"}`}
     >
       <div className="flex flex-row justify-end items-center space-x-8 px-8 py-5 w-full max-w-4xl mx-auto">
         {items.map((item) => {
@@ -65,7 +65,7 @@ export default function PCTopNav({ isFixed = false }: { isFixed?: boolean }) {
                 }
                 router.push(item.href);
               }}
-              className={`flex items-center space-x-2 transition-colors relative ${isActive ? "text-[#6b8cff]" : "text-white/50 hover:text-white/80"}`}
+              className={`flex items-center space-x-2 transition-colors relative ${isActive ? "text-[#0020A0]" : "text-gray-500 hover:text-gray-800"}`}
             >
               <div className="relative text-xl">
                 <span
@@ -79,19 +79,19 @@ export default function PCTopNav({ isFixed = false }: { isFixed?: boolean }) {
                 {item.href === "/chat" && navState.unreadChatsCount > 0 && (
                   <span className="absolute -top-1 -right-2 flex h-3 w-3">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-[#0f0d13]"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-white"></span>
                   </span>
                 )}
                 {item.href === "/quotes/received" && navState.hasNewQuotes && (
                   <span className="absolute -top-1 -right-2 flex h-3 w-3">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-[#0f0d13]"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-white"></span>
                   </span>
                 )}
                 {item.href === "/pro/requests" && navState.hasNewRequests && (
                   <span className="absolute -top-1 -right-2 flex h-3 w-3">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-[#0f0d13]"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-white"></span>
                   </span>
                 )}
               </div>
@@ -104,7 +104,7 @@ export default function PCTopNav({ isFixed = false }: { isFixed?: boolean }) {
         {navState.isProUser && (
           <button
             onClick={() => router.push("/pro/wallet")}
-            className="flex items-center space-x-2 transition-colors relative text-white/50 hover:text-white/80"
+            className="flex items-center space-x-2 transition-colors relative text-gray-500 hover:text-gray-800"
           >
             <div className="relative text-xl">
               <span
@@ -128,8 +128,8 @@ export default function PCTopNav({ isFixed = false }: { isFixed?: boolean }) {
           onClick={() => router.push("/notifications")}
           className={`flex items-center space-x-2 transition-colors relative ${
             pathname === "/notifications"
-              ? "text-[#6b8cff]"
-              : "text-white/50 hover:text-white/80"
+              ? "text-[#0020A0]"
+              : "text-gray-500 hover:text-gray-800"
           }`}
         >
           <div className="relative text-xl">
@@ -148,7 +148,7 @@ export default function PCTopNav({ isFixed = false }: { isFixed?: boolean }) {
             {navState.unreadNotifsCount > 0 && (
               <span className="absolute -top-1 -right-1 flex h-3 w-3">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-[#0f0d13]"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-white"></span>
               </span>
             )}
           </div>

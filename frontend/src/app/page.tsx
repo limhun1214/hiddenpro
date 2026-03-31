@@ -546,7 +546,7 @@ export default function HomePage() {
   const displayCategories =
     cmsCategories.length > 0 ? cmsCategories : fallbackCategories;
 
-  // Stitch 카테고리 아이콘/색상 매핑
+  // 카테고리 아이콘/색상 매핑
   const categoryStitchUI: Record<
     string,
     {
@@ -560,8 +560,8 @@ export default function HomePage() {
   > = {
     "이사/청소": {
       icon: "cleaning_services",
-      colorClass: "text-[#ff88b5]",
-      bgClass: "bg-[#ff88b5]/10",
+      colorClass: "text-[#0020A0]",
+      bgClass: "bg-[#E8F0FE]",
       tags:
         locale === "en"
           ? ["Residential", "Post-Renovation"]
@@ -571,8 +571,8 @@ export default function HomePage() {
     },
     "설치/수리": {
       icon: "build",
-      colorClass: "text-[#a68cff]",
-      bgClass: "bg-[#a68cff]/10",
+      colorClass: "text-[#0D9488]",
+      bgClass: "bg-[#CCFBF1]",
       tags:
         locale === "en"
           ? ["AC Maintenance", "24/7 Plumbing"]
@@ -582,24 +582,24 @@ export default function HomePage() {
     },
     "인테리어/시공": {
       icon: "architecture",
-      colorClass: "text-[#b5ffc2]",
-      bgClass: "bg-[#b5ffc2]/10",
+      colorClass: "text-[#D97706]",
+      bgClass: "bg-[#FEF3C7]",
       tags: locale === "en" ? ["Design", "Building"] : ["디자인", "건축"],
       title: "Interior & Construction",
       desc: "Architectural design, full-scale remodeling, and structural work.",
     },
     "비즈니스/외주": {
       icon: "work",
-      colorClass: "text-on-surface",
-      bgClass: "bg-on-surface/5",
+      colorClass: "text-[#6B7280]",
+      bgClass: "bg-gray-100",
       tags: locale === "en" ? ["Creative", "Legal"] : ["크리에이티브", "법률"],
       title: "Business & Outsourcing",
       desc: "Translation, graphic design, and professional virtual assistants.",
     },
     "이벤트/파티": {
       icon: "celebration",
-      colorClass: "text-[#ff88b5]",
-      bgClass: "bg-[#ff88b5]/10",
+      colorClass: "text-[#7C3AED]",
+      bgClass: "bg-[#EDE9FE]",
       tags:
         locale === "en" ? ["Catering", "Live Music"] : ["케이터링", "라이브"],
       title: "Events & Parties",
@@ -607,8 +607,8 @@ export default function HomePage() {
     },
     "레슨/튜터링": {
       icon: "school",
-      colorClass: "text-[#a68cff]",
-      bgClass: "bg-[#a68cff]/10",
+      colorClass: "text-[#059669]",
+      bgClass: "bg-[#D1FAE5]",
       tags: locale === "en" ? ["Language", "Music"] : ["언어", "음악"],
       title: "Lessons & Tutoring",
       desc: "Personal development through languages, arts, and academics.",
@@ -616,7 +616,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="bg-background text-on-background font-body antialiased overflow-x-hidden min-h-screen">
+    <div className="bg-[#F8F9FA] text-[#1F2937] antialiased overflow-x-hidden min-h-screen">
       {/* ── [확장] 정지 계정 경고 배너 ── */}
       {showSuspendedBanner && (
         <div className="fixed top-0 left-0 w-full z-[200] bg-red-600 text-white py-4 px-6 shadow-lg animate-slide-down">
@@ -666,14 +666,14 @@ export default function HomePage() {
       )}
       {/* [헤더] Stitch TopAppBar — 비로그인 시에만 표시 */}
       <header
-        className={`fixed top-0 z-50 w-full backdrop-blur-xl transition-all duration-300 ${isScrolled ? "bg-surface/95 border-b border-surface-container-high" : "bg-surface/80"} ${isLoggedIn ? "hidden" : ""}`}
+        className={`fixed top-0 z-50 w-full backdrop-blur-xl transition-all duration-300 ${isScrolled ? "bg-white/95 border-b border-gray-200" : "bg-white/90"} ${isLoggedIn ? "hidden" : ""}`}
       >
         <div className="flex justify-between items-center w-full px-6 py-4 max-w-7xl mx-auto">
           {/* 로고 */}
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
+            <div className="w-10 h-10 rounded-xl bg-[#0020A0] flex items-center justify-center shadow-lg shadow-[#0020A0]/20">
               <svg
-                className="w-6 h-6 text-on-primary"
+                className="w-6 h-6 text-white"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth={3}
@@ -695,7 +695,7 @@ export default function HomePage() {
                 setAuthMode("login");
                 setShowLoginModal(true);
               }}
-              className="text-on-surface-variant hover:text-on-surface font-semibold text-sm transition-colors px-4 py-2"
+              className="text-[#6B7280] hover:text-[#1F2937] font-semibold text-sm transition-colors px-4 py-2"
             >
               {t("landing.loginAriaLabel") || "Login"}
             </button>
@@ -705,7 +705,7 @@ export default function HomePage() {
                 setAuthTab("PRO");
                 setShowLoginModal(true);
               }}
-              className="bg-primary hover:scale-95 duration-200 ease-in-out text-on-primary px-6 py-2 rounded-full font-bold text-sm shadow-lg shadow-primary/20"
+              className="bg-[#0020A0] hover:scale-95 duration-200 ease-in-out text-white px-6 py-2 rounded-full font-bold text-sm shadow-lg shadow-[#0020A0]/20"
             >
               {t("landing.proSignupBtn")}
             </button>
@@ -715,27 +715,27 @@ export default function HomePage() {
 
       <main className={isLoggedIn ? "" : "pt-20"}>
         {/* [히어로] Stitch Hero */}
-        <section className="relative min-h-[751px] flex items-center px-6 overflow-hidden">
+        <section className="relative min-h-[751px] flex items-center px-6 overflow-hidden bg-[#0020A0]">
           {/* 배경 이미지 */}
           <div className="absolute inset-0 z-0">
             {isCmsLoading ? (
-              <div className="w-full h-full bg-surface-container animate-pulse" />
+              <div className="w-full h-full bg-[#001880] animate-pulse" />
             ) : (
               <Image
                 src={heroBanner?.media_url || "/images/hero-bg.jpg"}
                 alt="HiddenPro Service Professional"
                 fill
                 priority
-                className="object-cover object-center opacity-40 mix-blend-luminosity"
+                className="object-cover object-center opacity-15 mix-blend-luminosity"
               />
             )}
-            <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-br from-[#0020A0] via-[#0020A0]/90 to-[#001060]/80" />
           </div>
 
           <div className="relative z-10 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               {/* Verified pill */}
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary animate-pulse">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 text-white animate-pulse">
                 <span
                   className="material-symbols-outlined text-sm"
                   style={{ fontVariationSettings: "'FILL' 1" }}
@@ -748,12 +748,12 @@ export default function HomePage() {
               </div>
 
               {/* 헤드라인 */}
-              <h1 className="text-5xl md:text-7xl font-headline font-extrabold tracking-tight leading-[1.1]">
-                HiddenPro: Your <span className="text-[#ff88b5]">Trusted</span>{" "}
+              <h1 className="text-5xl md:text-7xl font-headline font-extrabold tracking-tight leading-[1.1] text-white">
+                HiddenPro: Your <span className="text-[#7DAFFF]">Trusted</span>{" "}
                 Home Service
               </h1>
 
-              <p className="text-xl text-on-surface-variant max-w-lg leading-relaxed">
+              <p className="text-xl text-white/80 max-w-lg leading-relaxed">
                 Meet the perfect professional for your next project. From
                 cleaning to complex construction, we bridge the gap with elite
                 local talent.
@@ -764,7 +764,7 @@ export default function HomePage() {
                 <div className="flex gap-3 items-center">
                   <div className="flex-1 relative">
                     <span
-                      className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant pointer-events-none"
+                      className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-[#9CA3AF] pointer-events-none"
                       style={{ fontSize: "20px" }}
                     >
                       search
@@ -779,14 +779,14 @@ export default function HomePage() {
                       placeholder={
                         animatedPlaceholder || t("landing.searchPlaceholder")
                       }
-                      className="w-full pl-12 pr-4 py-4 rounded-full bg-surface-container-high text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all placeholder:text-on-surface-variant"
+                      className="w-full pl-12 pr-4 py-4 rounded-full bg-white text-[#1F2937] focus:outline-none focus:ring-2 focus:ring-[#0020A0]/30 transition-all placeholder:text-[#9CA3AF]"
                     />
 
                     {/* 자동완성 드롭다운 */}
                     {showDropdown && (
-                      <div className="absolute top-full left-0 w-full mt-2 bg-surface-container-high rounded-2xl shadow-2xl border border-outline-variant max-h-[300px] overflow-y-auto z-[60]">
+                      <div className="absolute top-full left-0 w-full mt-2 bg-white rounded-2xl shadow-2xl border border-gray-200 max-h-[300px] overflow-y-auto z-[60]">
                         {isSearching ? (
-                          <div className="px-6 py-6 text-center text-on-surface-variant font-medium">
+                          <div className="px-6 py-6 text-center text-[#6B7280] font-medium">
                             {t("landing.searching")}
                           </div>
                         ) : searchQuery.trim() ? (
@@ -800,26 +800,26 @@ export default function HomePage() {
                                     `/request?categoryId=${encodeURIComponent(item.category)}&serviceId=${encodeURIComponent((item as any).service_ko || item.service)}${(item as any).depth2 ? `&depth2=${encodeURIComponent((item as any).depth2)}&serviceType=${encodeURIComponent((item as any).service_ko || item.service)}` : ""}`,
                                   );
                                 }}
-                                className="px-6 py-4 hover:bg-surface-container cursor-pointer flex items-center justify-between border-b border-outline-variant last:border-0 transition-colors"
+                                className="px-6 py-4 hover:bg-[#F8F9FA] cursor-pointer flex items-center justify-between border-b border-gray-100 last:border-0 transition-colors"
                               >
-                                <span className="text-on-surface font-semibold">
+                                <span className="text-[#1F2937] font-semibold">
                                   {(item as any).service_en || item.service}
                                 </span>
-                                <span className="text-xs font-semibold text-primary bg-primary/10 px-3 py-1 rounded-full">
+                                <span className="text-xs font-semibold text-[#0020A0] bg-[#E8F0FE] px-3 py-1 rounded-full">
                                   {(item as any).category_en || item.category}
                                 </span>
                               </div>
                             ))}
                             {searchResults.length === 0 && (
-                              <div className="px-6 py-6 text-center text-on-surface-variant font-medium">
+                              <div className="px-6 py-6 text-center text-[#6B7280] font-medium">
                                 {t("landing.noResults")}
                               </div>
                             )}
                           </>
                         ) : (
                           <>
-                            <div className="px-6 py-3 bg-surface-container border-b border-outline-variant flex justify-between items-center rounded-t-2xl">
-                              <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">
+                            <div className="px-6 py-3 bg-[#F8F9FA] border-b border-gray-200 flex justify-between items-center rounded-t-2xl">
+                              <span className="text-xs font-bold text-[#6B7280] uppercase tracking-wider">
                                 {t("landing.recommendedServices")}
                               </span>
                               {showAllRecommendServices && (
@@ -828,7 +828,7 @@ export default function HomePage() {
                                     e.stopPropagation();
                                     setShowAllRecommendServices(false);
                                   }}
-                                  className="text-xs font-bold text-on-surface-variant hover:text-on-surface cursor-pointer"
+                                  className="text-xs font-bold text-[#6B7280] hover:text-[#1F2937] cursor-pointer"
                                 >
                                   {t("landing.collapseServices")}
                                 </span>
@@ -887,14 +887,14 @@ export default function HomePage() {
                                     `/request?categoryId=${encodeURIComponent(item.category)}&serviceId=${encodeURIComponent(item.service)}${(item as any).depth2 ? `&depth2=${encodeURIComponent((item as any).depth2)}&serviceType=${encodeURIComponent(item.service)}` : ""}`,
                                   );
                                 }}
-                                className="px-6 py-4 hover:bg-surface-container cursor-pointer flex items-center justify-between border-b border-outline-variant last:border-0 transition-colors"
+                                className="px-6 py-4 hover:bg-[#F8F9FA] cursor-pointer flex items-center justify-between border-b border-gray-100 last:border-0 transition-colors"
                               >
-                                <span className="text-on-surface font-semibold">
+                                <span className="text-[#1F2937] font-semibold">
                                   {(item as any).service_display ||
                                     (item as any).service_en ||
                                     item.service}
                                 </span>
-                                <span className="text-xs font-semibold text-primary bg-primary/10 px-3 py-1 rounded-full">
+                                <span className="text-xs font-semibold text-[#0020A0] bg-[#E8F0FE] px-3 py-1 rounded-full">
                                   {(item as any).category_display ||
                                     DEPTH1_EN[item.category] ||
                                     item.category}
@@ -907,9 +907,9 @@ export default function HomePage() {
                                   e.stopPropagation();
                                   setShowAllRecommendServices(true);
                                 }}
-                                className="px-6 py-4 text-center cursor-pointer hover:bg-surface-container transition-colors border-t border-outline-variant rounded-b-2xl"
+                                className="px-6 py-4 text-center cursor-pointer hover:bg-[#F8F9FA] transition-colors border-t border-gray-200 rounded-b-2xl"
                               >
-                                <span className="text-sm font-bold text-primary flex items-center justify-center gap-1">
+                                <span className="text-sm font-bold text-[#0020A0] flex items-center justify-center gap-1">
                                   {t("landing.viewAllServices")}
                                   <span className="material-symbols-outlined text-sm">
                                     expand_more
@@ -934,7 +934,7 @@ export default function HomePage() {
                     }
                     router.push("/request");
                   }}
-                  className="bg-[#ff88b5] text-black font-bold rounded-full py-3 px-6 w-full text-center"
+                  className="bg-white text-[#0020A0] font-bold rounded-full py-3 px-6 w-full text-center hover:bg-[#F8F9FA] transition-colors"
                 >
                   Get a Free Quote in 1 Minute
                 </button>
@@ -945,21 +945,21 @@ export default function HomePage() {
                     <img
                       src="/images/avatar-1.jpg"
                       alt="Professional"
-                      className="w-9 h-9 rounded-full border-2 border-background object-cover"
+                      className="w-9 h-9 rounded-full border-2 border-[#0020A0] object-cover"
                     />
                     <img
                       src="/images/avatar-2.jpg"
                       alt="Professional"
-                      className="w-9 h-9 rounded-full border-2 border-background object-cover"
+                      className="w-9 h-9 rounded-full border-2 border-[#0020A0] object-cover"
                     />
                     <img
                       src="/images/avatar-3.jpg"
                       alt="Professional"
-                      className="w-9 h-9 rounded-full border-2 border-background object-cover"
+                      className="w-9 h-9 rounded-full border-2 border-[#0020A0] object-cover"
                     />
                   </div>
-                  <span className="text-sm text-on-surface-variant">
-                    <span className="text-on-surface font-bold">12k+</span>{" "}
+                  <span className="text-sm text-white/70">
+                    <span className="text-white font-bold">12k+</span>{" "}
                     professionals active this week
                   </span>
                 </div>
@@ -969,13 +969,13 @@ export default function HomePage() {
         </section>
 
         {/* [섹션 2: Explore Our Services - Stitch Bento Grid] */}
-        <section className="py-20 bg-surface-container-low">
+        <section className="py-20 bg-white">
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center mb-12">
-              <h2 className="text-4xl font-headline font-bold text-on-surface mb-4">
+              <h2 className="text-4xl font-headline font-bold text-[#1F2937] mb-4">
                 Explore Our Services
               </h2>
-              <p className="text-on-surface-variant text-lg max-w-2xl mx-auto mb-4">
+              <p className="text-[#6B7280] text-lg max-w-2xl mx-auto mb-4">
                 Find the right expertise for every corner of your life, from
                 home repairs to business expansion.
               </p>
@@ -987,7 +987,7 @@ export default function HomePage() {
                   }
                   router.push("/request");
                 }}
-                className="text-[#ff88b5] font-semibold flex items-center gap-1 cursor-pointer mx-auto"
+                className="text-[#0020A0] font-semibold flex items-center gap-1 cursor-pointer mx-auto"
               >
                 View All Services →
               </button>
@@ -1018,7 +1018,7 @@ export default function HomePage() {
                         );
                       }
                     }}
-                    className="group bg-surface-container rounded-2xl p-6 hover:bg-surface-container-high transition-all duration-300 border border-transparent hover:border-outline-variant flex flex-col gap-4"
+                    className="group bg-white rounded-lg p-6 hover:bg-[#F8F9FA] transition-all duration-300 border border-gray-200 hover:border-[#0020A0]/30 flex flex-col gap-4 shadow-[0_2px_8px_rgba(0,0,0,0.04)]"
                   >
                     <div
                       className={`w-12 h-12 rounded-xl ${ui.bgClass} flex items-center justify-center`}
@@ -1034,7 +1034,7 @@ export default function HomePage() {
                       </span>
                     </div>
                     <div className="flex-1 flex flex-col gap-3">
-                      <h3 className="font-bold text-on-surface text-lg">
+                      <h3 className="font-bold text-[#1F2937] text-lg">
                         {ui.title ||
                           (locale === "en"
                             ? (cat as any).title_en || cat.title
@@ -1051,7 +1051,7 @@ export default function HomePage() {
                         {ui.tags.map((tag) => (
                           <span
                             key={tag}
-                            className="text-xs px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface-variant"
+                            className="text-xs px-2.5 py-1 rounded-full bg-[#F8F9FA] text-[#6B7280] border border-gray-100"
                           >
                             {tag}
                           </span>
@@ -1066,13 +1066,13 @@ export default function HomePage() {
         </section>
 
         {/* [섹션 3: Live Customer Reviews - Stitch Dark] */}
-        <section className="py-24 bg-surface">
+        <section className="py-24 bg-[#F8F9FA]">
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center mb-12">
-              <h2 className="text-4xl font-headline font-bold text-on-surface mb-4">
+              <h2 className="text-4xl font-headline font-bold text-[#1F2937] mb-4">
                 {t("landing.reviewSectionTitle")}
               </h2>
-              <p className="text-on-surface-variant text-lg">
+              <p className="text-[#6B7280] text-lg">
                 {t("landing.reviewSectionSub")}
               </p>
             </div>
@@ -1135,7 +1135,7 @@ export default function HomePage() {
                   .map((review: any) => (
                     <div
                       key={review.review_id}
-                      className="bg-surface-container rounded-2xl p-6 flex flex-col gap-4 border border-surface-container-high"
+                      className="bg-white rounded-lg p-6 flex flex-col gap-4 border border-gray-200 shadow-[0_2px_8px_rgba(0,0,0,0.04)]"
                     >
                       <div className="flex gap-0.5">
                         {[...Array(5)].map((_, i) => (
@@ -1152,11 +1152,11 @@ export default function HomePage() {
                           </span>
                         ))}
                       </div>
-                      <p className="text-on-surface leading-relaxed line-clamp-4 flex-1">
+                      <p className="text-[#1F2937] leading-relaxed line-clamp-4 flex-1">
                         &ldquo;{review.comment}&rdquo;
                       </p>
-                      <div className="flex items-center gap-3 pt-4 border-t border-surface-container-high">
-                        <div className="w-10 h-10 rounded-full overflow-hidden bg-surface-container-high shrink-0">
+                      <div className="flex items-center gap-3 pt-4 border-t border-gray-100">
+                        <div className="w-10 h-10 rounded-full overflow-hidden bg-[#F8F9FA] shrink-0">
                           <img
                             src={
                               review.users?.avatar_url ||
@@ -1167,12 +1167,12 @@ export default function HomePage() {
                           />
                         </div>
                         <div>
-                          <p className="font-bold text-on-surface text-sm">
+                          <p className="font-bold text-[#1F2937] text-sm">
                             {review.users?.nickname ||
                               review.users?.name ||
                               t("landing.anonymousCustomer")}
                           </p>
-                          <p className="text-xs text-primary">
+                          <p className="text-xs text-[#0020A0]">
                             {review.chat_rooms?.match_requests?.service_type ||
                               t("landing.defaultService")}
                           </p>
@@ -1186,13 +1186,13 @@ export default function HomePage() {
         </section>
 
         {/* [섹션 4: The HiddenPro Difference - Stitch 3-col] */}
-        <section className="py-24 bg-surface-container-low">
+        <section className="py-24 bg-white">
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center mb-16">
-              <h2 className="text-4xl font-headline font-bold text-on-surface mb-4 break-keep">
+              <h2 className="text-4xl font-headline font-bold text-[#1F2937] mb-4 break-keep">
                 The HiddenPro Difference
               </h2>
-              <p className="text-on-surface-variant text-lg max-w-2xl mx-auto break-keep">
+              <p className="text-[#6B7280] text-lg max-w-2xl mx-auto break-keep">
                 We've built a marketplace based on trust, transparency, and
                 speed. No hidden fees, no guesswork.
               </p>
@@ -1201,29 +1201,29 @@ export default function HomePage() {
               {[
                 {
                   icon: "verified_user",
-                  colorClass: "text-primary",
-                  bgClass: "bg-primary/10",
+                  colorClass: "text-[#0020A0]",
+                  bgClass: "bg-[#E8F0FE]",
                   title: t("landing.feature1Title"),
                   desc: t("landing.feature1Desc"),
                 },
                 {
                   icon: "payments",
-                  colorClass: "text-secondary",
-                  bgClass: "bg-secondary/10",
+                  colorClass: "text-[#059669]",
+                  bgClass: "bg-[#D1FAE5]",
                   title: t("landing.feature2Title"),
                   desc: t("landing.feature2Desc"),
                 },
                 {
                   icon: "bolt",
-                  colorClass: "text-tertiary",
-                  bgClass: "bg-tertiary/10",
+                  colorClass: "text-[#D97706]",
+                  bgClass: "bg-[#FEF3C7]",
                   title: t("landing.feature3Title"),
                   desc: t("landing.feature3Desc"),
                 },
               ].map((feature) => (
                 <div
                   key={feature.title}
-                  className="bg-surface-container rounded-2xl p-8 flex flex-col gap-5 border border-surface-container-high"
+                  className="bg-white rounded-lg p-8 flex flex-col gap-5 border border-gray-200 shadow-[0_2px_8px_rgba(0,0,0,0.04)]"
                 >
                   <div
                     className={`w-14 h-14 rounded-xl ${feature.bgClass} flex items-center justify-center`}
@@ -1239,10 +1239,10 @@ export default function HomePage() {
                     </span>
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-on-surface mb-3">
+                    <h3 className="text-xl font-bold text-[#1F2937] mb-3">
                       {feature.title}
                     </h3>
-                    <p className="text-on-surface-variant leading-relaxed break-keep">
+                    <p className="text-[#6B7280] leading-relaxed break-keep">
                       {feature.desc}
                     </p>
                   </div>
@@ -1253,15 +1253,15 @@ export default function HomePage() {
         </section>
 
         {/* [섹션 5: Join as a Pro - Stitch] */}
-        <section className="py-24 bg-surface">
+        <section className="py-24 bg-[#F8F9FA]">
           <div className="max-w-7xl mx-auto px-6">
-            <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-secondary/20 via-surface-container to-primary/20 border border-outline-variant p-10 md:p-16">
+            <div className="relative rounded-xl overflow-hidden bg-[#0020A0] p-10 md:p-16">
               {/* 텍스트 + CTA */}
               <div className="flex-1 text-center md:text-left">
-                <h2 className="text-4xl md:text-5xl font-headline font-bold text-on-surface mb-5 leading-tight break-keep">
+                <h2 className="text-4xl md:text-5xl font-headline font-bold text-white mb-5 leading-tight break-keep">
                   Are You a Service Professional?
                 </h2>
-                <p className="text-on-surface-variant text-lg mb-6 leading-relaxed max-w-lg break-keep">
+                <p className="text-white/80 text-lg mb-6 leading-relaxed max-w-lg break-keep">
                   Join the fastest-growing marketplace for high-end service
                   providers. Keep 100% of your earnings and connect with quality
                   clients in your neighborhood.
@@ -1331,7 +1331,7 @@ export default function HomePage() {
                     setAuthTab("PRO");
                     setShowLoginModal(true);
                   }}
-                  className="bg-[#a68cff] hover:scale-95 duration-200 text-white font-bold px-8 py-4 rounded-full shadow-lg shadow-[#a68cff]/25 transition-all inline-flex items-center gap-2"
+                  className="bg-white hover:scale-95 duration-200 text-[#0020A0] font-bold px-8 py-4 rounded-full shadow-lg shadow-black/20 transition-all inline-flex items-center gap-2"
                 >
                   Start as a Pro ⚡
                 </button>
@@ -1343,11 +1343,11 @@ export default function HomePage() {
 
       {/* 프로덕션 레디 로그인/가입 모달 */}
       {showLoginModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-[#1a1721] rounded-3xl w-full max-w-md overflow-hidden shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl border border-gray-200">
             {/* 헤더 */}
-            <div className="flex justify-between items-center p-6 border-b border-gray-700">
-              <h3 className="text-xl font-bold text-white">
+            <div className="flex justify-between items-center p-6 border-b border-gray-200">
+              <h3 className="text-xl font-bold text-[#1F2937]">
                 {authMode === "login"
                   ? t("landing.loginTitle")
                   : authMode === "pro_signup"
@@ -1360,7 +1360,7 @@ export default function HomePage() {
                   setAuthError("");
                   setAuthMode("login");
                 }}
-                className="text-gray-400 hover:text-white font-bold w-8 h-8 flex items-center justify-center rounded-full transition"
+                className="text-gray-400 hover:text-gray-700 font-bold w-8 h-8 flex items-center justify-center rounded-full transition"
               >
                 &times;
               </button>
@@ -1369,11 +1369,11 @@ export default function HomePage() {
             <div className="p-6 space-y-5">
               {/* 고수 가입 모드일 때 안내 문구 */}
               {authMode === "pro_signup" && (
-                <div className="bg-[#2a2535] p-4 rounded-xl text-center">
-                  <p className="text-sm font-bold text-white">
+                <div className="bg-[#F8F9FA] p-4 rounded-xl text-center border border-gray-100">
+                  <p className="text-sm font-bold text-[#1F2937]">
                     {t("landing.proSignupDesc")}
                   </p>
-                  <p className="text-xs text-gray-300 mt-1">
+                  <p className="text-xs text-[#6B7280] mt-1">
                     {t("landing.proSignupDescSub")}
                   </p>
                 </div>
@@ -1383,7 +1383,7 @@ export default function HomePage() {
               <div className="space-y-3">
                 <button
                   onClick={() => handleSocialLogin("google")}
-                  className="w-full flex items-center justify-center gap-3 py-3.5 border border-gray-600 rounded-xl bg-[#2a2535] hover:bg-[#342e42] transition text-sm font-bold text-white"
+                  className="w-full flex items-center justify-center gap-3 py-3.5 border border-gray-200 rounded-xl bg-white hover:bg-gray-50 transition text-sm font-bold text-[#1F2937]"
                 >
                   <svg className="w-5 h-5" viewBox="0 0 24 24">
                     <path
@@ -1407,7 +1407,7 @@ export default function HomePage() {
                 </button>
                 <button
                   onClick={() => handleSocialLogin("facebook")}
-                  className="w-full flex items-center justify-center gap-3 py-3.5 rounded-xl bg-[#a68cff] hover:bg-[#9478e8] transition text-sm font-bold text-white"
+                  className="w-full flex items-center justify-center gap-3 py-3.5 rounded-xl bg-[#0020A0] hover:bg-[#001880] transition text-sm font-bold text-white"
                 >
                   <svg
                     className="w-5 h-5"
@@ -1420,13 +1420,13 @@ export default function HomePage() {
                 </button>
               </div>
 
-              <p className="text-[11px] text-gray-400 text-center leading-relaxed">
+              <p className="text-[11px] text-[#6B7280] text-center leading-relaxed">
                 {t("landing.termsAgreement")}{" "}
-                <span className="underline cursor-pointer text-[#ff88b5]">
+                <span className="underline cursor-pointer text-[#0020A0]">
                   {t("landing.termsLink")}
                 </span>{" "}
                 {t("landing.termsAnd")}{" "}
-                <span className="underline cursor-pointer text-[#ff88b5]">
+                <span className="underline cursor-pointer text-[#0020A0]">
                   {t("landing.privacyLink")}
                 </span>
                 .

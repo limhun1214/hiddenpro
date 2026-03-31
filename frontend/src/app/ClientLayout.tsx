@@ -529,7 +529,7 @@ export default function ClientLayout({
 
   // 최상위 컨테이너 클래스 (조건부 라우팅)
   const rootContainerClasses = isLandingPage
-    ? "flex flex-col min-h-screen relative w-full bg-[#0f0d13]"
+    ? "flex flex-col min-h-screen relative w-full bg-[#F8F9FA]"
     : isAdminPage
       ? "flex flex-col min-h-screen relative overflow-hidden w-full"
       : `flex flex-col lg:flex-row w-full min-h-screen lg:h-[100dvh] ${isInternalPage ? "bg-[#FAFAFA]" : "bg-white"} relative shadow-xl lg:overflow-hidden`;
@@ -568,14 +568,14 @@ export default function ClientLayout({
             {/* 모바일 전용 상단 헤더: 알림 벨 + 언어 전환 */}
             {(!isSpecialPage || (isLandingPage && !!userId)) && !isChatRoom && (
               <div
-                className={`lg:hidden sticky top-0 z-[60] w-full ${isLandingPage ? "bg-[#0f0d13] border-b border-white/10" : "bg-white border-b border-gray-100"} shrink-0`}
+                className={`lg:hidden sticky top-0 z-[60] w-full ${isLandingPage ? "bg-white border-b border-gray-200" : "bg-white border-b border-gray-100"} shrink-0`}
               >
                 <div className="flex justify-end items-center px-4 py-3 gap-3">
                   {isProUser && (
                     <button
                       onClick={() => router.push("/pro/wallet")}
                       aria-label={t("pcTopNav.wallet")}
-                      className={`relative transition-colors ${isLandingPage ? "text-white/70 hover:text-white" : currentPath === "/pro/wallet" ? "text-[#0020a0]" : "text-[#6B7280] hover:text-[#1F2937]"}`}
+                      className={`relative transition-colors ${currentPath === "/pro/wallet" ? "text-[#0020a0]" : "text-[#6B7280] hover:text-[#1F2937]"}`}
                     >
                       <span
                         className="material-symbols-outlined text-[22px]"
@@ -592,7 +592,7 @@ export default function ClientLayout({
                   )}
                   <button
                     onClick={() => router.push("/notifications")}
-                    className={`relative transition-colors ${isLandingPage ? "text-white/70 hover:text-white" : currentPath === "/notifications" ? "text-[#0020a0]" : "text-[#6B7280] hover:text-[#1F2937]"}`}
+                    className={`relative transition-colors ${currentPath === "/notifications" ? "text-[#0020a0]" : "text-[#6B7280] hover:text-[#1F2937]"}`}
                   >
                     <span
                       className="material-symbols-outlined text-[22px]"
@@ -607,7 +607,7 @@ export default function ClientLayout({
                       <span className="absolute -top-1 -right-1 flex h-3 w-3">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                         <span
-                          className={`relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 ${isLandingPage ? "border-[#0f0d13]" : "border-white"}`}
+                          className={`relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-white`}
                         ></span>
                       </span>
                     )}
@@ -632,7 +632,7 @@ export default function ClientLayout({
 
                 {!hideNavBar && (
                   <nav
-                    className={`fixed bottom-0 left-0 w-full ${isLandingPage ? "bg-[#1a1721] border-t border-white/10" : "bg-white border-t border-gray-200"} z-[999] px-2 py-2 md:hidden`}
+                    className={`fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 z-[999] px-2 py-2 md:hidden`}
                     style={{
                       position: "fixed",
                       bottom: 0,
@@ -681,12 +681,8 @@ export default function ClientLayout({
                               }}
                               className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${
                                 isActive
-                                  ? isLandingPage
-                                    ? "text-[#6b8cff]"
-                                    : "text-[#0020a0]"
-                                  : isLandingPage
-                                    ? "text-white/50"
-                                    : "text-[#374151]"
+                                  ? "text-[#0020a0]"
+                                  : "text-[#374151]"
                               }`}
                             >
                               <div className="relative">
@@ -706,7 +702,7 @@ export default function ClientLayout({
                                     <span className="absolute -top-1 -right-2 flex h-3 w-3">
                                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                                       <span
-                                        className={`relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 ${isLandingPage ? "border-[#1a1721]" : "border-white"}`}
+                                        className={`relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-white`}
                                       ></span>
                                     </span>
                                   )}
@@ -716,7 +712,7 @@ export default function ClientLayout({
                                     <span className="absolute -top-1 -right-2 flex h-3 w-3">
                                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                                       <span
-                                        className={`relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 ${isLandingPage ? "border-[#1a1721]" : "border-white"}`}
+                                        className={`relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-white`}
                                       ></span>
                                     </span>
                                   )}
@@ -724,20 +720,20 @@ export default function ClientLayout({
                                 {item.key === "quotes" && hasNewQuotes && (
                                   <span className="absolute -top-1 -right-2 flex h-3 w-3">
                                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                    <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-[#1a1721]"></span>
+                                    <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-white"></span>
                                   </span>
                                 )}
 
                                 {item.key === "requests" && hasNewRequests && (
                                   <span className="absolute -top-1 -right-2 flex h-3 w-3">
                                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                    <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-[#1a1721]"></span>
+                                    <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-white"></span>
                                   </span>
                                 )}
 
                                 {isProUser && item.key === "wallet" && (
                                   <span
-                                    className={`absolute -bottom-1 -right-8 flex h-4 px-1 rounded-full bg-yellow-400 items-center justify-center text-[10px] font-black text-white border-2 ${isLandingPage ? "border-[#1a1721]" : "border-white"} shadow-sm whitespace-nowrap`}
+                                    className={`absolute -bottom-1 -right-8 flex h-4 px-1 rounded-full bg-yellow-400 items-center justify-center text-[10px] font-black text-white border-2 border-white shadow-sm whitespace-nowrap`}
                                   >
                                     {walletBalance !== null
                                       ? walletBalance.toLocaleString()
