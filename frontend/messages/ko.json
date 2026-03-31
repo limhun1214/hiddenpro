@@ -398,6 +398,8 @@
     "noQuotesInProgress": "💡 알고리즘이 주변 우수 고수들에게 매칭 알림을 발송 중입니다.",
     "noQuotesClosed": "도착한 견적이 없습니다.",
     "closedRequest": "마감된 요청서입니다",
+    "bannerTitle": "더 빠르게 더 많은 견적 받기",
+    "bannerDesc": "우수 고수들에게 즉시 알림이 발송됩니다. 잠시만 기다리세요 — 최적의 고수를 찾는 중입니다.",
     "reviewTitle": "리뷰 작성",
     "reviewRatingLabel": "만족도를 평가해주세요",
     "reviewPlaceholder": "고수님과의 서비스 진행이 어떠셨나요?",
@@ -688,7 +690,8 @@
     "startChat": "대화를 시작해보세요.",
     "matchedBadge": "매칭 성사",
     "inProgress": "진행 중",
-    "proSuffix": "님"
+    "proSuffix": "님",
+    "searchPlaceholder": "대화 검색..."
   },
   "authComplete": {
     "processing": "인증 처리 중...",

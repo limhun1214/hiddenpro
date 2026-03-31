@@ -403,6 +403,8 @@
     "noQuotesInProgress": "💡 Algorithm is sending match alerts to nearby top pros.",
     "noQuotesClosed": "No quotes received.",
     "closedRequest": "This request is closed.",
+    "bannerTitle": "Get More Quotes Faster",
+    "bannerDesc": "Top pros are notified instantly. Sit back — your perfect match is on its way.",
     "reviewTitle": "Write a Review",
     "reviewRatingLabel": "Please rate your satisfaction",
     "reviewPlaceholder": "How was your experience with the pro?",
@@ -693,7 +695,8 @@
     "startChat": "Start a conversation.",
     "matchedBadge": "Matched",
     "inProgress": "In Progress",
-    "proSuffix": ""
+    "proSuffix": "",
+    "searchPlaceholder": "Search conversations..."
   },
   "authComplete": {
     "processing": "Processing authentication...",

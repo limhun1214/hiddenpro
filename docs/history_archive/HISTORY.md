@@ -1,3 +1,4 @@
+[2026-03-31] /chat 페이지 Stitch Sapphire Ledger 디자인 적용 — fixed 헤더(Manrope/햄버거/wallet/notifications), 검색바(animated underline), 채팅 카드(ambient-shadow/ring/uppercase badge), FAB(add_comment) 추가 / frontend/src/app/chat/page.tsx, messages/en.json, messages/ko.json / DB변경 없음
 [2026-03-31] Quote Details 모달 날짜/시간 영어 형식 변환 — toLocaleString([]→"en-US") + year 추가 + hour12:true → "Mar 30, 2026, 10:52 PM" / frontend/src/components/customer/QuoteDetailModal.tsx / DB변경 없음
 [2026-03-31] Quote Details 모달 레이아웃 개선 — PROPOSED AMOUNT 섹션 p-5→py-3 px-5 패딩 축소; 하단 sticky 노란 CTA 버튼 바 완전 제거 / frontend/src/components/customer/QuoteDetailModal.tsx / DB변경 없음
 [2026-03-31] /quotes/received 한글 텍스트·날짜/시간 영어 형식 변환 — "전문가"→"Pro", {proName}님→{proName} ×2, toLocaleDateString→en-US short ×2, toLocaleTimeString→en-US hour12:true ×1 / frontend/src/app/quotes/received/CustomerQuotesClient.tsx / DB변경 없음

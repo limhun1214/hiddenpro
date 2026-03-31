@@ -17,6 +17,7 @@ export default function ChatListPage() {
   const [lastMessageMap, setLastMessageMap] = useState<Record<string, string>>(
     {},
   );
+  const [searchQuery, setSearchQuery] = useState("");
 
   const formatChatTime = (dateString: string) => {
     const date = new Date(dateString);
@@ -244,194 +245,238 @@ export default function ChatListPage() {
       <div className="min-h-screen bg-[#f7f9fc] flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="w-10 h-10 border-4 border-[#0020A0] border-t-transparent rounded-full animate-spin" />
-          <p className="text-sm text-gray-400">{t("chatList.loading")}</p>
+          <p className="text-sm text-[#757685]">{t("chatList.loading")}</p>
         </div>
       </div>
     );
 
+  const filteredRooms = rooms.filter((room) => {
+    if (!searchQuery.trim()) return true;
+    const partnerName =
+      room.pro_id === currentUserId
+        ? room.customer_name || t("chatList.unknown")
+        : room.pro_name || t("chatList.unknown");
+    return partnerName.toLowerCase().includes(searchQuery.toLowerCase());
+  });
+
   return (
-    <div className="min-h-screen bg-[#f7f9fc] flex flex-col">
-      {/* 헤더 */}
-      <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-xl shadow-[0_32px_64px_-15px_rgba(0,15,93,0.06)]">
-        <div className="flex items-center justify-between px-6 py-4">
-          <h1 className="text-xl font-black text-[#0020A0] tracking-tight">
+    <div className="min-h-screen bg-[#f7f9fc] pb-24">
+      {/* TopAppBar */}
+      <header className="fixed top-0 w-full z-50 bg-slate-50/80 backdrop-blur-xl shadow-sm h-16 flex justify-between items-center px-6">
+        <div className="flex items-center gap-4">
+          <button className="text-indigo-900 hover:bg-slate-200/50 transition-colors p-2 rounded-full active:scale-95 duration-200">
+            <span className="material-symbols-outlined">menu</span>
+          </button>
+          <h1 className="font-['Manrope'] font-bold text-2xl tracking-tight text-indigo-900">
             {t("chatList.title")}
           </h1>
         </div>
-        <div className="h-px w-full bg-[#c5c5d6]/40" />
-      </div>
-
-      {errorMsg && (
-        <div className="mx-4 mt-3 text-red-600 text-sm bg-red-50 p-3 rounded-xl border border-red-200">
-          {t("chatList.dataError")}
-          {errorMsg}
+        <div className="flex items-center gap-2">
+          <button className="text-indigo-900 hover:bg-slate-200/50 transition-colors p-2 rounded-full active:scale-95 duration-200">
+            <span className="material-symbols-outlined">wallet</span>
+          </button>
+          <button className="text-indigo-900 hover:bg-slate-200/50 transition-colors p-2 rounded-full active:scale-95 duration-200 relative">
+            <span className="material-symbols-outlined">notifications</span>
+            <span className="absolute top-2 right-2 w-2 h-2 bg-[#fc755b] rounded-full border-2 border-white" />
+          </button>
         </div>
-      )}
+      </header>
 
-      {/* 채팅방 목록 */}
-      {!errorMsg && rooms.length === 0 ? (
-        <div className="flex-1 flex flex-col px-6 pt-8 pb-20">
-          {/* Security Notice 배너 — empty state 내부 상단 */}
-          <div className="bg-[#c2c9fe]/30 rounded-lg p-5 flex items-start gap-4 mb-10">
-            <div className="bg-[#0020A0] p-2 rounded-lg flex items-center justify-center flex-shrink-0">
-              <span
-                className="material-symbols-outlined text-white text-xl"
-                style={{ fontVariationSettings: "'FILL' 1, 'wght' 400" }}
-              >
-                lightbulb
-              </span>
-            </div>
-            <div className="flex flex-col">
-              <p className="text-[#4c5381] text-[10px] font-bold uppercase tracking-widest mb-1">
-                {t("chatList.bannerLabel")}
-              </p>
-              <p className="text-[#454653] text-sm leading-relaxed">
-                {t("chatList.banner")}
-              </p>
-            </div>
+      <main className="pt-24 px-6 max-w-3xl mx-auto">
+        {/* Error */}
+        {errorMsg && (
+          <div className="mb-4 text-red-600 text-sm bg-red-50 p-3 rounded-xl border border-red-200">
+            {t("chatList.dataError")}
+            {errorMsg}
           </div>
+        )}
 
-          {/* 아이콘 + 텍스트 + CTA */}
-          <div className="flex-1 flex flex-col items-center justify-center">
-            <div className="relative mb-8">
-              {/* 배경 블러 */}
-              <div className="absolute inset-0 bg-[#c2c9fe]/20 blur-3xl rounded-full scale-150" />
-              {/* 아이콘 컨테이너 */}
-              <div
-                className="relative bg-white w-44 h-44 rounded-3xl flex items-center justify-center"
-                style={{ boxShadow: "0 32px 64px -15px rgba(0, 15, 93, 0.06)" }}
-              >
+        {/* Search Bar */}
+        <div className="mb-8">
+          <div className="relative group">
+            <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-[#757685]">
+              <span className="material-symbols-outlined">search</span>
+            </div>
+            <input
+              className="w-full bg-[#f2f4f7] border-none focus:ring-0 rounded-xl py-4 pl-12 pr-4 text-[#191c1e] placeholder-[#757685] transition-all focus:bg-white focus:shadow-sm outline-none"
+              placeholder={t("chatList.searchPlaceholder")}
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#001269] transition-all duration-300 group-focus-within:w-full" />
+          </div>
+        </div>
+
+        {/* Chat List or Empty State */}
+        {!errorMsg && rooms.length === 0 ? (
+          <div className="flex flex-col pt-4 pb-20">
+            {/* Security Notice 배너 */}
+            <div className="bg-[#c2c9fe]/30 rounded-lg p-5 flex items-start gap-4 mb-10">
+              <div className="bg-[#0020A0] p-2 rounded-lg flex items-center justify-center flex-shrink-0">
                 <span
-                  className="material-symbols-outlined text-[#0020A0]"
-                  style={{
-                    fontSize: "80px",
-                    fontVariationSettings: "'FILL' 1",
-                  }}
+                  className="material-symbols-outlined text-white text-xl"
+                  style={{ fontVariationSettings: "'FILL' 1, 'wght' 400" }}
                 >
-                  chat_bubble
+                  lightbulb
                 </span>
               </div>
+              <div className="flex flex-col">
+                <p className="text-[#4c5381] text-[10px] font-bold uppercase tracking-widest mb-1">
+                  {t("chatList.bannerLabel")}
+                </p>
+                <p className="text-[#454653] text-sm leading-relaxed">
+                  {t("chatList.banner")}
+                </p>
+              </div>
             </div>
-            <div className="text-center max-w-xs">
-              <h2 className="font-black text-2xl text-[#191c1e] mb-3 tracking-tight">
-                {t("chatList.noRooms")}
-              </h2>
-              <p className="text-[#454653] text-sm px-4 leading-relaxed">
-                {t("chatList.noRoomsSub")}
-              </p>
-            </div>
-            <button
-              onClick={() => router.push("/request")}
-              className="mt-10 bg-[#0020A0] hover:bg-[#001880] text-white font-bold text-xs uppercase tracking-widest px-8 py-4 rounded-lg flex items-center gap-3 active:scale-95 transition-all shadow-lg shadow-indigo-900/10"
-            >
-              {t("chatList.exploreServices")}
-              <span className="material-symbols-outlined text-sm">
-                arrow_forward
-              </span>
-            </button>
-          </div>
-        </div>
-      ) : (
-        <ul className="flex-1 divide-y divide-[#c5c5d6]/30 px-3 py-2 space-y-1">
-          {rooms.map((room) => {
-            const partnerName =
-              room.pro_id === currentUserId
-                ? room.customer_name || t("chatList.unknown")
-                : room.pro_name || t("chatList.unknown");
-            const partnerAvatar =
-              room.pro_id === currentUserId
-                ? room.customer_avatar
-                : room.pro_avatar;
-            const unread = room.unread_count || 0;
-            const isClosed = room.status === "CLOSED";
 
-            return (
-              <li key={room.room_id}>
-                <Link
-                  href={`/chat/${room.room_id}`}
-                  className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white active:bg-white/80 transition-colors duration-200"
-                  style={{ boxShadow: "none" }}
+            {/* 아이콘 + 텍스트 + CTA */}
+            <div className="flex flex-col items-center justify-center">
+              <div className="relative mb-8">
+                <div className="absolute inset-0 bg-[#c2c9fe]/20 blur-3xl rounded-full scale-150" />
+                <div
+                  className="relative bg-white w-44 h-44 rounded-3xl flex items-center justify-center"
+                  style={{
+                    boxShadow: "0 32px 64px -15px rgba(0, 15, 93, 0.06)",
+                  }}
                 >
-                  {/* 아바타 */}
-                  <div className="relative flex-shrink-0">
-                    <div className="w-12 h-12 rounded-full bg-gray-100 overflow-hidden border border-gray-200 flex items-center justify-center">
-                      {partnerAvatar ? (
-                        <img
-                          src={partnerAvatar}
-                          alt="Profile"
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <svg
-                          className="w-6 h-6 text-gray-400"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-                        </svg>
+                  <span
+                    className="material-symbols-outlined text-[#0020A0]"
+                    style={{
+                      fontSize: "80px",
+                      fontVariationSettings: "'FILL' 1",
+                    }}
+                  >
+                    chat_bubble
+                  </span>
+                </div>
+              </div>
+              <div className="text-center max-w-xs">
+                <h2 className="font-black text-2xl text-[#191c1e] mb-3 tracking-tight">
+                  {t("chatList.noRooms")}
+                </h2>
+                <p className="text-[#454653] text-sm px-4 leading-relaxed">
+                  {t("chatList.noRoomsSub")}
+                </p>
+              </div>
+              <button
+                onClick={() => router.push("/request")}
+                className="mt-10 bg-[#0020A0] hover:bg-[#001880] text-white font-bold text-xs uppercase tracking-widest px-8 py-4 rounded-lg flex items-center gap-3 active:scale-95 transition-all shadow-lg shadow-indigo-900/10"
+              >
+                {t("chatList.exploreServices")}
+                <span className="material-symbols-outlined text-sm">
+                  arrow_forward
+                </span>
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {filteredRooms.map((room) => {
+              const partnerName =
+                room.pro_id === currentUserId
+                  ? room.customer_name || t("chatList.unknown")
+                  : room.pro_name || t("chatList.unknown");
+              const partnerAvatar =
+                room.pro_id === currentUserId
+                  ? room.customer_avatar
+                  : room.pro_avatar;
+              const unread = room.unread_count || 0;
+              const isClosed = room.status === "CLOSED";
+
+              const lastMessage = isClosed
+                ? lastMessageMap[room.room_id] || t("chatList.closedMsg")
+                : lastMessageMap[room.room_id] ||
+                  (room.status === "MATCHED"
+                    ? t("chatList.matched")
+                    : t("chatList.startChat"));
+
+              return (
+                <Link
+                  key={room.room_id}
+                  href={`/chat/${room.room_id}`}
+                  className="block"
+                >
+                  <div
+                    className="bg-white p-5 rounded-xl flex items-center gap-4 transition-transform active:scale-[0.98]"
+                    style={{ boxShadow: "0 0 32px 0 rgba(0, 15, 93, 0.06)" }}
+                  >
+                    {/* 아바타 */}
+                    <div className="relative flex-shrink-0">
+                      <div className="w-14 h-14 rounded-full overflow-hidden ring-2 ring-indigo-50 bg-[#f2f4f7] flex items-center justify-center">
+                        {partnerAvatar ? (
+                          <img
+                            src={partnerAvatar}
+                            alt="Profile"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <svg
+                            className="w-7 h-7 text-[#aea9b2]"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                          </svg>
+                        )}
+                      </div>
+                      {/* 종료됨 오버레이 */}
+                      {isClosed && (
+                        <div className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center">
+                          <span className="text-white text-[9px] font-bold">
+                            {t("chatList.closedOverlay")}
+                          </span>
+                        </div>
                       )}
                     </div>
-                    {/* 종료됨 오버레이 */}
-                    {isClosed && (
-                      <div className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center">
-                        <span className="text-white text-[9px] font-bold">
-                          {t("chatList.closedOverlay")}
+
+                    {/* 이름 + 마지막 메시지 영역 */}
+                    <div className="flex-grow min-w-0">
+                      <div className="flex justify-between items-start mb-1">
+                        <h3
+                          className={`font-['Inter'] font-bold text-lg truncate ${isClosed ? "text-[#aea9b2]" : "text-[#191c1e]"}`}
+                        >
+                          {partnerName}
+                          {t("chatList.proSuffix")}
+                        </h3>
+                        <span className="font-['Inter'] text-[11px] font-medium uppercase tracking-[0.05em] text-[#757685] flex-shrink-0 ml-2">
+                          {formatChatTime(room.created_at)}
                         </span>
                       </div>
-                    )}
-                  </div>
-
-                  {/* 이름 + 마지막 메시지 영역 */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5">
-                      <span
-                        className={`text-[15px] font-bold truncate ${isClosed ? "text-gray-300" : "text-[#1F2937]"}`}
-                      >
-                        {partnerName}
-                        {t("chatList.proSuffix")}
-                      </span>
-                      {isClosed && (
-                        <span className="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-full flex-shrink-0">
-                          {t("chatList.closedBadge")}
-                        </span>
-                      )}
+                      <div className="flex justify-between items-center">
+                        <p
+                          className={`font-['Inter'] text-sm truncate pr-3 ${unread > 0 ? "font-semibold text-[#001269]" : "text-[#454653]"}`}
+                        >
+                          {lastMessage}
+                        </p>
+                        {/* 배지 영역 */}
+                        {unread > 0 ? (
+                          <span className="min-w-[20px] h-5 bg-[#0020A0] text-white text-[11px] font-black px-1.5 rounded-full flex items-center justify-center flex-shrink-0">
+                            {unread > 99 ? "99+" : unread}
+                          </span>
+                        ) : room.status === "MATCHED" ? (
+                          <span className="bg-[#eceef1] text-[#454653] font-['Inter'] text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider flex-shrink-0">
+                            {t("chatList.matchedBadge")}
+                          </span>
+                        ) : isClosed ? (
+                          <span className="bg-[#eceef1] text-[#454653] font-['Inter'] text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider flex-shrink-0">
+                            {t("chatList.closedBadge")}
+                          </span>
+                        ) : (
+                          <span className="bg-[#c2c9fe] text-[#4c5381] font-['Inter'] text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider flex-shrink-0">
+                            {t("chatList.inProgress")}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    <p className="text-xs text-gray-400 mt-0.5 truncate">
-                      {isClosed
-                        ? lastMessageMap[room.room_id] ||
-                          t("chatList.closedMsg")
-                        : lastMessageMap[room.room_id] ||
-                          (room.status === "MATCHED"
-                            ? t("chatList.matched")
-                            : t("chatList.startChat"))}
-                    </p>
-                  </div>
-
-                  {/* 시간 + 뱃지 */}
-                  <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
-                    <span className="text-[11px] text-gray-400">
-                      {formatChatTime(room.created_at)}
-                    </span>
-                    {unread > 0 ? (
-                      <span className="min-w-[20px] h-5 bg-[#0020A0] text-white text-[11px] font-black px-1.5 rounded-full flex items-center justify-center">
-                        {unread > 99 ? "99+" : unread}
-                      </span>
-                    ) : room.status === "MATCHED" ? (
-                      <span className="text-[10px] font-bold text-green-600 bg-green-50 border border-green-200 px-2 py-0.5 rounded-full">
-                        {t("chatList.matchedBadge")}
-                      </span>
-                    ) : !isClosed ? (
-                      <span className="text-[10px] font-bold text-[#0020A0] bg-[#0020A0]/10 px-2 py-0.5 rounded-full">
-                        {t("chatList.inProgress")}
-                      </span>
-                    ) : null}
                   </div>
                 </Link>
-              </li>
-            );
-          })}
-        </ul>
-      )}
+              );
+            })}
+          </div>
+        )}
+      </main>
     </div>
   );
 }
