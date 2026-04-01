@@ -7758,7 +7758,7 @@ export default function DynamicRequestForm() {
       </div>
 
       {/* Chat History Flow */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-6 pb-32 scroll-smooth">
+      <div className="flex-1 overflow-y-auto no-scrollbar p-4 space-y-6 pb-32 scroll-smooth">
         {history.map((h, i) => (
           <div key={i} className="space-y-4">
             <div className="flex justify-start">
