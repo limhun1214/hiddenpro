@@ -37,6 +37,9 @@ export default function HomePage() {
   // ── [확장] 정지 계정 경고 배너 ──
   const [showSuspendedBanner, setShowSuspendedBanner] = useState(false);
   const [showWithdrawnBanner, setShowWithdrawnBanner] = useState(false);
+  // ── [확장] 탈퇴 계정 재가입 확인 모달 ──
+  const [showReregisterModal, setShowReregisterModal] = useState(false);
+  const [isReregistering, setIsReregistering] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
@@ -249,6 +252,10 @@ export default function HomePage() {
       if (params.get("withdrawn") === "true") {
         setShowWithdrawnBanner(true);
       }
+      // ── [확장] 탈퇴 계정 재가입 감지 ──
+      if (params.get("reregister") === "true") {
+        setShowReregisterModal(true);
+      }
 
       // ── [확장] 인증 에러 감지 → Alert 표출 ──
       const error = params.get("error");
@@ -261,6 +268,7 @@ export default function HomePage() {
       if (
         params.get("suspended") === "true" ||
         params.get("withdrawn") === "true" ||
+        params.get("reregister") === "true" ||
         params.get("error")
       ) {
         window.history.replaceState({}, "", "/");
@@ -353,6 +361,38 @@ export default function HomePage() {
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const handleReregister = async () => {
+    setIsReregistering(true);
+    try {
+      const { data: authData } = await supabase.auth.getUser();
+      const user = authData?.user;
+      if (!user) throw new Error("세션 없음");
+
+      const { error } = await supabase
+        .from("users")
+        .update({
+          status: "ACTIVE",
+          name: user.email?.split("@")[0] || "user",
+          nickname: null,
+          email: user.email ?? null,
+        })
+        .eq("user_id", user.id);
+
+      if (error) throw error;
+
+      setShowReregisterModal(false);
+      window.location.href = "/";
+    } catch (e: any) {
+      alert("재가입 처리 중 오류가 발생했습니다: " + e.message);
+      setIsReregistering(false);
+    }
+  };
+
+  const handleReregisterDecline = async () => {
+    await supabase.auth.signOut();
+    setShowReregisterModal(false);
+  };
 
   const handleSocialLogin = async (provider: "google" | "facebook") => {
     // 선택된 역할과 모드를 localStorage에 저장 (OAuth 리다이렉트 후 콜백에서 복원)
@@ -664,6 +704,41 @@ export default function HomePage() {
           </div>
         </div>
       )}
+      {/* ── 탈퇴 계정 재가입 확인 모달 ── */}
+      {showReregisterModal && (
+        <div className="fixed inset-0 z-[400] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl p-6 flex flex-col gap-4">
+            <div className="text-center">
+              <span className="text-4xl block mb-2">👋</span>
+              <h3 className="text-lg font-black text-gray-800">
+                {t("landing.reregisterTitle")}
+              </h3>
+              <p className="text-sm text-gray-500 mt-1 leading-relaxed">
+                {t("landing.reregisterDesc")}
+              </p>
+            </div>
+            <div className="flex gap-2 mt-1">
+              <button
+                onClick={handleReregisterDecline}
+                disabled={isReregistering}
+                className="flex-1 py-3 rounded-xl border border-gray-200 text-gray-600 font-bold text-sm hover:bg-gray-50 transition"
+              >
+                {t("landing.reregisterDecline")}
+              </button>
+              <button
+                onClick={handleReregister}
+                disabled={isReregistering}
+                className="flex-1 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition disabled:opacity-50"
+              >
+                {isReregistering
+                  ? t("landing.reregistering")
+                  : t("landing.reregisterConfirm")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* [헤더] Stitch TopAppBar — 비로그인 시에만 표시 */}
       <header
         className={`fixed top-0 z-50 w-full backdrop-blur-xl transition-all duration-300 ${isScrolled ? "bg-white/95 border-b border-gray-200" : "bg-white/90"} ${isLoggedIn ? "hidden" : ""}`}

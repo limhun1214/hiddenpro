@@ -53,13 +53,22 @@ export default function AuthCompletePage() {
         // 3. 서버 권한 우선주의: 기존 유저 여부 확인
         const { data: existingUser } = await supabase
           .from("users")
-          .select("role, created_at")
+          .select("role, created_at, status")
           .eq("user_id", sessionUser.id)
           .single();
 
         let finalRole: string;
 
         if (existingUser) {
+          // ▶ 탈퇴 계정 감지: 재가입 확인 페이지로 리다이렉트 (세션 유지)
+          if (String(existingUser.status).toUpperCase() === "DELETED") {
+            localStorage.removeItem("pending_auth_role");
+            localStorage.removeItem("pending_auth_mode");
+            localStorage.removeItem("pending_referral_code");
+            window.location.href = "/?reregister=true";
+            return;
+          }
+
           // ▶ 트리거 신규 판정: created_at이 30초 이내이면 handle_user_sync()가 방금 만든 레코드
           const createdAt = new Date(existingUser.created_at).getTime();
           const isTriggerFreshRecord = Date.now() - createdAt < 30_000;
