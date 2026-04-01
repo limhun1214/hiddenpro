@@ -566,19 +566,49 @@ ALTER TABLE users
 | `process_referral_reward(p_referred_user_id)` | 추천 보상 지급 처리             | 중복 지급 방지 UNIQUE 제약 + 트랜잭션 |
 | `redeem_coupon(p_pro_id, p_coupon_code)`      | 고수의 쿠폰 등록 → Credits 전환 | 쿠폰 상태 검증 + 만료 체크            |
 
+### 7.4 추천인 보상 매트릭스 (4-Way)
+
+보상 트리거 시점: 피추천인의 **첫 번째 행동** 완료 시
+
+| 추천인 역할 | 피추천인 역할 | 트리거 조건                    | 추천인 보상        | 피추천인 보상      |
+| ----------- | ------------- | ------------------------------ | ------------------ | ------------------ |
+| Pro         | Pro           | 피추천 Pro의 첫 견적서 발송    | +150 Bonus Credits | +150 Bonus Credits |
+| Customer    | Pro           | 피추천 Pro의 첫 견적서 발송    | 할인 쿠폰          | +150 Bonus Credits |
+| Customer    | Customer      | 피추천 Customer의 첫 견적 요청 | 할인 쿠폰          | 할인 쿠폰          |
+| Pro         | Customer      | 피추천 Customer의 첫 견적 요청 | +150 Bonus Credits | 할인 쿠폰          |
+
+**보상 종류**:
+
+- `BONUS_CREDITS`: `pro_profiles.current_cash` 에 150 적립 (즉시 사용 가능한 캐시)
+- `COUPON`: `coupons` 테이블에 발급 → 견적 요청 시 할인 적용
+
+**`process_referral_reward` 호출 시점**:
+
+- CUSTOMER 첫 견적 요청 후: `auth/complete/page.tsx` 내 `pendingRequestData` 처리 블록에서 fire-and-forget 호출
+- PRO 첫 견적서 발송 후: 견적서 발송 API / RPC에서 호출 (별도 구현 필요)
+
 ```sql
--- process_referral_reward 핵심 로직 구조
+-- process_referral_reward 핵심 로직 구조 (4-Way 보상 매트릭스 반영)
 CREATE OR REPLACE FUNCTION process_referral_reward(p_referred_user_id UUID)
 RETURNS VOID AS $$
 DECLARE
-  v_referrer_id UUID;
+  v_referrer_id   UUID;
+  v_referrer_role TEXT;
+  v_referred_role TEXT;
 BEGIN
-  -- 1. 피추천인의 추천인 확인
-  SELECT referred_by INTO v_referrer_id FROM users WHERE id = p_referred_user_id;
+  -- 1. 피추천인·추천인 역할 확인
+  SELECT role, referred_by INTO v_referred_role, v_referrer_id
+    FROM users WHERE user_id = p_referred_user_id;
   IF v_referrer_id IS NULL THEN RETURN; END IF;
 
-  -- 2. 중복 보상 방지 (UNIQUE 제약에 의해 자동 차단)
-  -- 3. 추천인 + 피추천인 양쪽 Credits/쿠폰 지급 (4-Way 구조)
+  SELECT role INTO v_referrer_role FROM users WHERE user_id = v_referrer_id;
+
+  -- 2. 중복 보상 방지 (UNIQUE 제약: referrer_id + referred_user_id)
+  -- 3. 4-Way 매트릭스 분기:
+  --    Pro→Pro:       추천인 +150 Credits, 피추천인 +150 Credits
+  --    Customer→Pro:  추천인 쿠폰 발급,   피추천인 +150 Credits
+  --    Customer→Cust: 추천인 쿠폰 발급,   피추천인 쿠폰 발급
+  --    Pro→Customer:  추천인 +150 Credits, 피추천인 쿠폰 발급
   -- 4. referral_rewards 테이블에 이력 기록
   -- 5. 알림 발송
 END;

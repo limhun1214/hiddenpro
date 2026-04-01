@@ -83,13 +83,8 @@ export default function AuthCompletePage() {
           const createdAt = new Date(existingUser.created_at).getTime();
           const isTriggerFreshRecord = Date.now() - createdAt < 30_000;
 
-          if (
-            isTriggerFreshRecord &&
-            pendingRole.toUpperCase() !== "CUSTOMER"
-          ) {
-            // 트리거가 CUSTOMER로 생성한 레코드를 pendingRole로 UPDATE
-            finalRole = pendingRole.toUpperCase();
-            // 추천인 코드로 추천인 ID 조회
+          if (isTriggerFreshRecord) {
+            // 추천인 코드로 추천인 ID 공통 조회
             let referredByUserId: string | null = null;
             if (pendingReferralCode) {
               const { data: referrerData } = await supabase
@@ -102,18 +97,21 @@ export default function AuthCompletePage() {
               }
             }
 
-            const { error: updateErr } = await supabase
-              .from("users")
-              .update({ role: finalRole, referred_by: referredByUserId })
-              .eq("user_id", sessionUser.id);
-            if (updateErr)
-              console.error(
-                "Role UPDATE Error (trigger fresh record):",
-                updateErr,
-              );
+            if (pendingRole.toUpperCase() !== "CUSTOMER") {
+              // ▶ PRO 가입: 트리거가 CUSTOMER로 생성한 레코드를 PRO로 UPDATE
+              finalRole = pendingRole.toUpperCase();
 
-            // PRO 가입 시 pro_profiles 초기 레코드 생성 (재시도 로직 포함)
-            if (finalRole === "PRO") {
+              const { error: updateErr } = await supabase
+                .from("users")
+                .update({ role: finalRole, referred_by: referredByUserId })
+                .eq("user_id", sessionUser.id);
+              if (updateErr)
+                console.error(
+                  "Role UPDATE Error (trigger fresh record):",
+                  updateErr,
+                );
+
+              // PRO 가입 시 pro_profiles 초기 레코드 생성 (재시도 로직 포함)
               let proInsertSuccess = false;
               for (let attempt = 0; attempt < 3; attempt++) {
                 const { error: proErr } = await supabase
@@ -134,6 +132,20 @@ export default function AuthCompletePage() {
                 console.error(
                   "Pro Profile Insert 최종 실패 — 관리자 확인 필요",
                 );
+              }
+            } else {
+              // ▶ CUSTOMER 가입: role은 CUSTOMER 유지, referred_by만 저장
+              finalRole = "CUSTOMER";
+              if (referredByUserId) {
+                const { error: updateErr } = await supabase
+                  .from("users")
+                  .update({ referred_by: referredByUserId })
+                  .eq("user_id", sessionUser.id);
+                if (updateErr)
+                  console.error(
+                    "Referral UPDATE Error (customer trigger fresh):",
+                    updateErr,
+                  );
               }
             }
           } else {
