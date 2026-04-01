@@ -197,6 +197,7 @@ export default function AuthCompletePage() {
         localStorage.removeItem("pending_auth_role");
         localStorage.removeItem("pending_auth_mode");
         localStorage.removeItem("pending_referral_code");
+        localStorage.removeItem("pending_show_login");
         setStatus(t("authComplete.loginSuccess"));
 
         // [pending 견적 처리] 로그인 후 미완료 견적 처리
