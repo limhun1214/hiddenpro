@@ -579,8 +579,8 @@ ALTER TABLE users
 
 **보상 종류**:
 
-- `BONUS_CREDITS`: `pro_profiles.current_cash` 에 150 적립 (즉시 사용 가능한 캐시)
-- `COUPON`: `coupons` 테이블에 발급 → 견적 요청 시 할인 적용
+- `BONUS_CREDITS`: `pro_profiles.current_cash` 에 150 적립 (즉시 사용 가능한 캐시, **만료 없음** — 만료 메커니즘 미구현, 향후 별도 스프린트 검토)
+- `COUPON`: `coupons` 테이블에 발급 → 견적 요청 시 할인 적용 (`expires_at` 기반 **1년 만료**, 집행 cron Go-Live 전 활성화 필요)
 
 **`process_referral_reward` 호출 시점**:
 

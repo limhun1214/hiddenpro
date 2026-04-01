@@ -19,8 +19,8 @@ export default function AdminReferralTab() {
     referral_enabled: 1,
     referral_bonus_credits: 150,
     referral_coupon_amount: 200,
-    coupon_expiry_days: 1095,
-    bonus_credit_expiry_days: 1095,
+    coupon_expiry_days: 365,
+    bonus_credit_expiry_days: 365,
   });
   const [settingsInputs, setSettingsInputs] = useState<Record<string, string>>(
     {},
