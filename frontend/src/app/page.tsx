@@ -42,6 +42,11 @@ export default function HomePage() {
   const [isReregistering, setIsReregistering] = useState(false);
   // ── [확장] 영구 이용 불가 모달 ──
   const [showPermanentBanModal, setShowPermanentBanModal] = useState(false);
+  // ── [확장] 신규 가입 웰컴 모달 ──
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+  const [welcomeRole, setWelcomeRole] = useState<"CUSTOMER" | "PRO">(
+    "CUSTOMER",
+  );
 
   const [searchQuery, setSearchQuery] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
@@ -261,6 +266,16 @@ export default function HomePage() {
       // ── [확장] 영구 이용 불가 감지 ──
       if (params.get("permanent_ban") === "true") {
         setShowPermanentBanModal(true);
+      }
+
+      // ── [확장] 신규 가입 웰컴 모달 감지 ──
+      const pendingWelcome = localStorage.getItem("pending_welcome");
+      if (pendingWelcome) {
+        localStorage.removeItem("pending_welcome");
+        setWelcomeRole(
+          pendingWelcome.toUpperCase() === "PRO" ? "PRO" : "CUSTOMER",
+        );
+        setShowWelcomeModal(true);
       }
 
       // ── [확장] 인증 에러 감지 → Alert 표출 ──
@@ -770,6 +785,35 @@ export default function HomePage() {
               className="w-full py-3 rounded-xl bg-gray-800 hover:bg-gray-900 text-white font-bold text-sm transition"
             >
               {t("landing.permanentBanBtn")}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── 신규 가입 웰컴 모달 ── */}
+      {showWelcomeModal && (
+        <div className="fixed inset-0 z-[400] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl p-6 flex flex-col gap-4">
+            <div className="text-center">
+              <span className="text-4xl block mb-2">🎉</span>
+              <h3 className="text-lg font-black text-gray-800">
+                {welcomeRole === "PRO"
+                  ? t("landing.welcomeProTitle")
+                  : t("landing.welcomeCustomerTitle")}
+              </h3>
+              <p className="text-sm text-gray-500 mt-1 leading-relaxed whitespace-pre-line">
+                {welcomeRole === "PRO"
+                  ? t("landing.welcomeProDesc")
+                  : t("landing.welcomeCustomerDesc")}
+              </p>
+            </div>
+            <button
+              onClick={() => setShowWelcomeModal(false)}
+              className="w-full py-3 rounded-xl bg-[#0020A0] hover:bg-blue-800 text-white font-bold text-sm transition"
+            >
+              {welcomeRole === "PRO"
+                ? t("landing.welcomeProBtn")
+                : t("landing.welcomeCustomerBtn")}
             </button>
           </div>
         </div>

@@ -58,6 +58,7 @@ export default function AuthCompletePage() {
           .single();
 
         let finalRole: string;
+        let isNewUser = false;
 
         if (existingUser) {
           // ▶ 탈퇴 계정 감지: 탈퇴 횟수 확인 후 분기 (세션 유지)
@@ -84,6 +85,7 @@ export default function AuthCompletePage() {
           const isTriggerFreshRecord = Date.now() - createdAt < 30_000;
 
           if (isTriggerFreshRecord) {
+            isNewUser = true;
             // 추천인 코드로 추천인 ID 공통 조회
             let referredByUserId: string | null = null;
             if (pendingReferralCode) {
@@ -178,6 +180,7 @@ export default function AuthCompletePage() {
           }
         } else {
           // ▶ 신규 유저: 선택한 역할로 INSERT
+          isNewUser = true;
           finalRole = pendingRole.toUpperCase();
           const userName = sessionUser.email?.split("@")[0] || "user";
 
@@ -359,6 +362,11 @@ export default function AuthCompletePage() {
         // 비관리자 계정은 locale을 en으로 강제
         if (!["ADMIN", "ADMIN_OPERATION", "ADMIN_VIEWER"].includes(finalRole)) {
           document.cookie = "locale=en; path=/; max-age=31536000; SameSite=Lax";
+        }
+
+        // 신규 가입 시 웰컴 모달 플래그 설정
+        if (isNewUser) {
+          localStorage.setItem("pending_welcome", finalRole);
         }
 
         window.location.href = "/";
