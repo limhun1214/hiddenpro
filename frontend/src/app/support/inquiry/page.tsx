@@ -241,19 +241,21 @@ function InquiryContent() {
   return (
     <div className="min-h-screen bg-[#f7f9fc] text-[#191c1e] flex flex-col pb-32 font-body">
       {/* 내부 헤더 */}
-      <header className="flex items-center justify-between w-full px-6 h-16 bg-white/80 backdrop-blur-md border-b border-[#c5c5d6]/40 shadow-[0_0_32px_0_rgba(0,15,93,0.06)] sticky top-0 z-10">
-        <button
-          onClick={() => router.back()}
-          className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-slate-100/50 transition-colors active:scale-90"
-        >
-          <span className="material-symbols-outlined text-[#001269]">
-            arrow_back
-          </span>
-        </button>
-        <h1 className="font-headline font-bold text-lg tracking-tight text-[#001269]">
-          {t("inquiry.pageTitle")}
-        </h1>
-        <div className="w-10"></div>
+      <header className="w-full bg-white/80 backdrop-blur-md border-b border-[#c5c5d6]/40 shadow-[0_0_32px_0_rgba(0,15,93,0.06)] sticky top-0 z-10">
+        <div className="max-w-2xl mx-auto px-6 h-16 flex items-center justify-between">
+          <button
+            onClick={() => router.back()}
+            className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-slate-100/50 transition-colors active:scale-90"
+          >
+            <span className="material-symbols-outlined text-[#001269]">
+              arrow_back
+            </span>
+          </button>
+          <h1 className="font-headline font-bold text-lg tracking-tight text-[#001269]">
+            {t("inquiry.pageTitle")}
+          </h1>
+          <div className="w-10"></div>
+        </div>
       </header>
 
       <main className="flex-1 w-full max-w-2xl mx-auto px-6 pt-8">
