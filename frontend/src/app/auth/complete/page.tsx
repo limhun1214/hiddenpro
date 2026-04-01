@@ -60,12 +60,22 @@ export default function AuthCompletePage() {
         let finalRole: string;
 
         if (existingUser) {
-          // ▶ 탈퇴 계정 감지: 재가입 확인 페이지로 리다이렉트 (세션 유지)
+          // ▶ 탈퇴 계정 감지: 탈퇴 횟수 확인 후 분기 (세션 유지)
           if (String(existingUser.status).toUpperCase() === "DELETED") {
             localStorage.removeItem("pending_auth_role");
             localStorage.removeItem("pending_auth_mode");
             localStorage.removeItem("pending_referral_code");
-            window.location.href = "/?reregister=true";
+
+            const { count: withdrawCount } = await supabase
+              .from("withdrawal_logs")
+              .select("user_id", { count: "exact", head: true })
+              .eq("user_id", sessionUser.id);
+
+            if ((withdrawCount ?? 0) >= 3) {
+              window.location.href = "/?permanent_ban=true";
+            } else {
+              window.location.href = "/?reregister=true";
+            }
             return;
           }
 

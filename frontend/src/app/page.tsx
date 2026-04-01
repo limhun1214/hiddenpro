@@ -40,6 +40,8 @@ export default function HomePage() {
   // ── [확장] 탈퇴 계정 재가입 확인 모달 ──
   const [showReregisterModal, setShowReregisterModal] = useState(false);
   const [isReregistering, setIsReregistering] = useState(false);
+  // ── [확장] 영구 이용 불가 모달 ──
+  const [showPermanentBanModal, setShowPermanentBanModal] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
@@ -256,6 +258,10 @@ export default function HomePage() {
       if (params.get("reregister") === "true") {
         setShowReregisterModal(true);
       }
+      // ── [확장] 영구 이용 불가 감지 ──
+      if (params.get("permanent_ban") === "true") {
+        setShowPermanentBanModal(true);
+      }
 
       // ── [확장] 인증 에러 감지 → Alert 표출 ──
       const error = params.get("error");
@@ -269,6 +275,7 @@ export default function HomePage() {
         params.get("suspended") === "true" ||
         params.get("withdrawn") === "true" ||
         params.get("reregister") === "true" ||
+        params.get("permanent_ban") === "true" ||
         params.get("error")
       ) {
         window.history.replaceState({}, "", "/");
@@ -735,6 +742,32 @@ export default function HomePage() {
                   : t("landing.reregisterConfirm")}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── 영구 이용 불가 모달 ── */}
+      {showPermanentBanModal && (
+        <div className="fixed inset-0 z-[400] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl p-6 flex flex-col gap-4">
+            <div className="text-center">
+              <span className="text-4xl block mb-2">🚫</span>
+              <h3 className="text-lg font-black text-gray-800">
+                {t("landing.permanentBanTitle")}
+              </h3>
+              <p className="text-sm text-gray-500 mt-1 leading-relaxed">
+                {t("landing.permanentBanDesc")}
+              </p>
+            </div>
+            <button
+              onClick={async () => {
+                await supabase.auth.signOut();
+                setShowPermanentBanModal(false);
+              }}
+              className="w-full py-3 rounded-xl bg-gray-800 hover:bg-gray-900 text-white font-bold text-sm transition"
+            >
+              {t("landing.permanentBanBtn")}
+            </button>
           </div>
         </div>
       )}
