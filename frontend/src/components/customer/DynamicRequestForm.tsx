@@ -7749,7 +7749,7 @@ export default function DynamicRequestForm() {
   const options = getOptionsForCurrentStep();
 
   return (
-    <div className="flex flex-col w-full min-h-screen bg-[#f7f9fc] lg:overflow-y-auto relative">
+    <div className="flex flex-col w-full max-w-3xl mx-auto min-h-screen bg-[#f7f9fc] lg:overflow-y-auto relative">
       {/* Header */}
       <div className="flex-none flex items-center justify-center px-6 h-16 bg-white/80 backdrop-blur-xl shadow-[0_2px_32px_0_rgba(0,15,93,0.06)] z-50">
         <h1 className="font-['Manrope'] text-[17px] font-bold text-[#001269]">
