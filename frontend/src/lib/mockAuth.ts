@@ -34,9 +34,18 @@ export async function mockVerifyCustomerPhone(userId: string, phone: string) {
     .neq("pro_id", userId)
     .limit(1);
 
+  // withdrawal_logs에서 탈퇴한 다른 계정의 번호인지 검색
+  const { data: withdrawnUser } = await supabase
+    .from("withdrawal_logs")
+    .select("user_id")
+    .eq("phone", normalizedPhone)
+    .neq("user_id", userId)
+    .limit(1);
+
   if (
     (existingUser && existingUser.length > 0) ||
-    (existingPro && existingPro.length > 0)
+    (existingPro && existingPro.length > 0) ||
+    (withdrawnUser && withdrawnUser.length > 0)
   ) {
     throw new Error(
       "이 전화번호는 이미 다른 계정에서 인증되었습니다. 1개의 번호로 1개의 계정만 인증할 수 있습니다.",
@@ -90,9 +99,18 @@ export async function mockVerifyProPhone(proId: string, phone: string) {
     .neq("user_id", proId)
     .limit(1);
 
+  // withdrawal_logs에서 탈퇴한 다른 계정의 번호인지 검색
+  const { data: withdrawnUser } = await supabase
+    .from("withdrawal_logs")
+    .select("user_id")
+    .eq("phone", normalizedPhone)
+    .neq("user_id", proId)
+    .limit(1);
+
   if (
     (existingPro && existingPro.length > 0) ||
-    (existingUser && existingUser.length > 0)
+    (existingUser && existingUser.length > 0) ||
+    (withdrawnUser && withdrawnUser.length > 0)
   ) {
     throw new Error(
       "이 전화번호는 이미 다른 계정에서 인증되었습니다. 1개의 번호로 1개의 계정만 인증할 수 있습니다.",
