@@ -266,27 +266,18 @@ export default function AuthCompletePage() {
               .single();
 
             if (!userRow?.is_phone_verified) {
-              // 전화번호 미인증 시 — 첫 번째 견적 여부 확인
-              const { count } = await supabase
-                .from("match_requests")
-                .select("request_id", { count: "exact", head: true })
-                .eq("customer_id", sessionUser.id);
-
-              if (count !== 0) {
-                // 두 번째 이상: pendingRequestData 복원 후 request 페이지로 이동 (전화번호 인증 유도)
-                localStorage.setItem(
-                  "pendingRequestData",
-                  JSON.stringify(pendingAnswers),
-                );
-                sessionStorage.setItem(
-                  "pending_phone_verify_msg",
-                  t("authComplete.pendingPhoneVerify"),
-                );
-                const categoryId = pendingAnswers.depth1 || "";
-                window.location.href = `/request?categoryId=${encodeURIComponent(categoryId)}&pendingSubmit=1`;
-                return;
-              }
-              // 첫 번째 견적: 인증 없이 바로 등록 (아래 INSERT 로직으로 계속 진행)
+              // 전화번호 미인증: 첫 번째 견적 포함 항상 인증 유도
+              localStorage.setItem(
+                "pendingRequestData",
+                JSON.stringify(pendingAnswers),
+              );
+              sessionStorage.setItem(
+                "pending_phone_verify_msg",
+                t("authComplete.pendingPhoneVerify"),
+              );
+              const categoryId = pendingAnswers.depth1 || "";
+              window.location.href = `/request?categoryId=${encodeURIComponent(categoryId)}&pendingSubmit=1`;
+              return;
             }
 
             // 전화번호 인증 완료 또는 첫 번째 견적 → DB 등록

@@ -7597,18 +7597,7 @@ export default function DynamicRequestForm() {
 
       const isVerified = await checkCustomerPhoneVerified(sessionUser.id);
       if (!isVerified) {
-        // 첫 번째 견적 여부 확인 (match_requests에 기존 견적이 없으면 첫 번째)
-        const { count } = await supabase
-          .from("match_requests")
-          .select("request_id", { count: "exact", head: true })
-          .eq("customer_id", sessionUser.id);
-
-        if (count === 0) {
-          // 첫 번째 견적: 인증 없이 바로 등록
-          await doActualSubmit();
-          return;
-        }
-        // 두 번째 이상: 전화번호 인증 모달 표시
+        // 전화번호 미인증: 첫 번째 견적 포함 항상 인증 모달 표시
         setShowPhoneModal(true);
         return;
       }
