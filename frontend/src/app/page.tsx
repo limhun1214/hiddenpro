@@ -388,6 +388,9 @@ export default function HomePage() {
 
       if (error) throw error;
 
+      // JWT user_metadata의 status도 ACTIVE로 복구 (미들웨어 DELETED 차단 해제)
+      await supabase.auth.updateUser({ data: { status: "ACTIVE" } });
+
       setShowReregisterModal(false);
       window.location.href = "/";
     } catch (e: any) {
