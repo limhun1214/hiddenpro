@@ -32,7 +32,33 @@ export default function BusinessInfoPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex flex-col">
-        <div className="flex justify-between items-center px-4 h-14 bg-white border-b border-gray-200 shadow-sm sticky top-0 z-10">
+        <div className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-10">
+          <div className="max-w-3xl mx-auto px-4 h-14 flex justify-between items-center">
+            <button
+              onClick={() => router.back()}
+              className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 transition-colors active:scale-90"
+            >
+              <span className="material-symbols-outlined text-[#D32D7D]">
+                arrow_back
+              </span>
+            </button>
+            <h1 className="font-bold text-gray-900">
+              {t("businessInfo.title")}
+            </h1>
+            <div className="w-10"></div>
+          </div>
+        </div>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-full border-4 border-gray-200 border-t-[#D32D7D] animate-spin"></div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-white text-gray-900 flex flex-col pb-32">
+      <header className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-10">
+        <div className="max-w-3xl mx-auto px-4 h-14 flex justify-between items-center">
           <button
             onClick={() => router.back()}
             className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 transition-colors active:scale-90"
@@ -44,26 +70,6 @@ export default function BusinessInfoPage() {
           <h1 className="font-bold text-gray-900">{t("businessInfo.title")}</h1>
           <div className="w-10"></div>
         </div>
-        <div className="flex-1 flex items-center justify-center">
-          <div className="w-8 h-8 rounded-full border-4 border-gray-200 border-t-[#D32D7D] animate-spin"></div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen bg-white text-gray-900 flex flex-col pb-32">
-      <header className="flex justify-between items-center px-4 h-14 bg-white border-b border-gray-200 shadow-sm sticky top-0 z-10">
-        <button
-          onClick={() => router.back()}
-          className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 transition-colors active:scale-90"
-        >
-          <span className="material-symbols-outlined text-[#D32D7D]">
-            arrow_back
-          </span>
-        </button>
-        <h1 className="font-bold text-gray-900">{t("businessInfo.title")}</h1>
-        <div className="w-10"></div>
       </header>
       <main className="flex-1 w-full max-w-3xl mx-auto px-5 pt-8 md:px-8">
         {/* 에디토리얼 헤더 */}
