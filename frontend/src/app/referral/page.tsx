@@ -18,8 +18,11 @@ export default function ReferralPage() {
   const [loading, setLoading] = useState(true);
   const [referralEnabled, setReferralEnabled] = useState(true);
 
-  // 추천 리스트
+  // 추천 리스트 (보상 이력 — 기존 유지)
   const [rewards, setRewards] = useState<any[]>([]);
+
+  // 추천 가입자 목록 (가입 즉시 표시용)
+  const [referrals, setReferrals] = useState<any[]>([]);
 
   // 쿠폰 (고객만)
   const [coupons, setCoupons] = useState<any[]>([]);
@@ -77,6 +80,12 @@ export default function ReferralPage() {
         .eq("referrer_id", uid)
         .order("created_at", { ascending: false });
       if (rewardsData) setRewards(rewardsData);
+
+      // 추천 가입자 목록 (가입 즉시 표시 — SECURITY DEFINER RPC로 RLS 우회)
+      const { data: referralsData } = await supabase.rpc("get_my_referrals", {
+        p_referrer_id: uid,
+      });
+      if (referralsData) setReferrals(referralsData);
 
       // 쿠폰 (고객)
       if (String(userData?.role).toUpperCase() === "CUSTOMER") {
@@ -178,8 +187,12 @@ export default function ReferralPage() {
     return name.substring(0, 3) + "***@" + domain;
   };
 
-  const completedCount = rewards.filter((r) => r.status === "COMPLETED").length;
-  const pendingCount = rewards.filter((r) => r.status === "PENDING").length;
+  const completedCount = referrals.filter(
+    (r) => r.reward_status === "COMPLETED",
+  ).length;
+  const pendingCount = referrals.filter(
+    (r) => r.reward_status === "PENDING" || r.reward_status == null,
+  ).length;
   const isPro = userRole === "PRO";
 
   if (loading)
@@ -260,7 +273,7 @@ export default function ReferralPage() {
             </p>
             <div className="flex items-end gap-2">
               <span className="text-2xl font-bold text-gray-900">
-                {rewards.length}
+                {referrals.length}
               </span>
               <span className="text-green-600 text-xs font-bold mb-1 flex items-center">
                 <span className="material-symbols-outlined text-sm">
@@ -289,33 +302,35 @@ export default function ReferralPage() {
               {t("referral.listTitle")}
             </h3>
           </div>
-          {rewards.length === 0 ? (
+          {referrals.length === 0 ? (
             <div className="bg-white rounded-xl p-8 text-center text-gray-500 text-sm border border-gray-200">
               {t("referral.listEmpty")}
             </div>
           ) : (
             <div className="bg-white rounded-xl overflow-hidden divide-y divide-gray-100 border border-gray-200">
-              {rewards.map((r) => (
+              {referrals.map((r) => (
                 <div
-                  key={r.id}
+                  key={r.referred_user_id}
                   className="p-4 flex items-center justify-between"
                 >
                   <div>
                     <p className="text-sm font-medium text-gray-900">
-                      {maskEmail(r.referred?.email)}
+                      {maskEmail(r.email)}
                     </p>
                     <p className="text-xs text-gray-500 mt-0.5">
                       {r.referred_role === "PRO" ? "Pro" : "Customer"}
                       <span className="mx-1">·</span>
-                      {new Date(r.created_at).toLocaleDateString()}
+                      {new Date(r.signed_up_at).toLocaleDateString()}
                     </p>
                   </div>
                   <div className="text-right">
-                    {r.status === "COMPLETED" ? (
+                    {r.reward_status === "COMPLETED" ? (
                       <span className="text-xs font-bold text-green-600 bg-green-50 px-3 py-1.5 rounded-full">
                         {r.referrer_reward_type === "BONUS_CREDITS"
                           ? `+${r.referrer_reward_amount} Credits`
-                          : `Coupon ${r.referrer_reward_amount}`}
+                          : r.referrer_reward_type === "COUPON"
+                            ? `Coupon ${r.referrer_reward_amount}`
+                            : "보상 완료"}
                       </span>
                     ) : (
                       <span className="text-xs font-bold text-yellow-600 bg-yellow-50 px-3 py-1.5 rounded-full">
