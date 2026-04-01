@@ -233,10 +233,12 @@ export default function ProfilePage() {
         <div className="fixed bottom-0 left-0 -z-10 w-2/3 h-1/2 bg-gradient-to-tr from-[#c2c9fe]/10 to-transparent blur-3xl pointer-events-none" />
 
         {/* 헤더 */}
-        <header className="bg-white/80 backdrop-blur-xl border-b border-slate-200/50 shadow-sm sticky top-0 z-10 h-16 flex items-center px-6">
-          <h1 className="font-headline font-bold text-lg tracking-tight text-indigo-900">
-            {t("profile.title")}
-          </h1>
+        <header className="bg-white/80 backdrop-blur-xl border-b border-slate-200/50 shadow-sm sticky top-0 z-10">
+          <div className="max-w-xl mx-auto w-full px-6 h-16 flex items-center">
+            <h1 className="font-headline font-bold text-lg tracking-tight text-indigo-900">
+              {t("profile.title")}
+            </h1>
+          </div>
         </header>
 
         <main className="flex-1 max-w-xl mx-auto w-full px-6 pt-8 space-y-8 pb-24">
@@ -439,10 +441,12 @@ export default function ProfilePage() {
       <div className="fixed bottom-0 left-0 -z-10 w-2/3 h-1/2 bg-gradient-to-tr from-[#c2c9fe]/10 to-transparent blur-3xl pointer-events-none" />
 
       {/* 헤더 */}
-      <header className="bg-white/80 backdrop-blur-xl border-b border-slate-200/50 shadow-sm sticky top-0 z-10 h-16 flex items-center px-6">
-        <h1 className="font-headline font-bold text-lg tracking-tight text-indigo-900">
-          {t("profile.title")}
-        </h1>
+      <header className="bg-white/80 backdrop-blur-xl border-b border-slate-200/50 shadow-sm sticky top-0 z-10">
+        <div className="max-w-xl mx-auto w-full px-6 h-16 flex items-center">
+          <h1 className="font-headline font-bold text-lg tracking-tight text-indigo-900">
+            {t("profile.title")}
+          </h1>
+        </div>
       </header>
 
       <main className="flex-1 max-w-xl mx-auto w-full px-6 pt-8 space-y-8 pb-24">
