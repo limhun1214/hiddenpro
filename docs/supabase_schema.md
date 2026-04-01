@@ -545,7 +545,7 @@ ALTER TABLE users ADD CONSTRAINT chk_no_self_referral
 | `issued_to`  | UUID (FK → users)  | 쿠폰 발급 대상 사용자           |
 | `amount`     | INT                | 쿠폰 금액                       |
 | `status`     | ENUM               | 'ACTIVE', 'REDEEMED', 'EXPIRED' |
-| `expires_at` | TIMESTAMP          | 만료 일시 (기본 3년)            |
+| `expires_at` | TIMESTAMP          | 만료 일시 (기본 1년)            |
 | `created_at` | TIMESTAMP          | 발급 일시                       |
 
 > **만료 자동 처리**: pg_cron 또는 Supabase Edge Function — `UPDATE coupons SET status='EXPIRED' WHERE status='ACTIVE' AND expires_at < NOW()` (Go-Live 전 활성화 필요)

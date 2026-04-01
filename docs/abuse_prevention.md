@@ -168,14 +168,14 @@ COMMIT;
 
 ### 4.2 관리자 조정 가능 설정 (platform_settings)
 
-| 설정 키                    | 기본값     | 설명                            |
-| -------------------------- | ---------- | ------------------------------- |
-| `max_quotes_per_request`   | 5          | 요청서당 최대 견적 발송 수      |
-| `referral_enabled`         | true       | 추천 프로그램 ON/OFF            |
-| `referral_bonus_credits`   | 150        | 추천 성공 시 지급 Bonus Credits |
-| `referral_coupon_amount`   | 200        | 추천 쿠폰 금액                  |
-| `coupon_expiry_days`       | 1095 (3년) | 쿠폰 만료 기간                  |
-| `bonus_credit_expiry_days` | 1095 (3년) | Bonus Credits 만료 기간         |
+| 설정 키                    | 기본값    | 설명                            |
+| -------------------------- | --------- | ------------------------------- |
+| `max_quotes_per_request`   | 5         | 요청서당 최대 견적 발송 수      |
+| `referral_enabled`         | true      | 추천 프로그램 ON/OFF            |
+| `referral_bonus_credits`   | 150       | 추천 성공 시 지급 Bonus Credits |
+| `referral_coupon_amount`   | 200       | 추천 쿠폰 금액                  |
+| `coupon_expiry_days`       | 365 (1년) | 쿠폰 만료 기간                  |
+| `bonus_credit_expiry_days` | 365 (1년) | Bonus Credits 만료 기간         |
 
 > **코딩 규칙**: 위 값들을 코드에 직접 하드코딩 금지. 반드시 `platform_settings` 테이블에서 조회.
 
@@ -282,13 +282,13 @@ COMMIT;
 
 ### 6.5 관리자 조정 가능 설정 (platform_settings)
 
-| 설정 키                    | 기본값     | 설명                            |
-| -------------------------- | ---------- | ------------------------------- |
-| `referral_enabled`         | true       | 추천 프로그램 ON/OFF            |
-| `referral_bonus_credits`   | 150        | 추천 성공 시 지급 Bonus Credits |
-| `referral_coupon_amount`   | 200        | 추천 쿠폰 금액                  |
-| `coupon_expiry_days`       | 1095 (3년) | 쿠폰 만료 기간                  |
-| `bonus_credit_expiry_days` | 1095 (3년) | Bonus Credits 만료 기간         |
+| 설정 키                    | 기본값    | 설명                            |
+| -------------------------- | --------- | ------------------------------- |
+| `referral_enabled`         | true      | 추천 프로그램 ON/OFF            |
+| `referral_bonus_credits`   | 150       | 추천 성공 시 지급 Bonus Credits |
+| `referral_coupon_amount`   | 200       | 추천 쿠폰 금액                  |
+| `coupon_expiry_days`       | 365 (1년) | 쿠폰 만료 기간                  |
+| `bonus_credit_expiry_days` | 365 (1년) | Bonus Credits 만료 기간         |
 
 > **코딩 금지**: 위 값들을 코드에 하드코딩 금지 — 반드시 `platform_settings` 테이블에서 런타임 조회
 

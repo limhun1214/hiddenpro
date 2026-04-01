@@ -829,7 +829,7 @@
     "loginRequired": "Please log in to use the referral program.",
     "systemOff": "Referral program is currently paused.",
     "gnbInvite": "Invite",
-    "legalExpiry": "Bonus Credits and Discount Coupons expire based on the platform's current policy (default: 3 years from issuance). The expiry period is set by the administrator and applies to rewards issued after each policy change.",
+    "legalExpiry": "Bonus Credits and Discount Coupons expire based on the platform's current policy (default: 1 year from issuance). The expiry period is set by the administrator and applies to rewards issued after each policy change.",
     "legalNoCash": "Rewards have no cash value and cannot be exchanged for cash, refunded, or transferred to another account under any circumstances.",
     "legalTrigger": "Rewards are credited only after the invited user submits their first quote (Pro) or posts their first request (Customer). Simply signing up does not qualify.",
     "legalCouponUsage": "Each Discount Coupon can only be used once per service match. The customer shares the coupon code with the matched pro, and the pro redeems it in the app. The system converts the coupon value into Bonus Credits for the pro — no cash changes hands between customer and pro.",
