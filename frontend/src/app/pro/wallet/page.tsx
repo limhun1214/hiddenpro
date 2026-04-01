@@ -295,7 +295,7 @@ export default function ProWalletPage() {
 
   return (
     <div className="min-h-screen bg-[#f7f9fc] text-gray-900 pb-32 font-body">
-      <main className="px-6 space-y-8 pt-6">
+      <main className="px-6 space-y-8 pt-6 max-w-3xl mx-auto w-full">
         {/* ── Balance Hero ── */}
         <section className="flex flex-col items-center text-center space-y-3 py-6">
           <p className="text-[#454653] font-bold uppercase tracking-widest text-xs">

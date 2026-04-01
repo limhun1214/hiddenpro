@@ -54,9 +54,10 @@ const config: Config = {
         "secondary-container": "#4600c4",
       },
       fontFamily: {
-        headline: ['"Plus Jakarta Sans"', "sans-serif"],
-        body: ["Manrope", "sans-serif"],
-        label: ["Manrope", "sans-serif"],
+        sans: ["Roboto", "sans-serif"],
+        headline: ["Roboto", "sans-serif"],
+        body: ["Roboto", "sans-serif"],
+        label: ["Roboto", "sans-serif"],
       },
     },
   },

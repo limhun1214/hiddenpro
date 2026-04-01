@@ -239,7 +239,7 @@ export default function CustomerMyReviewsPage() {
     );
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 pb-24 space-y-4">
+    <div className="min-h-screen bg-gray-50 p-4 pb-24 space-y-4 max-w-3xl mx-auto w-full">
       <div className="flex items-center gap-3 bg-white p-4 rounded-xl shadow-sm border border-gray-100 sticky top-0 z-10">
         <button
           onClick={() => router.back()}

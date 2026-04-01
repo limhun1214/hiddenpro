@@ -463,7 +463,7 @@ export default function ProRequestListClient() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] pb-24">
+    <div className="min-h-screen bg-[#F8F9FA] pb-24 max-w-3xl mx-auto w-full">
       {/* 헤더 */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-10 px-6 pt-4 pb-0 flex flex-col gap-3">
         <div className="flex items-center gap-2">
@@ -565,8 +565,12 @@ export default function ProRequestListClient() {
             )}
             {requests.filter((req) => {
               const isQuoted = quotedRequestIds.includes(req.request_id);
-              if (filterType === "NEW")
-                return !isQuoted && req.status !== "CANCELED"; // ── [핫픽스] 취소된 요청 제외 ──
+              if (filterType === "NEW") {
+                const expiresAt =
+                  new Date(req.created_at).getTime() + 48 * 60 * 60 * 1000;
+                const isExpired = expiresAt <= now;
+                return !isQuoted && req.status !== "CANCELED" && !isExpired; // ── [핫픽스] 취소/만료된 요청 제외 ──
+              }
               if (filterType === "QUOTED") {
                 if (!isQuoted) return false;
                 const myQuote = proQuotes.find(

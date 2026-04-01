@@ -243,7 +243,7 @@ export default function NotificationsPage() {
 
   return (
     <div
-      className="min-h-screen bg-[#f7f9fc] flex flex-col"
+      className="min-h-screen bg-[#f7f9fc] flex flex-col max-w-3xl mx-auto w-full"
       onClick={() => setOpenMenuId(null)}
     >
       {/* 배경 장식 */}

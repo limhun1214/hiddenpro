@@ -499,7 +499,7 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
     isQuoteValid;
 
   return (
-    <div className="relative min-h-screen bg-[#F8F9FA] pb-24">
+    <div className="relative min-h-screen bg-[#F8F9FA] pb-24 max-w-3xl mx-auto w-full">
       {/* 1. 상단 헤더 */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-10 px-4 pt-4 pb-3">
         <div className="flex items-center gap-3">

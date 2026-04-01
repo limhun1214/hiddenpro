@@ -575,7 +575,7 @@ export default function ClientLayout({
                     <button
                       onClick={() => router.push("/pro/wallet")}
                       aria-label={t("pcTopNav.wallet")}
-                      className={`relative transition-colors ${currentPath === "/pro/wallet" ? "text-[#0020a0]" : "text-[#6B7280] hover:text-[#1F2937]"}`}
+                      className={`relative transition-colors ${currentPath === "/pro/wallet" ? "text-[#1a73e8]" : "text-[#6B7280] hover:text-[#1F2937]"}`}
                     >
                       <span
                         className="material-symbols-outlined text-[22px]"
@@ -592,7 +592,7 @@ export default function ClientLayout({
                   )}
                   <button
                     onClick={() => router.push("/notifications")}
-                    className={`relative transition-colors ${currentPath === "/notifications" ? "text-[#0020a0]" : "text-[#6B7280] hover:text-[#1F2937]"}`}
+                    className={`relative transition-colors ${currentPath === "/notifications" ? "text-[#1a73e8]" : "text-[#6B7280] hover:text-[#1F2937]"}`}
                   >
                     <span
                       className="material-symbols-outlined text-[22px]"
@@ -680,7 +680,7 @@ export default function ClientLayout({
                                   );
                               }}
                               className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${
-                                isActive ? "text-[#0020a0]" : "text-[#374151]"
+                                isActive ? "text-[#1a73e8]" : "text-[#374151]"
                               }`}
                             >
                               <div className="relative">

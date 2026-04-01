@@ -631,7 +631,7 @@ export default function ChatRoomPage({
   };
 
   return (
-    <div className="relative w-full flex flex-col h-[calc(100dvh-72px)] lg:h-[100dvh] lg:max-w-full bg-white overflow-hidden">
+    <div className="relative w-full flex flex-col h-[calc(100dvh-72px)] lg:h-[calc(100dvh-56px)] lg:max-w-3xl lg:mx-auto bg-white overflow-hidden">
       {/* ▶ 상단 고정 헤더 (절대로 스크롤에 밀리지 않음) */}
       <header className="flex-none bg-white border-b border-gray-100 px-4 pt-3 pb-2 shadow-sm z-50">
         {/* 1행: 뒤로가기 + 아바타 + 이름/배지 + 우측 액션 버튼 */}

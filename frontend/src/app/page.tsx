@@ -560,7 +560,7 @@ export default function HomePage() {
   > = {
     "이사/청소": {
       icon: "cleaning_services",
-      colorClass: "text-[#0020A0]",
+      colorClass: "text-[#1a73e8]",
       bgClass: "bg-[#E8F0FE]",
       tags:
         locale === "en"
@@ -571,8 +571,8 @@ export default function HomePage() {
     },
     "설치/수리": {
       icon: "build",
-      colorClass: "text-[#0D9488]",
-      bgClass: "bg-[#CCFBF1]",
+      colorClass: "text-[#1a73e8]",
+      bgClass: "bg-[#E8F0FE]",
       tags:
         locale === "en"
           ? ["AC Maintenance", "24/7 Plumbing"]
@@ -582,24 +582,24 @@ export default function HomePage() {
     },
     "인테리어/시공": {
       icon: "architecture",
-      colorClass: "text-[#D97706]",
-      bgClass: "bg-[#FEF3C7]",
+      colorClass: "text-[#1a73e8]",
+      bgClass: "bg-[#E8F0FE]",
       tags: locale === "en" ? ["Design", "Building"] : ["디자인", "건축"],
       title: "Interior & Construction",
       desc: "Architectural design, full-scale remodeling, and structural work.",
     },
     "비즈니스/외주": {
       icon: "work",
-      colorClass: "text-[#6B7280]",
-      bgClass: "bg-gray-100",
+      colorClass: "text-[#1a73e8]",
+      bgClass: "bg-[#E8F0FE]",
       tags: locale === "en" ? ["Creative", "Legal"] : ["크리에이티브", "법률"],
       title: "Business & Outsourcing",
       desc: "Translation, graphic design, and professional virtual assistants.",
     },
     "이벤트/파티": {
       icon: "celebration",
-      colorClass: "text-[#7C3AED]",
-      bgClass: "bg-[#EDE9FE]",
+      colorClass: "text-[#1a73e8]",
+      bgClass: "bg-[#E8F0FE]",
       tags:
         locale === "en" ? ["Catering", "Live Music"] : ["케이터링", "라이브"],
       title: "Events & Parties",
@@ -607,8 +607,8 @@ export default function HomePage() {
     },
     "레슨/튜터링": {
       icon: "school",
-      colorClass: "text-[#059669]",
-      bgClass: "bg-[#D1FAE5]",
+      colorClass: "text-[#1a73e8]",
+      bgClass: "bg-[#E8F0FE]",
       tags: locale === "en" ? ["Language", "Music"] : ["언어", "음악"],
       title: "Lessons & Tutoring",
       desc: "Personal development through languages, arts, and academics.",
@@ -671,7 +671,7 @@ export default function HomePage() {
         <div className="flex justify-between items-center w-full px-6 py-4 max-w-7xl mx-auto">
           {/* 로고 */}
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-xl bg-[#0020A0] flex items-center justify-center shadow-lg shadow-[#0020A0]/20">
+            <div className="w-10 h-10 rounded-xl bg-[#1a73e8] flex items-center justify-center shadow-lg shadow-[#1a73e8]/20">
               <svg
                 className="w-6 h-6 text-white"
                 fill="none"
@@ -705,7 +705,7 @@ export default function HomePage() {
                 setAuthTab("PRO");
                 setShowLoginModal(true);
               }}
-              className="bg-[#0020A0] hover:scale-95 duration-200 ease-in-out text-white px-6 py-2 rounded-full font-bold text-sm shadow-lg shadow-[#0020A0]/20"
+              className="bg-[#1a73e8] hover:scale-95 duration-200 ease-in-out text-white px-6 py-2 rounded-full font-bold text-sm shadow-lg shadow-[#1a73e8]/20"
             >
               {t("landing.proSignupBtn")}
             </button>
@@ -742,18 +742,27 @@ export default function HomePage() {
                 >
                   verified
                 </span>
-                <span className="text-xs font-bold tracking-widest uppercase">
+                <span
+                  className="text-xs font-bold tracking-widest uppercase"
+                  style={{ fontFamily: "Manrope, sans-serif" }}
+                >
                   Verified Expert Network
                 </span>
               </div>
 
               {/* 헤드라인 */}
-              <h1 className="text-5xl md:text-7xl font-headline font-extrabold tracking-tight leading-[1.1] text-white">
+              <h1
+                className="text-5xl md:text-7xl font-headline font-extrabold tracking-tight leading-[1.1] text-white"
+                style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}
+              >
                 HiddenPro: Your <span className="text-[#7DAFFF]">Trusted</span>{" "}
                 Home Service
               </h1>
 
-              <p className="text-xl text-white/80 max-w-lg leading-relaxed">
+              <p
+                className="text-xl text-white/80 max-w-lg leading-relaxed"
+                style={{ fontFamily: "Manrope, sans-serif" }}
+              >
                 Meet the perfect professional for your next project. From
                 cleaning to complex construction, we bridge the gap with elite
                 local talent.
@@ -1141,7 +1150,7 @@ export default function HomePage() {
                         {[...Array(5)].map((_, i) => (
                           <span
                             key={i}
-                            className="material-symbols-outlined text-yellow-400"
+                            className="material-symbols-outlined text-[#1a73e8]"
                             style={{
                               fontVariationSettings:
                                 i < review.rating ? "'FILL' 1" : "'FILL' 0",
@@ -1331,7 +1340,7 @@ export default function HomePage() {
                     setAuthTab("PRO");
                     setShowLoginModal(true);
                   }}
-                  className="bg-white hover:scale-95 duration-200 text-[#0020A0] font-bold px-8 py-4 rounded-full shadow-lg shadow-black/20 transition-all inline-flex items-center gap-2"
+                  className="bg-white hover:scale-95 duration-200 text-[#1a73e8] font-bold px-8 py-4 rounded-full shadow-lg shadow-black/20 transition-all inline-flex items-center gap-2"
                 >
                   Start as a Pro ⚡
                 </button>
@@ -1422,11 +1431,17 @@ export default function HomePage() {
 
               <p className="text-[11px] text-[#6B7280] text-center leading-relaxed">
                 {t("landing.termsAgreement")}{" "}
-                <span className="underline cursor-pointer text-[#0020A0]">
+                <span
+                  className="underline cursor-pointer text-[#0020A0]"
+                  onClick={() => router.push("/legal/TERMS")}
+                >
                   {t("landing.termsLink")}
                 </span>{" "}
                 {t("landing.termsAnd")}{" "}
-                <span className="underline cursor-pointer text-[#0020A0]">
+                <span
+                  className="underline cursor-pointer text-[#0020A0]"
+                  onClick={() => router.push("/legal/PRIVACY")}
+                >
                   {t("landing.privacyLink")}
                 </span>
                 .
