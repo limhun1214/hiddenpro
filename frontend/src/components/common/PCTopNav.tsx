@@ -217,7 +217,7 @@ export default function PCTopNav({ isFixed = false }: { isFixed?: boolean }) {
               관리자 인증
             </h2>
             <p className="text-sm text-gray-500 text-center">
-              PIN 번호를 입력하세요
+              PIN 번호 6자리를 입력하세요
             </p>
             <input
               type="password"
