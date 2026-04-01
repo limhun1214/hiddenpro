@@ -2,7 +2,6 @@
 
 import React, { useContext, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import Image from "next/image";
 import { NavStateContext } from "@/context/NavStateContext";
 import LanguageSwitcher from "@/components/common/LanguageSwitcher";
 
@@ -122,34 +121,13 @@ export default function PCTopNav({ isFixed = false }: { isFixed?: boolean }) {
     return undefined;
   };
 
-  const showLogo = !navState.isLoggedIn;
-
   return (
     <>
       <div
         className={`hidden lg:block w-full bg-white border-b border-gray-200 z-[60] shrink-0 ${isFixed ? "fixed top-0 left-0" : "sticky top-0"}`}
       >
         <div className="flex flex-row justify-between items-center px-8 py-3 w-full max-w-4xl mx-auto">
-          {/* 로고 — 비로그인 상태에서만 표시 */}
-          {showLogo ? (
-            <button
-              onClick={() => router.push("/")}
-              className="flex items-center gap-2 shrink-0"
-            >
-              <Image
-                src="/favicon.svg"
-                alt="Hidden Logo"
-                width={28}
-                height={28}
-                priority
-              />
-              <span className="font-bold text-[#2563EB] text-lg tracking-tight">
-                Hidden
-              </span>
-            </button>
-          ) : (
-            <div />
-          )}
+          <div />
 
           {/* 우측 네비게이션 */}
           <div className="flex items-center gap-3">

@@ -55,7 +55,6 @@ function InquiryContent() {
         data: { session },
       } = await supabase.auth.getSession();
       if (!session) {
-        showToast(t("inquiry.loginRequired"), "error");
         router.push("/");
         return;
       }
