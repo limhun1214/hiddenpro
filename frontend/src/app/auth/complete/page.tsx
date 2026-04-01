@@ -25,6 +25,10 @@ export default function AuthCompletePage() {
       if (hasRun.current) return;
       hasRun.current = true;
 
+      // pending_show_login은 auth/complete 도달 시 무조건 삭제
+      // (auth 성공/실패·예외 발생과 무관하게 모달 재출현 방지)
+      localStorage.removeItem("pending_show_login");
+
       try {
         // 1. 세션 확인
         const { data: authData, error: authError } =
