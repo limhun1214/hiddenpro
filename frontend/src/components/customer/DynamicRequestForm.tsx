@@ -6979,7 +6979,7 @@ export default function DynamicRequestForm() {
       const msg = sessionStorage.getItem("pending_phone_verify_msg");
       if (msg) {
         sessionStorage.removeItem("pending_phone_verify_msg");
-        showToast(msg, "error");
+        setShowPhoneModal(true);
       }
     }
   }, []);
