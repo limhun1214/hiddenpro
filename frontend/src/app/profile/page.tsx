@@ -156,11 +156,18 @@ export default function ProfilePage() {
     setWithdrawing(true);
     try {
       // 1. withdrawal_logs에 개인정보 보존
+      // users.phone: 전화번호 인증 시 저장된 실제 인증 번호 (user_metadata.phone은 소셜 로그인 시 미존재)
+      const { data: usersRow } = await supabase
+        .from("users")
+        .select("phone")
+        .eq("user_id", sessionUser.id)
+        .single();
+
       const { error: logErr } = await supabase.from("withdrawal_logs").insert({
         user_id: sessionUser.id,
         real_name: sessionUser.user_metadata?.name || sessionUser.name || null,
         email: sessionUser.email || null,
-        phone: sessionUser.user_metadata?.phone || null,
+        phone: usersRow?.phone || sessionUser.user_metadata?.phone || null,
         role: userRole,
         reason: withdrawReason || "No reason provided",
       });
