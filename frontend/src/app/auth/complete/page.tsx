@@ -50,13 +50,6 @@ export default function AuthCompletePage() {
         const pendingReferralCode =
           localStorage.getItem("pending_referral_code") || "";
 
-        console.log("🔍 [REFERRAL DEBUG]", {
-          pendingReferralCode,
-          pendingRole,
-          pendingAuthMode,
-          sessionUserId: sessionUser.id,
-        });
-
         // 3. 서버 권한 우선주의: 기존 유저 여부 확인
         const { data: existingUser } = await supabase
           .from("users")
@@ -91,11 +84,6 @@ export default function AuthCompletePage() {
           const createdAt = new Date(existingUser.created_at).getTime();
           const isTriggerFreshRecord = Date.now() - createdAt < 300_000;
 
-          console.log("🔍 [REFERRAL CASE]", {
-            existingUserExists: !!existingUser,
-            isTriggerFreshRecord,
-          });
-
           if (isTriggerFreshRecord) {
             isNewUser = true;
             // 추천인 코드로 추천인 ID 공통 조회
@@ -105,11 +93,7 @@ export default function AuthCompletePage() {
                 "get_referrer_user_id",
                 { p_referral_code: pendingReferralCode },
               );
-              console.log("🔍 [REFERRAL LOOKUP]", {
-                pendingReferralCode,
-                referrerId,
-                referredByUserId,
-              });
+
               if (referrerId && referrerId !== sessionUser.id) {
                 referredByUserId = referrerId;
               }
