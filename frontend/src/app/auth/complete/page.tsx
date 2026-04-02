@@ -50,6 +50,13 @@ export default function AuthCompletePage() {
         const pendingReferralCode =
           localStorage.getItem("pending_referral_code") || "";
 
+        console.log("🔍 [REFERRAL DEBUG]", {
+          pendingReferralCode,
+          pendingRole,
+          pendingAuthMode,
+          sessionUserId: sessionUser.id,
+        });
+
         // 3. 서버 권한 우선주의: 기존 유저 여부 확인
         const { data: existingUser } = await supabase
           .from("users")
@@ -80,22 +87,31 @@ export default function AuthCompletePage() {
             return;
           }
 
-          // ▶ 트리거 신규 판정: created_at이 30초 이내이면 handle_user_sync()가 방금 만든 레코드
+          // ▶ 트리거 신규 판정: created_at이 5분 이내이면 handle_user_sync()가 방금 만든 레코드
           const createdAt = new Date(existingUser.created_at).getTime();
-          const isTriggerFreshRecord = Date.now() - createdAt < 30_000;
+          const isTriggerFreshRecord = Date.now() - createdAt < 300_000;
+
+          console.log("🔍 [REFERRAL CASE]", {
+            existingUserExists: !!existingUser,
+            isTriggerFreshRecord,
+          });
 
           if (isTriggerFreshRecord) {
             isNewUser = true;
             // 추천인 코드로 추천인 ID 공통 조회
             let referredByUserId: string | null = null;
             if (pendingReferralCode) {
-              const { data: referrerData } = await supabase
-                .from("users")
-                .select("user_id")
-                .eq("referral_code", pendingReferralCode)
-                .single();
-              if (referrerData && referrerData.user_id !== sessionUser.id) {
-                referredByUserId = referrerData.user_id;
+              const { data: referrerId } = await supabase.rpc(
+                "get_referrer_user_id",
+                { p_referral_code: pendingReferralCode },
+              );
+              console.log("🔍 [REFERRAL LOOKUP]", {
+                pendingReferralCode,
+                referrerId,
+                referredByUserId,
+              });
+              if (referrerId && referrerId !== sessionUser.id) {
+                referredByUserId = referrerId;
               }
             }
 
@@ -187,13 +203,17 @@ export default function AuthCompletePage() {
           // 추천인 코드로 추천인 ID 조회
           let referredByUserId: string | null = null;
           if (pendingReferralCode) {
-            const { data: referrerData } = await supabase
-              .from("users")
-              .select("user_id")
-              .eq("referral_code", pendingReferralCode)
-              .single();
-            if (referrerData && referrerData.user_id !== sessionUser.id) {
-              referredByUserId = referrerData.user_id;
+            const { data: referrerId } = await supabase.rpc(
+              "get_referrer_user_id",
+              { p_referral_code: pendingReferralCode },
+            );
+            console.log("🔍 [REFERRAL LOOKUP]", {
+              pendingReferralCode,
+              referrerId,
+              referredByUserId,
+            });
+            if (referrerId && referrerId !== sessionUser.id) {
+              referredByUserId = referrerId;
             }
           }
 
