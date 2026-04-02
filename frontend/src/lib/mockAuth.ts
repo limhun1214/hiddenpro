@@ -48,7 +48,7 @@ export async function mockVerifyCustomerPhone(userId: string, phone: string) {
     (withdrawnUser && withdrawnUser.length > 0)
   ) {
     throw new Error(
-      "이 전화번호는 이미 다른 계정에서 인증되었습니다. 1개의 번호로 1개의 계정만 인증할 수 있습니다.",
+      "This phone number is already verified on another account. Each number can only be used for one account.",
     );
   }
 
@@ -67,7 +67,8 @@ export async function mockVerifyCustomerPhone(userId: string, phone: string) {
 
     if (retryError) {
       throw new Error(
-        "[DB 에러] 고객 휴대폰 인증 DB 업데이트 실패: " + retryError.message,
+        "[DB Error] Failed to update customer phone verification: " +
+          retryError.message,
       );
     }
   }
@@ -113,7 +114,7 @@ export async function mockVerifyProPhone(proId: string, phone: string) {
     (withdrawnUser && withdrawnUser.length > 0)
   ) {
     throw new Error(
-      "이 전화번호는 이미 다른 계정에서 인증되었습니다. 1개의 번호로 1개의 계정만 인증할 수 있습니다.",
+      "This phone number is already verified on another account. Each number can only be used for one account.",
     );
   }
 
@@ -132,7 +133,8 @@ export async function mockVerifyProPhone(proId: string, phone: string) {
 
     if (retryError) {
       throw new Error(
-        "[DB 에러] 고수 전화번호 인증 DB 업데이트 실패: " + retryError.message,
+        "[DB Error] Failed to update pro phone verification: " +
+          retryError.message,
       );
     }
   }
@@ -153,7 +155,7 @@ export async function mockLinkFacebook(proId: string, url: string) {
 
   if (error) {
     throw new Error(
-      "[DB 에러] Facebook 연동 DB 업데이트 실패: " + error.message,
+      "[DB Error] Failed to update Facebook link: " + error.message,
     );
   }
   return true;

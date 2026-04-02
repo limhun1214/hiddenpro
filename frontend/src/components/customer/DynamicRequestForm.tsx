@@ -7528,7 +7528,7 @@ export default function DynamicRequestForm() {
     if (!e.target.files) return;
     const newFiles = Array.from(e.target.files);
     if (imagesState.length + newFiles.length > 5) {
-      alert("사진은 최대 5장까지만 업로드할 수 있습니다.");
+      alert("You can upload up to 5 photos.");
       return;
     }
 
@@ -7542,7 +7542,7 @@ export default function DynamicRequestForm() {
         ...uploadedUrls.map((url) => ({ url, description: "" })),
       ]);
     } catch (error) {
-      alert("이미지 업로드에 실패했습니다.");
+      alert("Failed to upload image.");
     } finally {
       setUploadingImages(false);
       e.target.value = ""; // Reset input
@@ -7588,7 +7588,7 @@ export default function DynamicRequestForm() {
         .single();
 
       if (!userData || userData.role?.toUpperCase() === "PRO") {
-        showToast("고수 계정으로는 견적 요청을 할 수 없습니다.", "error");
+        showToast("Pro accounts cannot submit quote requests.", "error");
         setTimeout(() => {
           router.replace("/");
         }, 1500);
@@ -7603,7 +7603,7 @@ export default function DynamicRequestForm() {
       }
       await doActualSubmit();
     } catch (e: any) {
-      alert("오류 발생: " + e.message);
+      alert("Error: " + e.message);
     } finally {
       setIsSubmitting(false); // 성공/실패 무관하게 항상 해제
     }
@@ -7611,20 +7611,20 @@ export default function DynamicRequestForm() {
 
   const handlePhoneVerifyAndSubmit = async () => {
     if (!phoneInput.trim()) {
-      alert("휴대폰 번호를 입력해주세요.");
+      alert("Please enter your phone number.");
       return;
     }
     setVerifyingPhone(true);
     try {
       const { data: authData } = await supabase.auth.getUser();
       const userId = authData?.user?.id;
-      if (!userId) throw new Error("로그인이 필요합니다.");
+      if (!userId) throw new Error("Login required.");
       await mockVerifyCustomerPhone(userId, phoneInput);
       setShowPhoneModal(false);
       setVerifyingPhone(false);
       await doActualSubmit();
     } catch (e: any) {
-      alert("인증 실패: " + e.message);
+      alert("Verification failed: " + e.message);
     }
     setVerifyingPhone(false);
   };
@@ -7703,7 +7703,7 @@ export default function DynamicRequestForm() {
           const notificationsToInsert = matchedPros.map((pro) => ({
             user_id: pro.pro_id,
             type: "MATCH",
-            message: `[${requestedService}] 새로운 서비스 요청이 도착했습니다. 견적을 보내보세요!`,
+            message: `[${requestedService}] A new service request has arrived. Send your quote!`,
             reference_id: requestData.request_id,
             is_read: false,
           }));
@@ -7746,7 +7746,7 @@ export default function DynamicRequestForm() {
 
       router.push("/quotes/received");
     } catch (e: any) {
-      alert("오류 발생: " + e.message);
+      alert("Error: " + e.message);
     }
   };
 

@@ -515,7 +515,7 @@ export default function ChatRoomPage({
           user_id: recipientId,
           sender_id: currentUser.id,
           type: "CHAT",
-          message: "새로운 채팅 메시지가 도착했습니다.",
+          message: "You have a new chat message.",
           reference_id: params.room_id,
           is_read: false,
         });

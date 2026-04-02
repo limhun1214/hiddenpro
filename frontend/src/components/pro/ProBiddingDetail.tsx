@@ -973,16 +973,16 @@ export default function ProBiddingDetail({ requestId }: { requestId: string }) {
                               setQuoteImages([]);
                               setNewTplTitle("");
                               setShowSaveTpl(false);
-                              showToast("템플릿이 저장되었습니다!", "success");
+                              showToast("Template saved!", "success");
                             } else {
                               showToast(
-                                "저장 실패: " + (error?.message || ""),
+                                "Save failed: " + (error?.message || ""),
                                 "error",
                               );
                             }
                           } catch (e: any) {
                             showToast(
-                              "이미지 업로드 실패: " + e.message,
+                              "Image upload failed: " + e.message,
                               "error",
                             );
                           } finally {

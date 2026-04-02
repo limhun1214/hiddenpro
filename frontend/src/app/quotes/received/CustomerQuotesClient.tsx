@@ -365,7 +365,7 @@ export default function CustomerQuotesClient() {
         sender_id: authData?.user?.id,
         type: "SYSTEM",
         reference_id: reviewTarget.request_id,
-        message: `고객님이 ⭐${reviewRating}점의 리뷰를 남겼습니다.`,
+        message: `A customer left a ⭐${reviewRating}-star review.`,
       });
 
       alert(t("customerQuotes.reviewSubmitSuccess"));

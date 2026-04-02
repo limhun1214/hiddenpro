@@ -389,7 +389,7 @@ export default function HomePage() {
     try {
       const { data: authData } = await supabase.auth.getUser();
       const user = authData?.user;
-      if (!user) throw new Error("세션 없음");
+      if (!user) throw new Error("No active session.");
 
       const { error } = await supabase
         .from("users")
@@ -409,7 +409,7 @@ export default function HomePage() {
       setShowReregisterModal(false);
       window.location.href = "/";
     } catch (e: any) {
-      alert("재가입 처리 중 오류가 발생했습니다: " + e.message);
+      alert("An error occurred during re-registration: " + e.message);
       setIsReregistering(false);
     }
   };
