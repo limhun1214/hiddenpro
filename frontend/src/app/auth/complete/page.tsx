@@ -238,6 +238,12 @@ export default function AuthCompletePage() {
         localStorage.removeItem("pending_show_login");
         setStatus(t("authComplete.loginSuccess"));
 
+        // JWT user_metadata에 role 동기화 — 미들웨어 역할 검증용
+        // (app_metadata는 Service Role Key 필요, user_metadata는 클라이언트에서 직접 수정 가능)
+        try {
+          await supabase.auth.updateUser({ data: { role: finalRole } });
+        } catch {}
+
         // [pending 견적 처리] 로그인 후 미완료 견적 처리
         const pendingRequestRaw = localStorage.getItem("pendingRequestData");
 
