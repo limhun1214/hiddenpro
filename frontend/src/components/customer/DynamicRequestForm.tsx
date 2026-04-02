@@ -7622,28 +7622,37 @@ export default function DynamicRequestForm() {
       await mockVerifyCustomerPhone(userId, phoneInput);
       setShowPhoneModal(false);
       setVerifyingPhone(false);
-      await doActualSubmit();
+
+      // 로그인 전 저장된 pending 견적이 있으면 그 데이터로 제출
+      const pendingRaw = localStorage.getItem("pendingRequestData");
+      if (pendingRaw) {
+        localStorage.removeItem("pendingRequestData");
+        await doActualSubmit(JSON.parse(pendingRaw));
+      } else {
+        await doActualSubmit();
+      }
     } catch (e: any) {
       alert("Verification failed: " + e.message);
     }
     setVerifyingPhone(false);
   };
 
-  const doActualSubmit = async () => {
+  const doActualSubmit = async (overrideData?: Record<string, any>) => {
+    const data = overrideData ?? answers;
     try {
       const { data: authData } = await supabase.auth.getUser();
       const customerId = authData?.user?.id;
       const expiresAt = new Date(
         Date.now() + 24 * 60 * 60 * 1000,
       ).toISOString();
-      const finalRegion = `${answers.region_reg}, ${answers.region_city}`;
+      const finalRegion = `${data.region_reg}, ${data.region_city}`;
 
       let realCategoryId = null;
-      if (answers.service_type) {
+      if (data.service_type) {
         const { data: catData } = await supabase
           .from("categories")
           .select("id")
-          .eq("name_en", koToEn[answers.service_type] ?? answers.service_type)
+          .eq("name_en", koToEn[data.service_type] ?? data.service_type)
           .single();
         if (catData) realCategoryId = catData.id;
       }
@@ -7654,9 +7663,11 @@ export default function DynamicRequestForm() {
           customer_id: customerId,
           category_id: realCategoryId,
           region_id: 1,
-          service_type: koToEn[answers.service_type] ?? answers.service_type,
+          service_type: koToEn[data.service_type] ?? data.service_type,
           region: finalRegion,
-          dynamic_answers: { ...answers, _history: history },
+          dynamic_answers: overrideData
+            ? { ...data }
+            : { ...data, _history: history },
           status: "OPEN",
           expires_at: expiresAt,
         })
@@ -7667,8 +7678,7 @@ export default function DynamicRequestForm() {
 
       // 1. 대분류 지역 추출 및 요청 서비스
       const mainRegion = finalRegion.split(",")[0].trim();
-      const requestedService =
-        koToEn[answers.service_type] ?? answers.service_type;
+      const requestedService = koToEn[data.service_type] ?? data.service_type;
 
       // 2. DB 페칭: 괄호 등 특수문자로 인한 Supabase 파싱 에러를 피하기 위해 프로필 안전 조회
       const { data: prosData } = await supabase
