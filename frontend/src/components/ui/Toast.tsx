@@ -64,10 +64,13 @@ function ToastEntry({
   }, [toast.href, remove, router]);
 
   const colorMap: Record<ToastType, string> = {
-    success: "bg-emerald-600 border-emerald-400 text-white",
-    error: "bg-red-600 border-red-400 text-white",
-    warning: "bg-gray-900 border-gray-700 text-white",
-    info: "bg-blue-600 border-blue-400 text-white",
+    success:
+      "bg-gradient-to-r from-[#07101F] to-[#1840C8] border-[#1840C8]/50 text-white",
+    error:
+      "bg-gradient-to-r from-[#07101F] to-[#1840C8] border-[#1840C8]/50 text-white",
+    warning:
+      "bg-gradient-to-r from-[#07101F] to-[#1840C8] border-[#1840C8]/50 text-white",
+    info: "bg-gradient-to-r from-[#07101F] to-[#1840C8] border-[#1840C8]/50 text-white",
   };
   const iconMap: Record<ToastType, string> = {
     success: "✅",
@@ -79,7 +82,7 @@ function ToastEntry({
   return (
     <div
       onClick={toast.href ? handleBannerClick : undefined}
-      className={`pointer-events-auto px-4 py-3 rounded-xl border shadow-2xl flex flex-col gap-1 transition-all duration-300 ${colorMap[toast.type]} ${toast.href ? "cursor-pointer" : ""} ${exiting ? "opacity-0 translate-x-8" : "opacity-100 translate-x-0 animate-[slideInRight_0.3s_ease-out]"}`}
+      className={`pointer-events-auto px-4 py-3 rounded-xl border shadow-2xl flex flex-col gap-1 transition-all duration-300 ${colorMap[toast.type]} ${toast.href ? "cursor-pointer" : ""} ${exiting ? "opacity-0 -translate-y-2" : "opacity-100 translate-y-0 animate-[slideInDown_0.3s_ease-out]"}`}
     >
       <div className="flex items-start gap-2.5">
         <span className="text-lg flex-shrink-0 mt-0.5">
@@ -143,21 +146,21 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       {children}
 
       {/* Toast Container */}
-      <div className="fixed top-4 right-4 z-[99999] flex flex-col gap-2 pointer-events-none max-w-sm w-full">
+      <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[99999] flex flex-col gap-2 pointer-events-none max-w-sm w-[calc(100%-2rem)]">
         {toasts.map((toast) => (
           <ToastEntry key={toast.id} toast={toast} onRemove={removeToast} />
         ))}
       </div>
 
       <style jsx global>{`
-        @keyframes slideInRight {
+        @keyframes slideInDown {
           from {
             opacity: 0;
-            transform: translateX(40px);
+            transform: translateX(-50%) translateY(-12px);
           }
           to {
             opacity: 1;
-            transform: translateX(0);
+            transform: translateX(-50%) translateY(0);
           }
         }
       `}</style>
