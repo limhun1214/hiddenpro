@@ -7920,6 +7920,20 @@ function AdminDashboardPageContent() {
                                   .from("admin_action_logs")
                                   .delete()
                                   .gt("id", 0);
+                                await supabase
+                                  .from("referral_rewards")
+                                  .delete()
+                                  .neq(
+                                    "id",
+                                    "00000000-0000-0000-0000-000000000000",
+                                  );
+                                await supabase
+                                  .from("referral_coupons")
+                                  .delete()
+                                  .neq(
+                                    "id",
+                                    "00000000-0000-0000-0000-000000000000",
+                                  );
                                 const { data, error } = await supabase.rpc(
                                   "reset_test_transaction_data",
                                 );
