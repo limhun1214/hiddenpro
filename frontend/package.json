@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:pages": "npx --yes --package=@cloudflare/next-on-pages@1.13.16 --package=wrangler@4.100.0 next-on-pages",
     "start": "next start",
     "lint": "eslint src",
     "typecheck": "tsc --noEmit"
