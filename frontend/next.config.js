@@ -6,6 +6,8 @@ const nextConfig = {
   // Separate local validation outputs when Windows holds a previous build open.
   distDir: process.env.NEXT_BUILD_DIR || ".next",
   poweredByHeader: false,
+  // A standalone static 404 avoids the Pages adapter's dynamic not-found limit.
+  experimental: { globalNotFound: true },
   images: {
     remotePatterns: [
       {
