@@ -198,7 +198,7 @@ export default function ReferralPage() {
   if (loading)
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#0020A0]"></div>
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#176b57]"></div>
       </div>
     );
 
@@ -214,7 +214,7 @@ export default function ReferralPage() {
 
         {/* A. 추천 코드 히어로 카드 */}
         <section className="relative group">
-          <div className="absolute -inset-0.5 bg-gradient-to-r from-[#0020A0] to-[#ff6ea9] rounded-xl blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
+          <div className="absolute -inset-0.5 bg-gradient-to-r from-[#176b57] to-[#75b09a] rounded-xl blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
           <div className="relative bg-gray-50 rounded-xl p-8 flex flex-col items-center text-center space-y-6">
             <div className="space-y-2">
               <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">
@@ -228,7 +228,7 @@ export default function ReferralPage() {
               <button
                 onClick={handleCopyLink}
                 disabled={!referralEnabled}
-                className="flex-1 bg-[#0020A0] text-white py-4 rounded-full font-bold text-sm active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-40"
+                className="flex-1 bg-[#176b57] text-white py-4 rounded-full font-bold text-sm active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-40"
               >
                 <span className="material-symbols-outlined text-lg">
                   content_copy
@@ -249,18 +249,18 @@ export default function ReferralPage() {
 
         {/* B. 보상 요약 - 벤토 그리드 */}
         <section className="grid grid-cols-2 gap-4">
-          <div className="col-span-2 bg-white rounded-xl p-6 flex items-center justify-between border-l-4 border-[#0020A0] border border-gray-200">
+          <div className="col-span-2 bg-white rounded-xl p-6 flex items-center justify-between border-l-4 border-[#176b57] border border-gray-200">
             <div>
               <p className="text-gray-500 text-xs font-semibold mb-1">
                 {t("referral.statsCompleted")}
               </p>
-              <p className="text-3xl font-extrabold text-[#0020A0]">
+              <p className="text-3xl font-extrabold text-[#176b57]">
                 +{completedCount} {t("referral.statsTotal")}
               </p>
             </div>
-            <div className="h-12 w-12 rounded-full bg-[#0020A0]/10 flex items-center justify-center">
+            <div className="h-12 w-12 rounded-full bg-[#176b57]/10 flex items-center justify-center">
               <span
-                className="material-symbols-outlined text-[#0020A0]"
+                className="material-symbols-outlined text-[#176b57]"
                 style={{ fontVariationSettings: "'FILL' 1" }}
               >
                 card_giftcard
@@ -290,7 +290,7 @@ export default function ReferralPage() {
               <span className="text-2xl font-bold text-gray-900">
                 {pendingCount}
               </span>
-              <span className="text-gray-500 text-[10px] mb-1">Verifying</span>
+              <span className="text-gray-500 text-xs mb-1">Verifying</span>
             </div>
           </div>
         </section>
@@ -367,17 +367,17 @@ export default function ReferralPage() {
                       className={`relative overflow-hidden bg-white rounded-xl flex items-stretch h-24 border border-gray-100 ${!isActive ? "opacity-60 grayscale" : ""}`}
                     >
                       <div
-                        className={`w-2 ${isActive ? "bg-[#0020A0]" : "bg-gray-300"}`}
+                        className={`w-2 ${isActive ? "bg-[#176b57]" : "bg-gray-300"}`}
                       ></div>
                       <div className="flex-1 p-4 flex flex-col justify-center">
                         <div className="flex justify-between items-start">
                           <div>
                             <p
-                              className={`font-extrabold text-lg ${isActive ? "text-[#0020A0]" : "text-gray-500"}`}
+                              className={`font-extrabold text-lg ${isActive ? "text-[#176b57]" : "text-gray-500"}`}
                             >
                               {c.discount_amount} {t("referral.couponOff")}
                             </p>
-                            <p className="text-gray-500 text-[10px] font-medium tracking-wide mt-0.5">
+                            <p className="text-gray-500 text-xs font-medium tracking-wide mt-0.5">
                               {isUsed
                                 ? `${t("referral.couponUsed")} · ${new Date(c.expires_at).toLocaleDateString()}`
                                 : `${t("referral.couponExpires")}: ${new Date(c.expires_at).toLocaleDateString()}`}
@@ -413,7 +413,7 @@ export default function ReferralPage() {
                 value={redeemCode}
                 onChange={(e) => setRedeemCode(e.target.value.toUpperCase())}
                 placeholder={t("referral.redeemPlaceholder")}
-                className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-mono uppercase text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0020A0]/50"
+                className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-mono uppercase text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#176b57]/50"
                 maxLength={12}
               />
               <button
@@ -455,19 +455,19 @@ export default function ReferralPage() {
                       <p className="text-white text-xs font-bold truncate">
                         {b.title}
                       </p>
-                      <p className="text-white/70 text-[10px]">
+                      <p className="text-white/70 text-xs">
                         {b.width}×{b.height} · {b.platform_hint}
                       </p>
                       <div className="flex gap-1.5">
                         <button
                           onClick={() => handleCopyBannerLink(b.id)}
-                          className="flex-1 bg-white/80 backdrop-blur-md text-gray-900 py-1.5 rounded-lg text-[10px] font-bold border border-white/10 active:scale-95 transition-all"
+                          className="flex-1 bg-white/80 backdrop-blur-md text-gray-900 py-1.5 rounded-lg text-xs font-bold border border-white/10 active:scale-95 transition-all"
                         >
                           Copy Code
                         </button>
                         <button
                           onClick={() => handleShareBanner(b.id)}
-                          className="flex-1 bg-[#0020A0]/80 backdrop-blur-md text-white py-1.5 rounded-lg text-[10px] font-bold active:scale-95 transition-all flex items-center justify-center gap-0.5"
+                          className="flex-1 bg-[#176b57]/80 backdrop-blur-md text-white py-1.5 rounded-lg text-xs font-bold active:scale-95 transition-all flex items-center justify-center gap-0.5"
                         >
                           <span className="material-symbols-outlined text-xs">
                             share
@@ -491,7 +491,7 @@ export default function ReferralPage() {
             className="w-full flex items-center justify-between p-4 text-sm font-bold text-gray-900 hover:bg-gray-50 transition"
           >
             <span className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-[#0020A0] text-lg">
+              <span className="material-symbols-outlined text-[#176b57] text-lg">
                 info
               </span>
               {t("referral.howItWorks")}
@@ -504,14 +504,14 @@ export default function ReferralPage() {
           </button>
           {showHowItWorks && (
             <div className="px-4 pb-4 space-y-3 text-sm text-gray-500 border-t border-gray-100 pt-3">
-              <div className="bg-[#0020A0]/10 rounded-lg p-3 border border-[#0020A0]/20">
-                <p className="font-bold text-[#0020A0] text-xs mb-1">
+              <div className="bg-[#176b57]/10 rounded-lg p-3 border border-[#176b57]/20">
+                <p className="font-bold text-[#176b57] text-xs mb-1">
                   Pro → Pro
                 </p>
                 <p>{t("referral.howProToPro")}</p>
               </div>
-              <div className="bg-[#0020A0]/10 rounded-lg p-3 border border-[#0020A0]/20">
-                <p className="font-bold text-[#0020A0] text-xs mb-1">
+              <div className="bg-[#176b57]/10 rounded-lg p-3 border border-[#176b57]/20">
+                <p className="font-bold text-[#176b57] text-xs mb-1">
                   Customer → Pro
                 </p>
                 <p>{t("referral.howCustToPro")}</p>
@@ -535,7 +535,7 @@ export default function ReferralPage() {
         {/* H. 쿠폰 사용 가이드 */}
         <section className="bg-white rounded-xl overflow-hidden border border-gray-100">
           <h3 className="text-sm font-bold text-gray-900 p-4 border-b border-gray-100 flex items-center gap-2">
-            <span className="material-symbols-outlined text-[#0020A0] text-lg">
+            <span className="material-symbols-outlined text-[#176b57] text-lg">
               confirmation_number
             </span>
             {t("referral.couponGuideTitle")}
@@ -548,7 +548,7 @@ export default function ReferralPage() {
               t("referral.couponStep4"),
             ].map((step, i) => (
               <div key={i} className="flex gap-3 items-start">
-                <span className="bg-[#0020A0]/15 text-[#0020A0] font-black text-xs w-6 h-6 rounded-full flex items-center justify-center shrink-0">
+                <span className="bg-[#176b57]/15 text-[#176b57] font-black text-xs w-6 h-6 rounded-full flex items-center justify-center shrink-0">
                   {i + 1}
                 </span>
                 <p className="text-sm text-gray-500">{step}</p>
@@ -590,7 +590,7 @@ export default function ReferralPage() {
             <span className="font-bold text-gray-500">Anti-Fraud:</span>{" "}
             {t("referral.legalAntiFraud")}
           </p>
-          <p className="text-[10px] text-gray-300 pt-2 border-t border-gray-100">
+          <p className="text-xs text-gray-300 pt-2 border-t border-gray-100">
             {t("referral.legalPermit")}
           </p>
         </section>

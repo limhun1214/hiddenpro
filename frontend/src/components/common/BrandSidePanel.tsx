@@ -10,7 +10,7 @@ export default function BrandSidePanel() {
       <div className="relative z-10 w-full max-w-lg">
         {/* 로고 영역 */}
         <div className="flex items-center gap-3 mb-10">
-          <div className="w-10 h-10 bg-gradient-to-tr from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-md">
+          <div className="w-10 h-10 bg-gradient-to-tr from-[#21846b] to-[#176b57] rounded-xl flex items-center justify-center shadow-md">
             <span className="text-xl text-white font-black">H</span>
           </div>
           <span className="text-xl font-extrabold tracking-tight text-white">
@@ -21,7 +21,7 @@ export default function BrandSidePanel() {
         <h1 className="text-3xl font-extrabold text-white tracking-tight leading-[1.5] mb-6 break-keep">
           {t("brandPanel.headline1")}
           <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6aaa8f] to-[#6aaa8f]">
             {t("brandPanel.headline2")}
           </span>
         </h1>
@@ -39,7 +39,7 @@ export default function BrandSidePanel() {
         {/* Feature Micro-copy */}
         <div className="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-sm">
           <div className="flex items-center gap-4 mb-6">
-            <div className="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 shrink-0">
+            <div className="w-12 h-12 rounded-full bg-[#21846b]/20 flex items-center justify-center text-[#6aaa8f] shrink-0">
               <svg
                 className="w-6 h-6"
                 fill="none"
@@ -91,8 +91,8 @@ export default function BrandSidePanel() {
         </div>
       </div>
       {/* 데코레이션 블러 */}
-      <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-blue-600/10 rounded-full blur-[100px] pointer-events-none"></div>
-      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-indigo-600/10 rounded-full blur-[100px] pointer-events-none"></div>
+      <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#176b57]/10 rounded-full blur-[100px] pointer-events-none"></div>
+      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#176b57]/10 rounded-full blur-[100px] pointer-events-none"></div>
     </div>
   );
 }

@@ -164,13 +164,13 @@ export default function ProProfileDetailModal({
           <div className="flex bg-gray-50 border-b border-gray-200">
             <button
               onClick={() => setActiveTab("INFO")}
-              className={`flex-1 py-3 text-sm font-bold transition ${activeTab === "INFO" ? "text-blue-600 border-b-2 border-blue-600 bg-white" : "text-gray-500 hover:text-gray-700"}`}
+              className={`flex-1 py-3 text-sm font-bold transition ${activeTab === "INFO" ? "text-[#176b57] border-b-2 border-[#176b57] bg-white" : "text-gray-500 hover:text-gray-700"}`}
             >
               {t("proProfileModal.tabInfo")}
             </button>
             <button
               onClick={() => setActiveTab("REVIEWS")}
-              className={`flex-1 py-3 text-sm font-bold transition ${activeTab === "REVIEWS" ? "text-blue-600 border-b-2 border-blue-600 bg-white" : "text-gray-500 hover:text-gray-700"}`}
+              className={`flex-1 py-3 text-sm font-bold transition ${activeTab === "REVIEWS" ? "text-[#176b57] border-b-2 border-[#176b57] bg-white" : "text-gray-500 hover:text-gray-700"}`}
             >
               {t("proProfileModal.tabReviews")}
             </button>
@@ -188,7 +188,7 @@ export default function ProProfileDetailModal({
                     </span>
                   )}
                   {proProfile?.facebook_url && (
-                    <span className="inline-flex items-center bg-blue-50 text-blue-700 text-xs font-bold px-3 py-1.5 rounded-full border border-blue-200 shadow-sm whitespace-nowrap">
+                    <span className="inline-flex items-center bg-[#f0f6f1] text-[#124c40] text-xs font-bold px-3 py-1.5 rounded-full border border-[#cbe1d5] shadow-sm whitespace-nowrap">
                       {t("proProfileModal.facebookLinked")}
                     </span>
                   )}

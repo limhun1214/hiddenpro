@@ -463,7 +463,7 @@ export default function ProRequestListClient() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] pb-24 max-w-3xl mx-auto w-full">
+    <div className="min-h-screen bg-[#f7f7f2] pb-24 max-w-3xl mx-auto w-full">
       {/* 헤더 */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-10 px-6 pt-4 pb-0 flex flex-col gap-3">
         <div className="flex items-center gap-2">
@@ -478,7 +478,7 @@ export default function ProRequestListClient() {
             onClick={() => setFilterType("NEW")}
             className={`flex-1 py-2.5 px-6 text-sm font-semibold transition-all duration-300 border-b-2 ${
               filterType === "NEW"
-                ? "text-[#0020A0] border-[#0020A0]"
+                ? "text-[#176b57] border-[#176b57]"
                 : "text-[#6B7280] border-transparent hover:text-[#6B7280]"
             }`}
           >
@@ -488,7 +488,7 @@ export default function ProRequestListClient() {
             onClick={() => setFilterType("QUOTED")}
             className={`flex-1 py-2.5 px-6 text-sm font-semibold transition-all duration-300 border-b-2 ${
               filterType === "QUOTED"
-                ? "text-[#0020A0] border-[#0020A0]"
+                ? "text-[#176b57] border-[#176b57]"
                 : "text-[#6B7280] border-transparent hover:text-[#6B7280]"
             }`}
           >
@@ -503,7 +503,7 @@ export default function ProRequestListClient() {
               onClick={() => setQuotedSubTab("IN_PROGRESS")}
               className={`flex-1 py-1.5 text-xs font-bold rounded-full transition ${
                 quotedSubTab === "IN_PROGRESS"
-                  ? "bg-[#0020A0]/10 text-[#0020A0] border border-[#0020A0]/30"
+                  ? "bg-[#176b57]/10 text-[#176b57] border border-[#176b57]/30"
                   : "text-[#374151] hover:text-[#6B7280] border border-gray-200"
               }`}
             >
@@ -535,7 +535,7 @@ export default function ProRequestListClient() {
             </p>
             <button
               onClick={() => router.push("/profile")}
-              className="bg-[#0020A0] hover:bg-[#001880] text-white font-black py-2 px-6 rounded-full text-sm transition shadow-lg shadow-[#0020A0]/20"
+              className="bg-[#176b57] hover:bg-[#124c40] text-white font-black py-2 px-6 rounded-full text-sm transition shadow-lg shadow-[#176b57]/20"
             >
               {t("proRequestList.vacationBtn")}
             </button>
@@ -549,11 +549,11 @@ export default function ProRequestListClient() {
                 style={{
                   background: "#FFF7F0",
                   border: "1px solid #F3E2D9",
-                  borderLeft: "3px solid #0020A0",
+                  borderLeft: "3px solid #176b57",
                 }}
               >
                 <span
-                  className="material-symbols-outlined text-[#0020A0] shrink-0"
+                  className="material-symbols-outlined text-[#176b57] shrink-0"
                   style={{ fontSize: "1.1rem", marginTop: "1px" }}
                 >
                   lightbulb
@@ -622,7 +622,7 @@ export default function ProRequestListClient() {
                   <div className="relative flex flex-col items-center">
                     <div className="relative z-10 w-20 h-20 mb-6 rounded-2xl flex items-center justify-center border border-gray-200 bg-gray-50">
                       <span
-                        className="material-symbols-outlined text-[#0020A0]/70"
+                        className="material-symbols-outlined text-[#176b57]/70"
                         style={{ fontSize: "2rem" }}
                       >
                         inventory_2
@@ -642,7 +642,7 @@ export default function ProRequestListClient() {
                     <div className="relative z-10 flex flex-col items-center text-center">
                       <div className="w-32 h-32 mb-8 rounded-xl flex items-center justify-center border border-gray-200 bg-gray-50 -rotate-6 shadow-sm">
                         <span
-                          className="material-symbols-outlined text-[#0020A0]"
+                          className="material-symbols-outlined text-[#176b57]"
                           style={{
                             fontSize: "60px",
                             fontVariationSettings: "'FILL' 1, 'wght' 400",
@@ -658,9 +658,9 @@ export default function ProRequestListClient() {
                         {t("proRequestList.emptySubtext")}
                       </p>
                     </div>
-                    <div className="absolute top-10 right-4 w-12 h-12 rounded-full flex items-center justify-center opacity-40 border border-[#0020A0]/20 bg-[#0020A0]/5">
+                    <div className="absolute top-10 right-4 w-12 h-12 rounded-full flex items-center justify-center opacity-40 border border-[#176b57]/20 bg-[#176b57]/5">
                       <span
-                        className="material-symbols-outlined text-[#0020A0]"
+                        className="material-symbols-outlined text-[#176b57]"
                         style={{ fontSize: "20px" }}
                       >
                         bolt
@@ -680,7 +680,7 @@ export default function ProRequestListClient() {
                     <button
                       onClick={() => setRefreshTrigger((prev) => prev + 1)}
                       disabled={isRefreshing}
-                      className="w-full py-4 rounded-full font-black text-base text-white bg-[#0020A0] hover:bg-[#001880] transition-all active:scale-95 shadow-xl shadow-[#0020A0]/20 flex items-center justify-center gap-2 disabled:opacity-70"
+                      className="w-full py-4 rounded-full font-black text-base text-white bg-[#176b57] hover:bg-[#124c40] transition-all active:scale-95 shadow-xl shadow-[#176b57]/20 flex items-center justify-center gap-2 disabled:opacity-70"
                     >
                       {isRefreshing ? (
                         <>
@@ -847,7 +847,7 @@ export default function ProRequestListClient() {
                             className={`inline-block font-semibold px-3 py-1 rounded-full text-xs ${
                               isClosed
                                 ? "bg-gray-50 text-[#374151] border border-gray-200"
-                                : "bg-[#0020A0]/10 text-[#0020A0] border border-[#0020A0]/20 animate-pulse"
+                                : "bg-[#176b57]/10 text-[#176b57] border border-[#176b57]/20 animate-pulse"
                             }`}
                           >
                             💡 {req.quote_count} / {req.max_quotes || 5}
@@ -861,7 +861,7 @@ export default function ProRequestListClient() {
                               isExpired || isMatchedButNotMe
                                 ? "text-[#6B7280]"
                                 : isHurrying
-                                  ? "text-[#0020A0] animate-pulse"
+                                  ? "text-[#176b57] animate-pulse"
                                   : "text-[#6B7280]"
                             }`}
                           >
@@ -928,8 +928,8 @@ export default function ProRequestListClient() {
                               ? "bg-green-50 text-green-700 cursor-not-allowed border border-green-200"
                               : "bg-gray-100 text-[#374151] cursor-not-allowed border border-gray-200"
                             : !myQuote && !isAccepted
-                              ? "bg-[#0020A0] hover:bg-[#001880] text-white shadow-lg shadow-[#0020A0]/20"
-                              : "bg-[#0020A0]/80 hover:bg-[#0020A0] text-white shadow-md shadow-[#0020A0]/10"
+                              ? "bg-[#176b57] hover:bg-[#124c40] text-white shadow-lg shadow-[#176b57]/20"
+                              : "bg-[#176b57]/80 hover:bg-[#176b57] text-white shadow-md shadow-[#176b57]/10"
                         }`}
                       >
                         {isAccepted

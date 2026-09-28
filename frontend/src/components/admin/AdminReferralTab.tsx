@@ -313,7 +313,7 @@ export default function AdminReferralTab() {
       PENDING: "bg-yellow-900/50 text-yellow-300",
       CANCELLED: "bg-gray-700/50 text-gray-400",
       ACTIVE: "bg-green-900/50 text-green-300",
-      USED: "bg-blue-900/50 text-blue-300",
+      USED: "bg-[#173c31]/50 text-[#a6cfba]",
       EXPIRED: "bg-red-900/50 text-red-300",
     })[s] || "bg-gray-700/50 text-gray-400";
 
@@ -327,7 +327,7 @@ export default function AdminReferralTab() {
           <button
             key={t}
             onClick={() => setSubTab(t)}
-            className={`px-4 py-2 rounded-lg text-sm font-bold transition ${subTab === t ? "bg-blue-600 text-white" : "bg-gray-800 text-gray-400 hover:bg-gray-700"}`}
+            className={`px-4 py-2 rounded-lg text-sm font-bold transition ${subTab === t ? "bg-[#176b57] text-white" : "bg-gray-800 text-gray-400 hover:bg-gray-700"}`}
           >
             {t === "overview"
               ? "📊 Overview & Settings"
@@ -365,7 +365,7 @@ export default function AdminReferralTab() {
             </div>
             <div className="bg-[#1e2433] rounded-2xl p-5 border border-gray-700/50">
               <p className="text-gray-400 text-sm">Active Coupons</p>
-              <p className="text-2xl font-black text-blue-400">
+              <p className="text-2xl font-black text-[#6aaa8f]">
                 {fmtNum(stats.activeCoupons)}
               </p>
             </div>
@@ -413,12 +413,12 @@ export default function AdminReferralTab() {
                         [s.key]: e.target.value,
                       }))
                     }
-                    className="bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white w-36 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white w-36 focus:outline-none focus:ring-2 focus:ring-[#21846b]"
                   />
                   <button
                     disabled={savingKey === s.key}
                     onClick={() => handleSaveSetting(s.key, s.t)}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-bold text-sm disabled:opacity-50"
+                    className="bg-[#176b57] hover:bg-[#124c40] text-white px-5 py-2 rounded-lg font-bold text-sm disabled:opacity-50"
                   >
                     {savingKey === s.key ? "Saving..." : "Save"}
                   </button>
@@ -437,7 +437,7 @@ export default function AdminReferralTab() {
               <button
                 key={f}
                 onClick={() => setRewardFilter(f)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold ${rewardFilter === f ? "bg-blue-600 text-white" : "bg-gray-800 text-gray-400"}`}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold ${rewardFilter === f ? "bg-[#176b57] text-white" : "bg-gray-800 text-gray-400"}`}
               >
                 {f === "all" ? "All" : f}
               </button>
@@ -485,7 +485,7 @@ export default function AdminReferralTab() {
                       <td className="p-3 text-gray-400 text-xs">
                         {r.referrer_role}
                       </td>
-                      <td className="p-3 text-blue-300 font-medium">
+                      <td className="p-3 text-[#a6cfba] font-medium">
                         {r.referred?.name ||
                           r.referred?.email?.split("@")[0] ||
                           "—"}
@@ -535,7 +535,7 @@ export default function AdminReferralTab() {
               <button
                 key={f}
                 onClick={() => setCouponFilter(f)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold ${couponFilter === f ? "bg-blue-600 text-white" : "bg-gray-800 text-gray-400"}`}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold ${couponFilter === f ? "bg-[#176b57] text-white" : "bg-gray-800 text-gray-400"}`}
               >
                 {f === "all" ? "All" : f}
               </button>
@@ -581,7 +581,7 @@ export default function AdminReferralTab() {
                       <td className="p-3 text-gray-300">
                         {c.owner?.name || c.owner?.email?.split("@")[0] || "—"}
                       </td>
-                      <td className="p-3 text-right font-bold text-blue-400">
+                      <td className="p-3 text-right font-bold text-[#6aaa8f]">
                         {fmtNum(c.discount_amount)}
                       </td>
                       <td className="p-3 text-center">
@@ -638,7 +638,7 @@ export default function AdminReferralTab() {
                       value={newBannerTitle}
                       onChange={(e) => setNewBannerTitle(e.target.value)}
                       placeholder="e.g. Facebook Banner"
-                      className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#21846b]"
                     />
                   </div>
                   <div>
@@ -648,7 +648,7 @@ export default function AdminReferralTab() {
                     <select
                       value={newBannerType}
                       onChange={(e) => setNewBannerType(e.target.value as any)}
-                      className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#21846b]"
                     >
                       <option value="horizontal">Horizontal (1200×628)</option>
                       <option value="vertical">Vertical (1080×1920)</option>
@@ -666,7 +666,7 @@ export default function AdminReferralTab() {
                     value={newBannerPlatform}
                     onChange={(e) => setNewBannerPlatform(e.target.value)}
                     placeholder="e.g. Facebook, Viber, Blog"
-                    className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#21846b]"
                   />
                 </div>
                 <div className="flex items-center gap-3">
@@ -680,7 +680,7 @@ export default function AdminReferralTab() {
                   />
                   <label
                     htmlFor="banner-upload"
-                    className={`px-5 py-2.5 rounded-lg font-bold text-sm cursor-pointer transition ${bannerUploading || !newBannerTitle.trim() ? "bg-gray-700 text-gray-500 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
+                    className={`px-5 py-2.5 rounded-lg font-bold text-sm cursor-pointer transition ${bannerUploading || !newBannerTitle.trim() ? "bg-gray-700 text-gray-500 cursor-not-allowed" : "bg-[#176b57] hover:bg-[#124c40] text-white"}`}
                   >
                     {bannerUploading
                       ? "Uploading..."

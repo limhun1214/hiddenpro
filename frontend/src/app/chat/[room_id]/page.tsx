@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/components/ui/Toast";
 import QuoteDetailModal from "@/components/customer/QuoteDetailModal";
@@ -9,11 +9,8 @@ import { useTranslations } from "next-intl";
 
 export const runtime = "edge";
 
-export default function ChatRoomPage({
-  params,
-}: {
-  params: { room_id: string };
-}) {
+export default function ChatRoomPage() {
+  const params = useParams<{ room_id: string }>();
   const t = useTranslations();
   const router = useRouter();
   const { showToast } = useToast();
@@ -620,7 +617,7 @@ export default function ChatRoomPage({
             href={part}
             target="_blank"
             rel="noopener noreferrer"
-            className={`underline break-all transition-colors ${isMine ? "text-white font-bold hover:text-blue-200" : "text-blue-600 font-bold hover:text-blue-800"}`}
+            className={`underline break-all transition-colors ${isMine ? "text-white font-bold hover:text-[#cbe1d5]" : "text-[#176b57] font-bold hover:text-[#153f35]"}`}
           >
             {part}
           </a>
@@ -685,12 +682,12 @@ export default function ChatRoomPage({
                   : t("chatRoom.defaultRoom")}
               </h1>
               {proPhoneVerified && (
-                <span className="inline-flex items-center text-[10px] bg-green-50 text-green-700 font-bold px-1.5 py-0.5 rounded-full border border-green-200 whitespace-nowrap flex-shrink-0">
+                <span className="inline-flex items-center text-xs bg-green-50 text-green-700 font-bold px-1.5 py-0.5 rounded-full border border-green-200 whitespace-nowrap flex-shrink-0">
                   {t("chatRoom.phoneVerified")}
                 </span>
               )}
               {proFacebookUrl && (
-                <span className="inline-flex items-center text-[10px] bg-blue-50 text-blue-700 font-bold px-1.5 py-0.5 rounded-full border border-blue-200 whitespace-nowrap flex-shrink-0">
+                <span className="inline-flex items-center text-xs bg-[#f0f6f1] text-[#124c40] font-bold px-1.5 py-0.5 rounded-full border border-[#cbe1d5] whitespace-nowrap flex-shrink-0">
                   {t("chatRoom.facebookLinked")}
                 </span>
               )}
@@ -726,12 +723,12 @@ export default function ChatRoomPage({
               </button>
             )}
             {reportStatus === "pending" && (
-              <span className="text-[11px] text-yellow-500 border border-yellow-300 px-2.5 py-1 rounded-lg">
+              <span className="text-xs text-yellow-500 border border-yellow-300 px-2.5 py-1 rounded-lg">
                 {t("chatRoom.reportPending")}
               </span>
             )}
             {reportStatus === "reviewed" && (
-              <span className="text-[11px] text-green-500 border border-green-300 px-2.5 py-1 rounded-lg">
+              <span className="text-xs text-green-500 border border-green-300 px-2.5 py-1 rounded-lg">
                 {t("chatRoom.reportReviewed")}
               </span>
             )}
@@ -741,10 +738,10 @@ export default function ChatRoomPage({
         {/* 2행: 견적 금액(좌) + 상태 버튼/배지(우) */}
         <div className="flex items-center justify-between mt-2.5 pt-2.5 border-t border-gray-100">
           <div>
-            <span className="text-[10px] text-gray-400 block leading-none mb-0.5">
+            <span className="text-xs text-gray-400 block leading-none mb-0.5">
               {t("chatRoom.proposedQuote")}
             </span>
-            <span className="text-sm font-bold text-blue-600">
+            <span className="text-sm font-bold text-[#176b57]">
               {quotePrice !== null
                 ? `${quotePrice.toLocaleString()}`
                 : t("chatRoom.noPrice")}
@@ -759,7 +756,7 @@ export default function ChatRoomPage({
           ) : userRole === "CUSTOMER" ? (
             <button
               onClick={() => setShowConfirmModal(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-1.5 px-3 rounded-lg shadow-sm transition"
+              className="bg-[#176b57] hover:bg-[#124c40] text-white text-xs font-bold py-1.5 px-3 rounded-lg shadow-sm transition"
             >
               {t("chatRoom.confirmBtn")}
             </button>
@@ -780,7 +777,7 @@ export default function ChatRoomPage({
               if (container) container.scrollTop = container.scrollHeight;
               setHasNewMessage(false);
             }}
-            className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg transition flex items-center gap-1.5"
+            className="bg-[#176b57] hover:bg-[#124c40] text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg transition flex items-center gap-1.5"
           >
             {t("chatRoom.newMessage")}
           </button>
@@ -921,7 +918,7 @@ export default function ChatRoomPage({
                       )}
 
                       <div
-                        className={`rounded-2xl px-4 py-2 shadow-sm ${msg.isMine ? "bg-blue-600 text-white rounded-tr-none" : "bg-white border border-gray-100 text-gray-800 rounded-tl-none"}`}
+                        className={`rounded-2xl px-4 py-2 shadow-sm ${msg.isMine ? "bg-[#176b57] text-white rounded-tr-none" : "bg-white border border-gray-100 text-gray-800 rounded-tl-none"}`}
                       >
                         <p className="text-sm whitespace-pre-wrap leading-relaxed">
                           {renderMessageWithLinks(msg.content, msg.isMine)}
@@ -930,7 +927,7 @@ export default function ChatRoomPage({
 
                       {/* 기존의 시간 및 읽음 표시 렌더링 영역 유지 */}
                       <span
-                        className={`text-[10px] flex items-center gap-1 mt-1 ${msg.isMine ? "text-gray-400 justify-end" : "text-gray-400 justify-start"}`}
+                        className={`text-xs flex items-center gap-1 mt-1 ${msg.isMine ? "text-gray-400 justify-end" : "text-gray-400 justify-start"}`}
                       >
                         {msg.isMine && !msg.is_read && (
                           <span className="text-yellow-500 font-bold">1</span>
@@ -967,7 +964,7 @@ export default function ChatRoomPage({
                     : t("chatRoom.messagePlaceholder")
             }
             disabled={isSuspended || isBlockedInRoom || isRoomClosed}
-            className="flex-1 bg-gray-50 border border-gray-200 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 bg-gray-50 border border-gray-200 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#21846b] focus:bg-white transition disabled:opacity-50 disabled:cursor-not-allowed"
           />
           <button
             type="submit"
@@ -977,7 +974,7 @@ export default function ChatRoomPage({
               isBlockedInRoom ||
               isRoomClosed
             }
-            className="bg-blue-600 text-white rounded-full p-2 h-10 w-10 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition"
+            className="bg-[#176b57] text-white rounded-full p-2 h-10 w-10 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#124c40] transition"
           >
             <svg
               className="w-5 h-5 ml-1"
@@ -1071,7 +1068,7 @@ export default function ChatRoomPage({
       {showConfirmModal && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl">
-            <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-14 h-14 bg-[#e8f3ed] rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="text-3xl">🎉</span>
             </div>
             <h3 className="text-lg font-bold text-gray-900 text-center mb-2">
@@ -1095,7 +1092,7 @@ export default function ChatRoomPage({
                   setShowConfirmModal(false);
                   handleMatchConfirm();
                 }}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-sm transition shadow-sm"
+                className="flex-1 bg-[#176b57] hover:bg-[#124c40] text-white font-bold py-3 rounded-xl text-sm transition shadow-sm"
               >
                 {t("chatRoom.confirmBtn2")}
               </button>
@@ -1121,7 +1118,7 @@ export default function ChatRoomPage({
                 setShowMatchSuccessModal(false);
                 router.push("/quotes/received?tab=CLOSED");
               }}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-sm transition shadow-sm"
+              className="w-full bg-[#176b57] hover:bg-[#124c40] text-white font-bold py-3 rounded-xl text-sm transition shadow-sm"
             >
               {t("chatRoom.successBtn")}
             </button>

@@ -1,15 +1,17 @@
 "use client";
 export const runtime = "edge";
 
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { NavStateContext } from "@/context/NavStateContext";
 
 export default function ChatListPage() {
   const t = useTranslations();
   const router = useRouter();
+  const { isProUser } = useContext(NavStateContext);
   const [rooms, setRooms] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -58,17 +60,6 @@ export default function ChatListPage() {
 
     const userId = sessionUser.id;
     setCurrentUserId(userId);
-
-    // [사용자 요구사항]: 렌더링 시 현재 로그인된 사용자의 명확한 role 확인
-    const { data: roleData } = await supabase
-      .from("users")
-      .select("role")
-      .eq("user_id", userId)
-      .single();
-    console.log(
-      "Current Verified Role:",
-      roleData?.role?.toUpperCase() || "UNKNOWN",
-    );
 
     const { data: roomsData, error: roomsError } = await supabase
       .from("chat_rooms")
@@ -171,7 +162,6 @@ export default function ChatListPage() {
         );
       });
 
-      console.log("Mapped Rooms Result:", JSON.stringify(mappedRooms, null, 2));
       setRooms(mappedRooms);
     } else {
       setRooms([]);
@@ -242,10 +232,10 @@ export default function ChatListPage() {
 
   if (loading)
     return (
-      <div className="min-h-screen bg-[#f7f9fc] flex items-center justify-center">
+      <div className="min-h-screen bg-[#f7f7f2] flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 border-4 border-[#0020A0] border-t-transparent rounded-full animate-spin" />
-          <p className="text-sm text-[#757685]">{t("chatList.loading")}</p>
+          <div className="w-10 h-10 border-4 border-[#176b57] border-t-transparent rounded-full animate-spin" />
+          <p className="text-sm text-[#69756d]">{t("chatList.loading")}</p>
         </div>
       </div>
     );
@@ -260,29 +250,23 @@ export default function ChatListPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#f7f9fc] pb-24">
+    <div className="min-h-full bg-[#f7f7f2] pb-16">
       {/* TopAppBar */}
-      <header className="fixed top-0 w-full z-50 bg-slate-50/80 backdrop-blur-xl shadow-sm h-16 flex justify-between items-center px-6">
-        <div className="flex items-center gap-4">
-          <button className="text-indigo-900 hover:bg-slate-200/50 transition-colors p-2 rounded-full active:scale-95 duration-200">
-            <span className="material-symbols-outlined">menu</span>
-          </button>
-          <h1 className="font-['Manrope'] font-bold text-2xl tracking-tight text-indigo-900">
+      <header className="relative w-full border-b border-[#dfe6dc] bg-white/80">
+        <div className="max-w-3xl mx-auto flex items-center gap-4 px-5 py-7 sm:px-8 sm:py-9">
+          <span aria-hidden="true" className="material-symbols-outlined flex h-12 w-12 items-center justify-center rounded-2xl bg-[#e8f3ed] text-[#176b57]">
+            forum
+          </span>
+          <h1 className="font-['Manrope'] font-bold text-3xl tracking-tight text-[#173c31]">
             {t("chatList.title")}
           </h1>
-        </div>
-        <div className="flex items-center gap-2">
-          <button className="text-indigo-900 hover:bg-slate-200/50 transition-colors p-2 rounded-full active:scale-95 duration-200">
-            <span className="material-symbols-outlined">wallet</span>
-          </button>
-          <button className="text-indigo-900 hover:bg-slate-200/50 transition-colors p-2 rounded-full active:scale-95 duration-200 relative">
-            <span className="material-symbols-outlined">notifications</span>
-            <span className="absolute top-2 right-2 w-2 h-2 bg-[#fc755b] rounded-full border-2 border-white" />
-          </button>
+          <span className="ml-auto rounded-full border border-[#dfe6dc] bg-white px-3 py-1 text-sm font-semibold text-[#52665b]">
+            {rooms.length}
+          </span>
         </div>
       </header>
 
-      <main className="pt-24 px-6 max-w-3xl mx-auto">
+      <section aria-label={t("chatList.title")} className="pt-7 px-5 sm:px-8 max-w-3xl mx-auto">
         {/* Error */}
         {errorMsg && (
           <div className="mb-4 text-red-600 text-sm bg-red-50 p-3 rounded-xl border border-red-200">
@@ -294,17 +278,18 @@ export default function ChatListPage() {
         {/* Search Bar */}
         <div className="mb-8">
           <div className="relative group">
-            <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-[#757685]">
+            <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-[#69756d]">
               <span className="material-symbols-outlined">search</span>
             </div>
             <input
-              className="w-full bg-[#f2f4f7] border-none focus:ring-0 rounded-xl py-4 pl-12 pr-4 text-[#191c1e] placeholder-[#757685] transition-all focus:bg-white focus:shadow-sm outline-none"
+              className="w-full bg-white border border-[#dfe6dc] focus:ring-2 focus:ring-[#176b57]/20 focus:border-[#176b57] rounded-2xl py-4 pl-12 pr-4 text-[#22352c] placeholder-[#69756d] transition-all outline-none"
+              aria-label={t("chatList.searchPlaceholder")}
               placeholder={t("chatList.searchPlaceholder")}
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#001269] transition-all duration-300 group-focus-within:w-full" />
+            <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#124c40] transition-all duration-300 group-focus-within:w-full" />
           </div>
         </div>
 
@@ -312,8 +297,8 @@ export default function ChatListPage() {
         {!errorMsg && rooms.length === 0 ? (
           <div className="flex flex-col pt-4 pb-20">
             {/* Security Notice 배너 */}
-            <div className="bg-[#c2c9fe]/30 rounded-lg p-5 flex items-start gap-4 mb-10">
-              <div className="bg-[#0020A0] p-2 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div className="bg-[#cbe1d5]/30 rounded-lg p-5 flex items-start gap-4 mb-10">
+              <div className="bg-[#176b57] p-2 rounded-lg flex items-center justify-center flex-shrink-0">
                 <span
                   className="material-symbols-outlined text-white text-xl"
                   style={{ fontVariationSettings: "'FILL' 1, 'wght' 400" }}
@@ -322,10 +307,10 @@ export default function ChatListPage() {
                 </span>
               </div>
               <div className="flex flex-col">
-                <p className="text-[#4c5381] text-[10px] font-bold uppercase tracking-widest mb-1">
+                <p className="text-[#436757] text-xs font-bold uppercase tracking-widest mb-1">
                   {t("chatList.bannerLabel")}
                 </p>
-                <p className="text-[#454653] text-sm leading-relaxed">
+                <p className="text-[#526058] text-sm leading-relaxed">
                   {t("chatList.banner")}
                 </p>
               </div>
@@ -334,7 +319,7 @@ export default function ChatListPage() {
             {/* 아이콘 + 텍스트 + CTA */}
             <div className="flex flex-col items-center justify-center">
               <div className="relative mb-8">
-                <div className="absolute inset-0 bg-[#c2c9fe]/20 blur-3xl rounded-full scale-150" />
+                <div className="absolute inset-0 bg-[#cbe1d5]/20 blur-3xl rounded-full scale-150" />
                 <div
                   className="relative bg-white w-44 h-44 rounded-3xl flex items-center justify-center"
                   style={{
@@ -342,7 +327,7 @@ export default function ChatListPage() {
                   }}
                 >
                   <span
-                    className="material-symbols-outlined text-[#0020A0]"
+                    className="material-symbols-outlined text-[#176b57]"
                     style={{
                       fontSize: "80px",
                       fontVariationSettings: "'FILL' 1",
@@ -353,18 +338,18 @@ export default function ChatListPage() {
                 </div>
               </div>
               <div className="text-center max-w-xs">
-                <h2 className="font-black text-2xl text-[#191c1e] mb-3 tracking-tight">
+                <h2 className="font-black text-2xl text-[#22352c] mb-3 tracking-tight">
                   {t("chatList.noRooms")}
                 </h2>
-                <p className="text-[#454653] text-sm px-4 leading-relaxed">
+                <p className="text-[#526058] text-sm px-4 leading-relaxed">
                   {t("chatList.noRoomsSub")}
                 </p>
               </div>
               <button
-                onClick={() => router.push("/request")}
-                className="mt-10 bg-[#0020A0] hover:bg-[#001880] text-white font-bold text-xs uppercase tracking-widest px-8 py-4 rounded-lg flex items-center gap-3 active:scale-95 transition-all shadow-lg shadow-indigo-900/10"
+                onClick={() => router.push(isProUser ? "/pro/requests" : "/request")}
+                className="mt-10 bg-[#176b57] hover:bg-[#124c40] text-white font-bold text-xs uppercase tracking-widest px-8 py-4 rounded-lg flex items-center gap-3 active:scale-95 transition-all shadow-lg shadow-[#173c31]/10"
               >
-                {t("chatList.exploreServices")}
+                {t(isProUser ? "pcTopNav.requests" : "chatList.exploreServices")}
                 <span className="material-symbols-outlined text-sm">
                   arrow_forward
                 </span>
@@ -404,7 +389,7 @@ export default function ChatListPage() {
                   >
                     {/* 아바타 */}
                     <div className="relative flex-shrink-0">
-                      <div className="w-14 h-14 rounded-full overflow-hidden ring-2 ring-indigo-50 bg-[#f2f4f7] flex items-center justify-center">
+                      <div className="w-14 h-14 rounded-full overflow-hidden ring-2 ring-[#f0f6f1] bg-[#f1f3ed] flex items-center justify-center">
                         {partnerAvatar ? (
                           <img
                             src={partnerAvatar}
@@ -435,36 +420,36 @@ export default function ChatListPage() {
                     <div className="flex-grow min-w-0">
                       <div className="flex justify-between items-start mb-1">
                         <h3
-                          className={`font-['Inter'] font-bold text-lg truncate ${isClosed ? "text-[#aea9b2]" : "text-[#191c1e]"}`}
+                          className={`font-['Inter'] font-bold text-lg truncate ${isClosed ? "text-[#aea9b2]" : "text-[#22352c]"}`}
                         >
                           {partnerName}
                           {t("chatList.proSuffix")}
                         </h3>
-                        <span className="font-['Inter'] text-[11px] font-medium uppercase tracking-[0.05em] text-[#757685] flex-shrink-0 ml-2">
+                        <span className="font-['Inter'] text-xs font-medium uppercase tracking-[0.05em] text-[#69756d] flex-shrink-0 ml-2">
                           {formatChatTime(room.created_at)}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
                         <p
-                          className={`font-['Inter'] text-sm truncate pr-3 ${unread > 0 ? "font-semibold text-[#001269]" : "text-[#454653]"}`}
+                          className={`font-['Inter'] text-sm truncate pr-3 ${unread > 0 ? "font-semibold text-[#124c40]" : "text-[#526058]"}`}
                         >
                           {lastMessage}
                         </p>
                         {/* 배지 영역 */}
                         {unread > 0 ? (
-                          <span className="min-w-[20px] h-5 bg-[#0020A0] text-white text-[11px] font-black px-1.5 rounded-full flex items-center justify-center flex-shrink-0">
+                          <span className="min-w-[20px] h-5 bg-[#176b57] text-white text-xs font-black px-1.5 rounded-full flex items-center justify-center flex-shrink-0">
                             {unread > 99 ? "99+" : unread}
                           </span>
                         ) : room.status === "MATCHED" ? (
-                          <span className="bg-[#eceef1] text-[#454653] font-['Inter'] text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider flex-shrink-0">
+                          <span className="bg-[#edf0e8] text-[#526058] font-['Inter'] text-xs font-bold px-2 py-0.5 rounded-full uppercase tracking-wider flex-shrink-0">
                             {t("chatList.matchedBadge")}
                           </span>
                         ) : isClosed ? (
-                          <span className="bg-[#eceef1] text-[#454653] font-['Inter'] text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider flex-shrink-0">
+                          <span className="bg-[#edf0e8] text-[#526058] font-['Inter'] text-xs font-bold px-2 py-0.5 rounded-full uppercase tracking-wider flex-shrink-0">
                             {t("chatList.closedBadge")}
                           </span>
                         ) : (
-                          <span className="bg-[#c2c9fe] text-[#4c5381] font-['Inter'] text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider flex-shrink-0">
+                          <span className="bg-[#cbe1d5] text-[#436757] font-['Inter'] text-xs font-bold px-2 py-0.5 rounded-full uppercase tracking-wider flex-shrink-0">
                             {t("chatList.inProgress")}
                           </span>
                         )}
@@ -476,7 +461,7 @@ export default function ChatListPage() {
             })}
           </div>
         )}
-      </main>
+      </section>
     </div>
   );
 }

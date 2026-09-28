@@ -151,7 +151,7 @@ export default function ChatRoom({ roomId }: { roomId: string }) {
         <div className="flex items-center justify-between">
           {/* 좌측: 아바타 + 이름 */}
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-500 font-bold shrink-0">
+            <div className="w-10 h-10 bg-[#e8f3ed] rounded-full flex items-center justify-center text-[#21846b] font-bold shrink-0">
               고
             </div>
             <h2 className="font-bold text-gray-800 text-sm">
@@ -184,7 +184,7 @@ export default function ChatRoom({ roomId }: { roomId: string }) {
             <span className="text-xs text-gray-400 block leading-none mb-0.5">
               {t("chatRoom.proposedQuote")}
             </span>
-            <span className="text-sm font-bold text-blue-600">
+            <span className="text-sm font-bold text-[#176b57]">
               {quoteData
                 ? quoteData.price?.toLocaleString()
                 : mockRoomData.quoteAmount.toLocaleString()}
@@ -195,7 +195,7 @@ export default function ChatRoom({ roomId }: { roomId: string }) {
           {status === "OPEN" ? (
             <button
               onClick={handleMatchConfirm}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-1.5 rounded-lg text-xs transition shadow-sm"
+              className="bg-[#176b57] hover:bg-[#124c40] text-white font-bold px-4 py-1.5 rounded-lg text-xs transition shadow-sm"
             >
               {t("chatRoom.confirmBtn")}
             </button>
@@ -222,7 +222,7 @@ export default function ChatRoom({ roomId }: { roomId: string }) {
                     href={part}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`underline break-all transition-colors ${isMine ? "text-white font-bold hover:text-blue-200" : "text-blue-600 font-bold hover:text-blue-800"}`}
+                    className={`underline break-all transition-colors ${isMine ? "text-white font-bold hover:text-[#cbe1d5]" : "text-[#176b57] font-bold hover:text-[#153f35]"}`}
                   >
                     {part}
                   </a>
@@ -238,7 +238,7 @@ export default function ChatRoom({ roomId }: { roomId: string }) {
               className={`flex ${msg.sender === "me" ? "justify-end" : "justify-start"}`}
             >
               <div
-                className={`max-w-[75%] rounded-2xl p-3 text-sm shadow-sm whitespace-pre-wrap leading-relaxed ${msg.sender === "me" ? "bg-blue-600 text-white rounded-tr-none" : "bg-white border border-gray-200 rounded-tl-none text-gray-800"}`}
+                className={`max-w-[75%] rounded-2xl p-3 text-sm shadow-sm whitespace-pre-wrap leading-relaxed ${msg.sender === "me" ? "bg-[#176b57] text-white rounded-tr-none" : "bg-white border border-gray-200 rounded-tl-none text-gray-800"}`}
               >
                 {renderMessageWithLinks(msg.text, msg.sender === "me")}
               </div>
@@ -262,7 +262,7 @@ export default function ChatRoom({ roomId }: { roomId: string }) {
             type="text"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            className="flex-1 bg-gray-100 border border-gray-200 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 rounded-xl px-4 py-2 outline-none text-sm transition"
+            className="flex-1 bg-gray-100 border border-gray-200 focus:bg-white focus:border-[#21846b] focus:ring-2 focus:ring-[#e8f3ed] rounded-xl px-4 py-2 outline-none text-sm transition"
             placeholder={t("chatRoom.inputPlaceholder")}
           />
           <button

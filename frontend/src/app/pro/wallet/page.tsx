@@ -212,7 +212,7 @@ export default function ProWalletPage() {
       return {
         label: t("wallet.txCharge"),
         icon: "payments",
-        iconColor: "text-[#0020A0]",
+        iconColor: "text-[#176b57]",
       };
     if (type === "DEDUCT_QUOTE")
       return {
@@ -224,7 +224,7 @@ export default function ProWalletPage() {
       return {
         label: t("wallet.txRefund"),
         icon: "undo",
-        iconColor: "text-[#0020A0]",
+        iconColor: "text-[#176b57]",
       };
     if (type === "BONUS") {
       const label = item.description?.includes("Coupon")
@@ -232,25 +232,25 @@ export default function ProWalletPage() {
         : item.description?.includes("Referral")
           ? t("wallet.txReferralBonus")
           : t("wallet.txBonus");
-      return { label, icon: "add_circle", iconColor: "text-[#0020A0]" };
+      return { label, icon: "add_circle", iconColor: "text-[#176b57]" };
     }
     if (type === "BONUS_REFUND")
       return {
         label: t("wallet.txBonusRefund"),
         icon: "undo",
-        iconColor: "text-[#0020A0]",
+        iconColor: "text-[#176b57]",
       };
     if (type === "ADMIN_CHARGE")
       return {
         label: t("wallet.txAdminCharge"),
         icon: "admin_panel_settings",
-        iconColor: "text-[#0020A0]",
+        iconColor: "text-[#176b57]",
       };
     if (type === "ADMIN_REFUND")
       return {
         label: t("wallet.txAdminRefund"),
         icon: "undo",
-        iconColor: "text-[#0020A0]",
+        iconColor: "text-[#176b57]",
       };
     if (type === "DEDUCT_BONUS_QUOTE")
       return {
@@ -262,19 +262,19 @@ export default function ProWalletPage() {
       return {
         label: t("wallet.txAdminBonusCharge"),
         icon: "admin_panel_settings",
-        iconColor: "text-[#0020A0]",
+        iconColor: "text-[#176b57]",
       };
     if (type === "ADMIN_BONUS_REFUND")
       return {
         label: t("wallet.txAdminBonusRefund"),
         icon: "undo",
-        iconColor: "text-[#0020A0]",
+        iconColor: "text-[#176b57]",
       };
     if (type === "SIGNUP_BONUS")
       return {
         label: t("wallet.txSignupBonus"),
         icon: "card_giftcard",
-        iconColor: "text-[#0020A0]",
+        iconColor: "text-[#176b57]",
       };
     return { label: type, icon: "receipt", iconColor: "text-gray-500" };
   };
@@ -294,14 +294,14 @@ export default function ProWalletPage() {
     .reduce((s, i) => s + Math.abs(Number(i.amount)), 0);
 
   return (
-    <div className="min-h-screen bg-[#f7f9fc] text-gray-900 pb-32 font-body">
+    <div className="min-h-screen bg-[#f7f7f2] text-gray-900 pb-32 font-body">
       <main className="px-6 space-y-8 pt-6 max-w-3xl mx-auto w-full">
         {/* ── Balance Hero ── */}
         <section className="flex flex-col items-center text-center space-y-3 py-6">
-          <p className="text-[#454653] font-bold uppercase tracking-widest text-xs">
+          <p className="text-[#526058] font-bold uppercase tracking-widest text-xs">
             {t("wallet.title")}
           </p>
-          <h2 className="font-headline font-extrabold text-5xl text-[#0020A0] tracking-tighter">
+          <h2 className="font-headline font-extrabold text-5xl text-[#176b57] tracking-tighter">
             {loading
               ? "..."
               : balance !== null
@@ -314,10 +314,10 @@ export default function ProWalletPage() {
 
           {!loading && bonusBalance > 0 && (
             <div className="flex justify-center gap-3 text-xs">
-              <span className="bg-[#c2c9fe]/20 text-[#4c5381] px-3 py-1 rounded-full font-bold border border-[#c2c9fe]/30">
+              <span className="bg-[#cbe1d5]/20 text-[#436757] px-3 py-1 rounded-full font-bold border border-[#cbe1d5]/30">
                 {t("wallet.realBalance")} {(balance || 0).toLocaleString()}
               </span>
-              <span className="flex items-center gap-1 bg-[#c2c9fe]/20 text-green-600 px-3 py-1 rounded-full font-bold border border-[#c2c9fe]/30">
+              <span className="flex items-center gap-1 bg-[#cbe1d5]/20 text-green-600 px-3 py-1 rounded-full font-bold border border-[#cbe1d5]/30">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="w-3.5 h-3.5 shrink-0"
@@ -334,7 +334,7 @@ export default function ProWalletPage() {
           <div className="pt-2 w-full flex justify-center">
             <button
               onClick={() => setIsChargeModalOpen(true)}
-              className="w-full max-w-[300px] py-4 bg-[#0020A0] hover:bg-[#001880] text-white font-bold text-lg rounded-xl shadow-[0_32px_64px_-15px_rgba(0,15,93,0.18)] active:scale-[0.96] transition-all flex items-center justify-center gap-2"
+              className="w-full max-w-[300px] py-4 bg-[#176b57] hover:bg-[#124c40] text-white font-bold text-lg rounded-xl shadow-[0_32px_64px_-15px_rgba(0,15,93,0.18)] active:scale-[0.96] transition-all flex items-center justify-center gap-2"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -369,7 +369,7 @@ export default function ProWalletPage() {
                   arrow_downward
                 </span>
               </div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-[#454653] mb-1">
+              <p className="text-xs font-bold uppercase tracking-widest text-[#526058] mb-1">
                 {t("wallet.totalCharged")}
               </p>
               <p className="font-extrabold text-xl text-green-600">
@@ -385,7 +385,7 @@ export default function ProWalletPage() {
                   arrow_upward
                 </span>
               </div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-[#454653] mb-1">
+              <p className="text-xs font-bold uppercase tracking-widest text-[#526058] mb-1">
                 {t("wallet.totalUsed")}
               </p>
               <p className="font-extrabold text-xl text-gray-900">
@@ -396,7 +396,7 @@ export default function ProWalletPage() {
         )}
 
         {/* ── Referral Banner (Bento Style) ── */}
-        <section className="relative overflow-hidden rounded-xl bg-[#c2c9fe]/30 p-6 cursor-pointer">
+        <section className="relative overflow-hidden rounded-xl bg-[#cbe1d5]/30 p-6 cursor-pointer">
           <div className="absolute top-1/2 right-3 -translate-y-1/2 opacity-20 pointer-events-none">
             {/* card_giftcard: 리본 달린 직사각형 선물 카드 */}
             <svg
@@ -412,7 +412,7 @@ export default function ProWalletPage() {
                 width="22"
                 height="13"
                 rx="1.5"
-                fill="#0020A0"
+                fill="#176b57"
               />
               {/* 가로 리본 줄무늬 */}
               <rect
@@ -424,26 +424,26 @@ export default function ProWalletPage() {
                 fillOpacity="0.3"
               />
               {/* 리본 왼쪽 루프 */}
-              <path d="M12 8 Q9 2 5 5 Q3 8 7 9 Z" fill="#0020A0" />
+              <path d="M12 8 Q9 2 5 5 Q3 8 7 9 Z" fill="#176b57" />
               {/* 리본 오른쪽 루프 */}
-              <path d="M12 8 Q15 2 19 5 Q21 8 17 9 Z" fill="#0020A0" />
+              <path d="M12 8 Q15 2 19 5 Q21 8 17 9 Z" fill="#176b57" />
               {/* 리본 매듭 */}
-              <ellipse cx="12" cy="8" rx="1.8" ry="1.5" fill="#0020A0" />
+              <ellipse cx="12" cy="8" rx="1.8" ry="1.5" fill="#176b57" />
             </svg>
           </div>
           <div className="relative z-10 space-y-4">
             <div className="space-y-1">
-              <h3 className="font-headline font-bold text-xl leading-tight text-[#191c1e]">
+              <h3 className="font-headline font-bold text-xl leading-tight text-[#22352c]">
                 {t("referral.inviteBanner")}
               </h3>
-              <p className="text-[#454653] text-sm max-w-[240px]">
+              <p className="text-[#526058] text-sm max-w-[240px]">
                 Share the Sapphire experience with your network and grow your
                 ledger.
               </p>
             </div>
             <button
               onClick={() => router.push("/referral")}
-              className="px-6 py-3 bg-[#4c5381] hover:bg-[#3d4270] text-white font-bold text-sm rounded-xl transition-colors"
+              className="px-6 py-3 bg-[#436757] hover:bg-[#315342] text-white font-bold text-sm rounded-xl transition-colors"
             >
               Send Invite
             </button>
@@ -453,7 +453,7 @@ export default function ProWalletPage() {
         {/* ── Credit History ── */}
         <section className="space-y-6">
           <div className="flex items-center justify-between">
-            <h3 className="font-black text-lg text-[#191c1e] tracking-tight">
+            <h3 className="font-black text-lg text-[#22352c] tracking-tight">
               {t("wallet.ledgerTitle")}
             </h3>
             <div className="flex gap-2">
@@ -463,8 +463,8 @@ export default function ProWalletPage() {
                   onClick={() => setFilterType(type)}
                   className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-colors ${
                     filterType === type
-                      ? "bg-[#0020A0] text-white"
-                      : "bg-[#f2f4f7] text-[#454653] hover:bg-[#e8eaf0]"
+                      ? "bg-[#176b57] text-white"
+                      : "bg-[#f1f3ed] text-[#526058] hover:bg-[#e8eee5]"
                   }`}
                 >
                   {type === "ALL"
@@ -482,11 +482,11 @@ export default function ProWalletPage() {
               {t("wallet.loading")}
             </p>
           ) : ledger.length === 0 ? (
-            <div className="text-center py-8 bg-white rounded-xl border border-[#c5c5d6]/30">
+            <div className="text-center py-8 bg-white rounded-xl border border-[#d8dfd7]/30">
               <p className="text-sm text-gray-500">{t("wallet.noLedger")}</p>
             </div>
           ) : filteredLedger.length === 0 ? (
-            <div className="text-center py-8 bg-white rounded-xl border border-[#c5c5d6]/30">
+            <div className="text-center py-8 bg-white rounded-xl border border-[#d8dfd7]/30">
               <p className="text-sm text-gray-500">{t("wallet.noFiltered")}</p>
             </div>
           ) : (
@@ -506,21 +506,21 @@ export default function ProWalletPage() {
                 return (
                   <div
                     key={item.transaction_id}
-                    className="flex items-center justify-between p-5 rounded-xl bg-white border border-[#c5c5d6]/30 hover:border-[#c5c5d6]/60 transition-colors"
+                    className="flex items-center justify-between p-5 rounded-xl bg-white border border-[#d8dfd7]/30 hover:border-[#d8dfd7]/60 transition-colors"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-full bg-indigo-50 flex items-center justify-center shrink-0">
+                      <div className="w-12 h-12 rounded-full bg-[#f0f6f1] flex items-center justify-center shrink-0">
                         <span
-                          className={`material-symbols-outlined text-[#0020A0]`}
+                          className={`material-symbols-outlined text-[#176b57]`}
                         >
                           {txIcon}
                         </span>
                       </div>
                       <div>
-                        <p className="font-bold text-[#191c1e] text-sm">
+                        <p className="font-bold text-[#22352c] text-sm">
                           {txLabel}
                         </p>
-                        <p className="text-xs text-[#454653]">
+                        <p className="text-xs text-[#526058]">
                           {new Date(item.created_at).toLocaleDateString(
                             "en-US",
                             { year: "numeric", month: "short", day: "numeric" },
@@ -534,7 +534,7 @@ export default function ProWalletPage() {
                           )}
                         </p>
                         {item.description && (
-                          <p className="text-xs text-[#454653] mt-0.5">
+                          <p className="text-xs text-[#526058] mt-0.5">
                             {item.description}
                           </p>
                         )}
@@ -545,7 +545,7 @@ export default function ProWalletPage() {
                         {operator}
                         {Math.abs(item.amount).toLocaleString()}
                       </p>
-                      <p className="text-xs text-[#454653] mt-1">
+                      <p className="text-xs text-[#526058] mt-1">
                         {t("wallet.balanceLabel")}
                         {item.balance_snapshot?.toLocaleString()}
                       </p>
@@ -567,7 +567,7 @@ export default function ProWalletPage() {
               {payoutHistory.map((p) => (
                 <div
                   key={p.id}
-                  className="bg-white border border-[#c5c5d6]/30 p-4 rounded-xl flex justify-between items-center"
+                  className="bg-white border border-[#d8dfd7]/30 p-4 rounded-xl flex justify-between items-center"
                 >
                   <div>
                     <p className="text-xs text-gray-500">
@@ -590,7 +590,7 @@ export default function ProWalletPage() {
                             ? "bg-red-50 text-red-500"
                             : p.status === "HELD"
                               ? "bg-yellow-50 text-yellow-600"
-                              : "bg-[#0020A0]/10 text-[#0020A0]"
+                              : "bg-[#176b57]/10 text-[#176b57]"
                       }`}
                     >
                       {p.status === "APPROVED"
@@ -619,19 +619,19 @@ export default function ProWalletPage() {
             <div className="flex flex-col gap-3">
               <button
                 onClick={() => handleChargeMock(100)}
-                className="w-full bg-gray-50 hover:bg-gray-100 text-[#0020A0] font-bold py-4 rounded-xl border border-gray-200 transition text-lg"
+                className="w-full bg-gray-50 hover:bg-gray-100 text-[#176b57] font-bold py-4 rounded-xl border border-gray-200 transition text-lg"
               >
                 100 Credits
               </button>
               <button
                 onClick={() => handleChargeMock(300)}
-                className="w-full bg-gray-50 hover:bg-gray-100 text-[#0020A0] font-bold py-4 rounded-xl border border-[#0020A0]/20 transition text-lg"
+                className="w-full bg-gray-50 hover:bg-gray-100 text-[#176b57] font-bold py-4 rounded-xl border border-[#176b57]/20 transition text-lg"
               >
                 300 Credits
               </button>
               <button
                 onClick={() => handleChargeMock(500)}
-                className="w-full bg-[#0020A0] hover:bg-[#001880] text-white font-bold py-4 rounded-xl shadow-[0_32px_64px_-15px_rgba(0,15,93,0.18)] transition text-lg"
+                className="w-full bg-[#176b57] hover:bg-[#124c40] text-white font-bold py-4 rounded-xl shadow-[0_32px_64px_-15px_rgba(0,15,93,0.18)] transition text-lg"
               >
                 500 Credits{" "}
                 <span className="text-sm bg-green-400 text-white px-2 py-0.5 rounded-full ml-1">
@@ -658,7 +658,7 @@ export default function ProWalletPage() {
             </h2>
             <p className="text-xs text-gray-500 text-center -mt-2">
               {t("wallet.payoutAvailable")}
-              <span className="font-bold text-[#0020A0]">
+              <span className="font-bold text-[#176b57]">
                 {(balance || 0).toLocaleString()} {t("wallet.cashUnit")}
               </span>
             </p>
@@ -668,28 +668,28 @@ export default function ProWalletPage() {
                 value={payoutAmount}
                 onChange={(e) => setPayoutAmount(e.target.value)}
                 placeholder={t("wallet.payoutAmountPlaceholder")}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#0020A0]/50"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#176b57]/50"
               />
               <input
                 type="text"
                 value={payoutBankName}
                 onChange={(e) => setPayoutBankName(e.target.value)}
                 placeholder={t("wallet.payoutBankPlaceholder")}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#0020A0]/50"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#176b57]/50"
               />
               <input
                 type="text"
                 value={payoutAccountNumber}
                 onChange={(e) => setPayoutAccountNumber(e.target.value)}
                 placeholder={t("wallet.payoutAccountPlaceholder")}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#0020A0]/50"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#176b57]/50"
               />
               <input
                 type="text"
                 value={payoutAccountHolder}
                 onChange={(e) => setPayoutAccountHolder(e.target.value)}
                 placeholder={t("wallet.payoutHolderPlaceholder")}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#0020A0]/50"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#176b57]/50"
               />
               <p className="text-xs text-yellow-600 bg-yellow-50 p-3 rounded-xl border border-yellow-200">
                 {t("wallet.payoutWarning")}
@@ -734,7 +734,7 @@ export default function ProWalletPage() {
                 <>
                   <button
                     onClick={handleChargeMockConfirm}
-                    className="w-full bg-[#0020A0] hover:bg-[#001880] text-white font-bold py-3.5 rounded-xl transition"
+                    className="w-full bg-[#176b57] hover:bg-[#124c40] text-white font-bold py-3.5 rounded-xl transition"
                   >
                     {t("wallet.chargeConfirmBtn")}
                   </button>
@@ -751,7 +751,7 @@ export default function ProWalletPage() {
               ) : (
                 <button
                   onClick={() => setInfoModal(null)}
-                  className="w-full bg-[#0020A0] hover:bg-[#001880] text-white font-bold py-3.5 rounded-xl transition"
+                  className="w-full bg-[#176b57] hover:bg-[#124c40] text-white font-bold py-3.5 rounded-xl transition"
                 >
                   {t("wallet.infoConfirmBtn")}
                 </button>

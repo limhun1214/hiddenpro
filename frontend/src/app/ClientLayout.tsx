@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useRef, createContext } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
@@ -52,6 +52,38 @@ export default function ClientLayout({
 
   const t = useTranslations();
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const noticeDialogRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!showLoginModal && !showProfileIncompleteModal) return;
+    const previousFocus = document.activeElement as HTMLElement | null;
+    const dialog = noticeDialogRef.current;
+    dialog?.querySelector<HTMLButtonElement>("button")?.focus();
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setShowLoginModal(false);
+        setShowProfileIncompleteModal(false);
+      }
+      if (event.key !== "Tab" || !dialog) return;
+      const controls = dialog.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), a[href], [tabindex="0"]',
+      );
+      const first = controls[0];
+      const last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last?.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first?.focus();
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      previousFocus?.focus();
+    };
+  }, [showLoginModal, showProfileIncompleteModal]);
 
   const [userId, setUserId] = useState<string | null>(null);
 
@@ -239,7 +271,6 @@ export default function ClientLayout({
     return () => {
       isMounted = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // 2단계: 라우트 가드
@@ -522,20 +553,18 @@ export default function ClientLayout({
   const hideFooter = isChatRoom || isRequestForm || isAdminPage || !!userId;
   const hideNavBar = isChatRoom || (isLandingPage && !userId) || isAdminPage;
 
-  // 메인 홈 화면 및 관리자 페이지: 모바일 제약 해제, 풀스크린 반응형 레이아웃 제공
-  // 서브 페이지 (견적요청, 프로필 등): 모바일은 max-w-md, PC는 넓게 50:50 분할
+  // 일반 화면은 문서 스크롤을 사용하고 채팅방만 고정 높이를 유지한다.
   const isSpecialPage = isLandingPage || isAdminPage;
-  const isInternalPage = !!userId && !isAdminPage && !isLandingPage;
 
   // 최상위 컨테이너 클래스 (조건부 라우팅)
   const rootContainerClasses = isLandingPage
-    ? "flex flex-col min-h-screen relative w-full bg-[#F8F9FA]"
+    ? "hp-app-shell flex flex-col min-h-screen relative w-full bg-[#f7f8fa]"
     : isAdminPage
       ? "flex flex-col min-h-screen relative overflow-hidden w-full"
-      : `flex flex-col lg:flex-row w-full min-h-screen lg:h-[100dvh] ${isInternalPage ? "bg-[#FAFAFA]" : "bg-white"} relative shadow-xl lg:overflow-hidden`;
+      : `hp-app-shell flex flex-col w-full min-h-screen bg-[#f7f8fa] relative ${isChatRoom ? "lg:h-[100dvh] lg:overflow-hidden" : ""}`;
 
   // 우측 영역(본문) 컨테이너 클래스 (서브 페이지용)
-  const rightPanelClasses = `flex flex-col w-full flex-1 min-h-screen lg:min-h-0 lg:h-full ${isInternalPage ? "bg-[#FAFAFA]" : "bg-white"} relative`;
+  const rightPanelClasses = `flex flex-col w-full flex-1 min-h-screen bg-[#f7f8fa] relative ${isChatRoom ? "lg:min-h-0 lg:h-full" : ""}`;
 
   return (
     <ToastProvider>
@@ -553,8 +582,10 @@ export default function ClientLayout({
           setShowProfileIncompleteModal,
         }}
       >
-        <div className={rootContainerClasses}>
-          {/* BrandSidePanel: 전체 내부 페이지에서 제거 */}
+        <div className={rootContainerClasses} data-app-page={isLandingPage ? "home" : isAdminPage ? "admin" : "internal"} data-route={currentPath}>
+          <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[10000] focus:rounded-xl focus:bg-[#176b57] focus:px-5 focus:py-3 focus:font-semibold focus:text-white focus:shadow-lg">
+            {t("common.skipToContent")}
+          </a>
 
           <div
             className={
@@ -567,17 +598,25 @@ export default function ClientLayout({
 
             {/* 모바일 전용 상단 헤더: 알림 벨 + 언어 전환 */}
             {(!isSpecialPage || (isLandingPage && !!userId)) && !isChatRoom && (
-              <div
-                className={`lg:hidden sticky top-0 z-[60] w-full ${isLandingPage ? "bg-white border-b border-gray-200" : "bg-white border-b border-gray-100"} shrink-0`}
+              <header
+                className="hp-mobile-header lg:hidden sticky top-0 z-40 w-full border-b border-[#e1e7e3] bg-white/95 backdrop-blur-xl shrink-0"
               >
-                <div className="flex justify-end items-center px-4 py-3 gap-3">
+                <div className="flex items-center px-5 py-3 gap-2">
+                  <Link href="/" aria-label="HiddenPro" className="mr-auto flex items-center gap-2 rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#176b57]">
+                    <span aria-hidden="true" className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#173e31] text-white">
+                      <svg width="28" height="28" viewBox="0 0 40 40" fill="none"><path d="M12 9v22m0-11c0-8 13-8 13 0v11" stroke="#e2f2a6" strokeWidth="4" strokeLinecap="round"/><circle cx="32" cy="30" r="2.5" fill="#f7f8f2"/></svg>
+                    </span>
+                    <span className="text-xl font-extrabold tracking-[-0.06em] text-[#142522]">Hidden<span className="text-[#176b57]">Pro</span></span>
+                  </Link>
                   {isProUser && (
                     <button
                       onClick={() => router.push("/pro/wallet")}
                       aria-label={t("pcTopNav.wallet")}
-                      className={`relative transition-colors ${currentPath === "/pro/wallet" ? "text-[#1a73e8]" : "text-[#6B7280] hover:text-[#1F2937]"}`}
+                      aria-current={currentPath === "/pro/wallet" ? "page" : undefined}
+                      className={`relative flex h-11 w-11 items-center justify-center rounded-xl transition-colors ${currentPath === "/pro/wallet" ? "bg-[#e8f3ed] text-[#176b57]" : "text-[#64716b] hover:bg-[#f2f5f3]"}`}
                     >
                       <span
+                        aria-hidden="true"
                         className="material-symbols-outlined text-[22px]"
                         style={{
                           fontVariationSettings:
@@ -592,9 +631,12 @@ export default function ClientLayout({
                   )}
                   <button
                     onClick={() => router.push("/notifications")}
-                    className={`relative transition-colors ${currentPath === "/notifications" ? "text-[#1a73e8]" : "text-[#6B7280] hover:text-[#1F2937]"}`}
+                    aria-label={t("pcTopNav.notifications")}
+                    aria-current={currentPath === "/notifications" ? "page" : undefined}
+                    className={`relative flex h-11 w-11 items-center justify-center rounded-xl transition-colors ${currentPath === "/notifications" ? "bg-[#e8f3ed] text-[#176b57]" : "text-[#64716b] hover:bg-[#f2f5f3]"}`}
                   >
                     <span
+                      aria-hidden="true"
                       className="material-symbols-outlined text-[22px]"
                       style={{
                         fontVariationSettings:
@@ -604,8 +646,7 @@ export default function ClientLayout({
                       notifications
                     </span>
                     {unreadNotifsCount > 0 && (
-                      <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                      <span aria-hidden="true" className="absolute top-2 right-2 flex h-2.5 w-2.5">
                         <span
                           className={`relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-white`}
                         ></span>
@@ -614,32 +655,31 @@ export default function ClientLayout({
                   </button>
                   {isAdminUser && <LanguageSwitcher />}
                 </div>
-              </div>
+              </header>
             )}
 
             {isCheckingAuth &&
             (currentPath === "/pro" || currentPath.startsWith("/pro/")) ? (
-              <div className="flex-1 flex flex-col items-center justify-center min-h-screen">
-                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
+              <div id="main-content" tabIndex={-1} role="status" className="flex-1 flex flex-col items-center justify-center min-h-[60vh] gap-4">
+                <div aria-hidden="true" className="animate-spin rounded-full h-10 w-10 border-2 border-[#dce7df] border-t-[#176b57]"></div>
+                <span className="text-sm text-[#64716b]">{t("common.loading")}</span>
               </div>
             ) : (
               <>
                 <main
-                  className={`flex-1 flex flex-col w-full ${!isSpecialPage ? "lg:overflow-y-auto custom-scrollbar" : ""} ${!hideNavBar ? "pb-16" : ""}`}
+                  id="main-content"
+                  tabIndex={-1}
+                  data-app-content="true"
+                  data-page-kind={isLandingPage ? "home" : isAdminPage ? "admin" : "internal"}
+                  className={`hp-main-content flex-1 flex flex-col w-full min-w-0 ${isChatRoom ? "lg:overflow-y-auto custom-scrollbar" : ""} ${!hideNavBar ? "pb-[calc(5rem+env(safe-area-inset-bottom))] lg:pb-0" : ""}`}
                 >
                   {children}
                 </main>
 
                 {!hideNavBar && (
                   <nav
-                    className={`fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 z-[999] px-2 py-2 md:hidden`}
-                    style={{
-                      position: "fixed",
-                      bottom: 0,
-                      left: 0,
-                      width: "100%",
-                      zIndex: 999,
-                    }}
+                    aria-label={t("common.primaryNavigation")}
+                    className="hp-bottom-nav fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-xl border-t border-[#e1e7e3] z-40 px-3 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] lg:hidden"
                   >
                     <ul className="flex justify-between items-center h-14 max-w-md mx-auto">
                       {currentNav.map((item) => {
@@ -652,6 +692,8 @@ export default function ClientLayout({
                           <li key={item.key} className="flex-1">
                             <Link
                               href={item.href}
+                              prefetch={false}
+                              aria-current={isActive ? "page" : undefined}
                               onClick={(e) => {
                                 if (
                                   !isCheckingAuth &&
@@ -679,12 +721,13 @@ export default function ClientLayout({
                                     new Event("gnb-tab-reset"),
                                   );
                               }}
-                              className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${
-                                isActive ? "text-[#1a73e8]" : "text-[#374151]"
+                              className={`flex flex-col items-center justify-center w-full min-h-14 rounded-xl space-y-1 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#176b57] ${
+                                isActive ? "text-[#176b57]" : "text-[#64716b] hover:text-[#142522]"
                               }`}
                             >
-                              <div className="relative">
+                              <div className={`relative flex h-7 w-14 items-center justify-center rounded-full ${isActive ? "bg-[#e8f3ed]" : ""}`}>
                                 <span
+                                  aria-hidden="true"
                                   className="material-symbols-outlined text-[22px]"
                                   style={{
                                     fontVariationSettings: isActive
@@ -740,7 +783,7 @@ export default function ClientLayout({
                                 )}
                               </div>
                               <span
-                                className={`text-[10px] ${isActive ? "scale-110 transition-transform" : ""}`}
+                                className={`text-[11px] ${isActive ? "font-bold" : "font-medium"}`}
                               >
                                 {item.label}
                               </span>
@@ -759,15 +802,15 @@ export default function ClientLayout({
           {isSpecialPage && !hideFooter && <GlobalFooter />}
 
           {showLoginModal && (
-            <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-              <div className="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
-                <div className="bg-gradient-to-r from-blue-500 to-indigo-500 p-6 text-center">
-                  <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto shadow-lg">
-                    <span className="text-3xl">🔐</span>
+            <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-[#142522]/50 backdrop-blur-sm">
+              <div ref={noticeDialogRef} role="dialog" aria-modal="true" aria-labelledby="login-required-title" className="bg-[#f7f8f2] border border-[#dce4d6] rounded-3xl w-full max-w-sm max-h-[90dvh] overflow-y-auto shadow-2xl">
+                <div className="bg-[#173e31] p-6 text-center">
+                  <div className="w-16 h-16 bg-[#e2f2a6] text-[#173e31] rounded-2xl flex items-center justify-center mx-auto">
+                    <span aria-hidden="true" className="material-symbols-outlined text-3xl">lock</span>
                   </div>
                 </div>
                 <div className="p-6 text-center">
-                  <h3 className="text-lg font-bold text-gray-900 mb-2">
+                  <h3 id="login-required-title" className="text-lg font-bold text-[#142522] mb-2">
                     {t("common.loginRequiredTitle")}
                   </h3>
                   <p className="text-sm text-gray-500 leading-relaxed mb-6 whitespace-pre-line">
@@ -785,7 +828,7 @@ export default function ClientLayout({
                         setShowLoginModal(false);
                         router.push("/?login=true");
                       }}
-                      className="flex-[2] py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-bold rounded-xl hover:from-blue-600 hover:to-indigo-600 transition-all shadow-md active:scale-[0.98] text-sm"
+                      className="flex-[2] py-3 bg-[#173e31] text-white font-bold rounded-xl hover:bg-[#245d47] transition-colors text-sm"
                     >
                       {t("common.loginRequiredBtn")}
                     </button>
@@ -796,10 +839,10 @@ export default function ClientLayout({
           )}
 
           {showProfileIncompleteModal && (
-            <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-              <div className="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
+            <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-[#142522]/50 backdrop-blur-sm">
+              <div ref={noticeDialogRef} role="dialog" aria-modal="true" aria-labelledby="profile-incomplete-title" className="bg-white rounded-3xl w-full max-w-sm max-h-[90dvh] overflow-y-auto shadow-2xl">
                 {/* 아이콘 헤더 */}
-                <div className="bg-gradient-to-r from-yellow-400 to-orange-400 p-6 text-center">
+                <div className="bg-[#e8f3ed] p-6 text-center">
                   <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto shadow-lg">
                     <span className="text-3xl">📋</span>
                   </div>
@@ -807,7 +850,7 @@ export default function ClientLayout({
 
                 {/* 본문 */}
                 <div className="p-6 text-center">
-                  <h3 className="text-lg font-bold text-gray-900 mb-2">
+                  <h3 id="profile-incomplete-title" className="text-lg font-bold text-[#142522] mb-2">
                     {t("common.profileIncompleteTitle")}
                   </h3>
                   <p className="text-sm text-gray-500 leading-relaxed mb-4 whitespace-pre-line">
@@ -842,7 +885,7 @@ export default function ClientLayout({
                       setShowProfileIncompleteModal(false);
                       router.push("/profile");
                     }}
-                    className="w-full py-3.5 bg-gradient-to-r from-yellow-400 to-orange-400 text-white font-bold rounded-xl hover:from-yellow-500 hover:to-orange-500 transition-all shadow-md active:scale-[0.98]"
+                    className="w-full py-3.5 bg-[#176b57] text-white font-bold rounded-xl hover:bg-[#105441] transition-colors"
                   >
                     {t("common.profileIncompleteBtn")}
                   </button>

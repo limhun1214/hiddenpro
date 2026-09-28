@@ -38,7 +38,7 @@ export default function BusinessInfoPage() {
               onClick={() => router.back()}
               className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 transition-colors active:scale-90"
             >
-              <span className="material-symbols-outlined text-[#D32D7D]">
+              <span className="material-symbols-outlined text-[#176b57]">
                 arrow_back
               </span>
             </button>
@@ -49,7 +49,7 @@ export default function BusinessInfoPage() {
           </div>
         </div>
         <div className="flex-1 flex items-center justify-center">
-          <div className="w-8 h-8 rounded-full border-4 border-gray-200 border-t-[#D32D7D] animate-spin"></div>
+          <div className="w-8 h-8 rounded-full border-4 border-gray-200 border-t-[#176b57] animate-spin"></div>
         </div>
       </div>
     );
@@ -63,7 +63,7 @@ export default function BusinessInfoPage() {
             onClick={() => router.back()}
             className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 transition-colors active:scale-90"
           >
-            <span className="material-symbols-outlined text-[#D32D7D]">
+            <span className="material-symbols-outlined text-[#176b57]">
               arrow_back
             </span>
           </button>
@@ -74,7 +74,7 @@ export default function BusinessInfoPage() {
       <main className="flex-1 w-full max-w-3xl mx-auto px-5 pt-8 md:px-8">
         {/* 에디토리얼 헤더 */}
         <div className="mb-10">
-          <span className="text-[#D32D7D] font-bold tracking-widest text-xs uppercase mb-3 block">
+          <span className="text-[#176b57] font-bold tracking-widest text-xs uppercase mb-3 block">
             Business
           </span>
           <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight">
@@ -88,11 +88,11 @@ export default function BusinessInfoPage() {
             prose-headings:font-bold prose-headings:text-gray-900
             prose-p:text-gray-500 prose-p:leading-relaxed
             prose-li:text-gray-500 prose-li:my-1
-            prose-a:text-[#D32D7D] prose-a:underline prose-a:underline-offset-2
+            prose-a:text-[#176b57] prose-a:underline prose-a:underline-offset-2
             prose-strong:text-gray-900
             prose-hr:border-gray-200
-            prose-blockquote:border-l-[#ff88b5] prose-blockquote:text-gray-500
-            prose-code:text-[#D32D7D] prose-code:bg-gray-100
+            prose-blockquote:border-l-[#a6cfba] prose-blockquote:text-gray-500
+            prose-code:text-[#176b57] prose-code:bg-gray-100
             whitespace-pre-wrap break-keep leading-relaxed
           "
         >

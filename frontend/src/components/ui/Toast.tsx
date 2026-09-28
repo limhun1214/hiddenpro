@@ -65,12 +65,12 @@ function ToastEntry({
 
   const colorMap: Record<ToastType, string> = {
     success:
-      "bg-gradient-to-r from-[#07101F] to-[#1840C8] border-[#1840C8]/50 text-white",
+      "bg-gradient-to-r from-[#07101F] to-[#21846b] border-[#21846b]/50 text-white",
     error:
-      "bg-gradient-to-r from-[#07101F] to-[#1840C8] border-[#1840C8]/50 text-white",
+      "bg-gradient-to-r from-[#07101F] to-[#21846b] border-[#21846b]/50 text-white",
     warning:
-      "bg-gradient-to-r from-[#07101F] to-[#1840C8] border-[#1840C8]/50 text-white",
-    info: "bg-gradient-to-r from-[#07101F] to-[#1840C8] border-[#1840C8]/50 text-white",
+      "bg-gradient-to-r from-[#07101F] to-[#21846b] border-[#21846b]/50 text-white",
+    info: "bg-gradient-to-r from-[#07101F] to-[#21846b] border-[#21846b]/50 text-white",
   };
   const iconMap: Record<ToastType, string> = {
     success: "✅",

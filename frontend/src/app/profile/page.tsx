@@ -197,7 +197,6 @@ export default function ProfilePage() {
         throw new Error(t("profile.withdrawMetaError") + metaErr.message);
 
       // 3. Supabase Auth 계정 비활성화 (관리자 API로 banned_until 영구 설정)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await (supabase.auth as any).admin
         ?.updateUserById?.(sessionUser.id, {
           ban_duration: "876000h", // 100년 = 사실상 영구 차단
@@ -217,13 +216,13 @@ export default function ProfilePage() {
 
   if (loading)
     return (
-      <div className="min-h-screen bg-[#f7f9fc] p-10 text-center text-[#757685]">
+      <div className="min-h-screen bg-[#f7f7f2] p-10 text-center text-[#69756d]">
         {t("profile.loading")}
       </div>
     );
   if (!userRole)
     return (
-      <div className="min-h-screen bg-[#f7f9fc] p-10 text-center text-red-500">
+      <div className="min-h-screen bg-[#f7f7f2] p-10 text-center text-red-500">
         {t("profile.error")}
       </div>
     );
@@ -232,17 +231,17 @@ export default function ProfilePage() {
   if (userRole === "CUSTOMER") {
     return (
       <div
-        className="min-h-screen bg-[#f7f9fc] flex flex-col"
+        className="min-h-screen bg-[#f7f7f2] flex flex-col"
         onClick={() => {}}
       >
         {/* 배경 장식 */}
-        <div className="fixed top-0 right-0 -z-10 w-1/2 h-1/2 bg-gradient-to-bl from-[#001269]/5 to-transparent blur-3xl pointer-events-none" />
-        <div className="fixed bottom-0 left-0 -z-10 w-2/3 h-1/2 bg-gradient-to-tr from-[#c2c9fe]/10 to-transparent blur-3xl pointer-events-none" />
+        <div className="fixed top-0 right-0 -z-10 w-1/2 h-1/2 bg-gradient-to-bl from-[#124c40]/5 to-transparent blur-3xl pointer-events-none" />
+        <div className="fixed bottom-0 left-0 -z-10 w-2/3 h-1/2 bg-gradient-to-tr from-[#cbe1d5]/10 to-transparent blur-3xl pointer-events-none" />
 
         {/* 헤더 */}
         <header className="bg-white/80 backdrop-blur-xl border-b border-slate-200/50 shadow-sm sticky top-0 z-10">
           <div className="max-w-xl mx-auto w-full px-6 h-16 flex items-center">
-            <h1 className="font-headline font-bold text-lg tracking-tight text-indigo-900">
+            <h1 className="font-headline font-bold text-lg tracking-tight text-[#173c31]">
               {t("profile.title")}
             </h1>
           </div>
@@ -260,10 +259,10 @@ export default function ProfilePage() {
           <CustomerSupportSection />
 
           {/* Invite & Earn */}
-          <div className="relative overflow-hidden bg-gradient-to-br from-[#0020A0] to-[#3e52c9] rounded-2xl p-8 shadow-xl">
+          <div className="relative overflow-hidden bg-gradient-to-br from-[#176b57] to-[#21846b] rounded-2xl p-8 shadow-xl">
             {/* 장식 원 */}
             <div className="absolute -top-8 -right-8 w-40 h-40 bg-white/10 rounded-full blur-2xl pointer-events-none" />
-            <div className="absolute -bottom-10 -left-6 w-32 h-32 bg-[#c2c9fe]/20 rounded-full blur-xl pointer-events-none" />
+            <div className="absolute -bottom-10 -left-6 w-32 h-32 bg-[#cbe1d5]/20 rounded-full blur-xl pointer-events-none" />
             <div className="relative z-10 flex flex-col gap-4">
               <span className="material-symbols-outlined text-[32px] text-white/80">
                 featured_seasonal
@@ -278,7 +277,7 @@ export default function ProfilePage() {
               </div>
               <button
                 onClick={() => router.push("/referral")}
-                className="self-start bg-white text-[#0020A0] px-5 py-3 rounded-xl text-sm font-bold hover:bg-white/90 transition"
+                className="self-start bg-white text-[#176b57] px-5 py-3 rounded-xl text-sm font-bold hover:bg-white/90 transition"
               >
                 Send Invite
               </button>
@@ -293,7 +292,7 @@ export default function ProfilePage() {
             >
               {t("profile.logout")}
             </button>
-            <span className="w-[1px] h-3 bg-[#c5c5d6]" />
+            <span className="w-[1px] h-3 bg-[#d8dfd7]" />
             <button
               onClick={() => {
                 setShowWithdrawModal(true);
@@ -310,35 +309,35 @@ export default function ProfilePage() {
           <div className="pt-1 pb-12 flex flex-wrap justify-center gap-x-3 gap-y-1">
             <Link
               href="/legal/TERMS"
-              className="text-[11px] text-[#454653] font-medium hover:text-[#001269] transition"
+              className="text-xs text-[#526058] font-medium hover:text-[#124c40] transition"
             >
               {t("footer.terms")}
             </Link>
-            <span className="text-[11px] text-[#c5c5d6]">·</span>
+            <span className="text-xs text-[#d8dfd7]">·</span>
             <Link
               href="/legal/PRIVACY"
-              className="text-[11px] text-[#454653] font-medium hover:text-[#001269] transition"
+              className="text-xs text-[#526058] font-medium hover:text-[#124c40] transition"
             >
               {t("footer.privacy")}
             </Link>
-            <span className="text-[11px] text-[#c5c5d6]">·</span>
+            <span className="text-xs text-[#d8dfd7]">·</span>
             <Link
               href="/support/customer/refund"
-              className="text-[11px] text-[#454653] font-medium hover:text-[#001269] transition"
+              className="text-xs text-[#526058] font-medium hover:text-[#124c40] transition"
             >
               {t("footer.refund")}
             </Link>
-            <span className="text-[11px] text-[#c5c5d6]">·</span>
+            <span className="text-xs text-[#d8dfd7]">·</span>
             <Link
               href="/support/inquiry"
-              className="text-[11px] text-[#454653] font-medium hover:text-[#001269] transition"
+              className="text-xs text-[#526058] font-medium hover:text-[#124c40] transition"
             >
               {t("footer.contactUs")}
             </Link>
-            <span className="text-[11px] text-[#c5c5d6]">·</span>
+            <span className="text-xs text-[#d8dfd7]">·</span>
             <Link
               href="/support/business-info"
-              className="text-[11px] text-[#454653] font-medium hover:text-[#001269] transition"
+              className="text-xs text-[#526058] font-medium hover:text-[#124c40] transition"
             >
               {t("footer.businessInfo")}
             </Link>
@@ -442,15 +441,15 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f7f9fc] flex flex-col">
+    <div className="min-h-screen bg-[#f7f7f2] flex flex-col">
       {/* 배경 장식 */}
-      <div className="fixed top-0 right-0 -z-10 w-1/2 h-1/2 bg-gradient-to-bl from-[#001269]/5 to-transparent blur-3xl pointer-events-none" />
-      <div className="fixed bottom-0 left-0 -z-10 w-2/3 h-1/2 bg-gradient-to-tr from-[#c2c9fe]/10 to-transparent blur-3xl pointer-events-none" />
+      <div className="fixed top-0 right-0 -z-10 w-1/2 h-1/2 bg-gradient-to-bl from-[#124c40]/5 to-transparent blur-3xl pointer-events-none" />
+      <div className="fixed bottom-0 left-0 -z-10 w-2/3 h-1/2 bg-gradient-to-tr from-[#cbe1d5]/10 to-transparent blur-3xl pointer-events-none" />
 
       {/* 헤더 */}
       <header className="bg-white/80 backdrop-blur-xl border-b border-slate-200/50 shadow-sm sticky top-0 z-10">
         <div className="max-w-xl mx-auto w-full px-6 h-16 flex items-center">
-          <h1 className="font-headline font-bold text-lg tracking-tight text-indigo-900">
+          <h1 className="font-headline font-bold text-lg tracking-tight text-[#173c31]">
             {t("profile.title")}
           </h1>
         </div>
@@ -469,10 +468,10 @@ export default function ProfilePage() {
         <CustomerSupportSection />
 
         {/* Invite & Earn */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-[#0020A0] to-[#3e52c9] rounded-2xl p-8 shadow-xl">
+        <div className="relative overflow-hidden bg-gradient-to-br from-[#176b57] to-[#21846b] rounded-2xl p-8 shadow-xl">
           {/* 장식 원 */}
           <div className="absolute -top-8 -right-8 w-40 h-40 bg-white/10 rounded-full blur-2xl pointer-events-none" />
-          <div className="absolute -bottom-10 -left-6 w-32 h-32 bg-[#c2c9fe]/20 rounded-full blur-xl pointer-events-none" />
+          <div className="absolute -bottom-10 -left-6 w-32 h-32 bg-[#cbe1d5]/20 rounded-full blur-xl pointer-events-none" />
           <div className="relative z-10 flex flex-col gap-4">
             <span className="material-symbols-outlined text-[32px] text-white/80">
               featured_seasonal
@@ -487,7 +486,7 @@ export default function ProfilePage() {
             </div>
             <button
               onClick={() => router.push("/referral")}
-              className="self-start bg-white text-[#0020A0] px-5 py-3 rounded-xl text-sm font-bold hover:bg-white/90 transition"
+              className="self-start bg-white text-[#176b57] px-5 py-3 rounded-xl text-sm font-bold hover:bg-white/90 transition"
             >
               Send Invite
             </button>
@@ -502,7 +501,7 @@ export default function ProfilePage() {
           >
             {t("profile.logout")}
           </button>
-          <span className="w-[1px] h-3 bg-[#c5c5d6]" />
+          <span className="w-[1px] h-3 bg-[#d8dfd7]" />
           <button
             onClick={() => {
               setShowWithdrawModal(true);
@@ -519,35 +518,35 @@ export default function ProfilePage() {
         <div className="pt-1 pb-12 flex flex-wrap justify-center gap-x-3 gap-y-1">
           <Link
             href="/legal/TERMS"
-            className="text-[11px] text-[#454653] font-medium hover:text-[#001269] transition"
+            className="text-xs text-[#526058] font-medium hover:text-[#124c40] transition"
           >
             {t("footer.terms")}
           </Link>
-          <span className="text-[11px] text-[#c5c5d6]">·</span>
+          <span className="text-xs text-[#d8dfd7]">·</span>
           <Link
             href="/legal/PRIVACY"
-            className="text-[11px] text-[#454653] font-medium hover:text-[#001269] transition"
+            className="text-xs text-[#526058] font-medium hover:text-[#124c40] transition"
           >
             {t("footer.privacy")}
           </Link>
-          <span className="text-[11px] text-[#c5c5d6]">·</span>
+          <span className="text-xs text-[#d8dfd7]">·</span>
           <Link
             href="/support/customer/refund"
-            className="text-[11px] text-[#454653] font-medium hover:text-[#001269] transition"
+            className="text-xs text-[#526058] font-medium hover:text-[#124c40] transition"
           >
             {t("footer.refund")}
           </Link>
-          <span className="text-[11px] text-[#c5c5d6]">·</span>
+          <span className="text-xs text-[#d8dfd7]">·</span>
           <Link
             href="/support/inquiry"
-            className="text-[11px] text-[#454653] font-medium hover:text-[#001269] transition"
+            className="text-xs text-[#526058] font-medium hover:text-[#124c40] transition"
           >
             {t("footer.contactUs")}
           </Link>
-          <span className="text-[11px] text-[#c5c5d6]">·</span>
+          <span className="text-xs text-[#d8dfd7]">·</span>
           <Link
             href="/support/business-info"
-            className="text-[11px] text-[#454653] font-medium hover:text-[#001269] transition"
+            className="text-xs text-[#526058] font-medium hover:text-[#124c40] transition"
           >
             {t("footer.businessInfo")}
           </Link>
@@ -961,7 +960,7 @@ function ProfileHeader({
       {/* 아바타 */}
       <div className="flex flex-col items-center gap-4">
         <div className="relative">
-          <div className="w-24 h-24 rounded-full overflow-hidden ring-4 ring-[#001269]/5 bg-gradient-to-br from-[#eceef1] to-[#e6e8eb] flex items-center justify-center shadow-sm">
+          <div className="w-24 h-24 rounded-full overflow-hidden ring-4 ring-[#124c40]/5 bg-gradient-to-br from-[#edf0e8] to-[#e6ebe1] flex items-center justify-center shadow-sm">
             {avatarUrl ? (
               <img
                 src={avatarUrl}
@@ -970,7 +969,7 @@ function ProfileHeader({
               />
             ) : (
               <svg
-                className="w-12 h-12 text-[#757685]"
+                className="w-12 h-12 text-[#69756d]"
                 fill="currentColor"
                 viewBox="0 0 24 24"
               >
@@ -987,10 +986,10 @@ function ProfileHeader({
 
         {/* 이름 + 역할 + 이메일 */}
         <div className="space-y-1">
-          <h2 className="font-headline font-extrabold text-2xl text-[#001269]">
+          <h2 className="font-headline font-extrabold text-2xl text-[#124c40]">
             {displayName}
           </h2>
-          <p className="text-[#454653] text-sm opacity-70">
+          <p className="text-[#526058] text-sm opacity-70">
             {user.email || t("profile.noEmail")}
           </p>
           {reviewHref && reviewStats.count > 0 && (
@@ -1011,7 +1010,7 @@ function ProfileHeader({
         {/* 계정 설정 버튼 */}
         <button
           onClick={() => setShowSettings(!showSettings)}
-          className="border border-[#001269] text-[#001269] px-8 py-2.5 rounded-lg text-sm font-medium hover:bg-[#001269]/5 transition"
+          className="border border-[#124c40] text-[#124c40] px-8 py-2.5 rounded-lg text-sm font-medium hover:bg-[#124c40]/5 transition"
         >
           {t("profile.accountSettings")}
         </button>
@@ -1021,14 +1020,14 @@ function ProfileHeader({
       <div
         className={`transition-all duration-300 ease-in-out overflow-hidden ${showSettings ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"}`}
       >
-        <div className="text-left space-y-5 border-t border-[#c5c5d6]/40 pt-6">
+        <div className="text-left space-y-5 border-t border-[#d8dfd7]/40 pt-6">
           {/* 프로필 사진 변경 */}
           <div className="space-y-3">
-            <label className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#454653]">
+            <label className="text-xs font-bold uppercase tracking-[0.1em] text-[#526058]">
               {t("profile.photoLabel")}
             </label>
             <div className="flex items-center gap-4">
-              <div className="w-20 h-20 rounded-full overflow-hidden bg-[#eceef1] flex items-center justify-center ring-2 ring-[#c5c5d6]/30">
+              <div className="w-20 h-20 rounded-full overflow-hidden bg-[#edf0e8] flex items-center justify-center ring-2 ring-[#d8dfd7]/30">
                 {avatarUrl ? (
                   <img
                     src={avatarUrl}
@@ -1037,7 +1036,7 @@ function ProfileHeader({
                   />
                 ) : (
                   <svg
-                    className="w-10 h-10 text-[#757685]"
+                    className="w-10 h-10 text-[#69756d]"
                     fill="currentColor"
                     viewBox="0 0 24 24"
                   >
@@ -1049,7 +1048,7 @@ function ProfileHeader({
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploading || cooldownRemaining > 0}
-                  className="bg-[#f2f4f7] hover:bg-[#eceef1] text-[#191c1e] font-medium text-sm px-4 py-2.5 rounded-xl border border-[#c5c5d6]/50 transition disabled:opacity-50"
+                  className="bg-[#f1f3ed] hover:bg-[#edf0e8] text-[#22352c] font-medium text-sm px-4 py-2.5 rounded-xl border border-[#d8dfd7]/50 transition disabled:opacity-50"
                 >
                   {uploading
                     ? t("profile.photoUploading")
@@ -1057,7 +1056,7 @@ function ProfileHeader({
                       ? `${cooldownRemaining} ${t("profile.photoCooldown")}`
                       : t("profile.photoUploadBtn")}
                 </button>
-                <span className="text-[11px] text-[#454653]">
+                <span className="text-xs text-[#526058]">
                   {t("profile.proPhotoSpec")}
                 </span>
               </div>
@@ -1073,9 +1072,9 @@ function ProfileHeader({
 
           {/* 활동명 수정 */}
           <div className="space-y-3">
-            <label className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#454653]">
+            <label className="text-xs font-bold uppercase tracking-[0.1em] text-[#526058]">
               {t("profile.nicknameLabel")}
-              <span className="ml-2 text-[10px] text-[#757685] font-normal normal-case tracking-normal">
+              <span className="ml-2 text-xs text-[#69756d] font-normal normal-case tracking-normal">
                 {t("profile.proNicknameRule")}
               </span>
             </label>
@@ -1090,17 +1089,17 @@ function ProfileHeader({
                   }}
                   placeholder={t("profile.nicknamePlaceholder")}
                   maxLength={20}
-                  className={`w-full bg-[#f2f4f7] border-b-2 px-4 py-3 rounded-t-lg focus:outline-none transition text-sm text-[#191c1e] placeholder:text-[#757685]/50 ${
+                  className={`w-full bg-[#f1f3ed] border-b-2 px-4 py-3 rounded-t-lg focus:outline-none transition text-sm text-[#22352c] placeholder:text-[#69756d]/50 ${
                     nicknameStatus === "taken" || nicknameStatus === "error"
                       ? "border-[#ba1a1a]"
                       : nicknameStatus === "available"
                         ? "border-green-500"
-                        : "border-transparent focus:border-[#001269]"
+                        : "border-transparent focus:border-[#124c40]"
                   }`}
                 />
                 {nicknameStatus === "checking" && (
                   <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                    <div className="w-4 h-4 border-2 border-[#001269] border-t-transparent rounded-full animate-spin"></div>
+                    <div className="w-4 h-4 border-2 border-[#124c40] border-t-transparent rounded-full animate-spin"></div>
                   </div>
                 )}
               </div>
@@ -1111,7 +1110,7 @@ function ProfileHeader({
                   nicknameStatus !== "available" ||
                   nicknameCooldown > 0
                 }
-                className="bg-[#0020a0] hover:bg-[#001269] text-white font-bold px-5 py-3 rounded-xl transition text-sm whitespace-nowrap disabled:bg-[#eceef1] disabled:text-[#757685] disabled:cursor-not-allowed"
+                className="bg-[#176b57] hover:bg-[#124c40] text-white font-bold px-5 py-3 rounded-xl transition text-sm whitespace-nowrap disabled:bg-[#edf0e8] disabled:text-[#69756d] disabled:cursor-not-allowed"
               >
                 {saving
                   ? t("profile.nicknameSaving")
@@ -1131,7 +1130,7 @@ function ProfileHeader({
                     ? "text-[#ba1a1a]"
                     : nicknameStatus === "available"
                       ? "text-green-600"
-                      : "text-[#454653]"
+                      : "text-[#526058]"
                 }`}
               >
                 {nicknameMsg}
@@ -1223,13 +1222,13 @@ function CustomerProfile({ user }: { user: any }) {
       className="bg-white rounded-2xl overflow-hidden"
       style={{ boxShadow: "0 32px 64px -15px rgba(0, 15, 93, 0.06)" }}
     >
-      <div className="divide-y divide-[#c5c5d6]/20">
+      <div className="divide-y divide-[#d8dfd7]/20">
         {/* 이메일 */}
         <div className="flex flex-col p-5">
-          <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#454653] mb-1">
+          <span className="text-xs font-bold uppercase tracking-[0.1em] text-[#526058] mb-1">
             {t("profile.emailLabel")}
           </span>
-          <span className="text-[#191c1e] font-medium text-sm">
+          <span className="text-[#22352c] font-medium text-sm">
             {user.email || t("profile.noEmailInfo")}
           </span>
         </div>
@@ -1238,10 +1237,10 @@ function CustomerProfile({ user }: { user: any }) {
         {phoneData?.is_phone_verified && phoneData?.phone ? (
           <div className="flex items-center p-5 gap-3">
             <div className="flex-1">
-              <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#454653] block mb-1">
+              <span className="text-xs font-bold uppercase tracking-[0.1em] text-[#526058] block mb-1">
                 {t("profile.verifiedPhone")}
               </span>
-              <span className="text-[#191c1e] font-medium text-sm">
+              <span className="text-[#22352c] font-medium text-sm">
                 {phoneData.phone}
               </span>
             </div>
@@ -1249,7 +1248,7 @@ function CustomerProfile({ user }: { user: any }) {
           </div>
         ) : (
           <div className="flex flex-col p-5 gap-2">
-            <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#454653]">
+            <span className="text-xs font-bold uppercase tracking-[0.1em] text-[#526058]">
               {t("profile.phoneVerification")}
             </span>
             <div className="flex gap-2">
@@ -1258,20 +1257,20 @@ function CustomerProfile({ user }: { user: any }) {
                 value={phoneInput}
                 onChange={(e) => setPhoneInput(e.target.value)}
                 placeholder={t("profile.phonePlaceholder")}
-                className="flex-1 bg-[#f2f4f7] border-b-2 border-transparent focus:border-[#001269] px-4 py-3 rounded-t-lg text-sm text-[#191c1e] placeholder:text-[#757685]/50 focus:outline-none transition"
+                className="flex-1 bg-[#f1f3ed] border-b-2 border-transparent focus:border-[#124c40] px-4 py-3 rounded-t-lg text-sm text-[#22352c] placeholder:text-[#69756d]/50 focus:outline-none transition"
                 disabled={verifyingPhone}
               />
               <button
                 onClick={handlePhoneVerify}
                 disabled={verifyingPhone || !phoneInput.trim()}
-                className="bg-[#0020a0] hover:bg-[#001269] text-white font-bold px-4 py-2 rounded-xl text-sm transition disabled:opacity-50 whitespace-nowrap"
+                className="bg-[#176b57] hover:bg-[#124c40] text-white font-bold px-4 py-2 rounded-xl text-sm transition disabled:opacity-50 whitespace-nowrap"
               >
                 {verifyingPhone
                   ? t("profile.phoneVerifying")
                   : t("profile.phoneVerifyBtn")}
               </button>
             </div>
-            <span className="text-xs text-[#757685]">
+            <span className="text-xs text-[#69756d]">
               {t("profile.phoneNote")}
             </span>
           </div>
@@ -1280,10 +1279,10 @@ function CustomerProfile({ user }: { user: any }) {
         {/* 가입일 */}
         {joinDate && (
           <div className="flex flex-col p-5">
-            <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#454653] mb-1">
+            <span className="text-xs font-bold uppercase tracking-[0.1em] text-[#526058] mb-1">
               {t("profile.joinDate")}
             </span>
-            <span className="text-[#191c1e] font-medium text-sm">
+            <span className="text-[#22352c] font-medium text-sm">
               {joinDate}
             </span>
           </div>
@@ -1295,14 +1294,14 @@ function CustomerProfile({ user }: { user: any }) {
           onClick={() => (window.location.href = "/customer/my-reviews")}
         >
           <div className="flex-1">
-            <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#454653] block mb-1">
+            <span className="text-xs font-bold uppercase tracking-[0.1em] text-[#526058] block mb-1">
               {t("profile.myReviewsLabel")}
             </span>
-            <span className="text-[#191c1e] font-medium text-sm">
+            <span className="text-[#22352c] font-medium text-sm">
               {reviewCount} {t("profile.reviewsCount")}
             </span>
           </div>
-          <span className="material-symbols-outlined text-[20px] text-[#c5c5d6] group-hover:text-[#001269] transition">
+          <span className="material-symbols-outlined text-[20px] text-[#d8dfd7] group-hover:text-[#124c40] transition">
             chevron_right
           </span>
         </div>
@@ -1563,14 +1562,14 @@ function ProProfile({ user }: { user: any }) {
       style={{ boxShadow: "0 32px 64px -15px rgba(0, 15, 93, 0.06)" }}
     >
       {/* 매칭 수락 토글 */}
-      <div className="bg-[#eceef1] rounded-lg px-4 py-2 flex items-center justify-between gap-4">
+      <div className="bg-[#edf0e8] rounded-lg px-4 py-2 flex items-center justify-between gap-4">
         <div>
-          <span className="text-sm font-bold text-[#191c1e]">
+          <span className="text-sm font-bold text-[#22352c]">
             {isAcceptingRequests
               ? t("profile.proAcceptingOn")
               : t("profile.proAcceptingOff")}
           </span>
-          <p className="text-xs text-[#454653] mt-0.5">
+          <p className="text-xs text-[#526058] mt-0.5">
             {t("profile.proAcceptingDesc")}
           </p>
         </div>
@@ -1581,24 +1580,24 @@ function ProProfile({ user }: { user: any }) {
             checked={isAcceptingRequests}
             onChange={handleToggleAccepting}
           />
-          <div className="w-14 h-7 bg-[#c5c5d6] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-[#c5c5d6] after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-[#0020a0]"></div>
+          <div className="w-14 h-7 bg-[#d8dfd7] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-[#d8dfd7] after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-[#176b57]"></div>
         </label>
       </div>
 
       {/* 인증 배지 */}
       <div className="flex flex-wrap gap-2">
         {isPhoneVerified && (
-          <span className="inline-flex items-center bg-[#c2c9fe]/30 text-[#001269] text-xs font-bold px-3 py-1.5 rounded-full">
+          <span className="inline-flex items-center bg-[#cbe1d5]/30 text-[#124c40] text-xs font-bold px-3 py-1.5 rounded-full">
             ✓ Phone Verified
           </span>
         )}
         {facebookUrl && (
-          <span className="inline-flex items-center bg-[#c2c9fe]/30 text-[#001269] text-xs font-bold px-3 py-1.5 rounded-full">
+          <span className="inline-flex items-center bg-[#cbe1d5]/30 text-[#124c40] text-xs font-bold px-3 py-1.5 rounded-full">
             ● Facebook Linked
           </span>
         )}
         {!isPhoneVerified && !facebookUrl && (
-          <span className="text-xs text-[#757685]">
+          <span className="text-xs text-[#69756d]">
             {t("profile.proNoBadges")}
           </span>
         )}
@@ -1606,16 +1605,16 @@ function ProProfile({ user }: { user: any }) {
 
       {/* 전화번호 인증 */}
       <div className="space-y-2">
-        <label className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#454653] flex items-center gap-2">
+        <label className="text-xs font-bold uppercase tracking-[0.1em] text-[#526058] flex items-center gap-2">
           {t("profile.proPhoneVerifyLabel")}
           {isPhoneVerified && (
-            <span className="text-green-600 text-[10px] font-bold normal-case tracking-normal">
+            <span className="text-green-600 text-xs font-bold normal-case tracking-normal">
               {t("profile.proPhoneVerified")}
             </span>
           )}
         </label>
         {isPhoneVerified ? (
-          <div className="bg-[#f2f4f7] text-[#191c1e] px-4 py-3 rounded-t-lg border-b-2 border-green-500 text-sm font-medium">
+          <div className="bg-[#f1f3ed] text-[#22352c] px-4 py-3 rounded-t-lg border-b-2 border-green-500 text-sm font-medium">
             {t("profile.proPhoneVerifiedText")} {proPhone}
           </div>
         ) : (
@@ -1625,13 +1624,13 @@ function ProProfile({ user }: { user: any }) {
               value={phoneInput}
               onChange={(e) => setPhoneInput(e.target.value)}
               placeholder={t("profile.proPhonePlaceholder")}
-              className="flex-1 bg-[#f2f4f7] border-b-2 border-transparent focus:border-[#001269] px-4 py-3 rounded-t-lg text-sm text-[#191c1e] placeholder:text-[#757685]/50 focus:outline-none transition"
+              className="flex-1 bg-[#f1f3ed] border-b-2 border-transparent focus:border-[#124c40] px-4 py-3 rounded-t-lg text-sm text-[#22352c] placeholder:text-[#69756d]/50 focus:outline-none transition"
             />
             <button
               type="button"
               onClick={handlePhoneVerify}
               disabled={verifyingPhone}
-              className="bg-[#0020a0] hover:bg-[#001269] text-white font-bold px-4 py-3 rounded-xl transition text-sm whitespace-nowrap disabled:opacity-50"
+              className="bg-[#176b57] hover:bg-[#124c40] text-white font-bold px-4 py-3 rounded-xl transition text-sm whitespace-nowrap disabled:opacity-50"
             >
               {verifyingPhone
                 ? t("profile.proPhoneProcessing")
@@ -1643,23 +1642,23 @@ function ProProfile({ user }: { user: any }) {
 
       {/* Facebook 연동 */}
       <div className="space-y-2">
-        <label className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#454653] flex items-center gap-2">
+        <label className="text-xs font-bold uppercase tracking-[0.1em] text-[#526058] flex items-center gap-2">
           {t("profile.proFbLinkLabel")}
           {facebookUrl && (
-            <span className="text-[#001269] text-[10px] font-bold normal-case tracking-normal">
+            <span className="text-[#124c40] text-xs font-bold normal-case tracking-normal">
               {t("profile.proFbLinked")}
             </span>
           )}
         </label>
         {facebookUrl && !editingFb ? (
           <div className="flex items-center gap-2">
-            <div className="flex-1 bg-[#f2f4f7] border-b-2 border-[#0020a0] px-4 py-3 rounded-t-lg text-sm text-[#191c1e] truncate">
+            <div className="flex-1 bg-[#f1f3ed] border-b-2 border-[#176b57] px-4 py-3 rounded-t-lg text-sm text-[#22352c] truncate">
               {facebookUrl}
             </div>
             <button
               type="button"
               onClick={() => setEditingFb(true)}
-              className="flex-shrink-0 text-xs font-bold text-[#001269] hover:text-[#0020a0] bg-[#dee0ff] px-3 py-2 rounded-lg hover:bg-[#c2c9fe] transition"
+              className="flex-shrink-0 text-xs font-bold text-[#124c40] hover:text-[#176b57] bg-[#e8f3ed] px-3 py-2 rounded-lg hover:bg-[#cbe1d5] transition"
             >
               {t("profile.proFbEditBtn")}
             </button>
@@ -1671,7 +1670,7 @@ function ProProfile({ user }: { user: any }) {
               value={facebookInput}
               onChange={(e) => setFacebookInput(e.target.value)}
               placeholder="https://facebook.com/yourname"
-              className="flex-1 bg-[#f2f4f7] border-b-2 border-transparent focus:border-[#001269] px-4 py-3 rounded-t-lg text-sm text-[#191c1e] placeholder:text-[#757685]/50 focus:outline-none transition"
+              className="flex-1 bg-[#f1f3ed] border-b-2 border-transparent focus:border-[#124c40] px-4 py-3 rounded-t-lg text-sm text-[#22352c] placeholder:text-[#69756d]/50 focus:outline-none transition"
             />
             <button
               type="button"
@@ -1680,7 +1679,7 @@ function ProProfile({ user }: { user: any }) {
                 setEditingFb(false);
               }}
               disabled={linkingFb}
-              className="bg-[#0020a0] hover:bg-[#001269] text-white font-bold px-4 py-3 rounded-xl transition text-sm whitespace-nowrap disabled:opacity-50"
+              className="bg-[#176b57] hover:bg-[#124c40] text-white font-bold px-4 py-3 rounded-xl transition text-sm whitespace-nowrap disabled:opacity-50"
             >
               {linkingFb
                 ? t("profile.proFbProcessing")
@@ -1693,7 +1692,7 @@ function ProProfile({ user }: { user: any }) {
                   setFacebookInput(facebookUrl);
                   setEditingFb(false);
                 }}
-                className="text-[#757685] hover:text-[#191c1e] font-bold px-2 transition text-sm"
+                className="text-[#69756d] hover:text-[#22352c] font-bold px-2 transition text-sm"
               >
                 {t("profile.proFbCancelBtn")}
               </button>
@@ -1705,9 +1704,9 @@ function ProProfile({ user }: { user: any }) {
       <form onSubmit={handleSave} className="space-y-6">
         {/* 한줄 소개 */}
         <div className="flex flex-col space-y-2">
-          <label className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#454653]">
+          <label className="text-xs font-bold uppercase tracking-[0.1em] text-[#526058]">
             {t("profile.proIntroLabel")}{" "}
-            <span className="text-[10px] text-[#757685] font-normal normal-case tracking-normal ml-1">
+            <span className="text-xs text-[#69756d] font-normal normal-case tracking-normal ml-1">
               {t("profile.proIntroLimit")}
             </span>
           </label>
@@ -1719,19 +1718,19 @@ function ProProfile({ user }: { user: any }) {
             }
             maxLength={50}
             placeholder={t("profile.proIntroPlaceholder")}
-            className="bg-[#f2f4f7] border-b-2 border-transparent focus:border-[#001269] px-4 py-3 rounded-t-lg text-sm text-[#191c1e] placeholder:text-[#757685]/50 focus:outline-none transition"
+            className="bg-[#f1f3ed] border-b-2 border-transparent focus:border-[#124c40] px-4 py-3 rounded-t-lg text-sm text-[#22352c] placeholder:text-[#69756d]/50 focus:outline-none transition"
             required
           />
-          <span className="text-xs text-[#757685] text-right">
+          <span className="text-xs text-[#69756d] text-right">
             {formData.intro.length}/50
           </span>
         </div>
 
         {/* 상세 소개 */}
         <div className="flex flex-col space-y-2">
-          <label className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#454653]">
+          <label className="text-xs font-bold uppercase tracking-[0.1em] text-[#526058]">
             {t("profile.proDetailedLabel")}{" "}
-            <span className="text-[10px] text-[#757685] font-normal normal-case tracking-normal ml-1">
+            <span className="text-xs text-[#69756d] font-normal normal-case tracking-normal ml-1">
               {t("profile.proDetailedLimit")}
             </span>
           </label>
@@ -1742,13 +1741,13 @@ function ProProfile({ user }: { user: any }) {
             }
             rows={5}
             placeholder={t("profile.proDetailedPlaceholder")}
-            className="bg-[#f2f4f7] border-b-2 border-transparent focus:border-[#001269] px-4 py-3 rounded-t-lg text-sm text-[#191c1e] placeholder:text-[#757685]/50 focus:outline-none transition resize-none"
+            className="bg-[#f1f3ed] border-b-2 border-transparent focus:border-[#124c40] px-4 py-3 rounded-t-lg text-sm text-[#22352c] placeholder:text-[#69756d]/50 focus:outline-none transition resize-none"
           />
         </div>
 
         {/* 활동 지역 */}
         <div className="flex flex-col space-y-2">
-          <label className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#454653]">
+          <label className="text-xs font-bold uppercase tracking-[0.1em] text-[#526058]">
             {t("profile.proRegionLabel")}
           </label>
           <div className="grid grid-cols-2 gap-3">
@@ -1758,7 +1757,7 @@ function ProProfile({ user }: { user: any }) {
                 setSelectedReg(e.target.value);
                 setSelectedCity("");
               }}
-              className="bg-[#f2f4f7] border-b-2 border-transparent focus:border-[#001269] px-4 py-3 rounded-t-lg text-sm text-[#191c1e] focus:outline-none transition"
+              className="bg-[#f1f3ed] border-b-2 border-transparent focus:border-[#124c40] px-4 py-3 rounded-t-lg text-sm text-[#22352c] focus:outline-none transition"
               required
             >
               <option value="" disabled>
@@ -1773,7 +1772,7 @@ function ProProfile({ user }: { user: any }) {
             <select
               value={selectedCity}
               onChange={(e) => setSelectedCity(e.target.value)}
-              className="bg-[#f2f4f7] border-b-2 border-transparent focus:border-[#001269] px-4 py-3 rounded-t-lg text-sm text-[#191c1e] focus:outline-none transition disabled:opacity-40"
+              className="bg-[#f1f3ed] border-b-2 border-transparent focus:border-[#124c40] px-4 py-3 rounded-t-lg text-sm text-[#22352c] focus:outline-none transition disabled:opacity-40"
               required
               disabled={!selectedReg}
             >
@@ -1790,12 +1789,12 @@ function ProProfile({ user }: { user: any }) {
         </div>
 
         {/* 서비스 선택 */}
-        <div className="flex flex-col space-y-3 border-t border-[#c5c5d6]/30 pt-4">
+        <div className="flex flex-col space-y-3 border-t border-[#d8dfd7]/30 pt-4">
           <div className="flex justify-between items-end">
-            <label className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#454653]">
+            <label className="text-xs font-bold uppercase tracking-[0.1em] text-[#526058]">
               {t("profile.proServicesLabel")}
             </label>
-            <span className="text-xs font-bold text-[#001269]">
+            <span className="text-xs font-bold text-[#124c40]">
               {formData.services.length} / 5
             </span>
           </div>
@@ -1808,7 +1807,7 @@ function ProProfile({ user }: { user: any }) {
                 setSelectedDepth1(e.target.value);
                 setSelectedDepth2("");
               }}
-              className="bg-[#f2f4f7] border-b-2 border-transparent focus:border-[#001269] px-4 py-3 rounded-t-lg text-sm text-[#191c1e] focus:outline-none transition"
+              className="bg-[#f1f3ed] border-b-2 border-transparent focus:border-[#124c40] px-4 py-3 rounded-t-lg text-sm text-[#22352c] focus:outline-none transition"
             >
               <option value="">{t("profile.depth1Placeholder")}</option>
               {depth1Keys.map((k) => (
@@ -1820,7 +1819,7 @@ function ProProfile({ user }: { user: any }) {
             <select
               value={selectedDepth2}
               onChange={(e) => setSelectedDepth2(e.target.value)}
-              className="bg-[#f2f4f7] border-b-2 border-transparent focus:border-[#001269] px-4 py-3 rounded-t-lg text-sm text-[#191c1e] focus:outline-none transition disabled:opacity-40"
+              className="bg-[#f1f3ed] border-b-2 border-transparent focus:border-[#124c40] px-4 py-3 rounded-t-lg text-sm text-[#22352c] focus:outline-none transition disabled:opacity-40"
               disabled={!selectedDepth1}
             >
               <option value="">{t("profile.depth2Placeholder")}</option>
@@ -1834,7 +1833,7 @@ function ProProfile({ user }: { user: any }) {
 
           {/* 3뎁스 선택 영역 */}
           {depth3Items.length > 0 ? (
-            <div className="bg-[#f2f4f7] rounded-xl p-3 max-h-48 overflow-y-auto flex flex-col space-y-1">
+            <div className="bg-[#f1f3ed] rounded-xl p-3 max-h-48 overflow-y-auto flex flex-col space-y-1">
               {depth3Items.map((service) => {
                 const isSelected = formData.services.includes(
                   koToEnService[service] ?? service,
@@ -1852,10 +1851,10 @@ function ProProfile({ user }: { user: any }) {
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => handleServiceToggle(service)}
-                      className="w-5 h-5 text-[#0020a0] rounded border-[#c5c5d6] focus:ring-[#0020a0] bg-white"
+                      className="w-5 h-5 text-[#176b57] rounded border-[#d8dfd7] focus:ring-[#176b57] bg-white"
                     />
                     <span
-                      className={`text-sm ${isSelected ? "font-bold text-[#001269]" : "text-[#454653]"}`}
+                      className={`text-sm ${isSelected ? "font-bold text-[#124c40]" : "text-[#526058]"}`}
                     >
                       {displayName}
                     </span>
@@ -1864,7 +1863,7 @@ function ProProfile({ user }: { user: any }) {
               })}
             </div>
           ) : (
-            <div className="text-center p-4 bg-[#f2f4f7] rounded-xl text-xs text-[#757685]">
+            <div className="text-center p-4 bg-[#f1f3ed] rounded-xl text-xs text-[#69756d]">
               {t("profile.selectParentFirst")}
             </div>
           )}
@@ -1875,7 +1874,7 @@ function ProProfile({ user }: { user: any }) {
               {formData.services.map((s) => (
                 <span
                   key={s}
-                  className="inline-flex items-center bg-[#0020a0] text-white text-xs font-bold px-4 py-2 rounded-full"
+                  className="inline-flex items-center bg-[#176b57] text-white text-xs font-bold px-4 py-2 rounded-full"
                 >
                   {locale === "en" && koToEnService[s] ? koToEnService[s] : s}
                   <button
@@ -1897,7 +1896,7 @@ function ProProfile({ user }: { user: any }) {
           className={`w-full font-bold py-4 rounded-xl transition ${
             isSaved
               ? "bg-green-500 text-white hover:bg-green-600"
-              : "bg-[#0020a0] text-white hover:bg-[#001269] disabled:bg-[#eceef1] disabled:text-[#757685]"
+              : "bg-[#176b57] text-white hover:bg-[#124c40] disabled:bg-[#edf0e8] disabled:text-[#69756d]"
           }`}
         >
           {saving
@@ -1956,21 +1955,21 @@ function CustomerSupportSection() {
       className="bg-white rounded-2xl overflow-hidden"
       style={{ boxShadow: "0 32px 64px -15px rgba(0, 15, 93, 0.06)" }}
     >
-      <ul className="flex flex-col divide-y divide-[#c5c5d6]/20">
+      <ul className="flex flex-col divide-y divide-[#d8dfd7]/20">
         <li className="hover:bg-slate-50 transition cursor-pointer group">
           <Link
             href="/support/inquiry"
             className="w-full flex justify-between items-center p-5"
           >
             <div className="flex items-center gap-3">
-              <span className="material-symbols-outlined text-indigo-900 text-[22px] leading-none">
+              <span className="material-symbols-outlined text-[#173c31] text-[22px] leading-none">
                 headset_mic
               </span>
-              <span className="text-sm font-medium text-[#191c1e]">
+              <span className="text-sm font-medium text-[#22352c]">
                 {t("profile.inquiryLink")}
               </span>
             </div>
-            <span className="material-symbols-outlined text-[#c5c5d6] group-hover:text-[#001269] text-[20px] transition-colors">
+            <span className="material-symbols-outlined text-[#d8dfd7] group-hover:text-[#124c40] text-[20px] transition-colors">
               chevron_right
             </span>
           </Link>
@@ -1986,24 +1985,24 @@ function CustomerSupportSection() {
                 className="w-full flex justify-between items-center p-5 text-left cursor-pointer"
               >
                 <div className="flex items-center gap-3">
-                  <span className="material-symbols-outlined text-indigo-900 text-[22px] leading-none">
+                  <span className="material-symbols-outlined text-[#173c31] text-[22px] leading-none">
                     {getCatIcon(cat.title)}
                   </span>
-                  <span className="text-sm font-medium text-[#191c1e]">
+                  <span className="text-sm font-medium text-[#22352c]">
                     {cat.title}
                   </span>
                 </div>
                 <span
-                  className="material-symbols-outlined text-[#c5c5d6] group-hover:text-[#001269] text-[20px] transition-all duration-200"
+                  className="material-symbols-outlined text-[#d8dfd7] group-hover:text-[#124c40] text-[20px] transition-all duration-200"
                   style={{ transform: isExpanded ? "rotate(90deg)" : "none" }}
                 >
                   chevron_right
                 </span>
               </button>
               {isExpanded && (
-                <ul className="bg-[#f7f9fc] flex flex-col pt-1 pb-3 px-5">
+                <ul className="bg-[#f7f7f2] flex flex-col pt-1 pb-3 px-5">
                   {catPages.length === 0 ? (
-                    <li className="text-xs text-[#757685] py-2 pl-2">
+                    <li className="text-xs text-[#69756d] py-2 pl-2">
                       {t("profile.noPages")}
                     </li>
                   ) : (
@@ -2011,7 +2010,7 @@ function CustomerSupportSection() {
                       <li key={page.id} className="py-1">
                         <Link
                           href={`/support/${cat.slug}/${page.slug}`}
-                          className="flex items-center text-sm text-[#454653] hover:text-[#001269] hover:font-semibold transition pl-2 py-2 border-l-2 border-transparent hover:border-[#001269]"
+                          className="flex items-center text-sm text-[#526058] hover:text-[#124c40] hover:font-semibold transition pl-2 py-2 border-l-2 border-transparent hover:border-[#124c40]"
                         >
                           {page.title}
                         </Link>

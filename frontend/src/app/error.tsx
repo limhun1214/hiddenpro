@@ -1,27 +1,18 @@
 "use client";
 
-export default function Error({
-  error,
-  reset,
-}: {
-  error: Error & { digest?: string };
-  reset: () => void;
-}) {
+import { useEffect } from "react";
+import Link from "next/link";
+import { useLocale } from "next-intl";
+
+export default function ErrorPage({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
+  const ko = useLocale() === "ko";
+  useEffect(() => { console.error("[HiddenPro] Page error", error); }, [error]);
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6 text-center">
-      <div className="text-5xl mb-4">⚠️</div>
-      <h2 className="text-xl font-bold text-gray-800 mb-2">
-        오류가 발생했습니다
-      </h2>
-      <p className="text-sm text-gray-500 mb-6 max-w-sm">
-        {error.message || "알 수 없는 오류가 발생했습니다."}
-      </p>
-      <button
-        onClick={reset}
-        className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl transition text-sm"
-      >
-        다시 시도
-      </button>
-    </div>
+    <section className="flex min-h-[65vh] flex-col items-center justify-center bg-[#f7f8f2] px-6 py-20 text-center">
+      <span aria-hidden="true" className="material-symbols-outlined mb-6 rounded-2xl bg-[#e8f3ed] p-5 text-4xl text-[#176b57]">refresh</span>
+      <h1 className="text-3xl font-bold tracking-tight text-[#142522]">{ko ? "잠시 연결이 원활하지 않아요." : "Let’s give that another try."}</h1>
+      <p className="mt-4 max-w-sm text-sm leading-7 text-[#64726b]">{ko ? "페이지를 불러오지 못했어요. 다시 시도하거나 홈으로 돌아가 주세요." : "We couldn’t load this page. Please try again, or return home to keep exploring."}</p>
+      <div className="mt-8 flex items-center gap-5"><button onClick={reset} className="hp-button hp-button-dark">{ko ? "다시 시도" : "Try again"}</button><Link href="/" className="text-sm font-semibold text-[#176b57] underline underline-offset-4">{ko ? "홈으로" : "Back home"}</Link></div>
+    </section>
   );
 }

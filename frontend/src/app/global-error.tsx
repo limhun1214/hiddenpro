@@ -1,61 +1,15 @@
 "use client";
 
-export default function GlobalError({
-  error,
-  reset,
-}: {
-  error: Error & { digest?: string };
-  reset: () => void;
-}) {
-  return (
-    <html lang="ko">
-      <body>
-        <div
-          style={{
-            minHeight: "100vh",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "24px",
-            textAlign: "center",
-            fontFamily: "sans-serif",
-          }}
-        >
-          <div style={{ fontSize: "48px", marginBottom: "16px" }}>🚨</div>
-          <h2
-            style={{
-              fontSize: "20px",
-              fontWeight: "bold",
-              color: "#1f2937",
-              marginBottom: "8px",
-            }}
-          >
-            앱에 심각한 오류가 발생했습니다
-          </h2>
-          <p
-            style={{ fontSize: "14px", color: "#6b7280", marginBottom: "24px" }}
-          >
-            {error.message ||
-              "페이지를 새로고침하거나 나중에 다시 시도해주세요."}
-          </p>
-          <button
-            onClick={reset}
-            style={{
-              backgroundColor: "#2563eb",
-              color: "white",
-              fontWeight: "bold",
-              padding: "12px 24px",
-              borderRadius: "12px",
-              border: "none",
-              cursor: "pointer",
-              fontSize: "14px",
-            }}
-          >
-            앱 다시 시작
-          </button>
-        </div>
-      </body>
-    </html>
-  );
+import { useEffect } from "react";
+
+export default function GlobalError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
+  useEffect(() => { console.error("[HiddenPro] Application error", error); }, [error]);
+  return <html lang="en"><body style={{ margin: 0, background: "#f7f8f2", color: "#142522", fontFamily: "system-ui, sans-serif" }}>
+    <main style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24, textAlign: "center", boxSizing: "border-box" }}>
+      <p style={{ color: "#176b57", fontWeight: 800, fontSize: 22 }}>HiddenPro</p>
+      <h1 style={{ fontSize: 30, letterSpacing: "-1px" }}>A small interruption.</h1>
+      <p style={{ fontSize: 14, color: "#64726b", lineHeight: 1.8 }}>Please try again in a moment.<br />잠시 후 다시 시도해 주세요.</p>
+      <button onClick={reset} style={{ marginTop: 20, background: "#173e31", color: "white", fontWeight: 700, padding: "15px 25px", borderRadius: 10, border: "none", cursor: "pointer", fontSize: 14 }}>Try again · 다시 시도</button>
+    </main>
+  </body></html>;
 }

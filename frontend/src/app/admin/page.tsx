@@ -128,7 +128,7 @@ const statusLabel = (s: string, locale: string = "en") => {
 const statusColor = (s: string) =>
   ({
     OPEN: "bg-green-900/50 text-green-300",
-    MATCHED: "bg-blue-900/50 text-blue-300",
+    MATCHED: "bg-[#173c31]/50 text-[#a6cfba]",
     EXPIRED: "bg-gray-700/50 text-gray-400",
     CLOSED: "bg-gray-700/50 text-gray-400",
   })[s] || "bg-gray-700/50 text-gray-400";
@@ -3329,7 +3329,7 @@ function AdminDashboardPageContent() {
   const UnreadBadge = ({ count }: { count: number }) => {
     if (count <= 0) return null;
     return (
-      <span className="ml-auto min-w-[20px] h-5 flex items-center justify-center rounded-full bg-red-500 text-white text-[11px] font-bold px-1.5 animate-pulse">
+      <span className="ml-auto min-w-[20px] h-5 flex items-center justify-center rounded-full bg-red-500 text-white text-xs font-bold px-1.5 animate-pulse">
         {count > 99 ? "99+" : count}
       </span>
     );
@@ -3350,7 +3350,7 @@ function AdminDashboardPageContent() {
           </button>
           {sidebarOpen && (
             <>
-              <span className="bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded font-bold">
+              <span className="bg-red-500 text-white text-xs px-1.5 py-0.5 rounded font-bold">
                 ADMIN
               </span>
               <span className="text-sm font-black">HiddenPro</span>
@@ -3362,7 +3362,7 @@ function AdminDashboardPageContent() {
           <div className="space-y-0.5">
             <button
               onClick={() => setGroup1Open(!group1Open)}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition ${["dashboard", "search_logs"].includes(tab) ? "bg-blue-600/20 text-blue-400" : "text-gray-400 hover:bg-gray-800 hover:text-white"}`}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition ${["dashboard", "search_logs"].includes(tab) ? "bg-[#176b57]/20 text-[#6aaa8f]" : "text-gray-400 hover:bg-gray-800 hover:text-white"}`}
             >
               <span className="text-base">📊</span>
               {sidebarOpen && (
@@ -3386,7 +3386,7 @@ function AdminDashboardPageContent() {
                   <button
                     key={m.key}
                     onClick={() => handleTabClick(m.key)}
-                    className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition ${tab === m.key ? "bg-blue-600/20 text-blue-400" : "text-gray-400 hover:bg-gray-800 hover:text-white"}`}
+                    className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition ${tab === m.key ? "bg-[#176b57]/20 text-[#6aaa8f]" : "text-gray-400 hover:bg-gray-800 hover:text-white"}`}
                   >
                     <span className="text-base">{m.icon}</span>
                     {m.label}
@@ -3402,7 +3402,7 @@ function AdminDashboardPageContent() {
               <div className="space-y-0.5">
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition ${isUserTab(tab) ? "bg-blue-600/20 text-blue-400" : "text-gray-400 hover:bg-gray-800 hover:text-white"}`}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition ${isUserTab(tab) ? "bg-[#176b57]/20 text-[#6aaa8f]" : "text-gray-400 hover:bg-gray-800 hover:text-white"}`}
                 >
                   <span className="text-base">👤</span>
                   {sidebarOpen && (
@@ -3424,7 +3424,7 @@ function AdminDashboardPageContent() {
                       <button
                         key={m.key}
                         onClick={() => handleTabClick(m.key)}
-                        className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition ${tab === m.key ? "bg-blue-600/20 text-blue-400" : "text-gray-400 hover:bg-gray-800 hover:text-white"}`}
+                        className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition ${tab === m.key ? "bg-[#176b57]/20 text-[#6aaa8f]" : "text-gray-400 hover:bg-gray-800 hover:text-white"}`}
                       >
                         <span className="text-base">{m.icon}</span>
                         {m.label}
@@ -3440,7 +3440,7 @@ function AdminDashboardPageContent() {
             <div className="space-y-0.5">
               <button
                 onClick={() => setGroup3Open(!group3Open)}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition ${["ledger", "payout"].includes(tab) ? "bg-blue-600/20 text-blue-400" : "text-gray-400 hover:bg-gray-800 hover:text-white"}`}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition ${["ledger", "payout"].includes(tab) ? "bg-[#176b57]/20 text-[#6aaa8f]" : "text-gray-400 hover:bg-gray-800 hover:text-white"}`}
               >
                 <span className="text-base">💰</span>
                 {sidebarOpen && (
@@ -3464,7 +3464,7 @@ function AdminDashboardPageContent() {
                     <button
                       key={m.key}
                       onClick={() => handleTabClick(m.key)}
-                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition ${tab === m.key ? "bg-blue-600/20 text-blue-400" : "text-gray-400 hover:bg-gray-800 hover:text-white"}`}
+                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition ${tab === m.key ? "bg-[#176b57]/20 text-[#6aaa8f]" : "text-gray-400 hover:bg-gray-800 hover:text-white"}`}
                     >
                       <span className="text-base">{m.icon}</span>
                       {m.label}
@@ -3483,7 +3483,7 @@ function AdminDashboardPageContent() {
             <div className="space-y-0.5">
               <button
                 onClick={() => setGroup4Open(!group4Open)}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition ${["quotes", "reviews"].includes(tab) ? "bg-blue-600/20 text-blue-400" : "text-gray-400 hover:bg-gray-800 hover:text-white"}`}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition ${["quotes", "reviews"].includes(tab) ? "bg-[#176b57]/20 text-[#6aaa8f]" : "text-gray-400 hover:bg-gray-800 hover:text-white"}`}
               >
                 <span className="text-base">📋</span>
                 {sidebarOpen && (
@@ -3507,7 +3507,7 @@ function AdminDashboardPageContent() {
                     <button
                       key={m.key}
                       onClick={() => handleTabClick(m.key)}
-                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition ${tab === m.key ? "bg-blue-600/20 text-blue-400" : "text-gray-400 hover:bg-gray-800 hover:text-white"}`}
+                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition ${tab === m.key ? "bg-[#176b57]/20 text-[#6aaa8f]" : "text-gray-400 hover:bg-gray-800 hover:text-white"}`}
                     >
                       <span className="text-base">{m.icon}</span>
                       {m.label}
@@ -3523,7 +3523,7 @@ function AdminDashboardPageContent() {
             <div className="space-y-0.5">
               <button
                 onClick={() => setGroup5Open(!group5Open)}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition ${["inquiries", "abuse", "reports"].includes(tab) ? "bg-blue-600/20 text-blue-400" : "text-gray-400 hover:bg-gray-800 hover:text-white"}`}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition ${["inquiries", "abuse", "reports"].includes(tab) ? "bg-[#176b57]/20 text-[#6aaa8f]" : "text-gray-400 hover:bg-gray-800 hover:text-white"}`}
               >
                 <span className="text-base">🚨</span>
                 {sidebarOpen && (
@@ -3545,7 +3545,7 @@ function AdminDashboardPageContent() {
                     <button
                       key={m.key}
                       onClick={() => handleTabClick(m.key)}
-                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition ${tab === m.key ? "bg-blue-600/20 text-blue-400" : "text-gray-400 hover:bg-gray-800 hover:text-white"}`}
+                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition ${tab === m.key ? "bg-[#176b57]/20 text-[#6aaa8f]" : "text-gray-400 hover:bg-gray-800 hover:text-white"}`}
                     >
                       <span className="text-base">{m.icon}</span>
                       {m.label}
@@ -3584,7 +3584,7 @@ function AdminDashboardPageContent() {
             <div className="space-y-0.5 pb-2">
               <button
                 onClick={() => setGroup6Open(!group6Open)}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition ${["categories", "cms", "audit_log", "settings"].includes(tab) ? "bg-blue-600/20 text-blue-400" : "text-gray-400 hover:bg-gray-800 hover:text-white"}`}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition ${["categories", "cms", "audit_log", "settings"].includes(tab) ? "bg-[#176b57]/20 text-[#6aaa8f]" : "text-gray-400 hover:bg-gray-800 hover:text-white"}`}
               >
                 <span className="text-base">⚙️</span>
                 {sidebarOpen && (
@@ -3608,7 +3608,7 @@ function AdminDashboardPageContent() {
                     <button
                       key={m.key}
                       onClick={() => handleTabClick(m.key)}
-                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition ${tab === m.key ? "bg-blue-600/20 text-blue-400" : "text-gray-400 hover:bg-gray-800 hover:text-white"}`}
+                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition ${tab === m.key ? "bg-[#176b57]/20 text-[#6aaa8f]" : "text-gray-400 hover:bg-gray-800 hover:text-white"}`}
                     >
                       <span className="text-base">{m.icon}</span>
                       {m.label}
@@ -3626,7 +3626,7 @@ function AdminDashboardPageContent() {
               document.cookie = `locale=${next};path=/;max-age=${365 * 24 * 60 * 60}`;
               setAdminLocale(next);
             }}
-            className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-500 hover:text-blue-400 hover:bg-gray-800 transition ${!sidebarOpen ? "justify-center" : ""}`}
+            className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-500 hover:text-[#6aaa8f] hover:bg-gray-800 transition ${!sidebarOpen ? "justify-center" : ""}`}
           >
             <span>🌐</span>
             {sidebarOpen && <span>{adminLocale === "ko" ? "EN" : "한"}</span>}
@@ -3686,7 +3686,7 @@ function AdminDashboardPageContent() {
                   </div>
                   {userDetail.role === "PRO" && detailData.profile && (
                     <div className="ml-auto text-right">
-                      <p className="text-2xl font-black text-blue-400">
+                      <p className="text-2xl font-black text-[#6aaa8f]">
                         {fmtNum(detailData.profile.current_cash || 0)}
                       </p>
                       {(detailData.profile.bonus_cash || 0) > 0 && (
@@ -3857,13 +3857,13 @@ function AdminDashboardPageContent() {
                           </td>
                           <td className="p-2">
                             <span
-                              className={`text-xs font-bold px-2 py-0.5 rounded-full ${tx.amount > 0 ? "bg-blue-900/50 text-blue-300" : "bg-red-900/50 text-red-300"}`}
+                              className={`text-xs font-bold px-2 py-0.5 rounded-full ${tx.amount > 0 ? "bg-[#173c31]/50 text-[#a6cfba]" : "bg-red-900/50 text-red-300"}`}
                             >
                               {txLabel(tx.tx_type)}
                             </span>
                           </td>
                           <td
-                            className={`p-2 text-right font-bold ${tx.amount > 0 ? "text-blue-400" : "text-red-400"}`}
+                            className={`p-2 text-right font-bold ${tx.amount > 0 ? "text-[#6aaa8f]" : "text-red-400"}`}
                           >
                             {tx.amount > 0 ? "+" : ""}
                             {fmtNum(Number(tx.amount))}
@@ -3930,7 +3930,7 @@ function AdminDashboardPageContent() {
                               </p>
                             </div>
                             <span
-                              className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${statusColor(q.status || "OPEN")}`}
+                              className={`text-xs font-bold px-2 py-0.5 rounded-full ${statusColor(q.status || "OPEN")}`}
                             >
                               {q.status || "PENDING"}
                             </span>
@@ -3999,7 +3999,7 @@ function AdminDashboardPageContent() {
                   <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-8">
                     {/* 미답변 1:1 문의 카드 (최우선 배치) */}
                     <div
-                      className="relative bg-[#1e2433] rounded-2xl p-5 flex flex-col gap-2 border border-gray-700/50 cursor-pointer hover:border-blue-500/50 hover:bg-[#252d42] transition-all"
+                      className="relative bg-[#1e2433] rounded-2xl p-5 flex flex-col gap-2 border border-gray-700/50 cursor-pointer hover:border-[#21846b]/50 hover:bg-[#252d42] transition-all"
                       onClick={() => handleTabClick("inquiries")}
                     >
                       {pendingInquiries > 0 && (
@@ -4037,7 +4037,7 @@ function AdminDashboardPageContent() {
                         v: stats.payoutPending,
                         c:
                           stats.payoutPending > 0
-                            ? "text-blue-400"
+                            ? "text-[#6aaa8f]"
                             : "text-white",
                         onClick: () => {
                           setPayoutFilter("PENDING");
@@ -4083,7 +4083,7 @@ function AdminDashboardPageContent() {
                             ? "💎 24h 충전"
                             : "💎 24h Top-up",
                         v: stats.charge24h,
-                        c: "text-blue-400",
+                        c: "text-[#6aaa8f]",
                         p: "+",
                         onClick: () => {
                           setLedgerCategory("CHARGE");
@@ -4132,7 +4132,7 @@ function AdminDashboardPageContent() {
                       <div
                         key={i}
                         onClick={s.onClick}
-                        className="bg-gray-800 rounded-xl p-4 border border-gray-700 cursor-pointer hover:border-blue-500/50 hover:bg-gray-700/60 transition-all group"
+                        className="bg-gray-800 rounded-xl p-4 border border-gray-700 cursor-pointer hover:border-[#21846b]/50 hover:bg-gray-700/60 transition-all group"
                       >
                         <p className="text-gray-400 text-xs font-bold uppercase mb-1 group-hover:text-gray-200 transition">
                           {s.l}
@@ -4146,14 +4146,14 @@ function AdminDashboardPageContent() {
                       </div>
                     ))}
                   </div>
-                  <div className="bg-gradient-to-r from-blue-900/30 to-purple-900/30 rounded-xl border border-blue-800/40 p-5">
+                  <div className="bg-gradient-to-r from-[#173c31]/30 to-purple-900/30 rounded-xl border border-[#153f35]/40 p-5">
                     <p className="text-gray-300 text-sm">
                       {adminLocale === "ko" ? (
                         <>
                           💡 상세 캐시 거래 내역은 좌측 메뉴의{" "}
                           <button
                             onClick={() => handleTabClick("ledger")}
-                            className="text-blue-400 font-bold hover:underline"
+                            className="text-[#6aaa8f] font-bold hover:underline"
                           >
                             💰 캐시 원장
                           </button>{" "}
@@ -4164,7 +4164,7 @@ function AdminDashboardPageContent() {
                           💡 View detailed cash transactions in the{" "}
                           <button
                             onClick={() => handleTabClick("ledger")}
-                            className="text-blue-400 font-bold hover:underline"
+                            className="text-[#6aaa8f] font-bold hover:underline"
                           >
                             💰 Cash Ledger
                           </button>{" "}
@@ -4195,13 +4195,13 @@ function AdminDashboardPageContent() {
                         {fmtNum(totalProBalance)}
                       </p>
                     </div>
-                    <div className="bg-gradient-to-br from-blue-900/40 to-blue-800/20 rounded-xl p-4 border border-blue-700/40">
-                      <p className="text-blue-300 text-xs font-bold uppercase mb-1">
+                    <div className="bg-gradient-to-br from-[#173c31]/40 to-[#153f35]/20 rounded-xl p-4 border border-[#124c40]/40">
+                      <p className="text-[#a6cfba] text-xs font-bold uppercase mb-1">
                         {adminLocale === "ko"
                           ? "📈 유입 합계 (충전)"
                           : "📈 Total In (Top-ups)"}
                       </p>
-                      <p className="text-2xl font-black text-blue-400">
+                      <p className="text-2xl font-black text-[#6aaa8f]">
                         +{fmtNum(ledgerStats.totalIn)}
                       </p>
                     </div>
@@ -4253,7 +4253,7 @@ function AdminDashboardPageContent() {
                           setLedgerPage(1);
                           loadLedger(1, k, ledgerPeriod, ledgerSearch);
                         }}
-                        className={`px-4 py-2 text-sm font-semibold rounded-lg transition whitespace-nowrap ${ledgerCategory === k ? "bg-blue-600 text-white shadow" : "text-gray-400 hover:text-white hover:bg-gray-700"}`}
+                        className={`px-4 py-2 text-sm font-semibold rounded-lg transition whitespace-nowrap ${ledgerCategory === k ? "bg-[#176b57] text-white shadow" : "text-gray-400 hover:text-white hover:bg-gray-700"}`}
                       >
                         {label}
                       </button>
@@ -4283,7 +4283,7 @@ function AdminDashboardPageContent() {
                             ? "고수 이름 / 이메일 / 전화번호 검색..."
                             : "Search pro name / email / phone..."
                         }
-                        className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#21846b]"
                       />
                       <button
                         onClick={() => {
@@ -4296,7 +4296,7 @@ function AdminDashboardPageContent() {
                             ledgerSearchInput,
                           );
                         }}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg text-sm font-bold"
+                        className="bg-[#176b57] hover:bg-[#124c40] text-white px-4 py-2.5 rounded-lg text-sm font-bold"
                       >
                         {adminLocale === "ko" ? "검색" : "Search"}
                       </button>
@@ -4444,7 +4444,7 @@ function AdminDashboardPageContent() {
                                         : null,
                                     );
                                   }}
-                                  className="text-blue-400 hover:text-blue-300 hover:underline font-semibold transition"
+                                  className="text-[#6aaa8f] hover:text-[#a6cfba] hover:underline font-semibold transition"
                                 >
                                   {tx.proName || tx.pro_id?.slice(0, 8) + "..."}
                                 </button>
@@ -4457,13 +4457,13 @@ function AdminDashboardPageContent() {
                               </td>
                               <td className="p-2.5">
                                 <span
-                                  className={`text-xs font-bold px-2 py-0.5 rounded-full ${tx.amount > 0 ? "bg-blue-900/50 text-blue-300" : "bg-red-900/50 text-red-300"}`}
+                                  className={`text-xs font-bold px-2 py-0.5 rounded-full ${tx.amount > 0 ? "bg-[#173c31]/50 text-[#a6cfba]" : "bg-red-900/50 text-red-300"}`}
                                 >
                                   {txLabel(tx.tx_type)}
                                 </span>
                               </td>
                               <td
-                                className={`p-2.5 text-right font-bold ${tx.amount > 0 ? "text-blue-400" : "text-red-400"}`}
+                                className={`p-2.5 text-right font-bold ${tx.amount > 0 ? "text-[#6aaa8f]" : "text-red-400"}`}
                               >
                                 {tx.amount > 0 ? "+" : ""}
                                 {fmtNum(Math.abs(Number(tx.amount)))}
@@ -4590,7 +4590,7 @@ function AdminDashboardPageContent() {
                         </button>
                         <button
                           onClick={() => setAbuseFilter("all")}
-                          className={`px-3 py-1.5 text-xs font-bold rounded-md transition ${abuseFilter === "all" ? "bg-blue-600 text-white" : "text-gray-400 hover:text-white"}`}
+                          className={`px-3 py-1.5 text-xs font-bold rounded-md transition ${abuseFilter === "all" ? "bg-[#176b57] text-white" : "text-gray-400 hover:text-white"}`}
                         >
                           {adminLocale === "ko"
                             ? "📊 전체 보기"
@@ -4599,7 +4599,7 @@ function AdminDashboardPageContent() {
                       </div>
                       <button
                         onClick={loadAbuseData}
-                        className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition"
+                        className="bg-[#176b57] hover:bg-[#21846b] text-white px-4 py-2 rounded-lg text-sm font-bold transition"
                       >
                         {adminLocale === "ko" ? "🔄 새로고침" : "🔄 Refresh"}
                       </button>
@@ -4818,7 +4818,7 @@ function AdminDashboardPageContent() {
                                     {(a.status === "SUSPENDED" ||
                                       a.userStatus === "SUSPENDED") && (
                                       <span className="relative group ml-1">
-                                        <span className="bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded cursor-help">
+                                        <span className="bg-red-600 text-white text-xs font-bold px-1.5 py-0.5 rounded cursor-help">
                                           {adminLocale === "ko"
                                             ? "정지"
                                             : "Suspended"}
@@ -4836,7 +4836,7 @@ function AdminDashboardPageContent() {
                                       </span>
                                     )}
                                     {a.total_reports >= 3 && (
-                                      <span className="ml-1 bg-orange-900/50 text-orange-300 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                                      <span className="ml-1 bg-orange-900/50 text-orange-300 text-xs font-bold px-1.5 py-0.5 rounded-full">
                                         {adminLocale === "ko"
                                           ? `신고${a.total_reports}`
                                           : `Rep.${a.total_reports}`}
@@ -5092,7 +5092,7 @@ function AdminDashboardPageContent() {
                                           ? "bg-green-500 border-green-300"
                                           : log.action_type === "FLAG"
                                             ? "bg-orange-500 border-orange-300"
-                                            : "bg-blue-500 border-blue-300"
+                                            : "bg-[#21846b] border-[#a6cfba]"
                                     }`}
                                   />
                                   <div className="bg-gray-800 rounded-lg p-3 border border-gray-700/50">
@@ -5105,7 +5105,7 @@ function AdminDashboardPageContent() {
                                               ? "bg-green-900/50 text-green-300"
                                               : log.action_type === "FLAG"
                                                 ? "bg-orange-900/50 text-orange-300"
-                                                : "bg-blue-900/50 text-blue-300"
+                                                : "bg-[#173c31]/50 text-[#a6cfba]"
                                         }`}
                                       >
                                         {log.action_type === "SUSPEND"
@@ -5277,7 +5277,7 @@ function AdminDashboardPageContent() {
                                   ? setChatPreview(null)
                                   : fetchChatPreview(report.id, report.room_id)
                               }
-                              className="text-xs text-blue-400 hover:text-blue-300 transition"
+                              className="text-xs text-[#6aaa8f] hover:text-[#a6cfba] transition"
                             >
                               {adminLocale === "ko"
                                 ? `💬 채팅 내역 ${chatPreview?.reportId === report.id ? "닫기" : "보기"}`
@@ -5361,7 +5361,7 @@ function AdminDashboardPageContent() {
                                       minute: "2-digit",
                                     })}
                                   </span>
-                                  <span className="ml-2 font-bold text-blue-400">
+                                  <span className="ml-2 font-bold text-[#6aaa8f]">
                                     {(msg.sender as any)?.nickname ||
                                       (msg.sender as any)?.name ||
                                       msg.sender_id?.slice(0, 8)}
@@ -5552,7 +5552,7 @@ function AdminDashboardPageContent() {
                           setCategoryDepth1Filter(e.target.value);
                           setCategoryDepth2Filter("all");
                         }}
-                        className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#21846b]"
                       >
                         <option value="all">
                           {adminLocale === "ko"
@@ -5577,7 +5577,7 @@ function AdminDashboardPageContent() {
                           onChange={(e) =>
                             setCategoryDepth2Filter(e.target.value)
                           }
-                          className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#21846b]"
                         >
                           <option value="all">
                             {adminLocale === "ko"
@@ -5611,7 +5611,7 @@ function AdminDashboardPageContent() {
                             is_active: true,
                           });
                         }}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-md transition"
+                        className="bg-[#176b57] hover:bg-[#124c40] text-white px-4 py-2 rounded-lg font-bold text-sm shadow-md transition"
                       >
                         {adminLocale === "ko"
                           ? "+ 새 카테고리 추가"
@@ -5675,7 +5675,7 @@ function AdminDashboardPageContent() {
                                 <td className="px-5 py-3 font-bold text-white text-base">
                                   {cat.name}
                                 </td>
-                                <td className="px-5 py-3 text-right font-mono font-bold text-blue-400">
+                                <td className="px-5 py-3 text-right font-mono font-bold text-[#6aaa8f]">
                                   {fmtNum(cat.base_price)}
                                 </td>
                                 <td className="px-5 py-3 text-center">
@@ -5699,7 +5699,7 @@ function AdminDashboardPageContent() {
                                     onClick={() =>
                                       setEditingCategory({ ...cat })
                                     }
-                                    className="text-blue-500 hover:text-blue-300 font-bold px-3 py-1 bg-blue-900/20 rounded transition text-xs mr-2"
+                                    className="text-[#21846b] hover:text-[#a6cfba] font-bold px-3 py-1 bg-[#173c31]/20 rounded transition text-xs mr-2"
                                   >
                                     {adminLocale === "ko" ? "수정" : "Edit"}
                                   </button>
@@ -5777,7 +5777,7 @@ function AdminDashboardPageContent() {
                                     depth1: e.target.value,
                                   })
                                 }
-                                className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold"
+                                className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#21846b] font-bold"
                                 disabled={!isAddingCategory}
                                 placeholder={
                                   adminLocale === "ko"
@@ -5801,7 +5801,7 @@ function AdminDashboardPageContent() {
                                     depth2: e.target.value,
                                   })
                                 }
-                                className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold"
+                                className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#21846b] font-bold"
                                 disabled={!isAddingCategory}
                                 placeholder={
                                   adminLocale === "ko"
@@ -5825,7 +5825,7 @@ function AdminDashboardPageContent() {
                                 name: e.target.value,
                               })
                             }
-                            className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold"
+                            className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#21846b] font-bold"
                             required
                             disabled={!isAddingCategory}
                             placeholder={
@@ -5859,11 +5859,11 @@ function AdminDashboardPageContent() {
                                   base_price: parseInt(e.target.value) || 0,
                                 })
                               }
-                              className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-lg font-bold"
+                              className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#21846b] font-mono text-lg font-bold"
                               required
                             />
                           </div>
-                          <p className="text-xs text-blue-400 mt-2">
+                          <p className="text-xs text-[#6aaa8f] mt-2">
                             {adminLocale === "ko"
                               ? "이 카테고리에서 고수가 견적서를 낼 때마다 차감할 캐시 비용입니다."
                               : "The credits amount deducted each time a pro sends a quote in this category."}
@@ -5880,7 +5880,7 @@ function AdminDashboardPageContent() {
                                   is_active: e.target.checked,
                                 })
                               }
-                              className="w-5 h-5 accent-blue-600 rounded"
+                              className="w-5 h-5 accent-[#176b57] rounded"
                             />
                             <span className="text-sm font-bold text-gray-200">
                               {adminLocale === "ko"
@@ -5903,7 +5903,7 @@ function AdminDashboardPageContent() {
                         </button>
                         <button
                           type="submit"
-                          className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm font-bold shadow-md transition"
+                          className="bg-[#176b57] hover:bg-[#124c40] text-white px-5 py-2.5 rounded-lg text-sm font-bold shadow-md transition"
                         >
                           {isAddingCategory
                             ? adminLocale === "ko"
@@ -5987,7 +5987,7 @@ function AdminDashboardPageContent() {
                           ? "이름 / 활동명 / 이메일 / ID 검색..."
                           : "Search name / nickname / email / ID..."
                       }
-                      className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#21846b]"
                     />
                     <select
                       value={proFilter}
@@ -6042,7 +6042,7 @@ function AdminDashboardPageContent() {
                               className="p-2.5"
                               onClick={() => loadUserDetail(p.pro_id, "PRO")}
                             >
-                              <div className="font-semibold text-white hover:text-blue-400 transition">
+                              <div className="font-semibold text-white hover:text-[#6aaa8f] transition">
                                 {p.nickname ||
                                   p.name ||
                                   (adminLocale === "ko"
@@ -6060,7 +6060,7 @@ function AdminDashboardPageContent() {
                               {p.phone || "-"}
                             </td>
                             <td className="p-2.5 text-right">
-                              <span className="font-bold text-blue-400">
+                              <span className="font-bold text-[#6aaa8f]">
                                 {fmtNum(p.current_cash)}
                               </span>
                               {(p.bonus_cash || 0) > 0 && (
@@ -6108,7 +6108,7 @@ function AdminDashboardPageContent() {
                                         setCashDesc("");
                                       }}
                                       disabled={p.status === "DELETED"}
-                                      className={`text-xs px-2 py-1 rounded font-bold ${p.status === "DELETED" ? "bg-gray-700 text-gray-500 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
+                                      className={`text-xs px-2 py-1 rounded font-bold ${p.status === "DELETED" ? "bg-gray-700 text-gray-500 cursor-not-allowed" : "bg-[#176b57] hover:bg-[#124c40] text-white"}`}
                                     >
                                       {adminLocale === "ko" ? "충전" : "Top-up"}
                                     </button>
@@ -6195,7 +6195,7 @@ function AdminDashboardPageContent() {
                         ? "이름 / 활동명 / 이메일 / 전화번호 검색..."
                         : "Search name / nickname / email / phone..."
                     }
-                    className="w-full sm:w-96 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
+                    className="w-full sm:w-96 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#21846b] mb-4"
                   />
                   <div className="bg-gray-800 rounded-xl border border-gray-700 overflow-x-auto">
                     <table className="w-full text-sm">
@@ -6233,7 +6233,7 @@ function AdminDashboardPageContent() {
                                 loadUserDetail(c.user_id, "CUSTOMER")
                               }
                             >
-                              <div className="font-semibold text-white hover:text-blue-400">
+                              <div className="font-semibold text-white hover:text-[#6aaa8f]">
                                 {c.nickname ||
                                   c.name ||
                                   (adminLocale === "ko"
@@ -6345,7 +6345,7 @@ function AdminDashboardPageContent() {
                             ? "승급할 계정 이메일 입력"
                             : "Enter email to promote"
                         }
-                        className="bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 w-72"
+                        className="bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#21846b] w-72"
                       />
                       <select
                         value={promoteRole}
@@ -6356,7 +6356,7 @@ function AdminDashboardPageContent() {
                               | "ADMIN_VIEWER",
                           )
                         }
-                        className="bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#21846b]"
                       >
                         <option value="ADMIN_OPERATION">
                           {adminLocale === "ko"
@@ -6372,7 +6372,7 @@ function AdminDashboardPageContent() {
                       <button
                         onClick={handlePromoteAdmin}
                         disabled={promoting}
-                        className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:text-gray-500 text-white text-sm font-bold px-4 py-2 rounded-lg transition"
+                        className="bg-[#176b57] hover:bg-[#124c40] disabled:bg-gray-700 disabled:text-gray-500 text-white text-sm font-bold px-4 py-2 rounded-lg transition"
                       >
                         {promoting
                           ? adminLocale === "ko"
@@ -6450,7 +6450,7 @@ function AdminDashboardPageContent() {
                                 </span>
                               )}
                               {a.role === "ADMIN_OPERATION" && (
-                                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-blue-900/50 text-blue-300">
+                                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-[#173c31]/50 text-[#a6cfba]">
                                   {adminLocale === "ko"
                                     ? "🔧 운영 관리자"
                                     : "🔧 Ops Admin"}
@@ -6658,7 +6658,7 @@ function AdminDashboardPageContent() {
                                                 key={idx}
                                                 className="bg-gray-700/30 rounded-lg p-2.5"
                                               >
-                                                <p className="text-[11px] text-blue-400 font-medium mb-1">
+                                                <p className="text-xs text-[#6aaa8f] font-medium mb-1">
                                                   Q. {item.stepText}
                                                 </p>
                                                 <p className="text-xs text-gray-200">
@@ -7080,7 +7080,7 @@ function AdminDashboardPageContent() {
                           {chatLogs.length > 0 && (
                             <button
                               onClick={() => setIsChatOpen(true)}
-                              className="mt-4 w-full bg-blue-600/20 hover:bg-blue-600/40 border border-blue-500/50 text-blue-400 font-bold py-2.5 rounded-lg transition text-sm flex items-center justify-center gap-2"
+                              className="mt-4 w-full bg-[#176b57]/20 hover:bg-[#176b57]/40 border border-[#21846b]/50 text-[#6aaa8f] font-bold py-2.5 rounded-lg transition text-sm flex items-center justify-center gap-2"
                             >
                               {adminLocale === "ko"
                                 ? `💬 양방향 채팅 로그 열람 (${chatLogs.length}개)`
@@ -7120,7 +7120,7 @@ function AdminDashboardPageContent() {
                               </p>
                             </div>
                             <div className="bg-gray-900/50 p-3 rounded-lg border border-gray-700/50">
-                              <span className="text-xs font-bold text-blue-400 mb-1 block">
+                              <span className="text-xs font-bold text-[#6aaa8f] mb-1 block">
                                 Matched Pro
                               </span>
                               {csContactInfo?.pro ? (
@@ -7132,7 +7132,7 @@ function AdminDashboardPageContent() {
                                   <p className="text-xs text-gray-400 mt-1">
                                     {csContactInfo.pro.email || "No email"}
                                   </p>
-                                  <p className="text-xs text-gray-300 font-mono mt-1 text-blue-300">
+                                  <p className="text-xs text-gray-300 font-mono mt-1 text-[#a6cfba]">
                                     {csContactInfo.pro.phone || "No phone"}
                                   </p>
                                 </>
@@ -7160,17 +7160,17 @@ function AdminDashboardPageContent() {
                           .map((q: any, i: number) => (
                             <div
                               key={q.quote_id}
-                              className={`bg-gray-800 rounded-xl border p-4 flex items-center gap-4 relative ${q.status === "ACCEPTED" ? "border-blue-500/50 bg-blue-900/10" : "border-gray-700"}`}
+                              className={`bg-gray-800 rounded-xl border p-4 flex items-center gap-4 relative ${q.status === "ACCEPTED" ? "border-[#21846b]/50 bg-[#173c31]/10" : "border-gray-700"}`}
                             >
                               <div
-                                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${q.status === "ACCEPTED" ? "bg-blue-600/30 text-blue-400" : "bg-gray-700 text-gray-400"}`}
+                                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${q.status === "ACCEPTED" ? "bg-[#176b57]/30 text-[#6aaa8f]" : "bg-gray-700 text-gray-400"}`}
                               >
                                 {i + 1}
                               </div>
                               <div className="flex-1">
                                 <div className="flex justify-between items-center">
                                   <span
-                                    className={`font-bold ${q.status === "ACCEPTED" ? "text-blue-400" : "text-white"}`}
+                                    className={`font-bold ${q.status === "ACCEPTED" ? "text-[#6aaa8f]" : "text-white"}`}
                                   >
                                     {fmtNum(q.price || 0)}
                                   </span>
@@ -7227,7 +7227,7 @@ function AdminDashboardPageContent() {
                                       onClick={() =>
                                         handleOpenProDetail(q.pro_id)
                                       }
-                                      className="text-[10px] bg-blue-800/50 hover:bg-blue-700 text-blue-300 px-2 py-0.5 rounded font-bold transition"
+                                      className="text-xs bg-[#153f35]/50 hover:bg-[#124c40] text-[#a6cfba] px-2 py-0.5 rounded font-bold transition"
                                     >
                                       View Detail
                                     </button>
@@ -7245,13 +7245,13 @@ function AdminDashboardPageContent() {
                                             "Customer",
                                         )
                                       }
-                                      className="text-[10px] bg-green-800/50 hover:bg-green-700 text-green-300 px-2 py-0.5 rounded font-bold transition"
+                                      className="text-xs bg-green-800/50 hover:bg-green-700 text-green-300 px-2 py-0.5 rounded font-bold transition"
                                     >
                                       💬 Chat Log
                                     </button>
                                   </div>
                                   <span
-                                    className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${q.status === "ACCEPTED" ? "bg-blue-900/50 text-blue-300" : "bg-gray-700 text-gray-400"}`}
+                                    className={`text-xs font-bold px-2 py-0.5 rounded-full ${q.status === "ACCEPTED" ? "bg-[#173c31]/50 text-[#a6cfba]" : "bg-gray-700 text-gray-400"}`}
                                   >
                                     {q.status}
                                   </span>
@@ -7339,7 +7339,7 @@ function AdminDashboardPageContent() {
                             value={reqSearch}
                             onChange={(e) => setReqSearch(e.target.value)}
                             placeholder="Service / Region / Name..."
-                            className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500"
+                            className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-[#21846b]"
                           />
                         </div>
                         <div className="flex flex-col">
@@ -7351,7 +7351,7 @@ function AdminDashboardPageContent() {
                             onChange={(e) =>
                               setReqFilter(e.target.value as any)
                             }
-                            className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500"
+                            className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-[#21846b]"
                           >
                             <option value="all">All Status</option>
                             <option value="OPEN">Pending</option>
@@ -7366,7 +7366,7 @@ function AdminDashboardPageContent() {
                           <select
                             value={reqCategory}
                             onChange={(e) => setReqCategory(e.target.value)}
-                            className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500"
+                            className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-[#21846b]"
                           >
                             <option value="all">All Categories</option>
                             <option value="Cleaning">Cleaning</option>
@@ -7387,7 +7387,7 @@ function AdminDashboardPageContent() {
                             type="date"
                             value={reqStartDate}
                             onChange={(e) => setReqStartDate(e.target.value)}
-                            className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 [color-scheme:dark]"
+                            className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-[#21846b] [color-scheme:dark]"
                           />
                         </div>
                         <div className="flex flex-col">
@@ -7398,7 +7398,7 @@ function AdminDashboardPageContent() {
                             type="date"
                             value={reqEndDate}
                             onChange={(e) => setReqEndDate(e.target.value)}
-                            className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 [color-scheme:dark]"
+                            className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-[#21846b] [color-scheme:dark]"
                           />
                         </div>
                       </div>
@@ -7451,7 +7451,7 @@ function AdminDashboardPageContent() {
                                 <td className="p-3 text-gray-300 font-medium">
                                   {r.customerName}
                                 </td>
-                                <td className="p-3 text-blue-300 font-medium">
+                                <td className="p-3 text-[#a6cfba] font-medium">
                                   {r.matchedProName}
                                 </td>
                                 <td className="p-3 text-right font-semibold text-white">
@@ -7507,7 +7507,7 @@ function AdminDashboardPageContent() {
                     value={reviewSearch}
                     onChange={(e) => setReviewSearch(e.target.value)}
                     placeholder="Search by customer / pro / comment..."
-                    className="w-full sm:w-96 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
+                    className="w-full sm:w-96 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#21846b] mb-4"
                   />
                   <div className="bg-gray-800 rounded-xl border border-gray-700 overflow-x-auto">
                     <table className="w-full text-sm">
@@ -7578,8 +7578,8 @@ function AdminDashboardPageContent() {
                                         !isEligible
                                           ? "border-gray-600 text-gray-500 bg-gray-800 opacity-50 cursor-not-allowed"
                                           : r.is_featured_on_main
-                                            ? "bg-blue-600 text-white border-blue-500"
-                                            : "bg-transparent text-blue-400 hover:bg-blue-900 border-blue-500 border-opacity-50"
+                                            ? "bg-[#176b57] text-white border-[#21846b]"
+                                            : "bg-transparent text-[#6aaa8f] hover:bg-[#173c31] border-[#21846b] border-opacity-50"
                                       }`}
                                       title={
                                         !isEligible
@@ -7699,7 +7699,7 @@ function AdminDashboardPageContent() {
                                       [log.keyword]: e.target.value,
                                     }))
                                   }
-                                  className="bg-gray-900 border border-gray-600 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-blue-500"
+                                  className="bg-gray-900 border border-gray-600 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-[#21846b]"
                                 >
                                   <option value="" disabled>
                                     Select category...
@@ -7714,7 +7714,7 @@ function AdminDashboardPageContent() {
                                   onClick={() =>
                                     handleMapSearchTag(log.keyword)
                                   }
-                                  className={`text-xs px-3 py-1.5 rounded font-bold transition-colors ${selectedCategoryMapping[log.keyword] ? "bg-blue-600 hover:bg-blue-700 text-white" : "bg-gray-700 text-gray-500 cursor-not-allowed"}`}
+                                  className={`text-xs px-3 py-1.5 rounded font-bold transition-colors ${selectedCategoryMapping[log.keyword] ? "bg-[#176b57] hover:bg-[#124c40] text-white" : "bg-gray-700 text-gray-500 cursor-not-allowed"}`}
                                   disabled={
                                     !selectedCategoryMapping[log.keyword]
                                   }
@@ -7790,7 +7790,7 @@ function AdminDashboardPageContent() {
                                 [s.key]: e.target.value,
                               }))
                             }
-                            className="bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white w-36 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white w-36 focus:outline-none focus:ring-2 focus:ring-[#21846b]"
                           />
                           <button
                             disabled={savingKey === s.key}
@@ -7818,7 +7818,7 @@ function AdminDashboardPageContent() {
                               }
                               setSavingKey(null);
                             }}
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-bold text-sm disabled:opacity-50"
+                            className="bg-[#176b57] hover:bg-[#124c40] text-white px-5 py-2 rounded-lg font-bold text-sm disabled:opacity-50"
                           >
                             {savingKey === s.key ? "Saving..." : "Save"}
                           </button>
@@ -7886,7 +7886,7 @@ function AdminDashboardPageContent() {
                           <p className="text-xs text-gray-400 mb-2 font-bold">
                             Type{" "}
                             <span className="text-red-400">
-                              "CONFIRM RESET"
+                              &quot;CONFIRM RESET&quot;
                             </span>{" "}
                             exactly in the field below.
                           </p>
@@ -8037,7 +8037,7 @@ function AdminDashboardPageContent() {
                           type="file"
                           id="cmsUpload"
                           accept="image/*,video/*"
-                          className="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-blue-900/50 file:text-blue-300 hover:file:bg-blue-900/80 cursor-pointer"
+                          className="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-[#173c31]/50 file:text-[#a6cfba] hover:file:bg-[#173c31]/80 cursor-pointer"
                         />
                         <button
                           disabled={cmsUploading}
@@ -8096,7 +8096,7 @@ function AdminDashboardPageContent() {
                               setCmsUploading(false);
                             }
                           }}
-                          className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-bold text-sm disabled:opacity-50"
+                          className="bg-[#176b57] hover:bg-[#124c40] text-white px-5 py-2.5 rounded-lg font-bold text-sm disabled:opacity-50"
                         >
                           {cmsUploading
                             ? "Uploading..."
@@ -8151,7 +8151,7 @@ function AdminDashboardPageContent() {
                                     <td className="px-4 py-3 font-bold text-gray-300">
                                       {cat ? cat.title : "Uncategorized"}
                                     </td>
-                                    <td className="px-4 py-3 font-mono text-xs text-blue-400">
+                                    <td className="px-4 py-3 font-mono text-xs text-[#6aaa8f]">
                                       /support/{cat ? cat.slug : ""}/{page.slug}
                                     </td>
                                     <td className="px-4 py-3 font-bold text-white">
@@ -8171,7 +8171,7 @@ function AdminDashboardPageContent() {
                                         onClick={() =>
                                           setEditingSupportPage({ ...page })
                                         }
-                                        className="bg-blue-600/20 text-blue-400 hover:bg-blue-600/40 font-bold py-1 px-4 rounded text-sm transition"
+                                        className="bg-[#176b57]/20 text-[#6aaa8f] hover:bg-[#176b57]/40 font-bold py-1 px-4 rounded text-sm transition"
                                       >
                                         Edit Content
                                       </button>
@@ -8229,7 +8229,7 @@ function AdminDashboardPageContent() {
                                       category_id: Number(e.target.value),
                                     })
                                   }
-                                  className="w-full bg-gray-800 border border-gray-700 rounded p-2 text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                                  className="w-full bg-gray-800 border border-gray-700 rounded p-2 text-white focus:ring-2 focus:ring-[#21846b] outline-none"
                                 >
                                   {supportCategories.map((c) => (
                                     <option key={c.id} value={c.id}>
@@ -8251,7 +8251,7 @@ function AdminDashboardPageContent() {
                                       slug: e.target.value,
                                     })
                                   }
-                                  className="w-full bg-gray-800 border border-gray-700 rounded p-2 text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                                  className="w-full bg-gray-800 border border-gray-700 rounded p-2 text-white focus:ring-2 focus:ring-[#21846b] outline-none"
                                   required
                                 />
                               </div>
@@ -8269,7 +8269,7 @@ function AdminDashboardPageContent() {
                                     title: e.target.value,
                                   })
                                 }
-                                className="w-full bg-gray-800 border border-gray-700 rounded p-2 text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                                className="w-full bg-gray-800 border border-gray-700 rounded p-2 text-white focus:ring-2 focus:ring-[#21846b] outline-none"
                                 required
                               />
                             </div>
@@ -8285,7 +8285,7 @@ function AdminDashboardPageContent() {
                                     content: e.target.value,
                                   })
                                 }
-                                className="w-full bg-gray-800 border border-gray-700 rounded p-3 h-64 font-mono text-xs text-blue-300 focus:ring-2 focus:ring-blue-500 outline-none"
+                                className="w-full bg-gray-800 border border-gray-700 rounded p-3 h-64 font-mono text-xs text-[#a6cfba] focus:ring-2 focus:ring-[#21846b] outline-none"
                                 required
                               />
                             </div>
@@ -8300,7 +8300,7 @@ function AdminDashboardPageContent() {
                                     is_active: e.target.checked,
                                   })
                                 }
-                                className="w-4 h-4 rounded bg-gray-800 border-gray-600 text-blue-600"
+                                className="w-4 h-4 rounded bg-gray-800 border-gray-600 text-[#176b57]"
                               />
                               <label
                                 htmlFor="support-active"
@@ -8319,7 +8319,7 @@ function AdminDashboardPageContent() {
                               </button>
                               <button
                                 type="submit"
-                                className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded transition"
+                                className="px-6 py-2 bg-[#176b57] hover:bg-[#124c40] text-white font-bold rounded transition"
                               >
                                 Save
                               </button>
@@ -8398,11 +8398,11 @@ function AdminDashboardPageContent() {
                                       : doc.document_type === "PRIVACY"
                                         ? "Privacy Policy "
                                         : "Refund Policy "}
-                                    <span className="text-blue-400 font-mono text-xs font-normal">
+                                    <span className="text-[#6aaa8f] font-mono text-xs font-normal">
                                       (/legal/{doc.document_type.toLowerCase()})
                                     </span>
                                   </td>
-                                  <td className="px-4 py-3 text-center font-mono text-blue-300">
+                                  <td className="px-4 py-3 text-center font-mono text-[#a6cfba]">
                                     {doc.version}
                                   </td>
                                   <td className="px-4 py-3 text-gray-300">
@@ -8425,7 +8425,7 @@ function AdminDashboardPageContent() {
                                       onClick={() =>
                                         setEditingLegalDoc({ ...doc })
                                       }
-                                      className="bg-blue-600/20 text-blue-400 hover:bg-blue-600/40 font-bold py-1 px-4 rounded text-sm transition"
+                                      className="bg-[#176b57]/20 text-[#6aaa8f] hover:bg-[#176b57]/40 font-bold py-1 px-4 rounded text-sm transition"
                                     >
                                       Edit
                                     </button>
@@ -8477,7 +8477,7 @@ function AdminDashboardPageContent() {
                                       document_type: e.target.value,
                                     })
                                   }
-                                  className="w-full bg-gray-800 border border-gray-700 rounded p-2 text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                                  className="w-full bg-gray-800 border border-gray-700 rounded p-2 text-white focus:ring-2 focus:ring-[#21846b] outline-none"
                                   disabled={!!editingLegalDoc.id}
                                 >
                                   <option value="TERMS">
@@ -8504,7 +8504,7 @@ function AdminDashboardPageContent() {
                                       version: e.target.value,
                                     })
                                   }
-                                  className="w-full bg-gray-800 border border-gray-700 rounded p-2 text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                                  className="w-full bg-gray-800 border border-gray-700 rounded p-2 text-white focus:ring-2 focus:ring-[#21846b] outline-none"
                                   placeholder="e.g. v1.0, v2026.1"
                                   required
                                 />
@@ -8522,7 +8522,7 @@ function AdminDashboardPageContent() {
                                       effective_date: e.target.value,
                                     })
                                   }
-                                  className="w-full bg-gray-800 border border-gray-700 rounded p-2 text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                                  className="w-full bg-gray-800 border border-gray-700 rounded p-2 text-white focus:ring-2 focus:ring-[#21846b] outline-none"
                                   required
                                 />
                               </div>
@@ -8541,7 +8541,7 @@ function AdminDashboardPageContent() {
                                     title: e.target.value,
                                   })
                                 }
-                                className="w-full bg-gray-800 border border-gray-700 rounded p-2 text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                                className="w-full bg-gray-800 border border-gray-700 rounded p-2 text-white focus:ring-2 focus:ring-[#21846b] outline-none"
                                 placeholder="e.g., HiddenPro Terms of Service"
                                 required
                               />
@@ -8559,7 +8559,7 @@ function AdminDashboardPageContent() {
                                     content: e.target.value,
                                   })
                                 }
-                                className="w-full bg-gray-800 border border-gray-700 rounded p-3 h-64 font-mono text-xs text-blue-300 focus:ring-2 focus:ring-blue-500 outline-none"
+                                className="w-full bg-gray-800 border border-gray-700 rounded p-3 h-64 font-mono text-xs text-[#a6cfba] focus:ring-2 focus:ring-[#21846b] outline-none"
                                 required
                               />
                             </div>
@@ -8596,7 +8596,7 @@ function AdminDashboardPageContent() {
                               </button>
                               <button
                                 type="submit"
-                                className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded transition"
+                                className="px-6 py-2 bg-[#176b57] hover:bg-[#124c40] text-white font-bold rounded transition"
                               >
                                 Save & Apply
                               </button>
@@ -8643,7 +8643,7 @@ function AdminDashboardPageContent() {
                       onChange={(e) => {
                         setInquiriesFilter(e.target.value as any);
                       }}
-                      className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                      className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#21846b] cursor-pointer"
                     >
                       <option value="all">All Status</option>
                       <option value="pending">Pending</option>
@@ -8655,7 +8655,7 @@ function AdminDashboardPageContent() {
                       onChange={(e) => {
                         setInquiriesCategory(e.target.value);
                       }}
-                      className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                      className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#21846b] cursor-pointer"
                     >
                       <option value="all">All Categories</option>
                       <option value="ACCOUNT">Account & Login</option>
@@ -8693,7 +8693,7 @@ function AdminDashboardPageContent() {
                             >
                               <td className="p-3">
                                 <span
-                                  className={`text-xs font-bold px-2 py-1 rounded-full ${iq.status === "resolved" ? "bg-green-900/50 text-green-300" : iq.status === "in_progress" ? "bg-blue-900/50 text-blue-300" : "bg-yellow-900/50 text-yellow-300"}`}
+                                  className={`text-xs font-bold px-2 py-1 rounded-full ${iq.status === "resolved" ? "bg-green-900/50 text-green-300" : iq.status === "in_progress" ? "bg-[#173c31]/50 text-[#a6cfba]" : "bg-yellow-900/50 text-yellow-300"}`}
                                 >
                                   {iq.status === "resolved"
                                     ? "Resolved"
@@ -8720,7 +8720,7 @@ function AdminDashboardPageContent() {
                                     iq.users?.name ||
                                     "Unknown"}
                                 </span>
-                                <span className="text-gray-500 block text-[10px] mt-0.5">
+                                <span className="text-gray-500 block text-xs mt-0.5">
                                   {iq.user_type}
                                 </span>
                               </td>
@@ -8744,7 +8744,7 @@ function AdminDashboardPageContent() {
                                       setSelectedInquiry(iq);
                                       setReplyContent(iq.admin_reply || "");
                                     }}
-                                    className="text-blue-300 bg-blue-900/30 border border-blue-900/60 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded transition text-xs font-bold"
+                                    className="text-[#a6cfba] bg-[#173c31]/30 border border-[#173c31]/60 hover:bg-[#176b57] hover:text-white px-3 py-1.5 rounded transition text-xs font-bold"
                                   >
                                     Reply
                                   </button>
@@ -8804,7 +8804,7 @@ function AdminDashboardPageContent() {
                               <button
                                 key={p}
                                 onClick={() => loadInquiries(p)}
-                                className={`px-3 py-1.5 text-xs rounded transition ${p === inquiriesPage ? "bg-blue-600 text-white font-bold" : "bg-gray-700 hover:bg-gray-600 text-gray-300"}`}
+                                className={`px-3 py-1.5 text-xs rounded transition ${p === inquiriesPage ? "bg-[#176b57] text-white font-bold" : "bg-gray-700 hover:bg-gray-600 text-gray-300"}`}
                               >
                                 {p}
                               </button>
@@ -8864,7 +8864,7 @@ function AdminDashboardPageContent() {
                           {f === "PENDING" &&
                             payoutRequests.filter((p) => p.status === "PENDING")
                               .length > 0 && (
-                              <span className="ml-1.5 bg-blue-500 text-white text-[10px] px-1.5 py-0.5 rounded-full">
+                              <span className="ml-1.5 bg-[#21846b] text-white text-xs px-1.5 py-0.5 rounded-full">
                                 {
                                   payoutRequests.filter(
                                     (p) => p.status === "PENDING",
@@ -8875,7 +8875,7 @@ function AdminDashboardPageContent() {
                           {f === "HELD" &&
                             payoutRequests.filter((p) => p.status === "HELD")
                               .length > 0 && (
-                              <span className="ml-1.5 bg-yellow-500 text-white text-[10px] px-1.5 py-0.5 rounded-full">
+                              <span className="ml-1.5 bg-yellow-500 text-white text-xs px-1.5 py-0.5 rounded-full">
                                 {
                                   payoutRequests.filter(
                                     (p) => p.status === "HELD",
@@ -8979,7 +8979,7 @@ function AdminDashboardPageContent() {
                                           ? "bg-red-900/50 text-red-300"
                                           : p.status === "HELD"
                                             ? "bg-yellow-900/50 text-yellow-300"
-                                            : "bg-blue-900/50 text-blue-300"
+                                            : "bg-[#173c31]/50 text-[#a6cfba]"
                                     }`}
                                   >
                                     {p.status === "APPROVED"
@@ -9008,7 +9008,7 @@ function AdminDashboardPageContent() {
                                       <p className="text-xs text-yellow-400 font-semibold">
                                         7-Day Hold
                                       </p>
-                                      <p className="text-[10px] text-gray-500 mt-0.5">
+                                      <p className="text-xs text-gray-500 mt-0.5">
                                         Notify pro to re-apply
                                       </p>
                                     </div>
@@ -9025,7 +9025,7 @@ function AdminDashboardPageContent() {
                                             [p.id]: e.target.value,
                                           }))
                                         }
-                                        className="text-xs bg-gray-700 border border-gray-600 rounded px-2 py-1 text-white w-32 focus:outline-none focus:border-blue-500"
+                                        className="text-xs bg-gray-700 border border-gray-600 rounded px-2 py-1 text-white w-32 focus:outline-none focus:border-[#21846b]"
                                       />
                                       <div className="flex gap-1">
                                         <button
@@ -9265,7 +9265,7 @@ function AdminDashboardPageContent() {
                                     log.admin?.email ||
                                     log.admin_id?.slice(0, 8) + "..."}
                                 </p>
-                                <p className="text-gray-500 text-[10px]">
+                                <p className="text-gray-500 text-xs">
                                   {log.admin?.email || ""}
                                 </p>
                               </td>
@@ -9277,7 +9277,7 @@ function AdminDashboardPageContent() {
                                         log.target?.name ||
                                         "-"}
                                     </p>
-                                    <p className="text-gray-500 text-[10px]">
+                                    <p className="text-gray-500 text-xs">
                                       {log.target?.email || ""}
                                     </p>
                                   </>
@@ -9289,9 +9289,9 @@ function AdminDashboardPageContent() {
                               </td>
                               <td className="p-2.5 text-center">
                                 <span
-                                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap ${
+                                  className={`text-xs font-bold px-2 py-0.5 rounded-full whitespace-nowrap ${
                                     log.action_type === "CASH_CHARGE"
-                                      ? "bg-blue-900/50 text-blue-300"
+                                      ? "bg-[#173c31]/50 text-[#a6cfba]"
                                       : log.action_type === "CASH_REFUND"
                                         ? "bg-purple-900/50 text-purple-300"
                                         : log.action_type === "PAYOUT_APPROVE"
@@ -9395,7 +9395,7 @@ function AdminDashboardPageContent() {
                       selectedInquiry.status === "resolved"
                         ? "bg-green-900/50 text-green-300"
                         : selectedInquiry.status === "in_progress"
-                          ? "bg-blue-900/50 text-blue-300"
+                          ? "bg-[#173c31]/50 text-[#a6cfba]"
                           : "bg-yellow-900/50 text-yellow-300"
                     }`}
                   >
@@ -9468,7 +9468,7 @@ function AdminDashboardPageContent() {
               </div>
 
               <div className="border-t border-gray-700 pt-6">
-                <label className="flex items-center gap-2 text-sm font-bold text-blue-400 mb-3">
+                <label className="flex items-center gap-2 text-sm font-bold text-[#6aaa8f] mb-3">
                   <span className="text-lg">🧑‍💻</span>
                   {selectedInquiry.status === "resolved"
                     ? "Registered Reply (Read-only)"
@@ -9489,11 +9489,11 @@ function AdminDashboardPageContent() {
                   className={`w-full rounded-xl p-4 text-sm text-white focus:outline-none min-h-[160px] ${
                     selectedInquiry.status === "resolved"
                       ? "bg-gray-700/40 border border-gray-600/40 cursor-default text-gray-300"
-                      : "bg-gray-900 border border-gray-700 focus:ring-2 focus:ring-blue-500"
+                      : "bg-gray-900 border border-gray-700 focus:ring-2 focus:ring-[#21846b]"
                   }`}
                 />
                 <p className="text-xs text-gray-500 mt-2 ml-1">
-                  When saved, the status will automatically change to 'Resolved'
+                  When saved, the status will automatically change to &apos;Resolved&apos;
                   and be immediately visible to the user.
                 </p>
                 {/* 기존 등록된 답변 이미지 표시 */}
@@ -9547,7 +9547,7 @@ function AdminDashboardPageContent() {
                           <button
                             type="button"
                             onClick={() => handleRemoveReplyImage(idx)}
-                            className="absolute top-0.5 right-0.5 bg-black/60 text-white rounded-full w-4 h-4 flex items-center justify-center text-[10px] font-bold hover:bg-black/80"
+                            className="absolute top-0.5 right-0.5 bg-black/60 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs font-bold hover:bg-black/80"
                           >
                             ✕
                           </button>
@@ -9567,7 +9567,7 @@ function AdminDashboardPageContent() {
                       />
                       <label
                         htmlFor="reply-image-input"
-                        className="inline-flex items-center gap-1.5 px-3 py-2 border border-dashed border-gray-600 rounded-lg text-xs text-gray-400 font-medium hover:border-blue-500 hover:text-blue-400 cursor-pointer transition"
+                        className="inline-flex items-center gap-1.5 px-3 py-2 border border-dashed border-gray-600 rounded-lg text-xs text-gray-400 font-medium hover:border-[#21846b] hover:text-[#6aaa8f] cursor-pointer transition"
                       >
                         🖼️ Add Image ({replyImages.length}/5)
                       </label>
@@ -9599,7 +9599,7 @@ function AdminDashboardPageContent() {
                       )
                     }
                     disabled={inquiryStatusUpdating}
-                    className="px-3 py-2 text-xs bg-blue-900/40 border border-blue-700/50 text-blue-300 hover:bg-blue-800/60 disabled:opacity-40 font-bold rounded-lg transition"
+                    className="px-3 py-2 text-xs bg-[#173c31]/40 border border-[#124c40]/50 text-[#a6cfba] hover:bg-[#153f35]/60 disabled:opacity-40 font-bold rounded-lg transition"
                   >
                     Set to In Progress
                   </button>
@@ -9632,7 +9632,7 @@ function AdminDashboardPageContent() {
                   <button
                     onClick={handleSaveInquiryReply}
                     disabled={replySaving || !replyContent.trim()}
-                    className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:text-blue-400 disabled:cursor-not-allowed text-white font-bold rounded-lg transition text-sm flex items-center gap-2"
+                    className="px-5 py-2.5 bg-[#176b57] hover:bg-[#124c40] disabled:bg-[#153f35] disabled:text-[#6aaa8f] disabled:cursor-not-allowed text-white font-bold rounded-lg transition text-sm flex items-center gap-2"
                   >
                     {replySaving ? "Saving..." : "Save & Mark Resolved"}
                   </button>
@@ -9663,7 +9663,7 @@ function AdminDashboardPageContent() {
               </p>
               <p className="text-sm text-gray-400">
                 Available Credits:{" "}
-                <span className="text-blue-400 font-bold">
+                <span className="text-[#6aaa8f] font-bold">
                   {fmtNum(cashModal.pro.current_cash)}
                 </span>
               </p>
@@ -9677,7 +9677,7 @@ function AdminDashboardPageContent() {
                 <div className="flex gap-2">
                   <button
                     onClick={() => setCashType("REAL")}
-                    className={`flex-1 py-2 rounded-lg text-sm font-bold transition border ${cashType === "REAL" ? "bg-blue-600/20 text-blue-400 border-blue-500" : "bg-gray-700 text-gray-400 border-gray-600 hover:border-gray-500"}`}
+                    className={`flex-1 py-2 rounded-lg text-sm font-bold transition border ${cashType === "REAL" ? "bg-[#176b57]/20 text-[#6aaa8f] border-[#21846b]" : "bg-gray-700 text-gray-400 border-gray-600 hover:border-gray-500"}`}
                   >
                     💎 Real Credits
                   </button>
@@ -9699,7 +9699,7 @@ function AdminDashboardPageContent() {
                   value={cashAmount}
                   onChange={(e) => setCashAmount(e.target.value)}
                   placeholder="Enter amount"
-                  className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-[#21846b]"
                   autoFocus
                 />
               </div>
@@ -9716,7 +9716,7 @@ function AdminDashboardPageContent() {
                       ? "e.g., Event bonus payout"
                       : "e.g., Customer service compensation"
                   }
-                  className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-[#21846b]"
                 />
               </div>
               {cashAmount && Number(cashAmount) > 0 && (
@@ -9734,7 +9734,7 @@ function AdminDashboardPageContent() {
                     </span>
                   </div>
                   <div
-                    className={`flex justify-between font-bold ${cashModal.type === "charge" ? "text-blue-400" : "text-red-400"}`}
+                    className={`flex justify-between font-bold ${cashModal.type === "charge" ? "text-[#6aaa8f]" : "text-red-400"}`}
                   >
                     <span>{cashModal.type === "charge" ? "+" : "-"}</span>
                     <span>{fmtNum(Number(cashAmount))}</span>
@@ -9765,7 +9765,7 @@ function AdminDashboardPageContent() {
               <button
                 onClick={handleCashAction}
                 disabled={cashProcessing}
-                className={`flex-1 py-2.5 rounded-lg font-bold text-sm disabled:opacity-50 ${cashModal.type === "charge" ? "bg-blue-600 hover:bg-blue-700 text-white" : "bg-red-600 hover:bg-red-700 text-white"}`}
+                className={`flex-1 py-2.5 rounded-lg font-bold text-sm disabled:opacity-50 ${cashModal.type === "charge" ? "bg-[#176b57] hover:bg-[#124c40] text-white" : "bg-red-600 hover:bg-red-700 text-white"}`}
               >
                 {cashProcessing
                   ? "Processing..."
@@ -9830,7 +9830,7 @@ function AdminDashboardPageContent() {
                     {
                       l: "Top-up",
                       v: sumByType(["CHARGE", "ADMIN_CHARGE", "BONUS"]),
-                      c: "text-blue-400",
+                      c: "text-[#6aaa8f]",
                     },
                     {
                       l: "Refund",
@@ -9845,7 +9845,7 @@ function AdminDashboardPageContent() {
                           key={i}
                           className="bg-gray-900/60 rounded-lg p-3 text-center"
                         >
-                          <p className="text-gray-500 text-[10px] font-bold uppercase">
+                          <p className="text-gray-500 text-xs font-bold uppercase">
                             {s.l}
                           </p>
                           <p className={`text-lg font-black ${s.c}`}>
@@ -9873,7 +9873,7 @@ function AdminDashboardPageContent() {
                     <button
                       key={k}
                       onClick={() => setDrilldownFilter(k)}
-                      className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition ${drilldownFilter === k ? "bg-blue-600 text-white" : "text-gray-400 hover:bg-gray-700"}`}
+                      className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition ${drilldownFilter === k ? "bg-[#176b57] text-white" : "text-gray-400 hover:bg-gray-700"}`}
                     >
                       {label}
                     </button>
@@ -9915,13 +9915,13 @@ function AdminDashboardPageContent() {
                             </td>
                             <td className="p-2.5">
                               <span
-                                className={`text-xs font-bold px-2 py-0.5 rounded-full ${tx.amount > 0 ? "bg-blue-900/50 text-blue-300" : "bg-red-900/50 text-red-300"}`}
+                                className={`text-xs font-bold px-2 py-0.5 rounded-full ${tx.amount > 0 ? "bg-[#173c31]/50 text-[#a6cfba]" : "bg-red-900/50 text-red-300"}`}
                               >
                                 {txLabel(tx.tx_type)}
                               </span>
                             </td>
                             <td
-                              className={`p-2.5 text-right font-bold ${tx.amount > 0 ? "text-blue-400" : "text-red-400"}`}
+                              className={`p-2.5 text-right font-bold ${tx.amount > 0 ? "text-[#6aaa8f]" : "text-red-400"}`}
                             >
                               {tx.amount > 0 ? "+" : ""}
                               {fmtNum(Math.abs(Number(tx.amount)))}
@@ -9976,11 +9976,11 @@ function AdminDashboardPageContent() {
                     key={msg.message_id}
                     className={`flex flex-col ${isCustomer ? "items-end" : "items-start"}`}
                   >
-                    <span className="text-[10px] text-gray-500 mb-0.5 px-1">
+                    <span className="text-xs text-gray-500 mb-0.5 px-1">
                       {isCustomer ? "Customer" : "Pro"}
                     </span>
                     <div
-                      className={`px-3 py-2 rounded-2xl max-w-[80%] text-sm ${isCustomer ? "bg-blue-600 text-white rounded-br-none" : "bg-gray-800 text-gray-200 border border-gray-700 rounded-bl-none"}`}
+                      className={`px-3 py-2 rounded-2xl max-w-[80%] text-sm ${isCustomer ? "bg-[#176b57] text-white rounded-br-none" : "bg-gray-800 text-gray-200 border border-gray-700 rounded-bl-none"}`}
                     >
                       {msg.content}
                     </div>
@@ -10097,7 +10097,7 @@ function AdminDashboardPageContent() {
                       <button
                         onClick={loadCsChatMore}
                         disabled={csChatLoading}
-                        className="text-xs text-blue-400 hover:text-blue-300 bg-gray-800/50 border border-gray-700 px-3 py-1.5 rounded-lg transition disabled:opacity-50"
+                        className="text-xs text-[#6aaa8f] hover:text-[#a6cfba] bg-gray-800/50 border border-gray-700 px-3 py-1.5 rounded-lg transition disabled:opacity-50"
                       >
                         {csChatLoading ? "Loading..." : "Load earlier messages"}
                       </button>
@@ -10121,12 +10121,12 @@ function AdminDashboardPageContent() {
                           key={msg.message_id}
                           className={`flex flex-col ${isCustomer ? "items-start" : "items-end"}`}
                         >
-                          <span className="text-[10px] text-gray-500 mb-0.5">
+                          <span className="text-xs text-gray-500 mb-0.5">
                             {isCustomer ? "👤 Customer" : "🔧 Pro"} ·{" "}
                             {senderName} · {fmtDate(msg.created_at)}
                           </span>
                           <div
-                            className={`max-w-[80%] px-3 py-2 rounded-xl text-xs leading-relaxed break-words ${isCustomer ? "bg-gray-700 text-gray-200" : "bg-blue-800/50 text-blue-100"}`}
+                            className={`max-w-[80%] px-3 py-2 rounded-xl text-xs leading-relaxed break-words ${isCustomer ? "bg-gray-700 text-gray-200" : "bg-[#153f35]/50 text-[#e8f3ed]"}`}
                           >
                             {msg.content}
                           </div>
@@ -10173,7 +10173,7 @@ function AdminDashboardPageContent() {
                     onClick={() =>
                       handleProDetailTabChange(t, proDetailModal.proId)
                     }
-                    className={`flex-1 py-2.5 text-xs font-semibold border-b-2 transition ${proDetailTab === t ? "border-blue-400 text-white bg-gray-800/50" : "border-transparent text-gray-500 hover:text-gray-300"}`}
+                    className={`flex-1 py-2.5 text-xs font-semibold border-b-2 transition ${proDetailTab === t ? "border-[#6aaa8f] text-white bg-gray-800/50" : "border-transparent text-gray-500 hover:text-gray-300"}`}
                   >
                     {
                       {
@@ -10228,7 +10228,7 @@ function AdminDashboardPageContent() {
                         </div>
                       </div>
                       <div className="ml-auto text-right">
-                        <p className="text-blue-400 font-bold">
+                        <p className="text-[#6aaa8f] font-bold">
                           {fmtNum(proDetailData.current_cash || 0)}
                         </p>
                         {(proDetailData.bonus_cash || 0) > 0 && (
@@ -10236,7 +10236,7 @@ function AdminDashboardPageContent() {
                             +🎁{fmtNum(proDetailData.bonus_cash)}
                           </p>
                         )}
-                        <p className="text-gray-500 text-[10px] mt-1">
+                        <p className="text-gray-500 text-xs mt-1">
                           Credit Balance
                         </p>
                       </div>
@@ -10249,13 +10249,13 @@ function AdminDashboardPageContent() {
                       </h3>
                       <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <p className="text-[10px] text-gray-500">Email</p>
+                          <p className="text-xs text-gray-500">Email</p>
                           <p className="text-sm text-white font-mono">
                             {proDetailData.email || "-"}
                           </p>
                         </div>
                         <div>
-                          <p className="text-[10px] text-gray-500">Phone</p>
+                          <p className="text-xs text-gray-500">Phone</p>
                           <p className="text-sm text-white font-mono">
                             {proDetailData.phone || "-"}
                           </p>
@@ -10270,19 +10270,19 @@ function AdminDashboardPageContent() {
                       </h3>
                       <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <p className="text-[10px] text-gray-500">Name</p>
+                          <p className="text-xs text-gray-500">Name</p>
                           <p className="text-sm text-white">
                             {proDetailData.name || "-"}
                           </p>
                         </div>
                         <div>
-                          <p className="text-[10px] text-gray-500">Nickname</p>
+                          <p className="text-xs text-gray-500">Nickname</p>
                           <p className="text-sm text-white">
                             {proDetailData.nickname || "-"}
                           </p>
                         </div>
                         <div>
-                          <p className="text-[10px] text-gray-500">Joined</p>
+                          <p className="text-xs text-gray-500">Joined</p>
                           <p className="text-sm text-white">
                             {proDetailData.created_at
                               ? fmtDate(proDetailData.created_at)
@@ -10290,7 +10290,7 @@ function AdminDashboardPageContent() {
                           </p>
                         </div>
                         <div>
-                          <p className="text-[10px] text-gray-500">
+                          <p className="text-xs text-gray-500">
                             Verification
                           </p>
                           <p
@@ -10302,13 +10302,13 @@ function AdminDashboardPageContent() {
                           </p>
                         </div>
                         <div>
-                          <p className="text-[10px] text-gray-500">Region</p>
+                          <p className="text-xs text-gray-500">Region</p>
                           <p className="text-sm text-white">
                             {proDetailData.region || "-"}
                           </p>
                         </div>
                         <div>
-                          <p className="text-[10px] text-gray-500">Facebook</p>
+                          <p className="text-xs text-gray-500">Facebook</p>
                           <p className="text-sm text-white truncate">
                             {proDetailData.facebook_url || "-"}
                           </p>
@@ -10327,7 +10327,7 @@ function AdminDashboardPageContent() {
                             (s: string, i: number) => (
                               <span
                                 key={i}
-                                className="text-xs bg-blue-900/40 text-blue-300 border border-blue-800/50 px-2 py-1 rounded-lg"
+                                className="text-xs bg-[#173c31]/40 text-[#a6cfba] border border-[#153f35]/50 px-2 py-1 rounded-lg"
                               >
                                 {s}
                               </span>
@@ -10346,7 +10346,7 @@ function AdminDashboardPageContent() {
                       <span className="text-xs text-gray-400">
                         Credit Balance
                       </span>
-                      <span className="text-blue-400 font-bold">
+                      <span className="text-[#6aaa8f] font-bold">
                         {fmtNum(proDetailData.current_cash || 0)}
                         {(proDetailData.bonus_cash || 0) > 0 && (
                           <span className="text-green-400 text-xs ml-2">
@@ -10375,10 +10375,10 @@ function AdminDashboardPageContent() {
                                 <p className="text-xs text-white font-medium">
                                   {txLabel(row.tx_type)}
                                 </p>
-                                <p className="text-[10px] text-gray-500 truncate">
+                                <p className="text-xs text-gray-500 truncate">
                                   {txDesc(row.tx_type, row.description)}
                                 </p>
-                                <p className="text-[10px] text-gray-600 mt-0.5">
+                                <p className="text-xs text-gray-600 mt-0.5">
                                   {fmtDate(row.created_at)}
                                 </p>
                               </div>
@@ -10390,7 +10390,7 @@ function AdminDashboardPageContent() {
                                   {fmtNum(Math.abs(row.amount))}
                                 </p>
                                 {row.balance_snapshot != null && (
-                                  <p className="text-[10px] text-gray-500">
+                                  <p className="text-xs text-gray-500">
                                     Bal. {fmtNum(row.balance_snapshot)}
                                   </p>
                                 )}
@@ -10435,18 +10435,18 @@ function AdminDashboardPageContent() {
                             >
                               <div className="flex items-center justify-between mb-1">
                                 <span
-                                  className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${statusColor(q.status)}`}
+                                  className={`text-xs px-1.5 py-0.5 rounded font-medium ${statusColor(q.status)}`}
                                 >
                                   {statusLabel(q.status)}
                                 </span>
-                                <span className="text-blue-400 font-bold text-sm">
+                                <span className="text-[#6aaa8f] font-bold text-sm">
                                   {fmtNum(q.price || 0)}
                                 </span>
                               </div>
-                              <p className="text-[10px] text-gray-500 truncate">
+                              <p className="text-xs text-gray-500 truncate">
                                 {q.description || "-"}
                               </p>
-                              <p className="text-[10px] text-gray-600 mt-0.5">
+                              <p className="text-xs text-gray-600 mt-0.5">
                                 {fmtDate(q.created_at)}
                               </p>
                             </div>
@@ -10490,7 +10490,7 @@ function AdminDashboardPageContent() {
                                   {"⭐".repeat(Math.min(rv.rating || 0, 5))}{" "}
                                   {rv.rating}/5
                                 </span>
-                                <span className="text-[10px] text-gray-600">
+                                <span className="text-xs text-gray-600">
                                   {fmtDate(rv.created_at)}
                                 </span>
                               </div>
@@ -10560,7 +10560,7 @@ function AdminDashboardPageContent() {
             ) : (
               <button
                 onClick={() => setModal(null)}
-                className="w-full py-3 rounded-xl bg-indigo-600 text-white font-bold hover:bg-indigo-500 transition mt-2"
+                className="w-full py-3 rounded-xl bg-[#176b57] text-white font-bold hover:bg-[#21846b] transition mt-2"
               >
                 OK
               </button>
@@ -10591,7 +10591,7 @@ function AdminDashboardPageContent() {
                 : "Enter the reason for suspension (min. 5 characters, recorded in audit log)"}
             </p>
             <textarea
-              className="w-full bg-[#2a3347] text-white rounded-xl p-3 text-sm resize-none border border-gray-600 focus:border-indigo-500 focus:outline-none"
+              className="w-full bg-[#2a3347] text-white rounded-xl p-3 text-sm resize-none border border-gray-600 focus:border-[#21846b] focus:outline-none"
               rows={3}
               placeholder="e.g., Repeated no-shows, false information, suspected fraud"
               value={suspendReasonModal.reason}
@@ -10657,7 +10657,7 @@ function AdminDashboardPageContent() {
             </p>
             <button
               onClick={() => setShowTimeoutWarning(false)}
-              className="w-full py-3 rounded-xl bg-indigo-600 text-white font-bold hover:bg-indigo-500 transition"
+              className="w-full py-3 rounded-xl bg-[#176b57] text-white font-bold hover:bg-[#21846b] transition"
             >
               Stay Logged In
             </button>

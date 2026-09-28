@@ -572,17 +572,17 @@ export default function CustomerQuotesClient() {
     });
 
   return (
-    <div className="flex flex-col flex-1 min-h-0 w-full overflow-y-auto bg-[#f7f9fc]">
+    <div className="flex flex-col flex-1 min-h-0 w-full overflow-y-auto bg-[#f7f7f2]">
       <BadgeCleaner type="quotes-read" />
       <div className="px-4 pb-32 pt-6 max-w-3xl mx-auto w-full">
         {/* Tab Navigation */}
-        <nav className="flex w-full mb-8 border-b border-[#c5c5d6]/15">
+        <nav className="flex w-full mb-8 border-b border-[#d8dfd7]/15">
           <button
             onClick={() => setActiveTab("IN_PROGRESS")}
             className={`flex-1 pb-4 text-center text-sm tracking-wide transition-colors ${
               activeTab === "IN_PROGRESS"
-                ? "font-bold text-indigo-700 border-b-2 border-[#0020a0]"
-                : "font-medium text-slate-500 hover:text-indigo-600"
+                ? "font-bold text-[#124c40] border-b-2 border-[#176b57]"
+                : "font-medium text-slate-500 hover:text-[#176b57]"
             }`}
           >
             {t("customerQuotes.tabInProgress").toUpperCase()}
@@ -591,8 +591,8 @@ export default function CustomerQuotesClient() {
             onClick={() => setActiveTab("CLOSED")}
             className={`flex-1 pb-4 text-center text-sm tracking-wide transition-colors ${
               activeTab === "CLOSED"
-                ? "font-bold text-indigo-700 border-b-2 border-[#0020a0]"
-                : "font-medium text-slate-500 hover:text-indigo-600"
+                ? "font-bold text-[#124c40] border-b-2 border-[#176b57]"
+                : "font-medium text-slate-500 hover:text-[#176b57]"
             }`}
           >
             {t("customerQuotes.tabClosed").toUpperCase()}
@@ -601,17 +601,17 @@ export default function CustomerQuotesClient() {
 
         {/* Section Header */}
         <div className="flex justify-between items-end mb-6">
-          <h2 className="font-['Manrope'] font-bold text-[#191c1e] text-lg">
+          <h2 className="font-['Manrope'] font-bold text-[#22352c] text-lg">
             {t("customerQuotes.pageTitle")}
           </h2>
-          <span className="text-[11px] font-medium text-slate-400 uppercase tracking-widest">
+          <span className="text-xs font-medium text-slate-400 uppercase tracking-widest">
             {displayRequests.length}{" "}
             {activeTab === "IN_PROGRESS" ? "ACTIVE" : "CLOSED"}
           </span>
         </div>
 
         {activeTab === "CLOSED" && (
-          <div className="bg-white border border-[#c5c5d6]/20 text-[#454653] text-sm font-medium p-4 rounded-lg leading-relaxed">
+          <div className="bg-white border border-[#d8dfd7]/20 text-[#526058] text-sm font-medium p-4 rounded-lg leading-relaxed">
             {t("customerQuotes.closedBanner")}
           </div>
         )}
@@ -628,11 +628,11 @@ export default function CustomerQuotesClient() {
             {activeTab === "IN_PROGRESS" ? (
               <>
                 <div className="relative mb-10 group">
-                  <div className="absolute inset-0 bg-[#0020A0]/10 blur-[60px] rounded-full group-hover:bg-[#0020A0]/20 transition-all duration-500"></div>
+                  <div className="absolute inset-0 bg-[#176b57]/10 blur-[60px] rounded-full group-hover:bg-[#176b57]/20 transition-all duration-500"></div>
                   <div className="relative w-40 h-40 flex items-center justify-center bg-gray-50 rounded-xl border border-gray-200 shadow-2xl overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#0020A0]/10 to-transparent"></div>
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#176b57]/10 to-transparent"></div>
                     <span
-                      className="material-symbols-outlined text-[80px] text-[#0020A0] opacity-40 select-none"
+                      className="material-symbols-outlined text-[80px] text-[#176b57] opacity-40 select-none"
                       style={{ fontVariationSettings: "'wght' 200" }}
                     >
                       content_paste
@@ -647,7 +647,7 @@ export default function CustomerQuotesClient() {
                 </p>
                 <button
                   onClick={() => router.push("/request")}
-                  className="group relative w-full py-5 rounded-full overflow-hidden transition-all duration-300 active:scale-95 bg-[#0020A0] hover:bg-[#001880]"
+                  className="group relative w-full py-5 rounded-full overflow-hidden transition-all duration-300 active:scale-95 bg-[#176b57] hover:bg-[#124c40]"
                 >
                   <div className="relative flex items-center justify-center gap-2">
                     <span className="material-symbols-outlined text-white text-xl">
@@ -685,7 +685,7 @@ export default function CustomerQuotesClient() {
             const isHurry = hoursRemaining < 24 && !isExpired;
 
             let statusLabel = t("customerQuotes.statusRecruiting");
-            let statusBadgeClass = "bg-[#c2c9fe] text-[#4c5381]";
+            let statusBadgeClass = "bg-[#cbe1d5] text-[#436757]";
             let statusIcon = "sync";
             if (isMatched) {
               statusLabel = t("customerQuotes.statusMatched");
@@ -693,7 +693,7 @@ export default function CustomerQuotesClient() {
               statusIcon = "handshake";
             } else if (isFull || isExpired) {
               statusLabel = t("customerQuotes.statusClosed");
-              statusBadgeClass = "bg-[#e0e3e6] text-[#454653]";
+              statusBadgeClass = "bg-[#e0e3e6] text-[#526058]";
               statusIcon = "lock";
             }
 
@@ -715,15 +715,15 @@ export default function CustomerQuotesClient() {
             return (
               <div
                 key={request.request_id}
-                className="bg-white rounded-lg p-6 shadow-[0_32px_32px_0_rgba(0,15,93,0.06)] border border-[#c5c5d6]/10 relative overflow-hidden mb-4"
+                className="bg-white rounded-lg p-6 shadow-[0_32px_32px_0_rgba(0,15,93,0.06)] border border-[#d8dfd7]/10 relative overflow-hidden mb-4"
               >
                 {/* Card Header */}
                 <div className="mb-5">
-                  <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-tighter mb-1">
+                  <p className="text-xs font-bold text-[#6aaa8f] uppercase tracking-tighter mb-1">
                     #{request.request_id?.slice(-6).toUpperCase()}
                   </p>
                   <div className="flex justify-between items-start">
-                    <h2 className="font-['Manrope'] font-bold text-[#191c1e] text-base leading-snug">
+                    <h2 className="font-['Manrope'] font-bold text-[#22352c] text-base leading-snug">
                       {(locale === "en" ? request.categories?.name_en : null) ||
                         request.categories?.name ||
                         request.service_type ||
@@ -731,7 +731,7 @@ export default function CustomerQuotesClient() {
                     </h2>
                     <div className="flex flex-col items-end ml-2 flex-shrink-0 gap-1">
                       <span
-                        className={`${statusBadgeClass} inline-flex items-center gap-1 font-bold px-2 py-1 rounded text-[10px] whitespace-nowrap`}
+                        className={`${statusBadgeClass} inline-flex items-center gap-1 font-bold px-2 py-1 rounded text-xs whitespace-nowrap`}
                       >
                         <span className="material-symbols-outlined text-[12px]">
                           {statusIcon}
@@ -740,7 +740,7 @@ export default function CustomerQuotesClient() {
                       </span>
                       {activeTab === "IN_PROGRESS" && !isExpired && (
                         <span
-                          className={`text-[10px] font-bold ${isHurry ? "text-red-500 animate-pulse" : "text-[#454653]"}`}
+                          className={`text-xs font-bold ${isHurry ? "text-red-500 animate-pulse" : "text-[#526058]"}`}
                         >
                           {t("customerQuotes.timeLeft")}
                           {hoursRemaining}
@@ -752,26 +752,26 @@ export default function CustomerQuotesClient() {
                   </div>
                   <div className="grid grid-cols-2 gap-y-3 gap-x-2 mt-4">
                     <div className="flex items-center gap-1.5">
-                      <span className="material-symbols-outlined text-indigo-300 text-[18px]">
+                      <span className="material-symbols-outlined text-[#a6cfba] text-[18px]">
                         location_on
                       </span>
-                      <span className="text-xs text-[#454653]">
+                      <span className="text-xs text-[#526058]">
                         {request.region || t("customerQuotes.noRegion")}
                       </span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <span className="material-symbols-outlined text-indigo-300 text-[18px]">
+                      <span className="material-symbols-outlined text-[#a6cfba] text-[18px]">
                         groups
                       </span>
-                      <span className="text-xs text-[#454653]">
+                      <span className="text-xs text-[#526058]">
                         {request.quote_count || 0} / 5
                       </span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <span className="material-symbols-outlined text-indigo-300 text-[18px]">
+                      <span className="material-symbols-outlined text-[#a6cfba] text-[18px]">
                         calendar_today
                       </span>
-                      <span className="text-xs text-[#454653]">
+                      <span className="text-xs text-[#526058]">
                         {new Date(request.created_at).toLocaleDateString(
                           "en-US",
                           { year: "numeric", month: "short", day: "numeric" },
@@ -785,7 +785,7 @@ export default function CustomerQuotesClient() {
                 {activeTab === "IN_PROGRESS" && (
                   <button
                     onClick={() => setViewRequestModal({ request })}
-                    className="w-full bg-[#0020a0] hover:bg-[#001880] text-white py-3.5 rounded-lg font-bold text-sm mb-4 transition flex items-center justify-center gap-2"
+                    className="w-full bg-[#176b57] hover:bg-[#124c40] text-white py-3.5 rounded-lg font-bold text-sm mb-4 transition flex items-center justify-center gap-2"
                   >
                     <span className="material-symbols-outlined text-[18px]">
                       description
@@ -796,7 +796,7 @@ export default function CustomerQuotesClient() {
 
                 {reqQuotes.length > 0 ? (
                   <div className="space-y-3">
-                    <h3 className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-2">
+                    <h3 className="text-xs font-bold text-[#6aaa8f] uppercase tracking-widest mb-2">
                       {t("customerQuotes.quotesArrived")} · {reqQuotes.length}
                     </h3>
                     {reqQuotes.map((quote: any) => {
@@ -826,7 +826,7 @@ export default function CustomerQuotesClient() {
                         return (
                           <div
                             key={quote.quote_id}
-                            className="bg-[#f7f9fc] p-3 rounded-lg border border-[#c5c5d6]/20 opacity-50"
+                            className="bg-[#f7f7f2] p-3 rounded-lg border border-[#d8dfd7]/20 opacity-50"
                           >
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2">
@@ -858,7 +858,7 @@ export default function CustomerQuotesClient() {
                       return (
                         <div
                           key={quote.quote_id}
-                          className="bg-[#f7f9fc] p-4 rounded-lg border border-[#c5c5d6]/20 flex flex-col space-y-3"
+                          className="bg-[#f7f7f2] p-4 rounded-lg border border-[#d8dfd7]/20 flex flex-col space-y-3"
                         >
                           {/* 상단 터치 존: 전체 클릭 시 프로필 모달 오픈 */}
                           <div
@@ -881,7 +881,7 @@ export default function CustomerQuotesClient() {
                                 isCompleted,
                               });
                             }}
-                            className="cursor-pointer hover:bg-[#e8eaf6]/30 -m-1 p-2 rounded-lg transition active:bg-[#e8eaf6]/60 mt-1 space-y-1.5"
+                            className="cursor-pointer hover:bg-[#e8f3ed]/30 -m-1 p-2 rounded-lg transition active:bg-[#e8f3ed]/60 mt-1 space-y-1.5"
                           >
                             <div className="flex justify-between items-center">
                               <div className="flex items-center flex-wrap gap-1.5">
@@ -895,7 +895,7 @@ export default function CustomerQuotesClient() {
                                     />
                                   ) : (
                                     <svg
-                                      className="w-4 h-4 text-[#0020A0]/60"
+                                      className="w-4 h-4 text-[#176b57]/60"
                                       fill="currentColor"
                                       viewBox="0 0 20 20"
                                     >
@@ -907,16 +907,16 @@ export default function CustomerQuotesClient() {
                                     </svg>
                                   )}
                                 </div>
-                                <span className="font-bold text-[#191c1e]">
+                                <span className="font-bold text-[#22352c]">
                                   {proName}
                                 </span>
                                 {proUser?.is_phone_verified && (
-                                  <span className="inline-flex items-center gap-0.5 text-[10px] bg-[#c2c9fe] text-[#4c5381] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap flex-shrink-0">
+                                  <span className="inline-flex items-center gap-0.5 text-xs bg-[#cbe1d5] text-[#436757] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap flex-shrink-0">
                                     {t("customerQuotes.phoneVerified")}
                                   </span>
                                 )}
                                 {proUser?.facebook_url && (
-                                  <span className="inline-flex items-center gap-0.5 text-[10px] bg-[#ffdad3] text-[#87200e] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap flex-shrink-0">
+                                  <span className="inline-flex items-center gap-0.5 text-xs bg-[#ffdad3] text-[#87200e] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap flex-shrink-0">
                                     {t("customerQuotes.facebookLinked")}
                                   </span>
                                 )}
@@ -968,7 +968,7 @@ export default function CustomerQuotesClient() {
                                   }}
                                   className={`flex-1 font-bold py-2.5 rounded-lg shadow-sm transition text-sm border ${
                                     !quote.is_read
-                                      ? "bg-[#0020A0] hover:bg-[#001880] text-white border-transparent animate-pulse"
+                                      ? "bg-[#176b57] hover:bg-[#124c40] text-white border-transparent animate-pulse"
                                       : "bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100"
                                   }`}
                                   style={
@@ -991,7 +991,7 @@ export default function CustomerQuotesClient() {
                                       request_id: request.request_id,
                                     })
                                   }
-                                  className="flex-1 bg-[#0020A0] hover:bg-[#001880] text-white font-bold py-2.5 rounded-lg shadow-sm transition text-sm"
+                                  className="flex-1 bg-[#176b57] hover:bg-[#124c40] text-white font-bold py-2.5 rounded-lg shadow-sm transition text-sm"
                                 >
                                   {t("customerQuotes.chatBtn")}
                                 </button>
@@ -1031,7 +1031,7 @@ export default function CustomerQuotesClient() {
                                             request,
                                           });
                                         }}
-                                        className="w-full bg-gray-50 hover:bg-gray-100 text-[#0020A0] font-bold py-2.5 rounded-lg shadow-sm transition text-sm border border-[#0020A0]/30 flex items-center justify-center gap-2"
+                                        className="w-full bg-gray-50 hover:bg-gray-100 text-[#176b57] font-bold py-2.5 rounded-lg shadow-sm transition text-sm border border-[#176b57]/30 flex items-center justify-center gap-2"
                                       >
                                         {t("customerQuotes.viewQuoteDetail")}
                                       </button>
@@ -1051,7 +1051,7 @@ export default function CustomerQuotesClient() {
                                               request_id: request.request_id,
                                             })
                                           }
-                                          className="w-full bg-[#0020A0] hover:bg-[#001880] text-white font-bold py-2.5 rounded-lg shadow-sm transition text-sm flex items-center justify-center gap-2"
+                                          className="w-full bg-[#176b57] hover:bg-[#124c40] text-white font-bold py-2.5 rounded-lg shadow-sm transition text-sm flex items-center justify-center gap-2"
                                         >
                                           {t("customerQuotes.chatRoomBtn")}
                                         </button>
@@ -1072,7 +1072,7 @@ export default function CustomerQuotesClient() {
                                               request.request_id,
                                             )
                                           }
-                                          className="w-full bg-[#0020A0] hover:bg-[#001880] text-white font-bold py-2.5 rounded-lg shadow-sm transition text-sm flex items-center justify-center gap-2"
+                                          className="w-full bg-[#176b57] hover:bg-[#124c40] text-white font-bold py-2.5 rounded-lg shadow-sm transition text-sm flex items-center justify-center gap-2"
                                         >
                                           {t("customerQuotes.leaveReview")}
                                         </button>
@@ -1104,7 +1104,7 @@ export default function CustomerQuotesClient() {
                                         request,
                                       });
                                     }}
-                                    className="w-full bg-gray-50 hover:bg-gray-100 text-[#0020A0] font-bold py-2.5 rounded-lg shadow-sm transition text-sm border border-[#0020A0]/30 flex items-center justify-center gap-2"
+                                    className="w-full bg-gray-50 hover:bg-gray-100 text-[#176b57] font-bold py-2.5 rounded-lg shadow-sm transition text-sm border border-[#176b57]/30 flex items-center justify-center gap-2"
                                   >
                                     {t("customerQuotes.viewQuoteDetail2")}
                                   </button>
@@ -1115,7 +1115,7 @@ export default function CustomerQuotesClient() {
                                         request_id: request.request_id,
                                       })
                                     }
-                                    className="w-full bg-[#0020A0] hover:bg-[#001880] text-white font-bold py-2.5 rounded-lg shadow-sm transition text-sm flex items-center justify-center gap-2"
+                                    className="w-full bg-[#176b57] hover:bg-[#124c40] text-white font-bold py-2.5 rounded-lg shadow-sm transition text-sm flex items-center justify-center gap-2"
                                   >
                                     {t("customerQuotes.consultChat")}
                                   </button>
@@ -1128,18 +1128,18 @@ export default function CustomerQuotesClient() {
                     })}
                   </div>
                 ) : (
-                  <div className="text-center p-6 bg-[#f7f9fc] rounded-lg border border-[#c5c5d6]/20 border-dashed text-sm">
+                  <div className="text-center p-6 bg-[#f7f7f2] rounded-lg border border-[#d8dfd7]/20 border-dashed text-sm">
                     {activeTab === "IN_PROGRESS" ? (
                       <div className="flex flex-col items-center gap-4 py-8">
-                        <div className="w-28 h-28 rounded-full border-2 border-[#0020a0]/20 flex items-center justify-center">
-                          <div className="w-20 h-20 bg-[#f0f2ff] rounded-2xl flex items-center justify-center shadow-sm">
+                        <div className="w-28 h-28 rounded-full border-2 border-[#176b57]/20 flex items-center justify-center">
+                          <div className="w-20 h-20 bg-[#f0f6f1] rounded-2xl flex items-center justify-center shadow-sm">
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
                               width="48"
                               height="48"
                               viewBox="0 0 24 24"
                               fill="none"
-                              stroke="#0020A0"
+                              stroke="#176b57"
                               strokeWidth="1.2"
                               strokeLinecap="round"
                               strokeLinejoin="round"
@@ -1160,16 +1160,16 @@ export default function CustomerQuotesClient() {
                           </div>
                         </div>
                         <div className="flex flex-col items-center gap-1">
-                          <p className="text-[#191c1e] font-semibold text-base">
+                          <p className="text-[#22352c] font-semibold text-base">
                             {t("customerQuotes.noActiveRequests")}
                           </p>
-                          <p className="text-[#454653] text-xs">
+                          <p className="text-[#526058] text-xs">
                             {t("customerQuotes.noQuotesInProgress")}
                           </p>
                         </div>
                         <button
                           onClick={() => router.push("/request")}
-                          className="bg-[#0020a0] hover:bg-[#001880] text-white rounded-lg px-6 py-3.5 font-bold text-sm flex items-center gap-2 transition"
+                          className="bg-[#176b57] hover:bg-[#124c40] text-white rounded-lg px-6 py-3.5 font-bold text-sm flex items-center gap-2 transition"
                         >
                           <span className="material-symbols-outlined text-[18px]">
                             add_circle
@@ -1178,7 +1178,7 @@ export default function CustomerQuotesClient() {
                         </button>
                         <button
                           onClick={() => router.push("/")}
-                          className="text-indigo-700 text-xs font-bold tracking-wider uppercase"
+                          className="text-[#124c40] text-xs font-bold tracking-wider uppercase"
                         >
                           {t("customerQuotes.browseProfessionals")}
                         </button>
@@ -1194,7 +1194,7 @@ export default function CustomerQuotesClient() {
                 {activeTab === "CLOSED" && (
                   <button
                     disabled
-                    className="w-full mt-4 bg-[#f7f9fc] text-[#454653] font-bold py-3 rounded-lg cursor-not-allowed text-sm border border-[#c5c5d6]/20"
+                    className="w-full mt-4 bg-[#f7f7f2] text-[#526058] font-bold py-3 rounded-lg cursor-not-allowed text-sm border border-[#d8dfd7]/20"
                   >
                     {t("customerQuotes.closedRequest")}
                   </button>
@@ -1221,7 +1221,7 @@ export default function CustomerQuotesClient() {
                     <button
                       key={star}
                       onClick={() => setReviewRating(star)}
-                      className={`text-3xl transition ${star <= reviewRating ? "text-[#0020A0]" : "text-gray-300"}`}
+                      className={`text-3xl transition ${star <= reviewRating ? "text-[#176b57]" : "text-gray-300"}`}
                     >
                       ★
                     </button>
@@ -1232,7 +1232,7 @@ export default function CustomerQuotesClient() {
                 value={reviewComment}
                 onChange={(e) => setReviewComment(e.target.value)}
                 placeholder={t("customerQuotes.reviewPlaceholder")}
-                className="w-full bg-gray-100 border border-gray-200 rounded-xl p-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0020A0]/30 min-h-[100px]"
+                className="w-full bg-gray-100 border border-gray-200 rounded-xl p-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#176b57]/30 min-h-[100px]"
               />
             </div>
             <div className="flex-none border-t border-gray-200 p-4 flex gap-2">
@@ -1244,7 +1244,7 @@ export default function CustomerQuotesClient() {
               </button>
               <button
                 onClick={handleReviewSubmit}
-                className="flex-1 bg-[#0020A0] hover:bg-[#001880] text-white font-bold py-3 rounded-xl transition text-sm"
+                className="flex-1 bg-[#176b57] hover:bg-[#124c40] text-white font-bold py-3 rounded-xl transition text-sm"
               >
                 {t("customerQuotes.reviewSubmit")}
               </button>
@@ -1324,7 +1324,7 @@ export default function CustomerQuotesClient() {
                     </button>
                   </div>
                   {hasQuotes && (
-                    <div className="mt-3 bg-[#0020A0]/10 border border-[#0020A0]/20 text-[#0020A0] text-xs font-bold p-3 rounded-lg">
+                    <div className="mt-3 bg-[#176b57]/10 border border-[#176b57]/20 text-[#176b57] text-xs font-bold p-3 rounded-lg">
                       {t("customerQuotes.quoteLocked")}
                     </div>
                   )}
@@ -1392,7 +1392,7 @@ export default function CustomerQuotesClient() {
                             key={idx}
                             className="bg-gray-100 p-3 rounded-lg border border-gray-200"
                           >
-                            <span className="text-xs font-bold text-[#0020A0]">
+                            <span className="text-xs font-bold text-[#176b57]">
                               Q. {item.stepText}
                             </span>
                             <p className="text-sm text-gray-900 mt-1 font-medium">
@@ -1472,7 +1472,7 @@ export default function CustomerQuotesClient() {
                   )}
                   {/* ── [확장] 미열람 견적 환불 안내 ── */}
                   {unreadQuoteCount > 0 && (
-                    <div className="bg-[#0020A0]/10 border border-[#0020A0]/20 text-[#0020A0] text-xs font-bold p-3 rounded-lg mt-2 text-left">
+                    <div className="bg-[#176b57]/10 border border-[#176b57]/20 text-[#176b57] text-xs font-bold p-3 rounded-lg mt-2 text-left">
                       {t("customerQuotes.cancelUnreadRefund").replace(
                         "{count}",
                         String(unreadQuoteCount),

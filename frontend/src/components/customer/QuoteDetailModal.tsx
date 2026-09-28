@@ -85,7 +85,7 @@ export default function QuoteDetailModal({
           <div className="flex-1 overflow-y-auto p-4 pb-4 space-y-4">
             {/* A. 고수 정보 + 트러스트 배지 */}
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden border border-gray-200">
+              <div className="w-10 h-10 bg-[#e8f3ed] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden border border-gray-200">
                 {avatarUrl ? (
                   <img
                     src={avatarUrl}
@@ -94,7 +94,7 @@ export default function QuoteDetailModal({
                   />
                 ) : (
                   <svg
-                    className="w-5 h-5 text-blue-500"
+                    className="w-5 h-5 text-[#21846b]"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
@@ -112,12 +112,12 @@ export default function QuoteDetailModal({
                     {displayProName}
                   </span>
                   {proProfile?.is_phone_verified && (
-                    <span className="inline-flex items-center text-[10px] bg-green-50 text-green-700 font-bold px-1.5 py-0.5 rounded-full border border-green-200 whitespace-nowrap">
+                    <span className="inline-flex items-center text-xs bg-green-50 text-green-700 font-bold px-1.5 py-0.5 rounded-full border border-green-200 whitespace-nowrap">
                       {t("quoteModal.phoneVerified")}
                     </span>
                   )}
                   {proProfile?.facebook_url && (
-                    <span className="inline-flex items-center text-[10px] bg-blue-50 text-blue-700 font-bold px-1.5 py-0.5 rounded-full border border-blue-200 whitespace-nowrap">
+                    <span className="inline-flex items-center text-xs bg-[#f0f6f1] text-[#124c40] font-bold px-1.5 py-0.5 rounded-full border border-[#cbe1d5] whitespace-nowrap">
                       {t("quoteModal.facebookLinked")}
                     </span>
                   )}
@@ -137,13 +137,13 @@ export default function QuoteDetailModal({
             {/* 한 줄 소개 */}
             {proProfile?.intro && (
               <p className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg border border-gray-100 italic">
-                "{proProfile.intro}"
+                &ldquo;{proProfile.intro}&rdquo;
               </p>
             )}
 
             {/* B. 제안 금액 (가장 눈에 띄게) */}
-            <div className="bg-blue-50 py-3 px-5 rounded-xl border border-blue-100 text-center">
-              <span className="text-xs font-bold text-blue-500 uppercase tracking-wider block mb-1">
+            <div className="bg-[#f0f6f1] py-3 px-5 rounded-xl border border-[#e8f3ed] text-center">
+              <span className="text-xs font-bold text-[#21846b] uppercase tracking-wider block mb-1">
                 {t("quoteModal.proposedPrice")}
               </span>
               {quote.price ? (
@@ -303,7 +303,7 @@ export default function QuoteDetailModal({
                                           alt={`${t("quoteModal.imageAlt")}${i + 1}`}
                                         />
                                         {img.description && (
-                                          <span className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-[10px] p-1 truncate text-center transition-all group-hover:bg-black/80">
+                                          <span className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-xs p-1 truncate text-center transition-all group-hover:bg-black/80">
                                             {img.description}
                                           </span>
                                         )}

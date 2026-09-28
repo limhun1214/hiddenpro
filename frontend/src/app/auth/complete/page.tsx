@@ -384,10 +384,10 @@ export default function AuthCompletePage() {
   }, []);
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-white z-50">
-      <div className="text-center space-y-4">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-        <p className="text-gray-600 font-medium text-sm">
+    <div className="fixed inset-0 flex items-center justify-center bg-[#f7f8f2] z-50">
+      <div role="status" className="text-center space-y-4">
+        <div aria-hidden="true" className="animate-spin rounded-full h-12 w-12 border-2 border-[#dce4d6] border-t-[#173e31] mx-auto"></div>
+        <p className="text-[#496450] font-medium text-sm">
           {status || t("authComplete.processing")}
         </p>
       </div>

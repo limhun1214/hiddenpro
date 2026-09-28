@@ -3,6 +3,9 @@ const withNextIntl = createNextIntlPlugin("./src/i18n.ts");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Separate local validation outputs when Windows holds a previous build open.
+  distDir: process.env.NEXT_BUILD_DIR || ".next",
+  poweredByHeader: false,
   images: {
     remotePatterns: [
       {

@@ -82,7 +82,7 @@ function ProReviewCard({
       {comment.length > 50 && (
         <button
           onClick={() => setExpanded(!expanded)}
-          className="text-xs text-blue-500 font-medium hover:underline"
+          className="text-xs text-[#21846b] font-medium hover:underline"
         >
           {expanded ? t("proReviews.collapse") : t("proReviews.expand")}
         </button>
@@ -92,7 +92,7 @@ function ProReviewCard({
         <div className="mt-4 pt-4 border-t border-gray-100 flex w-full sm:justify-end">
           <button
             onClick={() => onClickViewQuote(review)}
-            className="w-full sm:w-auto justify-center text-xs font-bold text-blue-600 hover:text-blue-800 bg-blue-50 px-4 py-2 rounded-lg border border-blue-200 transition-colors flex items-center gap-1"
+            className="w-full sm:w-auto justify-center text-xs font-bold text-[#176b57] hover:text-[#153f35] bg-[#f0f6f1] px-4 py-2 rounded-lg border border-[#cbe1d5] transition-colors flex items-center gap-1"
           >
             <span>📋</span> {t("proReviews.viewQuote")}
           </button>
@@ -293,7 +293,7 @@ export default function ProReviewsPage() {
           </span>
         </div>
         <span className="text-sm text-gray-500 font-medium">
-          <strong className="text-blue-600">{reviewCount}</strong>{" "}
+          <strong className="text-[#176b57]">{reviewCount}</strong>{" "}
           {t("proReviews.totalReviews")}
         </span>
       </div>

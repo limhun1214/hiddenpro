@@ -7763,7 +7763,7 @@ export default function DynamicRequestForm() {
   const options = getOptionsForCurrentStep();
 
   return (
-    <div className="flex flex-col w-full max-w-3xl mx-auto min-h-screen bg-[#f7f9fc] lg:overflow-y-auto relative">
+    <div className="flex flex-col w-full max-w-3xl mx-auto min-h-screen bg-[#f7f7f2] lg:overflow-y-auto relative">
       {/* Header */}
       <div className="flex-none flex items-center justify-center px-6 h-16 bg-white/80 backdrop-blur-xl shadow-[0_2px_32px_0_rgba(0,15,93,0.06)] z-50 relative">
         {currentIndex > 0 && !isFinished && (
@@ -7774,7 +7774,7 @@ export default function DynamicRequestForm() {
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 text-[#001269]"
+              className="h-5 w-5 text-[#124c40]"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -7788,7 +7788,7 @@ export default function DynamicRequestForm() {
             </svg>
           </button>
         )}
-        <h1 className="font-['Manrope'] text-[17px] font-bold text-[#001269]">
+        <h1 className="font-['Manrope'] text-[17px] font-bold text-[#124c40]">
           {t("requestForm.headerTitle")}
         </h1>
       </div>
@@ -7805,12 +7805,12 @@ export default function DynamicRequestForm() {
               </div>
             </div>
             <div className="flex justify-end flex-col items-end w-full">
-              <div className="bg-[#0020a0] text-white p-3 rounded-2xl rounded-tr-none shadow-sm max-w-[80%] text-sm break-keep break-words">
+              <div className="bg-[#176b57] text-white p-3 rounded-2xl rounded-tr-none shadow-sm max-w-[80%] text-sm break-keep break-words">
                 {h.userAnswer}
               </div>
               <button
                 onClick={() => handleEdit(i)}
-                className="text-[10px] text-gray-400 mt-1 hover:text-[#0020a0] underline text-right"
+                className="text-xs text-gray-400 mt-1 hover:text-[#176b57] underline text-right"
               >
                 {t("requestForm.edit")}
               </button>
@@ -7831,10 +7831,10 @@ export default function DynamicRequestForm() {
               >
                 {currentQuestion.id === "depth1" ? (
                   <div className="mb-6 px-1 pt-2">
-                    <p className="font-['Manrope'] text-3xl font-extrabold text-[#191c1e] leading-tight tracking-tight">
+                    <p className="font-['Manrope'] text-3xl font-extrabold text-[#22352c] leading-tight tracking-tight">
                       {currentQuestion.text}
                     </p>
-                    <p className="text-[#454653] text-base leading-relaxed mt-3 max-w-md">
+                    <p className="text-[#526058] text-base leading-relaxed mt-3 max-w-md">
                       Tell us what you need and we&apos;ll match you with the
                       best pros in your area.
                     </p>
@@ -7858,12 +7858,12 @@ export default function DynamicRequestForm() {
                       ? // Stitch hero category cards for depth1
                         (() => {
                           const iconBgColors = [
-                            "bg-[#c2c9fe]",
+                            "bg-[#cbe1d5]",
                             "bg-[#ffdad3]",
-                            "bg-[#dee0ff]",
-                            "bg-[#bdc3f8]",
-                            "bg-[#dee0ff]",
-                            "bg-[#c2c9fe]",
+                            "bg-[#e8f3ed]",
+                            "bg-[#cbe1d5]",
+                            "bg-[#e8f3ed]",
+                            "bg-[#cbe1d5]",
                           ];
                           return options.map((opt: string, idx: number) => {
                             const stitch = DEPTH1_STITCH[opt];
@@ -7873,13 +7873,13 @@ export default function DynamicRequestForm() {
                               <button
                                 key={opt}
                                 onClick={() => commitAnswer(opt, opt)}
-                                className="group w-full flex items-center gap-6 p-6 rounded-xl bg-white shadow-[0_4px_20px_0_rgba(0,15,93,0.03)] border border-transparent hover:border-[#bbc3ff] transition-all active:scale-[0.98] text-left"
+                                className="group w-full flex items-center gap-6 p-6 rounded-xl bg-white shadow-[0_4px_20px_0_rgba(0,15,93,0.03)] border border-transparent hover:border-[#cbe1d5] transition-all active:scale-[0.98] text-left"
                               >
                                 <div
                                   className={`w-14 h-14 rounded-xl ${iconBg} flex items-center justify-center flex-shrink-0`}
                                 >
                                   <span
-                                    className="material-symbols-outlined text-[#0020a0] text-3xl"
+                                    className="material-symbols-outlined text-[#176b57] text-3xl"
                                     style={{
                                       fontVariationSettings: "'FILL' 0",
                                     }}
@@ -7888,14 +7888,14 @@ export default function DynamicRequestForm() {
                                   </span>
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                  <p className="font-['Manrope'] font-bold text-lg text-[#001269]">
+                                  <p className="font-['Manrope'] font-bold text-lg text-[#124c40]">
                                     {opt}
                                   </p>
-                                  <p className="text-sm text-[#454653] mt-0.5">
+                                  <p className="text-sm text-[#526058] mt-0.5">
                                     {stitch?.desc || ""}
                                   </p>
                                 </div>
-                                <span className="material-symbols-outlined text-[#757685] group-hover:text-[#001269] transition-colors flex-shrink-0">
+                                <span className="material-symbols-outlined text-[#69756d] group-hover:text-[#124c40] transition-colors flex-shrink-0">
                                   chevron_right
                                 </span>
                               </button>
@@ -7913,7 +7913,7 @@ export default function DynamicRequestForm() {
                                   commitAnswer(opt, opt);
                                 }
                               }}
-                              className={`w-full py-3 px-4 rounded-xl border font-medium transition whitespace-normal text-left ${selectedSingle === opt ? "bg-[#0020a0] text-white border-[#0020a0]" : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100"}`}
+                              className={`w-full py-3 px-4 rounded-xl border font-medium transition whitespace-normal text-left ${selectedSingle === opt ? "bg-[#176b57] text-white border-[#176b57]" : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100"}`}
                             >
                               {opt}
                             </button>
@@ -7924,10 +7924,10 @@ export default function DynamicRequestForm() {
                                   value={otherText}
                                   onChange={(e) => setOtherText(e.target.value)}
                                   placeholder="원하시는 이사/운송 형태를 상세히 적어주세요."
-                                  className="w-full border border-gray-200 bg-gray-50 text-gray-900 p-3 rounded-xl focus:ring-2 focus:ring-[#0020a0] text-sm min-h-[80px] placeholder:text-gray-400"
+                                  className="w-full border border-gray-200 bg-gray-50 text-gray-900 p-3 rounded-xl focus:ring-2 focus:ring-[#176b57] text-sm min-h-[80px] placeholder:text-gray-400"
                                   maxLength={255}
                                 />
-                                <div className="text-right text-[10px] text-gray-400">
+                                <div className="text-right text-xs text-gray-400">
                                   {otherText.length} / 255자
                                 </div>
                                 <button
@@ -7940,7 +7940,7 @@ export default function DynamicRequestForm() {
                                     }
                                   }}
                                   disabled={!otherText.trim()}
-                                  className="w-full bg-[#0020a0] text-white py-3 rounded-xl font-bold disabled:opacity-50"
+                                  className="w-full bg-[#176b57] text-white py-3 rounded-xl font-bold disabled:opacity-50"
                                 >
                                   {t("requestForm.select")}
                                 </button>
@@ -7966,14 +7966,14 @@ export default function DynamicRequestForm() {
                           value={tempDate}
                           onChange={(e) => setTempDate(e.target.value)}
                           min={todayPHT}
-                          className="border border-gray-200 bg-gray-50 text-gray-900 p-3 rounded-xl focus:ring-2 focus:ring-[#0020a0] w-full"
+                          className="border border-gray-200 bg-gray-50 text-gray-900 p-3 rounded-xl focus:ring-2 focus:ring-[#176b57] w-full"
                         />
                         <button
                           onClick={() =>
                             tempDate && commitAnswer(tempDate, tempDate)
                           }
                           disabled={!tempDate}
-                          className="w-full bg-[#0020a0] text-white py-3 rounded-xl font-bold disabled:opacity-50"
+                          className="w-full bg-[#176b57] text-white py-3 rounded-xl font-bold disabled:opacity-50"
                         >
                           {t("requestForm.next")}
                         </button>
@@ -7995,14 +7995,14 @@ export default function DynamicRequestForm() {
                           tempText &&
                           commitAnswer(tempText, tempText)
                         }
-                        className="border border-gray-200 bg-gray-50 text-gray-900 p-3 rounded-xl focus:ring-2 focus:ring-[#0020a0] w-full placeholder:text-gray-400"
+                        className="border border-gray-200 bg-gray-50 text-gray-900 p-3 rounded-xl focus:ring-2 focus:ring-[#176b57] w-full placeholder:text-gray-400"
                         placeholder="Please enter here"
                       />
                     ) : (
                       <textarea
                         value={tempText}
                         onChange={(e) => setTempText(e.target.value)}
-                        className="border border-gray-200 bg-gray-50 text-gray-900 p-3 rounded-xl focus:ring-2 focus:ring-[#0020a0] w-full min-h-[100px] placeholder:text-gray-400"
+                        className="border border-gray-200 bg-gray-50 text-gray-900 p-3 rounded-xl focus:ring-2 focus:ring-[#176b57] w-full min-h-[100px] placeholder:text-gray-400"
                         placeholder={t("requestForm.notesPlaceholder")}
                       />
                     )}
@@ -8020,7 +8020,7 @@ export default function DynamicRequestForm() {
                           tempText && commitAnswer(tempText, tempText)
                         }
                         disabled={!tempText}
-                        className="flex-1 bg-[#0020a0] text-white py-3 rounded-xl font-bold disabled:opacity-50"
+                        className="flex-1 bg-[#176b57] text-white py-3 rounded-xl font-bold disabled:opacity-50"
                       >
                         {t("requestForm.next")}
                       </button>
@@ -8072,7 +8072,7 @@ export default function DynamicRequestForm() {
                         )
                       }
                       disabled={!regionReg || !regionCity}
-                      className="w-full bg-[#0020a0] text-white py-3 rounded-xl font-bold disabled:opacity-50"
+                      className="w-full bg-[#176b57] text-white py-3 rounded-xl font-bold disabled:opacity-50"
                     >
                       {t("requestForm.next")}
                     </button>
@@ -8102,7 +8102,7 @@ export default function DynamicRequestForm() {
                                 });
                               }
                             }}
-                            className={`py-2 px-4 rounded-full border text-sm font-medium transition ${isSel ? "bg-[#0020a0] text-white border-[#0020a0]" : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100"}`}
+                            className={`py-2 px-4 rounded-full border text-sm font-medium transition ${isSel ? "bg-[#176b57] text-white border-[#176b57]" : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100"}`}
                           >
                             {opt}
                           </button>
@@ -8115,10 +8115,10 @@ export default function DynamicRequestForm() {
                           value={otherText}
                           onChange={(e) => setOtherText(e.target.value)}
                           placeholder="어떤 짐인지 상세히 적어주세요. (예: 안마의자 1개)"
-                          className="w-full border border-gray-200 bg-gray-50 text-gray-900 p-3 rounded-xl focus:ring-2 focus:ring-[#0020a0] text-sm min-h-[80px] placeholder:text-gray-400"
+                          className="w-full border border-gray-200 bg-gray-50 text-gray-900 p-3 rounded-xl focus:ring-2 focus:ring-[#176b57] text-sm min-h-[80px] placeholder:text-gray-400"
                           maxLength={255}
                         />
-                        <div className="text-right text-[10px] text-gray-400 mt-1">
+                        <div className="text-right text-xs text-gray-400 mt-1">
                           {otherText.length} / 255자
                         </div>
                       </div>
@@ -8148,7 +8148,7 @@ export default function DynamicRequestForm() {
                           }
                         }}
                         disabled={multiSelection.length === 0}
-                        className="flex-1 bg-[#0020a0] text-white py-3 rounded-xl font-bold disabled:opacity-50"
+                        className="flex-1 bg-[#176b57] text-white py-3 rounded-xl font-bold disabled:opacity-50"
                       >
                         {t("requestForm.select")}
                       </button>
@@ -8165,7 +8165,7 @@ export default function DynamicRequestForm() {
                         className="bg-gray-100 border border-gray-200 rounded-xl p-3 flex flex-col gap-3 relative"
                       >
                         <div className="flex gap-3 items-center">
-                          <img
+                          <img alt="Request attachment preview"
                             src={img.url}
                             className="w-16 h-16 object-cover rounded-lg border border-gray-200"
                           />
@@ -8177,9 +8177,9 @@ export default function DynamicRequestForm() {
                               onChange={(e) =>
                                 updateImageDesc(idx, e.target.value)
                               }
-                              className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-lg p-2 text-sm focus:outline-none focus:border-[#0020a0] placeholder:text-gray-400"
+                              className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-lg p-2 text-sm focus:outline-none focus:border-[#176b57] placeholder:text-gray-400"
                             />
-                            <span className="text-[10px] text-gray-400 mt-1 block px-1">
+                            <span className="text-xs text-gray-400 mt-1 block px-1">
                               {img.description.length}/100
                             </span>
                           </div>
@@ -8206,7 +8206,7 @@ export default function DynamicRequestForm() {
                     ))}
 
                     {imagesState.length < 5 && (
-                      <div className="relative border-2 border-dashed border-[#0020a0]/30 rounded-xl bg-gray-100 hover:bg-gray-50 transition flex flex-col items-center justify-center p-6 cursor-pointer">
+                      <div className="relative border-2 border-dashed border-[#176b57]/30 rounded-xl bg-gray-100 hover:bg-gray-50 transition flex flex-col items-center justify-center p-6 cursor-pointer">
                         <input
                           type="file"
                           multiple
@@ -8216,7 +8216,7 @@ export default function DynamicRequestForm() {
                           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-wait"
                         />
                         {uploadingImages ? (
-                          <div className="flex items-center gap-2 text-[#0020a0] font-bold">
+                          <div className="flex items-center gap-2 text-[#176b57] font-bold">
                             <svg
                               className="animate-spin h-5 w-5"
                               viewBox="0 0 24 24"
@@ -8239,9 +8239,9 @@ export default function DynamicRequestForm() {
                             {t("requestForm.imageUploading")}
                           </div>
                         ) : (
-                          <div className="text-center text-[#0020a0]">
+                          <div className="text-center text-[#176b57]">
                             <svg
-                              className="w-8 h-8 mx-auto mb-2 text-[#0020a0]"
+                              className="w-8 h-8 mx-auto mb-2 text-[#176b57]"
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"
@@ -8280,7 +8280,7 @@ export default function DynamicRequestForm() {
                               : t("requestForm.imageSkipped"),
                           )
                         }
-                        className="flex-1 bg-[#0020a0] text-white py-3 rounded-xl font-bold"
+                        className="flex-1 bg-[#176b57] text-white py-3 rounded-xl font-bold"
                       >
                         {t("requestForm.next")}
                       </button>
@@ -8295,7 +8295,7 @@ export default function DynamicRequestForm() {
                       onClick={() =>
                         commitAnswer("지금 작성할게요", "💬 지금 작성할게요")
                       }
-                      className="bg-gray-50 text-gray-900 py-3 px-4 rounded-xl border border-[#0020a0]/30 font-medium text-left hover:bg-gray-100"
+                      className="bg-gray-50 text-gray-900 py-3 px-4 rounded-xl border border-[#176b57]/30 font-medium text-left hover:bg-gray-100"
                     >
                       {t("requestForm.detailsNow")}
                     </button>
@@ -8345,7 +8345,7 @@ export default function DynamicRequestForm() {
             <button
               onClick={submitAction}
               disabled={isSubmitting}
-              className={`w-full bg-[#0020a0] text-white font-bold py-4 rounded-xl shadow-lg mt-2 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
+              className={`w-full bg-[#176b57] text-white font-bold py-4 rounded-xl shadow-lg mt-2 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               {isSubmitting
                 ? t("requestForm.submitting")
@@ -8361,7 +8361,7 @@ export default function DynamicRequestForm() {
       {showPhoneModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
           <div className="bg-gray-100 rounded-3xl w-full max-w-sm p-6 shadow-2xl flex flex-col gap-4 border border-gray-200">
-            <div className="mx-auto w-12 h-12 bg-[#0020a0]/10 rounded-full flex items-center justify-center mb-2">
+            <div className="mx-auto w-12 h-12 bg-[#176b57]/10 rounded-full flex items-center justify-center mb-2">
               <span className="text-2xl">📱</span>
             </div>
             <h2 className="text-xl font-bold text-center text-gray-900">
@@ -8375,7 +8375,7 @@ export default function DynamicRequestForm() {
               value={phoneInput}
               onChange={(e) => setPhoneInput(e.target.value)}
               placeholder={t("requestForm.phonePlaceholder")}
-              className="p-4 bg-gray-50 border border-gray-200 text-gray-900 rounded-2xl focus:ring-2 focus:ring-[#0020a0] focus:outline-none transition text-center text-lg font-medium tracking-wider mt-2 placeholder:text-gray-400"
+              className="p-4 bg-gray-50 border border-gray-200 text-gray-900 rounded-2xl focus:ring-2 focus:ring-[#176b57] focus:outline-none transition text-center text-lg font-medium tracking-wider mt-2 placeholder:text-gray-400"
             />
             <div className="flex gap-3 mt-4">
               <button
@@ -8387,7 +8387,7 @@ export default function DynamicRequestForm() {
               <button
                 onClick={handlePhoneVerifyAndSubmit}
                 disabled={verifyingPhone}
-                className="flex-[2] bg-[#0020a0] hover:bg-[#001269] text-white font-bold py-4 rounded-2xl shadow-lg transition text-sm disabled:opacity-50"
+                className="flex-[2] bg-[#176b57] hover:bg-[#124c40] text-white font-bold py-4 rounded-2xl shadow-lg transition text-sm disabled:opacity-50"
               >
                 {verifyingPhone ? (
                   <span className="flex items-center justify-center gap-2">
