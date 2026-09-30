@@ -1,19 +1,19 @@
 "use client";
 
-import { useContext, useEffect, useRef } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { NavStateContext } from "@/context/NavStateContext";
-import dynamic from "next/dynamic";
-
-const DynamicRequestForm = dynamic(
-  () => import("@/components/customer/DynamicRequestForm"),
-  { ssr: false },
-);
+import DynamicRequestForm from "@/components/customer/DynamicRequestForm";
 
 export default function RequestPageGuard() {
   const router = useRouter();
   const { isProUser, isLoggedIn } = useContext(NavStateContext);
   const redirected = useRef(false);
+  const [mounted, setMounted] = useState(false);
+
+  // The form reads browser state. Defer rendering until hydration while keeping
+  // its module in the route bundle for the Cloudflare Pages adapter.
+  useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
     if (isLoggedIn && isProUser && !redirected.current) {
@@ -22,7 +22,7 @@ export default function RequestPageGuard() {
     }
   }, [isLoggedIn, isProUser, router]);
 
-  if (isLoggedIn && isProUser) {
+  if (!mounted || (isLoggedIn && isProUser)) {
     return null;
   }
 
