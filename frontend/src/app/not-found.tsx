@@ -1,10 +1,10 @@
+"use client";
+
 import Link from "next/link";
-import { getLocale } from "next-intl/server";
+import { useLocale } from "next-intl";
 
-export const runtime = "edge";
-
-export default async function NotFound() {
-  const ko = (await getLocale()) === "ko";
+export default function NotFound() {
+  const ko = useLocale() === "ko";
   return (
     <section className="flex min-h-[65vh] flex-col items-center justify-center bg-[#f7f8f2] px-6 py-20 text-center">
       <p className="mb-5 font-headline text-7xl font-extrabold tracking-tighter text-[#bed0ae]">404</p>

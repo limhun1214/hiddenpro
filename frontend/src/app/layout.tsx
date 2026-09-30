@@ -5,9 +5,6 @@ import type { Metadata, Viewport } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getLocale } from "next-intl/server";
 
-// Generated routes such as /_not-found must inherit the Pages Edge runtime too.
-export const runtime = "edge";
-
 export const viewport: Viewport = {
   themeColor: "#176b57",
 };
